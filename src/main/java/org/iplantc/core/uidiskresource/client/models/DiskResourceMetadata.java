@@ -13,11 +13,13 @@ public class DiskResourceMetadata extends BaseModelData {
     public static String ATTRIBUTE = "attr";
     public static String VALUE = "value";
     public static String UNIT = "unit";
+    public static String ID = "id";
 
-    public DiskResourceMetadata(String attr, String value, String unit) {
+    public DiskResourceMetadata(String id, String attr, String value, String unit) {
         set(ATTRIBUTE, attr);
         set(VALUE, value);
         set(UNIT, unit);
+        set(ID, id);
     }
 
     public String getAttribute() {
@@ -32,6 +34,10 @@ public class DiskResourceMetadata extends BaseModelData {
         return (get(UNIT) == null) ? "" : get(UNIT).toString();
     }
 
+    public String getId() {
+        return (get(ID) == null) ? "" : get(ID).toString();
+    }
+
     public void setAttribute(String attr) {
         set(ATTRIBUTE, attr);
     }
@@ -42,6 +48,10 @@ public class DiskResourceMetadata extends BaseModelData {
 
     public void setUnit(String unit) {
         set(UNIT, unit);
+    }
+
+    public void setId(String id) {
+        set(ID, id);
     }
 
     public JSONObject toJson() {
