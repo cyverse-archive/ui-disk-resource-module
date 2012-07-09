@@ -11,6 +11,7 @@ public class Folder extends DiskResource {
     private static final long serialVersionUID = 2525604102944798997L;
 
     private boolean hasSubFolders;
+    private boolean remotelyLoaded = false;
 
     /**
      * Instantiate from id and name.
@@ -54,5 +55,13 @@ public class Folder extends DiskResource {
      */
     public boolean hasSubFolders() {
         return hasSubFolders;
+    }
+
+    public boolean isRemotelyLoaded() {
+        return remotelyLoaded;
+    }
+
+    public void setRemotelyLoaded(boolean remotelyLoaded) {
+        this.remotelyLoaded = remotelyLoaded;
     }
 }
