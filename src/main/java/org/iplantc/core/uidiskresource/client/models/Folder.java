@@ -32,7 +32,7 @@ public class Folder extends DiskResource {
     public Folder(JSONObject folder) {
         super(folder);
 
-        setHasSubFolders(JsonUtil.getBoolean(folder, "hasSubDirs", false)); //$NON-NLS-1$
+        setHasSubFolders(JsonUtil.getBoolean(folder, "hasSubDirs", true)); //$NON-NLS-1$
     }
 
     /**
