@@ -3,6 +3,11 @@
 <module>
 	<inherits name="com.google.gwt.user.User" />
 	<inherits name='com.extjs.gxt.ui.GXT'/>
+    <inherits name='com.sencha.gxt.ui.GXT' />
+    
+    <!-- UIBinder -->
+    <inherits name="com.google.web.bindery.autobean.AutoBean"/>
+    <inherits name="com.google.gwt.uibinder.UiBinder" />
 
     <!-- iPlant module inherits -->
     <inherits name="org.iplantc.core.JsonUtil" />

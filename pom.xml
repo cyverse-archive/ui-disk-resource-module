@@ -27,7 +27,7 @@
 		<jdk.version>1.6</jdk.version>
 
 		<!-- Current GXT Version -->
-		<gxt.version>2.2.5</gxt.version>
+		<gxt.version>3.0.1</gxt.version>
 
 		<!-- Current GWT Version -->
 		<gwt.version>2.5.0-rc1</gwt.version>
@@ -62,10 +62,15 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.extjs</groupId>
-			<artifactId>gxt</artifactId>
-			<version>${gxt.version}</version>
-		</dependency>
+            <groupId>com.sencha.gxt</groupId>
+            <artifactId>gxt</artifactId>
+            <version>${gxt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.extjs</groupId>
+            <artifactId>gxt</artifactId>
+            <version>2.2.5</version>
+        </dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
@@ -247,6 +252,11 @@
 			</url>
 
 		</repository>
+   <repository>
+      <id>sencha-commercial-release</id>
+      <name>Sencha commercial releases</name>
+      <url>https://maven.sencha.com/repo/commercial-release/</url>
+   </repository>
 
 	</repositories>
 
