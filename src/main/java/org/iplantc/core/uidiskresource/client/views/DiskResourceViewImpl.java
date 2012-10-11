@@ -1,5 +1,6 @@
 package org.iplantc.core.uidiskresource.client.views;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
@@ -10,6 +11,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -88,7 +90,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
             @Override
             public void onSelectionChanged(SelectionChangedEvent<Folder> event) {
                 if ((event.getSelection() != null) && !event.getSelection().isEmpty()) {
-                    presenter.onFolderSelected(event.getSelection().get(0));
+                    onFolderSelected(event.getSelection().get(0));
                 }
             }
 
@@ -103,6 +105,16 @@ public class DiskResourceViewImpl implements DiskResourceView {
             }
 
         });
+    }
+
+    @Override
+    public void onDiskResourceSelected(List<DiskResource> selection) {
+        onDiskResourceSelected(selection);
+    }
+
+    @Override
+    public void onFolderSelected(Folder folder) {
+        presenter.onFolderSelected(folder);
     }
 
     @UiFactory
@@ -184,6 +196,18 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @Override
     public boolean isLoaded(Folder folder) {
         return tree.findNode(folder).isLoaded();
+    }
+
+    @Override
+    public void setDiskResources(ArrayList<DiskResource> folderChildren) {
+        grid.getStore().clear();
+        grid.getStore().addAll(folderChildren);
+    }
+
+    @Override
+    public void setNorthWidget(IsWidget widget) {
+        northData.setHidden(false);
+        con.setNorthWidget(widget, northData);
     }
 
 }

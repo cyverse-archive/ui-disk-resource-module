@@ -1,8 +1,113 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
-             xmlns:toolbar="urn:import:com.sencha.gxt.widget.core.client.toolbar">
+             xmlns:toolbar="urn:import:com.sencha.gxt.widget.core.client.toolbar"
+             xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button"
+             xmlns:menu="urn:import:com.sencha.gxt.widget.core.client.menu">
+             
+   <ui:with field="res"
+            type="org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar.Resources"/>
+   <ui:with field="display"
+            type="org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings"/>
+            
    <toolbar:ToolBar>
-   
+         <!-- Upload Menu -->
+      <toolbar:child>
+         <button:TextButton text="{display.upload}"
+                            icon="{res.uploadButtonIcon}">
+            <button:menu>
+               <menu:Menu>
+                  <menu:MenuItem ui:field="bulkUploadButton" 
+                                 text="{display.bulkUploadFromDesktop}">
+                  </menu:MenuItem>
+                  <menu:MenuItem ui:field="simpleUploadButton" 
+                                 text="{display.simpleUploadFromDesktop}">
+                  </menu:MenuItem>
+                  <menu:MenuItem ui:field="importButton" 
+                                 text="{display.importLabel}">
+                  </menu:MenuItem>
+               </menu:Menu>
+            </button:menu>
+         </button:TextButton>
+      </toolbar:child>
+
+      <!-- New Folder button -->
+      <toolbar:child>
+         <button:TextButton ui:field="newFolderButton"
+                            text="{display.newFolder}"
+                            icon="{res.newFolderButtonIcon}">
+         </button:TextButton>
+      </toolbar:child>   
+
+      <!-- Refresh button -->
+      <toolbar:child>
+         <button:TextButton ui:field="refreshButton" 
+                            text="{display.refresh}"
+                            icon="{res.refreshButtonIcon}">
+         </button:TextButton>
+      </toolbar:child>   
+      
+      <!-- Download menu -->
+      <toolbar:child>
+         <button:TextButton text="{display.download}"
+                            icon="{res.downloadButtonIcon}">
+            <button:menu>
+               <menu:Menu>
+                  <menu:MenuItem ui:field="simpleDownloadButton" 
+                                 text="{display.simpleDownload}">
+                  </menu:MenuItem>
+                  <menu:MenuItem ui:field="bulkDownloadButton" 
+                                 text="{display.bulkDownload}">
+                  </menu:MenuItem>
+               </menu:Menu>
+            </button:menu>
+         </button:TextButton>
+      </toolbar:child>
+      
+      <!-- Rename button -->
+      <toolbar:child>
+         <button:TextButton ui:field="renameButton" 
+                            text="{display.rename}"
+                            icon="{res.renameButtonIcon}">
+         </button:TextButton>
+      </toolbar:child>
+      
+      <!-- Delete button -->
+      <toolbar:child>
+         <button:TextButton ui:field="deleteButton" 
+                            text="{display.delete}"
+                            icon="{res.deleteButtonIcon}">
+         </button:TextButton>
+      </toolbar:child>
+      
+      <!-- Share button -->
+      <toolbar:child>
+         <button:TextButton ui:field="shareButton" 
+                            text="{display.share}" 
+                            icon="{res.shareButtonIcon}">
+         </button:TextButton>
+      </toolbar:child>
+      
+      <!-- Metadata button -->
+      <toolbar:child>
+         <button:TextButton ui:field="metadataButton" 
+                            text="{display.metadata}"
+                            icon="{res.metadataButtonIcon}">
+         </button:TextButton>
+      </toolbar:child>      
+      
+      <!-- Data Search box -->
+      <toolbar:child>
+         <button:TextButton text="Data Search Place Holder">
+         </button:TextButton>
+      </toolbar:child>
+
+      <!-- Data Quota button -->
+      <toolbar:child>
+         <button:TextButton ui:field="dataQuotaButton" 
+                            icon="{res.dataQuotaButtonIcon}">
+         </button:TextButton>
+      </toolbar:child>      
+      
    </toolbar:ToolBar>        
 </ui:UiBinder> 

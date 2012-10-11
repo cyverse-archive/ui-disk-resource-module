@@ -1,28 +1,35 @@
 package org.iplantc.core.uidiskresource.client.presenters;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
-import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderRpcProxy;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
+import com.sencha.gxt.widget.core.client.info.Info;
 
+/**
+ * TODO JDS Implement recursive load of previously selected folder.
+ * 
+ * @author jstroot
+ * 
+ */
 public class DiskResourcePresenter implements DiskResourceView.Presenter,
         DiskResourceViewToolbar.Presenter {
 
     private final DiskResourceView view;
-    private FolderRpcProxy proxy;
+    private final DiskResourceView.Proxy proxy;
 
-    public DiskResourcePresenter(final DiskResourceView view) {
+    public DiskResourcePresenter(final DiskResourceView view, final DiskResourceViewToolbar toolbar,
+            final DiskResourceView.Proxy proxy) {
         this.view = view;
-        proxy = new FolderRpcProxy();
-        TreeLoader<Folder> treeLoader = new TreeLoader<Folder>(proxy) {
+        this.proxy = proxy;
+        TreeLoader<Folder> treeLoader = new TreeLoader<Folder>(this.proxy) {
             @Override
             public boolean hasChildren(Folder parent) {
                 return parent.hasSubDirs();
@@ -30,25 +37,17 @@ public class DiskResourcePresenter implements DiskResourceView.Presenter,
         };
 
 
-        treeLoader.addLoadHandler(new ChildTreeStoreBinding<Folder>(view.getTreeStore()));
-        view.setTreeLoader(treeLoader);
-        view.setPresenter(this);
+        treeLoader.addLoadHandler(new ChildTreeStoreBinding<Folder>(this.view.getTreeStore()));
+        this.view.setTreeLoader(treeLoader);
+        this.view.setNorthWidget(toolbar);
+        this.view.setPresenter(this);
+        this.proxy.setPresenter(this);
+        toolbar.setPresenter(this);
     }
 
     @Override
     public void go(HasOneWidget container) {
         container.setWidget(view);
-
-        // proxy.load(null, new AsyncCallback<List<Folder>>() {
-        //
-        // @Override
-        // public void onSuccess(List<Folder> result) {
-        // view.setRootFolders(result);
-        // }
-        //
-        // @Override
-        // public void onFailure(Throwable caught) {}
-        // });
     }
 
     @Override
@@ -63,20 +62,7 @@ public class DiskResourcePresenter implements DiskResourceView.Presenter,
 
     @Override
     public void onFolderSelected(Folder folder) {
-        // FIXME JDS This need to be IMPLEMENTED
-        if (view.isLoaded(folder)) {
-            GWT.log("Folder is loaded");
-        } else {
-            GWT.log("Folder is NOT LOADED");
-
-        }
-
-        if ((folder.getFiles() != null) || (folder.getFolders() != null)) {
-            GWT.log("We have stuff");
-        } else {
-            GWT.log("We got NOTHING");
-
-        }
+        proxy.load(folder);
     }
 
     @Override
@@ -85,4 +71,84 @@ public class DiskResourcePresenter implements DiskResourceView.Presenter,
 
     }
 
+    @Override
+    public void onFolderLoad(Folder loadedFolder, ArrayList<DiskResource> folderChildren) {
+        if (loadedFolder == getSelectedFolder()) {
+            view.setDiskResources(folderChildren);
+        }
+
+    }
+
+    @Override
+    public void doBulkUpload() {
+        // TODO Auto-generated method stub
+        Info.display("You clicked something!", "doBulkUpload");
+    }
+
+    @Override
+    public void doSimpleUpload() {
+        // TODO Auto-generated method stub
+        Info.display("You clicked something!", "doSimpleUpload");
+    }
+
+    @Override
+    public void doImport() {
+        // TODO Auto-generated method stub
+        Info.display("You clicked something!", "doImport");
+    }
+
+    @Override
+    public void doCreateNewFolder() {
+        // TODO Auto-generated method stub
+        Info.display("You clicked something!", "doCreateNewFolder");
+    }
+
+    @Override
+    public void doRefresh() {
+        // TODO Auto-generated method stub
+        Info.display("You clicked something!", "doRefresh");
+    }
+
+    @Override
+    public void doSimpleDownload() {
+        // TODO Auto-generated method stub
+        Info.display("You clicked something!", "doSimpleDownload");
+    }
+
+    @Override
+    public void doBulkDownload() {
+        // TODO Auto-generated method stub
+        Info.display("You clicked something!", "doBulkDownload");
+    }
+
+    @Override
+    public void doRename() {
+        // TODO Auto-generated method stub
+        Info.display("You clicked something!", "doRename");
+    }
+
+    @Override
+    public void doShare() {
+        // TODO Auto-generated method stub
+        Info.display("You clicked something!", "doShare");
+    }
+
+    @Override
+    public void doDelete() {
+        // TODO Auto-generated method stub
+        Info.display("You clicked something!", "doDelete");
+    }
+
+    @Override
+    public void doMetadata() {
+        // TODO Auto-generated method stub
+        Info.display("You clicked something!", "doMetadata");
+    }
+
+    @Override
+    public void doDataQuota() {
+        // TODO Auto-generated method stub
+        Info.display("You clicked something!", "doDataQuota");
+
+    }
 }

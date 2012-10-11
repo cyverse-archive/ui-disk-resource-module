@@ -1,15 +1,18 @@
 package org.iplantc.core.uidiskresource.client.presenters.proxy;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.Services;
+import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uidiskresource.client.models.autobeans.File;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 import org.iplantc.core.uidiskresource.client.models.autobeans.RootFolders;
+import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.autobean.shared.AutoBean;
@@ -19,9 +22,11 @@ import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 import com.sencha.gxt.data.client.loader.RpcProxy;
 
-public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> {
+public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements DiskResourceView.Proxy {
 
     private final DiskResourceAutoBeanFactory factory = GWT.create(DiskResourceAutoBeanFactory.class);
+    private DiskResourceView.Presenter presenter;
+
     @Override
     public void load(final Folder parentFolder, final AsyncCallback<List<Folder>> callback) {
         if (parentFolder == null) {
@@ -36,14 +41,18 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> {
                     for (Folder root : roots) {
                         // getFolderContents(root);
                     }
-                    callback.onSuccess(roots);
+                    if (callback != null) {
+                        callback.onSuccess(roots);
+                    }
                 }
 
                 @Override
                 public void onFailure(Throwable caught) {
                     ErrorHandler.post(I18N.ERROR.retrieveFolderInfoFailed(), caught);
 
-                    callback.onFailure(caught);
+                    if (callback != null) {
+                        callback.onFailure(caught);
+                    }
                 }
 
             });
@@ -53,68 +62,41 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> {
 
                         @Override
                         public void onSuccess(String result) {
-                            // Looking for the "folders" key here
+                            // Turn json result into a Splittable and wrap the loaded folder
                             Splittable split = StringQuoter.split(result);
-                            AutoBean<Folder> newFolder = AutoBeanCodex.decode(factory, Folder.class,
-                                    split);
-                            // AutoBean<Folder> bean = AutoBeanCodex.decode(factory, Folder.class,
-                            // result);
-                            AutoBean<Folder> beanToWrap = AutoBeanUtils.getAutoBean(parentFolder);
-                            AutoBeanCodex.decodeInto(split, beanToWrap);
-                            List<Folder> folders = parentFolder.getFolders();
-                            List<File> files = parentFolder.getFiles();
+                            AutoBeanCodex.decodeInto(split,
+                                    AutoBeanUtils.<Folder, Folder> getAutoBean(parentFolder));
 
-                            List<Folder> folders2 = newFolder.as().getFolders();
-                            List<File> files2 = newFolder.as().getFiles();
 
-                            callback.onSuccess(newFolder.as().getFolders());
-
+                            ArrayList<DiskResource> parentFolderChildren = Lists.newArrayList();
+                            parentFolderChildren.addAll(parentFolder.getFolders());
+                            parentFolderChildren.addAll(parentFolder.getFiles());
+                            presenter.onFolderLoad(parentFolder, parentFolderChildren);
+                            if (callback != null) {
+                                callback.onSuccess(parentFolder.getFolders());
+                            }
                         }
 
                         @Override
                         public void onFailure(Throwable caught) {
                             ErrorHandler.post(I18N.ERROR.retrieveFolderInfoFailed(), caught);
-
-                            callback.onFailure(caught);
+                            if (callback != null) {
+                                callback.onFailure(caught);
+                            }
                         }
-
                     });
         }
     }
 
-    public void getFolderContents(final Folder parentFolder, final AsyncCallback<List<Folder>> callback) {
-        Services.DISK_RESOURCE_SERVICE.getFolderContents(parentFolder.getId(), false,
-                new AsyncCallback<String>() {
+    @Override
+    public void setPresenter(DiskResourceView.Presenter presenter) {
+        this.presenter = presenter;
+    }
 
-                    @Override
-                    public void onSuccess(String result) {
-                        // Looking for the "folders" key here
-                        Splittable split = StringQuoter.split(result);
-                        AutoBean<Folder> newFolder = AutoBeanCodex.decode(factory, Folder.class, split);
-                        // AutoBean<Folder> bean = AutoBeanCodex.decode(factory, Folder.class, result);
-                        AutoBean<Folder> beanToWrap = AutoBeanUtils.getAutoBean(parentFolder);
-                        AutoBeanCodex.decodeInto(split, beanToWrap);
-                        List<Folder> folders = parentFolder.getFolders();
-                        List<File> files = parentFolder.getFiles();
-
-                        List<Folder> folders2 = newFolder.as().getFolders();
-                        List<File> files2 = newFolder.as().getFiles();
-                        // callback.onSuccess(bean.as().getFolders());
-                        if (split == null) {
-                            
-                        }
-
-                    }
-
-                    @Override
-                    public void onFailure(Throwable caught) {
-                        ErrorHandler.post(I18N.ERROR.retrieveFolderInfoFailed(), caught);
-
-                        // callback.onFailure(caught);
-                    }
-
-                });
-
+    @Override
+    public void load(final Folder folder) {
+        AsyncCallback<List<Folder>> nullCallback = null;
+        load(folder, nullCallback);
     }
 
 }
