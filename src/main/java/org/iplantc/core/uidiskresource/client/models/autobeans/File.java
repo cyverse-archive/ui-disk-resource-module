@@ -5,6 +5,6 @@ import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
 public interface File extends DiskResource {
 
     @PropertyName("file-size")
-    int getSize();
+    String getSize();
 
 }

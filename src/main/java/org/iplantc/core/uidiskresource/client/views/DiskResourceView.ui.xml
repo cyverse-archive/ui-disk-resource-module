@@ -4,7 +4,8 @@
              xmlns:container="urn:import:com.sencha.gxt.widget.core.client.container"
              xmlns:tree="urn:import:com.sencha.gxt.widget.core.client.tree"
              xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client"
-             xmlns:grid="urn:import:com.sencha.gxt.widget.core.client.grid">
+             xmlns:grid="urn:import:com.sencha.gxt.widget.core.client.grid"
+             xmlns:toolbar="urn:import:org.iplantc.core.uidiskresource.client.views.widgets">
    <ui:with type="org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings" field="DISPLAY" />
 
 
@@ -43,8 +44,7 @@
    <ui:with field="northData"
             type="com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData">
       <ui:attributes size="30"
-                     maxSize="30"
-                     hidden="true"/>
+                     maxSize="30"/>
    </ui:with>
    <ui:with field="westData"
             type="com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData">
@@ -54,12 +54,19 @@
                      split="true" />
    </ui:with>
    <ui:with field="centerData"
-            type="com.sencha.gxt.widget.core.client.container.MarginData">
-      <ui:attributes margins="{centerMargins}" />
+            type="com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData">
+      <ui:attributes margins="{centerMargins}" 
+                     size="1"
+                     hidden="false"/>
    </ui:with>
    <ui:with field="eastData"
             type="com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData">
       <ui:attributes size="150"
+                     hidden="true"/>
+   </ui:with>
+   <ui:with field="southData"
+            type="com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData">
+      <ui:attributes size="30"
                      hidden="true"/>
    </ui:with>
    
@@ -67,7 +74,9 @@
       <container:BorderLayoutContainer ui:field="con"
                                        borders="true">
              <!-- This is the tool bar -->
-         <container:north layoutData="{northData}"/>
+         <container:north layoutData="{northData}">
+            <toolbar:DiskResourceViewToolbar ui:field="toolbar"/>
+         </container:north>
              <!-- This is the navigation panel -->
          <container:west layoutData="{westData}">
             <gxt:ContentPanel ui:field="westPanel"
@@ -95,6 +104,7 @@
             <gxt:ContentPanel ui:field="eastPanel" 
                               headingText="{DISPLAY.details}"/>
          </container:east>
+         <container:south layoutData="{southData}"/>
       </container:BorderLayoutContainer>
    </container:SimpleContainer>
 </ui:UiBinder> 

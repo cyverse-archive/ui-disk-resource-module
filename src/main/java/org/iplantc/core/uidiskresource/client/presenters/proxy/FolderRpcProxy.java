@@ -38,9 +38,6 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
                     AutoBean<RootFolders> bean = AutoBeanCodex
                             .decode(factory, RootFolders.class, result);
                     List<Folder> roots = bean.as().getRoots();
-                    for (Folder root : roots) {
-                        // getFolderContents(root);
-                    }
                     if (callback != null) {
                         callback.onSuccess(roots);
                     }
@@ -57,7 +54,7 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
 
             });
         } else {
-            Services.DISK_RESOURCE_SERVICE.getFolderContents(parentFolder.getId(), false,
+            Services.DISK_RESOURCE_SERVICE.getFolderContents(parentFolder.getId(), true,
                     new AsyncCallback<String>() {
 
                         @Override
@@ -69,8 +66,12 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
 
 
                             ArrayList<DiskResource> parentFolderChildren = Lists.newArrayList();
-                            parentFolderChildren.addAll(parentFolder.getFolders());
-                            parentFolderChildren.addAll(parentFolder.getFiles());
+                            if (parentFolder.getFolders() != null) {
+                                parentFolderChildren.addAll(parentFolder.getFolders());
+                            }
+                            if (parentFolder.getFiles() != null) {
+                                parentFolderChildren.addAll(parentFolder.getFiles());
+                            }
                             presenter.onFolderLoad(parentFolder, parentFolderChildren);
                             if (callback != null) {
                                 callback.onSuccess(parentFolder.getFolders());

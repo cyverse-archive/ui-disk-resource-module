@@ -8,8 +8,13 @@ public interface DiskResource {
 
     String getId();
 
+    void setId(String id);
+
     @PropertyName("label")
     String getName();
+
+    @PropertyName("label")
+    void setName(String name);
 
     @PropertyName("date-created")
     Date getDateCreated();

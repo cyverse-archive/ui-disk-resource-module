@@ -26,4 +26,12 @@ public interface DiskResourceDisplayStrings extends CommonUIDisplayStrings {
     String bulkUploadFromDesktop();
 
     String simpleUploadFromDesktop();
+
+    String selectAFile();
+
+    String selectAFolder();
+
+    String selectedFile();
+
+    String selectedFolder();
 }

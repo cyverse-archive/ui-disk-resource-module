@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
+import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
@@ -15,7 +18,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
-import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.widget.core.client.ContentPanel;
@@ -41,6 +43,9 @@ public class DiskResourceViewImpl implements DiskResourceView {
     private Presenter presenter;
 
     @UiField
+    DiskResourceViewToolbar toolbar;
+
+    @UiField
     BorderLayoutContainer con;
 
     @UiField
@@ -49,8 +54,8 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @UiField
     Tree<Folder, String> tree;
 
-    @UiField
-    TreeStore<Folder> treeStore;
+    @UiField(provided = true)
+    final TreeStore<Folder> treeStore;
 
     @UiField
     ContentPanel centerPanel;
@@ -71,13 +76,20 @@ public class DiskResourceViewImpl implements DiskResourceView {
     ContentPanel eastPanel;
 
     @UiField
-    BorderLayoutData northData;
+    BorderLayoutData westData;
+    @UiField
+    BorderLayoutData centerData;
     @UiField
     BorderLayoutData eastData;
+    @UiField
+    BorderLayoutData northData;
+    @UiField
+    BorderLayoutData southData;
 
     private final Widget widget;
 
-    public DiskResourceViewImpl() {
+    public DiskResourceViewImpl(final TreeStore<Folder> treeStore) {
+        this.treeStore = treeStore;
         widget = BINDER.createAndBindUi(this);
 
         // Set Leaf icon to a folder
@@ -105,6 +117,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
             }
 
         });
+
     }
 
     @Override
@@ -125,13 +138,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @UiFactory
     ListStore<DiskResource> createListStore() {
         return new ListStore<DiskResource>(new DiskResourceModelKeyProvider());
-    }
-
-    private class DiskResourceModelKeyProvider implements ModelKeyProvider<DiskResource> {
-        @Override
-        public String getKey(DiskResource item) {
-            return item.getId();
-        }
     }
 
     @UiFactory
@@ -161,6 +167,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @Override
     public void setPresenter(Presenter presenter) {
         this.presenter = presenter;
+        toolbar.setPresenter(presenter);
     }
 
     @Override
@@ -205,9 +212,67 @@ public class DiskResourceViewImpl implements DiskResourceView {
     }
 
     @Override
-    public void setNorthWidget(IsWidget widget) {
-        northData.setHidden(false);
-        con.setNorthWidget(widget, northData);
+    public void setWestWidgetHidden(boolean hideWestWidget) {
+        westData.setHidden(hideWestWidget);
+    }
+
+    @Override
+    public void setCenterWidgetHidden(boolean hideCenterWidget) {
+        // If we are hiding the center widget, update west data to fill available space.
+        if (hideCenterWidget) {
+            westData.setSize(1);
+        }
+        centerData.setHidden(hideCenterWidget);
+    }
+
+    @Override
+    public void setEastWidgetHidden(boolean hideEastWidget) {
+        eastData.setHidden(hideEastWidget);
+    }
+
+    @Override
+    public void setNorthWidgetHidden(boolean hideNorthWidget) {
+        northData.setHidden(hideNorthWidget);
+    }
+
+    @Override
+    public void setSouthWidget(IsWidget widget) {
+        southData.setHidden(false);
+        con.setSouthWidget(widget, southData);
+    }
+
+    @Override
+    public void addDiskResourceSelectChangedHandler(SelectionChangedHandler<DiskResource> selectionChangedHandler) {
+        grid.getSelectionModel().addSelectionChangedHandler(selectionChangedHandler);
+    }
+
+    @Override
+    public void addFolderSelectChangedHandler(SelectionChangedHandler<Folder> selectionChangedHandler) {
+        tree.getSelectionModel().addSelectionChangedHandler(selectionChangedHandler);
+    }
+
+    @Override
+    public void setSelectedFolder(Folder folder) {
+
+        if (treeStore.findModelWithKey(folder.getId()) != null) {
+            tree.getSelectionModel().setSelection(
+                    Lists.newArrayList(treeStore.findModelWithKey(folder.getId())));
+        }
+    }
+
+    @Override
+    public void addFolder(Folder parent, Folder newChild) {
+        treeStore.add(parent, newChild);
+    }
+
+    @Override
+    public Folder getFolderById(String folderId) {
+        return treeStore.findModelWithKey(folderId);
+    }
+
+    @Override
+    public void expandFolder(Folder folder) {
+        tree.setExpanded(folder, true);
     }
 
 }

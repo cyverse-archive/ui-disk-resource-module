@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
-import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
@@ -21,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.google.common.collect.Lists;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
 
 
@@ -31,10 +29,9 @@ import com.sencha.gxt.data.shared.loader.TreeLoader;
  *
  */
 @RunWith(JMock.class)
-public class DiskResourcePresenterTest {// extends TestCase {
+public class DiskResourcePresenterTest {
 
     public Mockery context = new JUnit4Mockery();
-    private DiskResourceViewToolbar toolbar;
     private DiskResourceView view;
     private DiskResourceView.Proxy proxy;
 
@@ -56,7 +53,6 @@ public class DiskResourcePresenterTest {// extends TestCase {
     @Before
     public void setUp() throws Exception {
         view = context.mock(DiskResourceView.class);
-        toolbar = context.mock(DiskResourceViewToolbar.class);
         proxy = context.mock(DiskResourceView.Proxy.class);
 
     }
@@ -80,11 +76,9 @@ public class DiskResourcePresenterTest {// extends TestCase {
                 oneOf(view).setTreeLoader(with(aNonNull(TreeLoader.class)));
                 oneOf(view).setPresenter(with(aNonNull(DiskResourceView.Presenter.class)));
                 oneOf(proxy).setPresenter(with(aNonNull(DiskResourceView.Presenter.class)));
-                oneOf(view).setNorthWidget(with(aNonNull(IsWidget.class)));
-                oneOf(toolbar).setPresenter(with(aNonNull(DiskResourceViewToolbar.Presenter.class)));
             oneOf (proxy).load(folder);
         }});
-        DiskResourceView.Presenter presenter = new DiskResourcePresenter(view, toolbar, proxy);
+        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy);
         
         presenter.onFolderSelected(folder);
 
@@ -109,13 +103,11 @@ public class DiskResourcePresenterTest {// extends TestCase {
                 oneOf(view).setTreeLoader(with(aNonNull(TreeLoader.class)));
                 oneOf(view).setPresenter(with(aNonNull(DiskResourceView.Presenter.class)));
                 oneOf(proxy).setPresenter(with(aNonNull(DiskResourceView.Presenter.class)));
-                oneOf(view).setNorthWidget(with(aNonNull(IsWidget.class)));
-                oneOf(toolbar).setPresenter(with(aNonNull(DiskResourceViewToolbar.Presenter.class)));
                 atLeast(1).of(view).getSelectedFolder();
                 will(returnValue(retFolder));
             }
         });
-        DiskResourcePresenter presenter = new DiskResourcePresenter(view, toolbar, proxy);
+        DiskResourcePresenterImpl presenter = new DiskResourcePresenterImpl(view, proxy);
 
         presenter.onFolderLoad(folder, null);
 
@@ -139,14 +131,12 @@ public class DiskResourcePresenterTest {// extends TestCase {
                 oneOf(view).setTreeLoader(with(aNonNull(TreeLoader.class)));
                 oneOf(view).setPresenter(with(aNonNull(DiskResourceView.Presenter.class)));
                 oneOf(proxy).setPresenter(with(aNonNull(DiskResourceView.Presenter.class)));
-                oneOf(view).setNorthWidget(with(aNonNull(IsWidget.class)));
-                oneOf(toolbar).setPresenter(with(aNonNull(DiskResourceViewToolbar.Presenter.class)));
                 atLeast(1).of(view).getSelectedFolder();
                 will(returnValue(folder));
                 oneOf(view).setDiskResources(with(folderChildren));
             }
         });
-        DiskResourcePresenter presenter = new DiskResourcePresenter(view, toolbar, proxy);
+        DiskResourcePresenterImpl presenter = new DiskResourcePresenterImpl(view, proxy);
 
         presenter.onFolderLoad(folder, folderChildren);
 

@@ -6,11 +6,14 @@ import java.util.List;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
+import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
+import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.loader.DataProxy;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
 /**
  * @author jstroot
@@ -18,7 +21,11 @@ import com.sencha.gxt.data.shared.loader.TreeLoader;
  */
 public interface DiskResourceView extends IsWidget {
 
-    public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter {
+    public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter,
+            DiskResourceViewToolbar.Presenter {
+
+        void go(HasOneWidget container, boolean hideWestWidget, boolean hideCenterWidget,
+                boolean hideEastWidget, boolean hideNorthWidget);
 
         Folder getSelectedFolder();
 
@@ -42,6 +49,29 @@ public interface DiskResourceView extends IsWidget {
          * @param folderChildren
          */
         void onFolderLoad(Folder loadedFolder, ArrayList<DiskResource> folderChildren);
+
+        void addFileSelectChangedHandler(SelectionChangedHandler<DiskResource> selectionChangedHandler);
+
+        void addFolderSelectChangedHandler(SelectionChangedHandler<Folder> selectionChangedHandler);
+
+        /**
+         * Selects the folder with the given Id by adding a {@link SelectFolderByIdLoadHandler} to the
+         * view's corresponding {@link TreeLoader}.
+         * This method is typically called before the
+         * {@link org.iplantc.core.uicommons.client.presenter.Presenter#go(HasOneWidget)} method is
+         * called.
+         * The intent is to have the
+         * 
+         * @param folderId
+         */
+        void setSelectedFolderById(String folderId);
+
+        /**
+         * Sets the selected disk resource with the given ids.
+         * 
+         * @param diskResourceIdList
+         */
+        void setSelectedDiskResourcesById(List<String> diskResourceIdList);
     }
 
     /**
@@ -58,6 +88,7 @@ public interface DiskResourceView extends IsWidget {
         void load(Folder folder);
 
         void setPresenter(Presenter presenter);
+
     }
 
     void setPresenter(Presenter presenter);
@@ -80,5 +111,26 @@ public interface DiskResourceView extends IsWidget {
 
     void onDiskResourceSelected(List<DiskResource> selection);
 
-    void setNorthWidget(IsWidget widget);
+    void setWestWidgetHidden(boolean hideWestWidget);
+
+    void setCenterWidgetHidden(boolean hideCenterWidget);
+
+    void setEastWidgetHidden(boolean hideEastWidget);
+
+    void setNorthWidgetHidden(boolean hideNorthWidget);
+
+    void setSouthWidget(IsWidget fl);
+
+    void addDiskResourceSelectChangedHandler(SelectionChangedHandler<DiskResource> selectionChangedHandler);
+
+    void addFolderSelectChangedHandler(SelectionChangedHandler<Folder> selectionChangedHandler);
+
+    void setSelectedFolder(Folder folder);
+
+    void addFolder(Folder parent, Folder newChild);
+
+    Folder getFolderById(String folderId);
+
+    void expandFolder(Folder folder);
+
 }
