@@ -3,20 +3,25 @@
 <module>
     <!-- iPlant module inherits -->
     <inherits name="org.iplantc.core.ui-commons"/>
-    <!-- <inherits name="org.iplantc.core.JsonUtil" /> -->
+    <inherits name="org.iplantc.core.JsonUtil" />
 
-	<!-- <inherits name="com.google.gwt.user.User" /> -->
+	<inherits name="com.google.gwt.user.User" />
 	<!-- <inherits name='com.extjs.gxt.ui.GXT'/> -->
     <inherits name='com.sencha.gxt.ui.GXT' />
     <inherits name="com.google.common.collect.Collect"/>
     
     
-    <!-- <inherits name="com.google.gwt.junit.JUnit" /> -->
+    <inherits name="com.google.gwt.junit.JUnit" />
     
     <!-- UIBinder -->
     <inherits name="com.google.web.bindery.autobean.AutoBean"/>
     <inherits name="com.google.gwt.uibinder.UiBinder" />
 
+    <!-- Deferred binding rules -->
+    <replace-with class="org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl">
+       <when-type-is class="org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar"/>
+    </replace-with>
+   
 	<source path="client"/>
     <source path="uidiskresource"/>
 </module>

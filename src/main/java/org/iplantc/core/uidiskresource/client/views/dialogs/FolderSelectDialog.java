@@ -2,6 +2,7 @@ package org.iplantc.core.uidiskresource.client.views.dialogs;
 
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.I18N;
+import org.iplantc.core.uidiskresource.client.Services;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 import org.iplantc.core.uidiskresource.client.presenters.DiskResourcePresenterImpl;
@@ -9,11 +10,11 @@ import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderRpcProxy;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceViewImpl;
 
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
-import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
 /**
  * An <code>IPlantDialog</code> which wraps the standard <code>DiskResourceView</code> for folder
@@ -38,20 +39,20 @@ public class FolderSelectDialog extends IPlantDialog {
         final TreeStore<Folder> treeStore = new TreeStore<Folder>(new DiskResourceModelKeyProvider());
         DiskResourceView view = new DiskResourceViewImpl(treeStore);
         DiskResourceView.Proxy proxy = new FolderRpcProxy();
-        presenter = new DiskResourcePresenterImpl(view, proxy);
+        presenter = new DiskResourcePresenterImpl(view, proxy, Services.DISK_RESOURCE_SERVICE,
+                I18N.DISPLAY);
 
-        // TODO JDS Need to add a south widget with label and text field.
         final FieldLabel fl = new FieldLabel(selectedFileField, I18N.DISPLAY.selectedFolder());
 
         view.setSouthWidget(fl);
-        presenter.addFolderSelectChangedHandler(new FileSelectionChangedHandler(selectedFileField));
+        presenter.addFolderSelectionHandler(new FileSelectionChangedHandler(selectedFileField));
 
         // Tell the presenter to add the view with the north, east, and center widgets hidden.
         presenter.go(this, false, true, true, true);
 
     }
 
-    private final class FileSelectionChangedHandler implements SelectionChangedHandler<Folder> {
+    private final class FileSelectionChangedHandler implements SelectionHandler<Folder> {
         private final TextField selectedFileField;
 
         private FileSelectionChangedHandler(final TextField selectedFileField) {
@@ -59,11 +60,11 @@ public class FolderSelectDialog extends IPlantDialog {
         }
 
         @Override
-        public void onSelectionChanged(SelectionChangedEvent<Folder> event) {
-            if ((event.getSelection() == null) || event.getSelection().isEmpty()) {
+        public void onSelection(SelectionEvent<Folder> event) {
+            if (event.getSelectedItem() == null) {
                 return;
             }
-            Folder diskResource = event.getSelection().get(0);
+            Folder diskResource = event.getSelectedItem();
             selectedFileField.setValue(diskResource.getName());
             setSelectedFolderId(diskResource.getId());
         }

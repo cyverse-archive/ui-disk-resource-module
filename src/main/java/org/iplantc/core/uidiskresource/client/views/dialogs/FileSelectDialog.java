@@ -2,6 +2,7 @@ package org.iplantc.core.uidiskresource.client.views.dialogs;
 
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.I18N;
+import org.iplantc.core.uidiskresource.client.Services;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.models.autobeans.File;
@@ -39,7 +40,8 @@ public class FileSelectDialog extends IPlantDialog {
         final TreeStore<Folder> treeStore = new TreeStore<Folder>(new DiskResourceModelKeyProvider());
         DiskResourceView view = new DiskResourceViewImpl(treeStore);
         DiskResourceView.Proxy proxy = new FolderRpcProxy();
-        presenter = new DiskResourcePresenterImpl(view, proxy);
+        presenter = new DiskResourcePresenterImpl(view, proxy, Services.DISK_RESOURCE_SERVICE,
+                I18N.DISPLAY);
 
         // TODO JDS Need to add a south widget with label and text field.
         final FieldLabel fl = new FieldLabel(selectedFileField, I18N.DISPLAY.selectedFile());

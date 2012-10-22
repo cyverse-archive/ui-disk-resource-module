@@ -1,8 +1,11 @@
 package org.iplantc.core.uidiskresource.client.services;
 
 import java.util.List;
+import java.util.Set;
 
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetaData;
+import org.iplantc.core.uidiskresource.client.models.autobeans.File;
+import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
@@ -78,9 +81,11 @@ public interface DiskResourceServiceFacade {
      * Calls the move folder and move file services for the list of given disk resource ids.
      * 
      * @param diskResources list of file and folder ids to move.
-     * @param idDestFolder id of the destination folder.
+     * @param destFolder the destination folder where the disk resources will be moved.
      */
-    void moveDiskResources(List<DiskResource> diskResources, String idDestFolder,
+    void moveDiskResources(
+            Set<org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource> diskResources,
+            Folder destFolder,
             AsyncCallback<String> callback);
 
     /**
@@ -100,6 +105,16 @@ public interface DiskResourceServiceFacade {
      * @param callback service success/failure callback
      */
     void moveFolder(List<String> idSrcFolders, String idDestFolder, AsyncCallback<String> callback);
+
+    /**
+     * Call service rename a file or folder.
+     * 
+     * @param src
+     * @param newName
+     * @param callback service success/failure callback
+     */
+    void renameDiskResource(org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource src,
+            String newName, AsyncCallback<String> callback);
 
     /**
      * Call service rename a folder.
@@ -151,20 +166,38 @@ public interface DiskResourceServiceFacade {
     void simpleDownload(String path);
 
     /**
-     * Call service to delete folders.
+     * Call service to delete disk resources (i.e. {@link File}s and {@link Folder}s)
      * 
-     * @param pathsAsJsonArray
-     * @param callback executed when RPC call completes.
+     * @param diskResources a set of <code>DiskResource</code>s to be deleted
+     * @param callback callback executed when service call completes.
      */
-    void deleteFolders(String pathsAsJsonArray, AsyncCallback<String> callback);
+    <T extends org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource> void deleteDiskResources(
+            Set<T> diskResources,
+            AsyncCallback<String> callback);
 
     /**
      * Call service to delete folders.
      * 
-     * @param pathsAsJsonArray
+     * @param folders
      * @param callback executed when RPC call completes.
      */
-    void deleteFiles(String pathsAsJsonArray, AsyncCallback<String> callback);
+    void deleteFolders(List<Folder> folders, AsyncCallback<String> callback);
+
+    /**
+     * Call service to delete folders.
+     * 
+     * @param paths
+     * @param callback executed when RPC call completes.
+     */
+    void deleteFiles(List<File> files, AsyncCallback<String> callback);
+
+    /**
+     * @param resource the <code>DiskResource</code> for which metadata will be retrieved.
+     * @param callback callback executed when service call completes.
+     */
+    void getDiskResourceMetaData(
+            org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource resource,
+            AsyncCallback<String> callback);
 
     /**
      * call service to get file metadata
@@ -181,6 +214,19 @@ public interface DiskResourceServiceFacade {
      * @param callback execute when RPC call complete
      */
     void getFolderMetaData(String path, AsyncCallback<String> callback);
+
+    /**
+     * Calls service to set disk resource metadata.
+     * 
+     * @param resource the <code>DiskResource</code> whose metadata will be updated
+     * @param mdToUpdate a list of <code>DiskResourceMetadata</code> objects which will be updated
+     * @param mdToDelete a list of <code>DiskResourceMetadata</code> objects which will be deleted
+     * @param callback executed when the service call completes.
+     */
+    void setDiskResourceMetaData(
+            org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource resource,
+            Set<DiskResourceMetaData> mdToUpdate, Set<DiskResourceMetaData> mdToDelete,
+            AsyncCallback<String> callback);
 
     /**
      * call service to set folder metadata

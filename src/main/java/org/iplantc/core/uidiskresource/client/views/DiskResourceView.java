@@ -1,13 +1,18 @@
 package org.iplantc.core.uidiskresource.client.views;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
+import org.iplantc.core.uicommons.client.views.IsMaskable;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
+import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
 
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.sencha.gxt.data.shared.TreeStore;
@@ -19,25 +24,29 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
  * @author jstroot
  * 
  */
-public interface DiskResourceView extends IsWidget {
+public interface DiskResourceView extends IsWidget, IsMaskable {
 
     public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter,
-            DiskResourceViewToolbar.Presenter {
+            DiskResourceViewToolbarImpl.Presenter {
 
         void go(HasOneWidget container, boolean hideWestWidget, boolean hideCenterWidget,
                 boolean hideEastWidget, boolean hideNorthWidget);
 
         Folder getSelectedFolder();
 
-        List<DiskResource> getSelectedDiskResources();
+        Set<DiskResource> getSelectedDiskResources();
 
         /**
+         * Method called by the view when a folder is selected.
+         * Whenever this method is called with a non-null and non-empty list, the presenter will have the
+         * view de-select all disk resources
+         * in the center panel.
          * 
-         * @param folder
+         * @param folders
          */
-        void onFolderSelected(Folder folder);
+        void onFolderSelected(Folder folders);
 
-        void onDiskResourceSelected(List<DiskResource> selection);
+        void onDiskResourceSelected(Set<DiskResource> selection);
 
         /**
          * Called by the {@link DiskResourceView.Proxy} when a folder is successfully loaded. If the
@@ -48,11 +57,11 @@ public interface DiskResourceView extends IsWidget {
          * @param loadedFolder
          * @param folderChildren
          */
-        void onFolderLoad(Folder loadedFolder, ArrayList<DiskResource> folderChildren);
+        void onFolderLoad(Folder loadedFolder, Set<DiskResource> folderChildren);
 
         void addFileSelectChangedHandler(SelectionChangedHandler<DiskResource> selectionChangedHandler);
 
-        void addFolderSelectChangedHandler(SelectionChangedHandler<Folder> selectionChangedHandler);
+        void addFolderSelectionHandler(SelectionHandler<Folder> selectionHandler);
 
         /**
          * Selects the folder with the given Id by adding a {@link SelectFolderByIdLoadHandler} to the
@@ -71,7 +80,7 @@ public interface DiskResourceView extends IsWidget {
          * 
          * @param diskResourceIdList
          */
-        void setSelectedDiskResourcesById(List<String> diskResourceIdList);
+        void setSelectedDiskResourcesById(Set<String> diskResourceIdList);
     }
 
     /**
@@ -97,19 +106,19 @@ public interface DiskResourceView extends IsWidget {
 
     Folder getSelectedFolder();
 
-    List<DiskResource> getSelectedDiskResources();
+    Set<DiskResource> getSelectedDiskResources();
 
-    void setRootFolders(List<Folder> rootFolders);
+    void setRootFolders(Set<Folder> rootFolders);
 
     TreeStore<Folder> getTreeStore();
 
     boolean isLoaded(Folder folder);
 
-    void setDiskResources(ArrayList<DiskResource> folderChildren);
+    void setDiskResources(Set<DiskResource> folderChildren);
     
     void onFolderSelected(Folder folder);
 
-    void onDiskResourceSelected(List<DiskResource> selection);
+    void onDiskResourceSelected(Set<DiskResource> selection);
 
     void setWestWidgetHidden(boolean hideWestWidget);
 
@@ -123,7 +132,7 @@ public interface DiskResourceView extends IsWidget {
 
     void addDiskResourceSelectChangedHandler(SelectionChangedHandler<DiskResource> selectionChangedHandler);
 
-    void addFolderSelectChangedHandler(SelectionChangedHandler<Folder> selectionChangedHandler);
+    void addFolderSelectionHandler(SelectionHandler<Folder> selectionHandler);
 
     void setSelectedFolder(Folder folder);
 
@@ -132,5 +141,28 @@ public interface DiskResourceView extends IsWidget {
     Folder getFolderById(String folderId);
 
     void expandFolder(Folder folder);
+
+    void deSelectDiskResources();
+
+    /**
+     * @return a list of root folders from the view's tree store.
+     */
+    Set<Folder> getRootFolders();
+
+    /**
+     * Clears all children from the tree store and reloads all root folders.
+     */
+    void refreshAll();
+
+    void refreshFolder(Folder folder);
+
+    DiskResourceViewToolbar getToolbar();
+
+    /**
+     * Removes the given <code>DiskResource</code>s from all of the view's stores.
+     * 
+     * @param resources
+     */
+    <D extends DiskResource> void removeDiskResources(Collection<D> resources);
 
 }

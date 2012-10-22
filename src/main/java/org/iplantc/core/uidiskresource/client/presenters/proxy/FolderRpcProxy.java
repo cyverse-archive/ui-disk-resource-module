@@ -1,7 +1,7 @@
 package org.iplantc.core.uidiskresource.client.presenters.proxy;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uidiskresource.client.I18N;
@@ -12,7 +12,7 @@ import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 import org.iplantc.core.uidiskresource.client.models.autobeans.RootFolders;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.autobean.shared.AutoBean;
@@ -64,8 +64,7 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
                             AutoBeanCodex.decodeInto(split,
                                     AutoBeanUtils.<Folder, Folder> getAutoBean(parentFolder));
 
-
-                            ArrayList<DiskResource> parentFolderChildren = Lists.newArrayList();
+                            Set<DiskResource> parentFolderChildren = Sets.newHashSet();
                             if (parentFolder.getFolders() != null) {
                                 parentFolderChildren.addAll(parentFolder.getFolders());
                             }

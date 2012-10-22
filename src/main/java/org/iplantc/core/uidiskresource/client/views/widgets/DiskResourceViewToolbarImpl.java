@@ -1,0 +1,196 @@
+package org.iplantc.core.uidiskresource.client.views.widgets;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.menu.Item;
+import com.sencha.gxt.widget.core.client.menu.MenuItem;
+
+public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
+
+    @UiTemplate("DiskResourceViewToolbar.ui.xml")
+    interface DiskResourceViewToolbarUiBinder extends UiBinder<Widget, DiskResourceViewToolbarImpl> {
+    }
+
+    private static DiskResourceViewToolbarUiBinder BINDER = GWT
+            .create(DiskResourceViewToolbarUiBinder.class);
+
+    private DiskResourceViewToolbar.Presenter presenter;
+    private final Widget widget;
+
+    @UiField
+    MenuItem bulkUploadButton;
+
+    @UiField
+    MenuItem simpleUploadButton;
+
+    @UiField
+    MenuItem importButton;
+
+    @UiField
+    TextButton newFolderButton;
+
+    @UiField
+    TextButton refreshButton;
+
+    @UiField
+    MenuItem simpleDownloadButton;
+
+    @UiField
+    MenuItem bulkDownloadButton;
+
+    @UiField
+    TextButton renameButton;
+
+    @UiField
+    TextButton deleteButton;
+
+    @UiField
+    TextButton shareButton;
+
+    @UiField
+    TextButton metadataButton;
+
+    @UiField
+    TextButton dataQuotaButton;
+
+    public DiskResourceViewToolbarImpl() {
+        widget = BINDER.createAndBindUi(this);
+    }
+
+    @Override
+    public Widget asWidget() {
+        return widget;
+    }
+
+    @Override
+    public void setPresenter(DiskResourceViewToolbar.Presenter presenter) {
+        this.presenter = presenter;
+    }
+
+    @UiHandler("bulkUploadButton")
+    void onBulkUploadClicked(SelectionEvent<Item> event) {
+        presenter.doBulkUpload();
+    }
+
+    @UiHandler("simpleUploadButton")
+    void onSimpleUploadClicked(SelectionEvent<Item> event) {
+        presenter.doSimpleUpload();
+    }
+
+    @UiHandler("importButton")
+    void onImportClicked(SelectionEvent<Item> event) {
+        presenter.doImport();
+    }
+
+    @UiHandler("newFolderButton")
+    void onNewFolderClicked(SelectEvent event) {
+        presenter.doCreateNewFolder();
+    }
+
+    @UiHandler("refreshButton")
+    void onRefreshClicked(SelectEvent event) {
+        presenter.doRefresh();
+    }
+
+    @UiHandler("simpleDownloadButton")
+    void onSimpleDownloadClicked(SelectionEvent<Item> event) {
+        presenter.doSimpleDownload();
+    }
+
+    @UiHandler("bulkDownloadButton")
+    void onBulkDownloadClicked(SelectionEvent<Item> event) {
+        presenter.doBulkDownload();
+    }
+
+    @UiHandler("renameButton")
+    void onRenameClicked(SelectEvent event) {
+        presenter.doRename();
+    }
+
+    @UiHandler("deleteButton")
+    void onDeleteClicked(SelectEvent event) {
+        presenter.requestDelete();
+    }
+
+    @UiHandler("shareButton")
+    void onShareClicked(SelectEvent event) {
+        presenter.doShare();
+    }
+
+    @UiHandler("metadataButton")
+    void onMetadataClicked(SelectEvent event) {
+        presenter.doMetadata();
+    }
+
+    @UiHandler("dataQuotaButton")
+    void onDataQuotaClicked(SelectEvent event) {
+        presenter.doDataQuota();
+    }
+
+    @Override
+    public void setBulkUploadEnabled(boolean enabled) {
+        bulkUploadButton.setEnabled(enabled);
+    }
+
+    @Override
+    public void setSimpleUploadEnabled(boolean enabled) {
+        simpleUploadButton.setEnabled(enabled);
+    }
+
+    @Override
+    public void setImportButtonEnabled(boolean enabled) {
+        importButton.setEnabled(enabled);
+    }
+
+    @Override
+    public void setNewFolderButtonEnabled(boolean enabled) {
+        newFolderButton.setEnabled(enabled);
+    }
+
+    @Override
+    public void setRefreshButtonEnabled(boolean enabled) {
+        refreshButton.setEnabled(enabled);
+    }
+
+    @Override
+    public void setSimpleDowloadButtonEnabled(boolean enabled) {
+        simpleDownloadButton.setEnabled(enabled);
+    }
+
+    @Override
+    public void setBulkDownloadButtonEnabled(boolean enabled) {
+        bulkDownloadButton.setEnabled(enabled);
+    }
+
+    @Override
+    public void setRenameButtonEnabled(boolean enabled) {
+        renameButton.setEnabled(enabled);
+    }
+
+    @Override
+    public void setDeleteButtonEnabled(boolean enabled) {
+        deleteButton.setEnabled(enabled);
+    }
+
+    @Override
+    public void setShareButtonEnabled(boolean enabled) {
+        shareButton.setEnabled(enabled);
+    }
+
+    @Override
+    public void setMetadataButtonEnabled(boolean enabled) {
+        metadataButton.setEnabled(enabled);
+    }
+
+    @Override
+    public void setDataQuotaButtonEnabled(boolean enabled) {
+        dataQuotaButton.setEnabled(enabled);
+    }
+}

@@ -1,7 +1,7 @@
 package org.iplantc.core.uidiskresource.client.views;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Set;
 
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceModelKeyProvider;
@@ -9,13 +9,17 @@ import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.TreeStore;
@@ -88,6 +92,8 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     private final Widget widget;
 
+    private TreeLoader<Folder> treeLoader;
+
     public DiskResourceViewImpl(final TreeStore<Folder> treeStore) {
         this.treeStore = treeStore;
         widget = BINDER.createAndBindUi(this);
@@ -96,23 +102,24 @@ public class DiskResourceViewImpl implements DiskResourceView {
         TreeStyle treeStyle = tree.getStyle();
         TreeAppearance appearance = tree.getAppearance();
         treeStyle.setLeafIcon(appearance.closeNodeIcon());
-
-        tree.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<Folder>() {
+        tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        tree.getSelectionModel().addSelectionHandler(new SelectionHandler<Folder>() {
 
             @Override
-            public void onSelectionChanged(SelectionChangedEvent<Folder> event) {
-                if ((event.getSelection() != null) && !event.getSelection().isEmpty()) {
-                    onFolderSelected(event.getSelection().get(0));
+            public void onSelection(SelectionEvent<Folder> event) {
+                if (event.getSelectedItem() != null) {
+                    onFolderSelected(event.getSelectedItem());
                 }
             }
 
         });
+
         grid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<DiskResource>() {
 
             @Override
             public void onSelectionChanged(SelectionChangedEvent<DiskResource> event) {
                 if ((event.getSelection() != null) && !event.getSelection().isEmpty()) {
-                    presenter.onDiskResourceSelected(event.getSelection());
+                    presenter.onDiskResourceSelected(Sets.newHashSet(event.getSelection()));
                 }
             }
 
@@ -121,7 +128,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     }
 
     @Override
-    public void onDiskResourceSelected(List<DiskResource> selection) {
+    public void onDiskResourceSelected(Set<DiskResource> selection) {
         onDiskResourceSelected(selection);
     }
 
@@ -178,6 +185,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @Override
     public void setTreeLoader(TreeLoader<Folder> treeLoader) {
         tree.setLoader(treeLoader);
+        this.treeLoader = treeLoader;
     }
 
     @Override
@@ -186,13 +194,13 @@ public class DiskResourceViewImpl implements DiskResourceView {
     }
 
     @Override
-    public List<DiskResource> getSelectedDiskResources() {
-        return grid.getSelectionModel().getSelectedItems();
+    public Set<DiskResource> getSelectedDiskResources() {
+        return Sets.newHashSet(grid.getSelectionModel().getSelectedItems());
     }
 
     @Override
-    public void setRootFolders(List<Folder> rootFolders) {
-        treeStore.add(rootFolders);
+    public void setRootFolders(Set<Folder> rootFolders) {
+        treeStore.add(Lists.newArrayList(rootFolders));
     }
 
     @Override
@@ -206,7 +214,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     }
 
     @Override
-    public void setDiskResources(ArrayList<DiskResource> folderChildren) {
+    public void setDiskResources(Set<DiskResource> folderChildren) {
         grid.getStore().clear();
         grid.getStore().addAll(folderChildren);
     }
@@ -247,8 +255,8 @@ public class DiskResourceViewImpl implements DiskResourceView {
     }
 
     @Override
-    public void addFolderSelectChangedHandler(SelectionChangedHandler<Folder> selectionChangedHandler) {
-        tree.getSelectionModel().addSelectionChangedHandler(selectionChangedHandler);
+    public void addFolderSelectionHandler(SelectionHandler<Folder> selectionHandler) {
+        tree.getSelectionModel().addSelectionHandler(selectionHandler);
     }
 
     @Override
@@ -273,6 +281,55 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @Override
     public void expandFolder(Folder folder) {
         tree.setExpanded(folder, true);
+    }
+
+    @Override
+    public void deSelectDiskResources() {
+        grid.getSelectionModel().deselectAll();
+    }
+
+    @Override
+    public Set<Folder> getRootFolders() {
+        return Sets.newHashSet(treeStore.getRootItems());
+    }
+
+    @Override
+    public void refreshAll() {
+        treeStore.clear();
+        treeLoader.load(null);
+    }
+
+    @Override
+    public void refreshFolder(Folder folder) {
+        if (folder != null) {
+            treeStore.removeChildren(folder);
+        }
+        treeLoader.load(folder);
+    }
+
+    @Override
+    public DiskResourceViewToolbar getToolbar() {
+        return toolbar;
+    }
+
+    @Override
+    public void mask(String loadingMask) {
+        con.mask(loadingMask);
+    }
+
+    @Override
+    public void unmask() {
+        con.unmask();
+    }
+
+    @Override
+    public <D extends DiskResource> void removeDiskResources(Collection<D> resources) {
+        for (DiskResource dr : resources) {
+            listStore.remove(dr);
+            if (dr instanceof Folder) {
+                treeStore.remove((Folder)dr);
+            }
+        }
     }
 
 }

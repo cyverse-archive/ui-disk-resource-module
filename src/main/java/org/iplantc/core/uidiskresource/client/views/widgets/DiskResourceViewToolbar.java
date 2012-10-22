@@ -1,17 +1,10 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.menu.Item;
 
-public class DiskResourceViewToolbar implements IsWidget {
+public interface DiskResourceViewToolbar extends IsWidget {
 
     public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter {
 
@@ -23,6 +16,9 @@ public class DiskResourceViewToolbar implements IsWidget {
 
         void doCreateNewFolder();
 
+        /**
+         * Reloads all the view's root folders.
+         */
         void doRefresh();
 
         void doSimpleDownload();
@@ -32,6 +28,8 @@ public class DiskResourceViewToolbar implements IsWidget {
         void doRename();
 
         void doShare();
+
+        void requestDelete();
 
         void doDelete();
 
@@ -71,86 +69,30 @@ public class DiskResourceViewToolbar implements IsWidget {
 
     }
 
+    void setPresenter(Presenter presenter);
 
-    interface DiskResourceViewToolbarUiBinder extends UiBinder<Widget, DiskResourceViewToolbar> {
-    }
+    void setBulkUploadEnabled(boolean enabled);
 
-    private static DiskResourceViewToolbarUiBinder BINDER = GWT
-            .create(DiskResourceViewToolbarUiBinder.class);
+    void setSimpleUploadEnabled(boolean enabled);
 
-    private Presenter presenter;
-    private final Widget widget;
+    void setImportButtonEnabled(boolean enabled);
 
-    public DiskResourceViewToolbar() {
-        widget = BINDER.createAndBindUi(this);
-    }
+    void setNewFolderButtonEnabled(boolean enabled);
 
-    @Override
-    public Widget asWidget() {
-        return widget;
-    }
+    void setRefreshButtonEnabled(boolean enabled);
 
-    public void setPresenter(Presenter presenter) {
-        this.presenter = presenter;
-    }
+    void setSimpleDowloadButtonEnabled(boolean enabled);
 
-    @UiHandler("bulkUploadButton")
-    void onBulkUploadClicked(SelectionEvent<Item> event) {
-        presenter.doBulkUpload();
-    }
+    void setBulkDownloadButtonEnabled(boolean enabled);
 
-    @UiHandler("simpleUploadButton")
-    void onSimpleUploadClicked(SelectionEvent<Item> event) {
-        presenter.doSimpleUpload();
-    }
+    void setRenameButtonEnabled(boolean enabled);
 
-    @UiHandler("importButton")
-    void onImportClicked(SelectionEvent<Item> event) {
-        presenter.doImport();
-    }
+    void setDeleteButtonEnabled(boolean enabled);
 
-    @UiHandler("newFolderButton")
-    void onNewFolderClicked(SelectEvent event) {
-        presenter.doCreateNewFolder();
-    }
+    void setShareButtonEnabled(boolean enabled);
 
-    @UiHandler("refreshButton")
-    void onRefreshClicked(SelectEvent event) {
-        presenter.doRefresh();
-    }
+    void setMetadataButtonEnabled(boolean enabled);
 
-    @UiHandler("simpleDownloadButton")
-    void onSimpleDownloadClicked(SelectionEvent<Item> event) {
-        presenter.doSimpleDownload();
-    }
+    void setDataQuotaButtonEnabled(boolean enabled);
 
-    @UiHandler("bulkDownloadButton")
-    void onBulkDownloadClicked(SelectionEvent<Item> event) {
-        presenter.doBulkDownload();
-    }
-
-    @UiHandler("renameButton")
-    void onRenameClicked(SelectEvent event) {
-        presenter.doRename();
-    }
-
-    @UiHandler("deleteButton")
-    void onDeleteClicked(SelectEvent event) {
-        presenter.doDelete();
-    }
-
-    @UiHandler("shareButton")
-    void onShareClicked(SelectEvent event) {
-        presenter.doShare();
-    }
-
-    @UiHandler("metadataButton")
-    void onMetadataClicked(SelectEvent event) {
-        presenter.doMetadata();
-    }
-
-    @UiHandler("dataQuotaButton")
-    void onDataQuotaClicked(SelectEvent event) {
-        presenter.doDataQuota();
-    }
 }
