@@ -12,24 +12,23 @@ public class FilesDeletedEvent extends GwtEvent<FilesDeletedEventHandler> {
 
     public interface FilesDeletedEventHandler extends EventHandler {
 
-
         void onFilesDeleted(Collection<File> files);
     }
 
-    public static final GwtEvent.Type<FilesDeletedEvent.FilesDeletedEventHandler> TYPE = new GwtEvent.Type<FilesDeletedEvent.FilesDeletedEventHandler>();
+    public static final GwtEvent.Type<FilesDeletedEventHandler> TYPE = new GwtEvent.Type<FilesDeletedEventHandler>();
     private final Collection<File> files;
 
-    public FilesDeletedEvent(Collection<File> files) {
+    public FilesDeletedEvent(final Collection<File> files) {
         this.files = files;
     }
 
     @Override
-    public GwtEvent.Type<FilesDeletedEvent.FilesDeletedEventHandler> getAssociatedType() {
+    public GwtEvent.Type<FilesDeletedEventHandler> getAssociatedType() {
         return TYPE;
     }
 
     @Override
-    protected void dispatch(FilesDeletedEvent.FilesDeletedEventHandler handler) {
+    protected void dispatch(FilesDeletedEventHandler handler) {
         handler.onFilesDeleted(files);
     }
 }

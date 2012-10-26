@@ -1,51 +1,51 @@
 package org.iplantc.core.uidiskresource.client.presenters.callbacks;
 
-import java.util.Collection;
-
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.views.IsMaskable;
 import org.iplantc.core.uidiskresource.client.I18N;
-import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.autobeans.errors.DiskResourceDeleteError;
+import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent;
+import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
+import org.iplantc.core.uidiskresource.client.models.autobeans.errors.CreateFolderError;
 import org.iplantc.core.uidiskresource.client.models.autobeans.errors.DiskResourceErrorAutoBeanFactory;
 
-import com.google.gwt.core.shared.GWT;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONObject;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
-public class DiskResourceDeleteCallback extends DiskResourceServiceCallback {
+public class CreateFolderCallback extends DiskResourceServiceCallback {
 
-    private final Collection<DiskResource> resources;
+    private final Folder parentFolder;
 
-    public DiskResourceDeleteCallback(Collection<DiskResource> resources, IsMaskable maskedCaller) {
-        super(maskedCaller);
-        this.resources = resources;
+    public CreateFolderCallback(final Folder parentFolder, IsMaskable maskable) {
+        super(maskable);
+        this.parentFolder = parentFolder;
     }
 
     @Override
     public void onSuccess(String result) {
         unmaskCaller();
 
-        EventBus.getInstance().fireEvent(new DiskResourcesDeletedEvent(resources));
+        DiskResourceAutoBeanFactory factory = GWT.create(DiskResourceAutoBeanFactory.class);
+        AutoBean<Folder> bean = AutoBeanCodex.decode(factory, Folder.class, result);
+        EventBus.getInstance().fireEvent(new FolderCreatedEvent(parentFolder, bean.as()));
     }
 
     @Override
     public void onFailure(Throwable caught) {
         unmaskCaller();
         DiskResourceErrorAutoBeanFactory factory = GWT.create(DiskResourceErrorAutoBeanFactory.class);
-        AutoBean<DiskResourceDeleteError> errorBean = AutoBeanCodex.decode(factory,
-                DiskResourceDeleteError.class, caught.getMessage());
+        AutoBean<CreateFolderError> errorBean = AutoBeanCodex.decode(factory, CreateFolderError.class,
+                caught.getMessage());
 
         ErrorHandler.post(errorBean.as(), caught);
-
     }
 
     @Override
     protected String getErrorMessageDefault() {
-        return I18N.ERROR.deleteFileFailed();
+        return I18N.ERROR.createFolderFailed();
     }
 
     @Override

@@ -41,7 +41,7 @@ public abstract class DiskResourceServiceCallback implements AsyncCallback<Strin
         this.maskedCaller = maskedCaller;
     }
 
-    private void unmaskCaller() {
+    protected void unmaskCaller() {
         if (maskedCaller == null) {
             return;
         }
@@ -285,7 +285,7 @@ public abstract class DiskResourceServiceCallback implements AsyncCallback<Strin
      * @return The parsed JSON object.
      * @throws Throwable if result is not a JSON object or if a failure status is parsed from result.
      */
-    protected JSONObject getJsonResponse(String result) throws Throwable {
+    private JSONObject getJsonResponse(String result) throws Throwable {
 
         JSONObject ret = JsonUtil.getObject(result);
         if (ret == null) {

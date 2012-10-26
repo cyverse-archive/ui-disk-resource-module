@@ -3,37 +3,42 @@ package org.iplantc.core.uidiskresource.client.presenters;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.views.dialogs.ErrorDialog;
+import org.iplantc.core.uicommons.client.views.gxt3.dialogs.ErrorDialog3;
 import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
 import org.iplantc.core.uidiskresource.client.I18N;
+import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
+import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent.DiskResourceRenamedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.FilesDeletedEvent;
 import org.iplantc.core.uidiskresource.client.events.FilesDeletedEvent.FilesDeletedEventHandler;
+import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent;
+import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent.FolderCreatedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.FoldersDeletedEvent;
 import org.iplantc.core.uidiskresource.client.events.FoldersDeletedEvent.FoldersDeletedEventHandler;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.File;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 import org.iplantc.core.uidiskresource.client.presenters.callbacks.DiskResourceDeleteCallback;
-import org.iplantc.core.uidiskresource.client.presenters.callbacks.FileDeleteCallback;
-import org.iplantc.core.uidiskresource.client.presenters.callbacks.FolderDeleteCallback;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
-import org.iplantc.core.uidiskresource.client.views.dialogs.FileSelectDialog;
-import org.iplantc.core.uidiskresource.client.views.dialogs.FolderSelectDialog;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
+import com.sencha.gxt.dnd.core.client.DndDropEvent;
+import com.sencha.gxt.dnd.core.client.DndDropEvent.DndDropHandler;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
@@ -42,14 +47,6 @@ import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
 /**
- * Selection rules
- * 
- * -- Multi select folders/files
- * -- If file(s) are selected, folder will remain selected
- * -- Selecting a folder deselects anything in center panel.
- * -- Operations for the toolbar are based off of what was last selected.
- * 
- * 
  * 
  * @author jstroot
  * 
@@ -90,6 +87,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         this.DISPLAY = display;
 
         initHandlers();
+        initDragAndDrop();
         treeLoader = new TreeLoader<Folder>(this.proxy) {
             @Override
             public boolean hasChildren(Folder parent) {
@@ -109,12 +107,40 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         this.proxy.setPresenter(this);
     }
 
+    private void initDragAndDrop() {
+        view.addGridDropHandler(new DndDropHandler() {
+
+            @Override
+            public void onDrop(DndDropEvent event) {
+                if (event.getTarget() != null) {
+                    GWT.log("DROP A DUECE!!");
+                }
+            }
+        });
+
+    }
+
     private void initHandlers() {
         EventBus eventBus = EventBus.getInstance();
 
         DiskResourcesDeletedEventHandlerImpl diskResourcesDeletedHandler = new DiskResourcesDeletedEventHandlerImpl(view);
         eventBus.addHandler(FoldersDeletedEvent.TYPE, diskResourcesDeletedHandler);
         eventBus.addHandler(FilesDeletedEvent.TYPE, diskResourcesDeletedHandler);
+        eventBus.addHandler(FolderCreatedEvent.TYPE, new FolderCreatedEventHandler() {
+
+            @Override
+            public void onFolderCreated(Folder parentFolder, Folder newFolder) {
+                view.addFolder(parentFolder, newFolder);
+            }
+        });
+        eventBus.addHandler(DiskResourceRenamedEvent.TYPE, new DiskResourceRenamedEventHandler() {
+
+            @Override
+            public void onRename(DiskResource originalDr, DiskResource newDr) {
+                view.updateDiskResource(originalDr, newDr);
+
+            }
+        });
     }
 
     @Override
@@ -161,10 +187,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void onDiskResourceSelected(Set<DiskResource> selection) {
-        // TODO JDS Determine if one or many was selected
-
-
-
     }
 
     @Override
@@ -194,13 +216,11 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doCreateNewFolder() {
-        // TODO Auto-generated method stub
-        Info.display("You clicked something!", "doCreateNewFolder");
+        new CreateFolderDialog(getSelectedFolder(), view, diskResourceService).show();
     }
 
     @Override
     public void doRefresh() {
-        // view.refreshAll();
         view.refreshFolder(getSelectedFolder());
     }
 
@@ -218,18 +238,32 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doRename() {
-        // TODO Auto-generated method stub
-        Info.display("You clicked something!", "doRename");
-        FileSelectDialog dialog = new FileSelectDialog();
-        dialog.show();
+        if (!getSelectedDiskResources().isEmpty() && (getSelectedDiskResources().size() == 1)) {
+            DiskResource dr = getSelectedDiskResources().iterator().next();
+            if (dr instanceof File) {
+                RenameFileDialog dlg = new RenameFileDialog((File)dr, view, diskResourceService);
+                dlg.show();
+
+            } else {
+                RenameFolderDialog dlg = new RenameFolderDialog((Folder)dr, view, diskResourceService);
+                dlg.show();
+
+            }
+        } else if (getSelectedFolder() != null) {
+            RenameFolderDialog dlg = new RenameFolderDialog(getSelectedFolder(), view,
+                    diskResourceService);
+            dlg.show();
+        }
     }
 
     @Override
     public void doShare() {
         // TODO Auto-generated method stub
         Info.display("You clicked something!", "doShare");
-        FolderSelectDialog dialog = new FolderSelectDialog();
-        dialog.show();
+        ErrorDialog3 dlg = new ErrorDialog3(
+                "Sample Err msg",
+                "Sample Err Msg description asdffasdfasdfasdfasdfasdfasfasdfasfasdfasdfasdfasdfasdfasdfasdfasdfasfasdfasdfasdf\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nsadfasdfasdfasdfasdfasdf");
+        dlg.show();
     }
 
     @Override
@@ -251,30 +285,14 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void doDelete() {
         if (!getSelectedDiskResources().isEmpty() && isDeletable(getSelectedDiskResources())) {
             view.mask(DISPLAY.loadingMask());
-            // Create lists for each type of disk resource
-            Set<Folder> folders = Sets.newHashSet();
-            List<File> files = Lists.newArrayList();
-            for (DiskResource dr : getSelectedDiskResources()) {
-                if (dr instanceof File) {
-                    files.add((File)dr);
-                } else if (dr instanceof Folder) {
-                    folders.add((Folder)dr);
-                }
-            }
 
-            // If either of the sublists contains elements, call the appropriate service method.
-            if (!folders.isEmpty()) {
-                // diskResourceService.deleteFolders(folders, new FolderDeleteCallback(folders, view));
-                diskResourceService.deleteDiskResources(folders, new DiskResourceDeleteCallback<Folder>(
-                        folders, view));
-            }
-            if (!files.isEmpty()) {
-                diskResourceService.deleteFiles(files, new FileDeleteCallback(files, view));
-            }
+            HashSet<DiskResource> drSet = Sets.newHashSet(getSelectedDiskResources());
+            diskResourceService.deleteDiskResources(drSet, new DiskResourceDeleteCallback(drSet, view));
+
         } else if ((getSelectedFolder() != null) && isDeletable(getSelectedFolder())) {
             view.mask(DISPLAY.loadingMask());
-            diskResourceService.deleteFolders(Lists.newArrayList(getSelectedFolder()),
-                    new FolderDeleteCallback(Lists.newArrayList(getSelectedFolder()), view));
+            HashSet<DiskResource> drSet = Sets.newHashSet((DiskResource)getSelectedFolder());
+            diskResourceService.deleteDiskResources(drSet, new DiskResourceDeleteCallback(drSet, view));
         }
     }
 
@@ -298,6 +316,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void doMetadata() {
         // TODO Auto-generated method stub
         Info.display("You clicked something!", "doMetadata");
+        ErrorDialog erd = new ErrorDialog("Sample", "semanbdfl");
+        erd.show();
     }
 
     @Override

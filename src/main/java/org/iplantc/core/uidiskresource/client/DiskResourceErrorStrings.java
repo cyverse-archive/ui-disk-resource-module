@@ -78,4 +78,6 @@ public interface DiskResourceErrorStrings extends CommonUIErrorStrings {
 
     String deleteFileFailed();
 
+    String createFolderFailed();
+
 }

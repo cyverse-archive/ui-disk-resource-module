@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.loader.DataProxy;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
+import com.sencha.gxt.dnd.core.client.DndDropEvent.DndDropHandler;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
 /**
@@ -164,5 +165,9 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
      * @param resources
      */
     <D extends DiskResource> void removeDiskResources(Collection<D> resources);
+
+    void addGridDropHandler(DndDropHandler dndDropHandler);
+
+    void updateDiskResource(DiskResource originalDr, DiskResource newDr);
 
 }

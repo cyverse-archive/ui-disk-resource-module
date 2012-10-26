@@ -9,6 +9,8 @@ public interface DiskResourceAutoBeanFactory extends AutoBeanFactory {
 
     AutoBean<Folder> folder(Folder toWrap);
 
+    AutoBean<DiskResource> diskResource();
+
     AutoBean<File> file();
 
     AutoBean<Permissions> permissions();

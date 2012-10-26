@@ -1,6 +1,7 @@
 package org.iplantc.core.uidiskresource.client.views;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
@@ -24,6 +25,12 @@ import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
+import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
+import com.sencha.gxt.dnd.core.client.DndDragStartEvent.DndDragStartHandler;
+import com.sencha.gxt.dnd.core.client.DndDropEvent.DndDropHandler;
+import com.sencha.gxt.dnd.core.client.GridDragSource;
+import com.sencha.gxt.dnd.core.client.GridDropTarget;
+import com.sencha.gxt.dnd.core.client.TreeDragSource;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
@@ -34,6 +41,7 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeAppearance;
+import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 
 public class DiskResourceViewImpl implements DiskResourceView {
@@ -94,6 +102,8 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     private TreeLoader<Folder> treeLoader;
 
+    private final GridDropTarget<DiskResource> gridDropTarget;
+
     public DiskResourceViewImpl(final TreeStore<Folder> treeStore) {
         this.treeStore = treeStore;
         widget = BINDER.createAndBindUi(this);
@@ -123,6 +133,32 @@ public class DiskResourceViewImpl implements DiskResourceView {
                 }
             }
 
+        });
+
+        gridDropTarget = new GridDropTarget<DiskResource>(grid);
+        GridDragSource<DiskResource> gridDragSource = new GridDragSource<DiskResource>(grid);
+        // TreeDropTarget<Folder> treeDropTarget = new TreeDropTarget<Folder>(tree);
+        TreeDragSource<Folder> treeDragSource = new TreeDragSource<Folder>(tree);
+        treeDragSource.addDragStartHandler(new DndDragStartHandler() {
+
+            @Override
+            public void onDragStart(DndDragStartEvent event) {
+                // Transform drag start data from ArrayList<TreeModel> to ArrayList<Folder>
+                if ((event.getData() instanceof List)
+                        && !((List<?>)event.getData()).isEmpty()
+                        && (((List<?>)event.getData()).get(0) instanceof TreeStore.TreeNode<?>)
+                        && (((TreeStore.TreeNode<?>)(((List<?>)event.getData()).get(0))).getData() instanceof Folder)) {
+                    GWT.log("derp");
+                    // ArrayList<Folder> folders = Lists.newArrayList();
+                    // for (TreeStore.TreeNode<Folder> f : (List<TreeStore.TreeNode<Folder>>)event
+                    // .getData()) {
+                    // folders.add(f.getData());
+                    // }
+                    // event.setData(folders);
+
+                }
+
+            }
         });
 
     }
@@ -210,7 +246,8 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     @Override
     public boolean isLoaded(Folder folder) {
-        return tree.findNode(folder).isLoaded();
+        TreeNode<Folder> findNode = tree.findNode(folder);
+        return findNode.isLoaded();
     }
 
     @Override
@@ -301,10 +338,16 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     @Override
     public void refreshFolder(Folder folder) {
-        if (folder != null) {
-            treeStore.removeChildren(folder);
+        if (folder == null) {
+            return;
         }
-        treeLoader.load(folder);
+
+        if (!isLoaded(folder)) {
+            treeLoader.load(folder);
+        } else {
+            treeStore.removeChildren(folder);
+            treeLoader.load(folder);
+        }
     }
 
     @Override
@@ -329,6 +372,33 @@ public class DiskResourceViewImpl implements DiskResourceView {
             if (dr instanceof Folder) {
                 treeStore.remove((Folder)dr);
             }
+        }
+    }
+
+    @Override
+    public void addGridDropHandler(DndDropHandler dndDropHandler) {
+        gridDropTarget.addDropHandler(dndDropHandler);
+    }
+
+    @Override
+    public void updateDiskResource(DiskResource originalDr, DiskResource newDr) {
+        // Check each store for for existence of original disk resource
+        Folder treeStoreModel = treeStore.findModelWithKey(originalDr.getId());
+        if (treeStoreModel != null) {
+
+            // Grab original disk resource's parent, then remove original from tree store
+            Folder parentFolder = treeStore.getParent(treeStoreModel);
+            treeStore.remove(treeStoreModel);
+
+            treeStoreModel.setId(newDr.getId());
+            treeStoreModel.setName(newDr.getName());
+            treeStore.add(parentFolder, treeStoreModel);
+        }
+
+        DiskResource listStoreModel = listStore.findModelWithKey(originalDr.getId());
+        if (listStoreModel != null) {
+            listStore.remove(listStoreModel);
+            listStore.add(newDr);
         }
     }
 

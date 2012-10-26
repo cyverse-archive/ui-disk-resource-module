@@ -38,4 +38,6 @@ public interface DiskResourceDisplayStrings extends CommonUIDisplayStrings {
     String deleteFilesTitle();
 
     String deleteFilesMsg();
+
+    String folderName();
 }

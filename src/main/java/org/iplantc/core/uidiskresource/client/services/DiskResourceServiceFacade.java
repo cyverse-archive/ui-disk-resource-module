@@ -85,8 +85,7 @@ public interface DiskResourceServiceFacade {
      */
     void moveDiskResources(
             Set<org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource> diskResources,
-            Folder destFolder,
-            AsyncCallback<String> callback);
+            Folder destFolder, AsyncCallback<String> callback);
 
     /**
      * Call service to move the given file ids to the given folder.
@@ -110,11 +109,11 @@ public interface DiskResourceServiceFacade {
      * Call service rename a file or folder.
      * 
      * @param src
-     * @param newName
+     * @param destName
      * @param callback service success/failure callback
      */
     void renameDiskResource(org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource src,
-            String newName, AsyncCallback<String> callback);
+            String destName, AsyncCallback<String> callback);
 
     /**
      * Call service rename a folder.
@@ -172,8 +171,7 @@ public interface DiskResourceServiceFacade {
      * @param callback callback executed when service call completes.
      */
     <T extends org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource> void deleteDiskResources(
-            Set<T> diskResources,
-            AsyncCallback<String> callback);
+            Set<T> diskResources, AsyncCallback<String> callback);
 
     /**
      * Call service to delete folders.
