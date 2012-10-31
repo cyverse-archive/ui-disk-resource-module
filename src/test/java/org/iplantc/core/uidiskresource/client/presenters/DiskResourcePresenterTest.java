@@ -374,10 +374,8 @@ public class DiskResourcePresenterTest {
                 will(returnValue(true));
 
                 never(view).getSelectedFolder();
-                oneOf(diskResourceService).deleteFiles(with(Lists.newArrayList(file)),
+                oneOf(diskResourceService).deleteDiskResources(with(Sets.newHashSet(file)),
                         with(aNonNull(AsyncCallback.class)));
-                never(diskResourceService).deleteFolders(with(any(List.class)),
-                        with(any(AsyncCallback.class)));
             }
         });
 
@@ -412,10 +410,8 @@ public class DiskResourcePresenterTest {
                 will(returnValue(true));
 
                 never(view).getSelectedFolder();
-                oneOf(diskResourceService).deleteFiles(with(Lists.newArrayList(file)),
+                oneOf(diskResourceService).deleteDiskResources(with(Sets.newHashSet(file, folder)),
                         with(aNonNull(AsyncCallback.class)));
-                oneOf(diskResourceService).deleteFolders(with(Lists.newArrayList(folder)),
-                        with(any(AsyncCallback.class)));
             }
         });
 
@@ -444,10 +440,8 @@ public class DiskResourcePresenterTest {
 
                 allowing(view).getSelectedFolder();
                 will(returnValue(folder));
-                never(diskResourceService).deleteFiles(with(any(List.class)),
-                        with(any(AsyncCallback.class)));
-                oneOf(diskResourceService).deleteFolders(with(Lists.newArrayList(folder)),
-                        with(any(AsyncCallback.class)));
+                oneOf(diskResourceService).deleteDiskResources(with(Sets.newHashSet(folder)),
+                        with(aNonNull(AsyncCallback.class)));
             }
         });
 
