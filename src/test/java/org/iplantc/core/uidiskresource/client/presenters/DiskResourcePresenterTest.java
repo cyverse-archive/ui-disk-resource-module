@@ -501,31 +501,16 @@ public class DiskResourcePresenterTest {
 
     }
 
-    // private void tmp() {
-    // final DiskResourceViewToolbar toolbar = context.mock(DiskResourceViewToolbar.class, "tb");
-    // final Folder folder = context.mock(Folder.class);
-    // final Permissions permissions = context.mock(Permissions.class);
-    // context.checking(new Expectations() {
-    // {
-    // oneOf(toolbar).setBulkUploadEnabled(with(false));
-    // oneOf(toolbar).setSimpleUploadEnabled(with(false));
-    // oneOf(toolbar).setImportButtonEnabled(with(false));
-    // oneOf(toolbar).setNewFolderButtonEnabled(with(false));
-    // oneOf(toolbar).setRefreshButtonEnabled(with(false));
-    // oneOf(toolbar).setSimpleDowloadButtonEnabled(with(false));
-    // oneOf(toolbar).setBulkDownloadButtonEnabled(with(false));
-    // oneOf(toolbar).setRenameButtonEnabled(with(false));
-    // oneOf(toolbar).setDeleteButtonEnabled(with(false));
-    // oneOf(toolbar).setShareButtonEnabled(with(false));
-    // oneOf(toolbar).setMetadataButtonEnabled(with(false));
-    // oneOf(toolbar).setDataQuotaButtonEnabled(with(false));
-    //
-    // oneOf(permissions).isOwner();
-    // will(returnValue(true));
-    // oneOf(folder).getPermissions();
-    // will(returnValue(permissions));
-    //
-    // }
-    // });
-    // }
+    @Test
+    public void testDoRename() {
+        // FIXME JDS Implement this test; testDoRename
+
+    }
+
+    @Test
+    public void testDoFolderCreate() {
+        // FIXME JDS Implement this test; testDoFolderCreate
+
+    }
+
 }

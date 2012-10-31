@@ -15,6 +15,7 @@ public class CreateFolderDialog extends IPlantPromptDialog {
 
     public CreateFolderDialog(final Folder parentFolder, final IsMaskable maskable, final DiskResourceServiceFacade diskResourceService) {
         super(I18N.DISPLAY.folderName(), -1, "", new NameValidator3());
+        setHeadingText(I18N.DISPLAY.newFolder());
         
         addOkButtonSelectHandler(new SelectHandler() {
             
@@ -22,8 +23,7 @@ public class CreateFolderDialog extends IPlantPromptDialog {
             public void onSelect(SelectEvent event) {
                 maskable.mask(I18N.DISPLAY.loadingMask());
                 diskResourceService.createFolder(parentFolder.getId() + "/" + getFieldText(),
-                        new CreateFolderCallback(
-                        parentFolder, maskable));
+                        new CreateFolderCallback(parentFolder, maskable, getFieldText()));
             }
         });
     }

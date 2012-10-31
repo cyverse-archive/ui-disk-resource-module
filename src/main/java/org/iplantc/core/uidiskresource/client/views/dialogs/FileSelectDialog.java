@@ -2,17 +2,11 @@ package org.iplantc.core.uidiskresource.client.views.dialogs;
 
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.I18N;
-import org.iplantc.core.uidiskresource.client.Services;
+import org.iplantc.core.uidiskresource.client.gin.DiskResourceInjector;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.models.autobeans.File;
-import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
-import org.iplantc.core.uidiskresource.client.presenters.DiskResourcePresenterImpl;
-import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderRpcProxy;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
-import org.iplantc.core.uidiskresource.client.views.DiskResourceViewImpl;
 
-import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
@@ -37,16 +31,11 @@ public class FileSelectDialog extends IPlantDialog {
         setSize("640", "480");
         setHeadingText(I18N.DISPLAY.selectAFile());
 
-        final TreeStore<Folder> treeStore = new TreeStore<Folder>(new DiskResourceModelKeyProvider());
-        DiskResourceView view = new DiskResourceViewImpl(treeStore);
-        DiskResourceView.Proxy proxy = new FolderRpcProxy();
-        presenter = new DiskResourcePresenterImpl(view, proxy, Services.DISK_RESOURCE_SERVICE,
-                I18N.DISPLAY);
+        presenter = DiskResourceInjector.INSTANCE.getDiskResourceViewPresenter();
 
-        // TODO JDS Need to add a south widget with label and text field.
         final FieldLabel fl = new FieldLabel(selectedFileField, I18N.DISPLAY.selectedFile());
 
-        view.setSouthWidget(fl);
+        presenter.getView().setSouthWidget(fl);
         presenter.addFileSelectChangedHandler(new FileSelectionChangedHandler(selectedFileField));
 
         // Tell the presenter to add the view with the north and east widgets hidden.

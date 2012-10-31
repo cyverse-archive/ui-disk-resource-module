@@ -13,12 +13,20 @@ import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent.DiskResourceRenamedEventHandler;
+import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
+import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent.DiskResourceSelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.FilesDeletedEvent;
 import org.iplantc.core.uidiskresource.client.events.FilesDeletedEvent.FilesDeletedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent;
 import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent.FolderCreatedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.FoldersDeletedEvent;
 import org.iplantc.core.uidiskresource.client.events.FoldersDeletedEvent.FoldersDeletedEventHandler;
+import org.iplantc.core.uidiskresource.client.events.RequestBulkDownloadEvent;
+import org.iplantc.core.uidiskresource.client.events.RequestBulkUploadEvent;
+import org.iplantc.core.uidiskresource.client.events.RequestImportFromUrlEvent;
+import org.iplantc.core.uidiskresource.client.events.RequestSimpleDownloadEvent;
+import org.iplantc.core.uidiskresource.client.events.RequestSimpleUploadEvent;
+import org.iplantc.core.uidiskresource.client.events.ShowFilePreviewEvent;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.File;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
@@ -30,15 +38,13 @@ import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewTool
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasOneWidget;
+import com.google.inject.Inject;
 import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
-import com.sencha.gxt.dnd.core.client.DndDropEvent;
-import com.sencha.gxt.dnd.core.client.DndDropEvent.DndDropHandler;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
@@ -79,6 +85,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private DiskResourceServiceFacade diskResourceService;
     private final DiskResourceDisplayStrings DISPLAY;
 
+    @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
             final DiskResourceServiceFacade diskResourceService, final DiskResourceDisplayStrings display) {
         this.view = view;
@@ -108,15 +115,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     }
 
     private void initDragAndDrop() {
-        view.addGridDropHandler(new DndDropHandler() {
-
-            @Override
-            public void onDrop(DndDropEvent event) {
-                if (event.getTarget() != null) {
-                    GWT.log("DROP A DUECE!!");
-                }
-            }
-        });
 
     }
 
@@ -141,6 +139,23 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
             }
         });
+        eventBus.addHandler(DiskResourceSelectedEvent.TYPE, new DiskResourceSelectedEventHandler() {
+
+            @Override
+            public void onSelect(DiskResourceSelectedEvent event) {
+                if (event.getSelectedItem() instanceof Folder) {
+                    view.setSelectedFolder((Folder)event.getSelectedItem());
+                } else if (event.getSelectedItem() instanceof File) {
+                    EventBus.getInstance().fireEvent(
+                            new ShowFilePreviewEvent((File)event.getSelectedItem(), this));
+                }
+            }
+        });
+    }
+
+    @Override
+    public DiskResourceView getView() {
+        return view;
     }
 
     @Override
@@ -198,20 +213,17 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doBulkUpload() {
-        // TODO Auto-generated method stub
-        Info.display("You clicked something!", "doBulkUpload");
+        EventBus.getInstance().fireEvent(new RequestBulkUploadEvent(this));
     }
 
     @Override
     public void doSimpleUpload() {
-        // TODO Auto-generated method stub
-        Info.display("You clicked something!", "doSimpleUpload");
+        EventBus.getInstance().fireEvent(new RequestSimpleUploadEvent(this));
     }
 
     @Override
     public void doImport() {
-        // TODO Auto-generated method stub
-        Info.display("You clicked something!", "doImport");
+        EventBus.getInstance().fireEvent(new RequestImportFromUrlEvent(this));
     }
 
     @Override
@@ -226,14 +238,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doSimpleDownload() {
-        // TODO Auto-generated method stub
-        Info.display("You clicked something!", "doSimpleDownload");
+        EventBus.getInstance().fireEvent(new RequestSimpleDownloadEvent(this));
     }
 
     @Override
     public void doBulkDownload() {
-        // TODO Auto-generated method stub
-        Info.display("You clicked something!", "doBulkDownload");
+        EventBus.getInstance().fireEvent(new RequestBulkDownloadEvent(this));
     }
 
     @Override

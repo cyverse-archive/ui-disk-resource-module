@@ -63,7 +63,6 @@ final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, List<Fold
                     regMgr.unregisterHandler(this);
                 }
             } else {
-                // TODO JDS Throw Error
                 GWT.log("Folder not found!!");
             }
 
@@ -105,7 +104,6 @@ final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, List<Fold
                 }
                 // If no folders could be found in view
                 if (path.isEmpty()) {
-                    // TODO JDS Throw some kind of error about no root folders
                     GWT.log("NO ROOT FOLDERS FOUND");
                     regMgr.unregisterHandler(SelectFolderByIdLoadHandler.this);
                 }
@@ -115,7 +113,6 @@ final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, List<Fold
             public void onFailure(Throwable caught) {
                 // If the folder does not exist, inform user..... or something
                 folderExists = false;
-                // TODO JDS Unregister the load handler
                 GWT.log("Time to unregister");
                 regMgr.unregisterHandler(SelectFolderByIdLoadHandler.this);
 

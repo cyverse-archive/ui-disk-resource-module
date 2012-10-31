@@ -14,13 +14,18 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONObject;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.google.web.bindery.autobean.shared.Splittable;
+import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
 public class CreateFolderCallback extends DiskResourceServiceCallback {
 
     private final Folder parentFolder;
+    private final String newName;
 
-    public CreateFolderCallback(final Folder parentFolder, IsMaskable maskable) {
+    public CreateFolderCallback(final Folder parentFolder, final IsMaskable maskable,
+            final String newName) {
         super(maskable);
+        this.newName = newName;
         this.parentFolder = parentFolder;
     }
 
@@ -29,7 +34,17 @@ public class CreateFolderCallback extends DiskResourceServiceCallback {
         unmaskCaller();
 
         DiskResourceAutoBeanFactory factory = GWT.create(DiskResourceAutoBeanFactory.class);
+        Splittable splittable = StringQuoter.split(result);
         AutoBean<Folder> bean = AutoBeanCodex.decode(factory, Folder.class, result);
+
+        // Set the new folder name since the create folder service call result does not contain the name
+        // of the new folder
+        bean.as().setName(newName);
+
+        // Use the service call result to set the ID of the new folder. Otherwise, calls to getId() on
+        // this new folder instance will return null.
+        bean.as().setId(splittable.get("path").asString());
+
         EventBus.getInstance().fireEvent(new FolderCreatedEvent(parentFolder, bean.as()));
     }
 
@@ -50,7 +65,6 @@ public class CreateFolderCallback extends DiskResourceServiceCallback {
 
     @Override
     protected String getErrorMessageByCode(ErrorCode code, JSONObject jsonError) {
-        // TODO Auto-generated method stub
         return null;
     }
 
