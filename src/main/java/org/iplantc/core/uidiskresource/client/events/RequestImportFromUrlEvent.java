@@ -1,6 +1,7 @@
 package org.iplantc.core.uidiskresource.client.events;
 
 import org.iplantc.core.uidiskresource.client.events.RequestImportFromUrlEvent.RequestImportFromUrlEventHandler;
+import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
@@ -13,9 +14,11 @@ public class RequestImportFromUrlEvent extends GwtEvent<RequestImportFromUrlEven
     }
 
     public static final GwtEvent.Type<RequestImportFromUrlEventHandler> TYPE = new GwtEvent.Type<RequestImportFromUrlEventHandler>();
+    private final Folder destinationFolder;
 
-    public RequestImportFromUrlEvent(Object source) {
+    public RequestImportFromUrlEvent(Object source, final Folder destinationFolder) {
         setSource(source);
+        this.destinationFolder = destinationFolder;
     }
 
     @Override
@@ -26,5 +29,9 @@ public class RequestImportFromUrlEvent extends GwtEvent<RequestImportFromUrlEven
     @Override
     protected void dispatch(RequestImportFromUrlEventHandler handler) {
         handler.onRequestUploadFromUrl(this);
+    }
+
+    public Folder getDestinationFolder() {
+        return destinationFolder;
     }
 }

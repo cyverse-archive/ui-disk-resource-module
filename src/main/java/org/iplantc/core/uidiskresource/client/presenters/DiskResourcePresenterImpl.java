@@ -213,17 +213,17 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doBulkUpload() {
-        EventBus.getInstance().fireEvent(new RequestBulkUploadEvent(this));
+        EventBus.getInstance().fireEvent(new RequestBulkUploadEvent(this, getSelectedFolder()));
     }
 
     @Override
     public void doSimpleUpload() {
-        EventBus.getInstance().fireEvent(new RequestSimpleUploadEvent(this));
+        EventBus.getInstance().fireEvent(new RequestSimpleUploadEvent(this, getSelectedFolder()));
     }
 
     @Override
     public void doImport() {
-        EventBus.getInstance().fireEvent(new RequestImportFromUrlEvent(this));
+        EventBus.getInstance().fireEvent(new RequestImportFromUrlEvent(this, getSelectedFolder()));
     }
 
     @Override
@@ -238,12 +238,13 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doSimpleDownload() {
-        EventBus.getInstance().fireEvent(new RequestSimpleDownloadEvent(this));
+        EventBus.getInstance().fireEvent(
+                new RequestSimpleDownloadEvent(this, getSelectedDiskResources()));
     }
 
     @Override
     public void doBulkDownload() {
-        EventBus.getInstance().fireEvent(new RequestBulkDownloadEvent(this));
+        EventBus.getInstance().fireEvent(new RequestBulkDownloadEvent(this, getSelectedDiskResources()));
     }
 
     @Override
