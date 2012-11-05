@@ -17,4 +17,6 @@ public interface DiskResourceAutoBeanFactory extends AutoBeanFactory {
 
     AutoBean<RootFolders> rootFolders();
 
+    AutoBean<DiskResourceMetadata> metadata();
+
 }

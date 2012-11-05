@@ -33,7 +33,7 @@ final class ToolbarButtonVisibilityDiskResourceSelectionChangedHandler implement
                 toolbar.setRenameButtonEnabled(true);
                 toolbar.setDeleteButtonEnabled(true);
                 toolbar.setShareButtonEnabled(true);
-                toolbar.setMetadataButtonEnabled(false);
+                toolbar.setMetadataButtonEnabled(true);
                 toolbar.setDataQuotaButtonEnabled(false);
             } else {
 

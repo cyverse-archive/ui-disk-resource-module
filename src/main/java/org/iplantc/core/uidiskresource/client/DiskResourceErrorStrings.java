@@ -80,4 +80,10 @@ public interface DiskResourceErrorStrings extends CommonUIErrorStrings {
 
     String createFolderFailed();
 
+    String permissionErrorTitle();
+
+    String permissionErrorMessage();
+
+    String metadataUpdateFailed();
+
 }

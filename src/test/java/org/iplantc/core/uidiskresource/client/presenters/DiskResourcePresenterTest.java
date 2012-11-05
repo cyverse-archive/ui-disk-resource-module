@@ -294,7 +294,7 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setRenameButtonEnabled(with(true));
                 oneOf(toolbar).setDeleteButtonEnabled(with(true));
                 oneOf(toolbar).setShareButtonEnabled(with(true));
-                oneOf(toolbar).setMetadataButtonEnabled(with(false));
+                oneOf(toolbar).setMetadataButtonEnabled(with(true));
                 oneOf(toolbar).setDataQuotaButtonEnabled(with(false));
 
                 oneOf(permissions).isOwner();

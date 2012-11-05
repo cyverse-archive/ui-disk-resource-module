@@ -3,7 +3,7 @@ package org.iplantc.core.uidiskresource.client.services;
 import java.util.List;
 import java.util.Set;
 
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetaData;
+import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.autobeans.File;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 
@@ -223,7 +223,7 @@ public interface DiskResourceServiceFacade {
      */
     void setDiskResourceMetaData(
             org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource resource,
-            Set<DiskResourceMetaData> mdToUpdate, Set<DiskResourceMetaData> mdToDelete,
+            Set<DiskResourceMetadata> mdToUpdate, Set<DiskResourceMetadata> mdToDelete,
             AsyncCallback<String> callback);
 
     /**

@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.iplantc.core.uicommons.client.events.EventBus;
-import org.iplantc.core.uicommons.client.views.dialogs.ErrorDialog;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.ErrorDialog3;
 import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
 import org.iplantc.core.uidiskresource.client.I18N;
@@ -33,6 +32,7 @@ import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 import org.iplantc.core.uidiskresource.client.presenters.callbacks.DiskResourceDeleteCallback;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
+import org.iplantc.core.uidiskresource.client.views.metadata.DiskResourceMetadataDialog;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
 
 import com.google.common.base.Strings;
@@ -325,10 +325,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doMetadata() {
-        // TODO Auto-generated method stub
-        Info.display("You clicked something!", "doMetadata");
-        ErrorDialog erd = new ErrorDialog("Sample", "semanbdfl");
-        erd.show();
+        if (getSelectedDiskResources().size() == 1) {
+            DiskResourceMetadataDialog dlg = new DiskResourceMetadataDialog(getSelectedDiskResources()
+                    .iterator().next());
+            dlg.show();
+        }
+
     }
 
     @Override
