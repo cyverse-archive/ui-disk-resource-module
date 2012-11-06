@@ -14,12 +14,10 @@ import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent.DiskResourceRenamedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent.DiskResourceSelectedEventHandler;
-import org.iplantc.core.uidiskresource.client.events.FilesDeletedEvent;
-import org.iplantc.core.uidiskresource.client.events.FilesDeletedEvent.FilesDeletedEventHandler;
+import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent;
+import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent.DiskResourcesDeletedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent;
 import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent.FolderCreatedEventHandler;
-import org.iplantc.core.uidiskresource.client.events.FoldersDeletedEvent;
-import org.iplantc.core.uidiskresource.client.events.FoldersDeletedEvent.FoldersDeletedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.RequestBulkDownloadEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestBulkUploadEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestImportFromUrlEvent;
@@ -66,7 +64,7 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         DiskResourceViewToolbarImpl.Presenter, HasHandlerRegistrationMgmt {
 
-    private final class DiskResourcesDeletedEventHandlerImpl implements FilesDeletedEventHandler, FoldersDeletedEventHandler {
+    private final class DiskResourcesDeletedEventHandlerImpl implements DiskResourcesDeletedEventHandler {
         private final DiskResourceView view;
 
         public DiskResourcesDeletedEventHandlerImpl(final DiskResourceView view) {
@@ -74,14 +72,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         }
 
         @Override
-        public void onFilesDeleted(final Collection<File> files) {
-            view.removeDiskResources(files);
+        public void onDiskResourcesDeleted(Collection<DiskResource> resources) {
+            view.removeDiskResources(resources);
         }
-        
-        @Override
-        public void onFoldersDeleted(final Collection<Folder> folders) {
-            view.removeDiskResources(folders);
-        }
+
     }
 
     private final DiskResourceView view;
@@ -131,8 +125,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         EventBus eventBus = EventBus.getInstance();
 
         DiskResourcesDeletedEventHandlerImpl diskResourcesDeletedHandler = new DiskResourcesDeletedEventHandlerImpl(view);
-        eventBus.addHandler(FoldersDeletedEvent.TYPE, diskResourcesDeletedHandler);
-        eventBus.addHandler(FilesDeletedEvent.TYPE, diskResourcesDeletedHandler);
+        eventBus.addHandler(DiskResourcesDeletedEvent.TYPE, diskResourcesDeletedHandler);
         eventBus.addHandler(FolderCreatedEvent.TYPE, new FolderCreatedEventHandler() {
 
             @Override

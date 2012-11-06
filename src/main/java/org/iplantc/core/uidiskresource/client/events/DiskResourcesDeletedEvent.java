@@ -2,21 +2,21 @@ package org.iplantc.core.uidiskresource.client.events;
 
 import java.util.Collection;
 
-import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent.FilesDeletedEventHandler;
+import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent.DiskResourcesDeletedEventHandler;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
-public class DiskResourcesDeletedEvent extends GwtEvent<FilesDeletedEventHandler> {
+public class DiskResourcesDeletedEvent extends GwtEvent<DiskResourcesDeletedEventHandler> {
 
-    public interface FilesDeletedEventHandler extends EventHandler {
+    public interface DiskResourcesDeletedEventHandler extends EventHandler {
 
 
-        void onFilesDeleted(Collection<DiskResource> resources);
+        void onDiskResourcesDeleted(Collection<DiskResource> resources);
     }
 
-    public static final GwtEvent.Type<DiskResourcesDeletedEvent.FilesDeletedEventHandler> TYPE = new GwtEvent.Type<DiskResourcesDeletedEvent.FilesDeletedEventHandler>();
+    public static final GwtEvent.Type<DiskResourcesDeletedEventHandler> TYPE = new GwtEvent.Type<DiskResourcesDeletedEventHandler>();
     private final Collection<DiskResource> resources;
 
     public DiskResourcesDeletedEvent(Collection<DiskResource> resources) {
@@ -24,12 +24,12 @@ public class DiskResourcesDeletedEvent extends GwtEvent<FilesDeletedEventHandler
     }
 
     @Override
-    public GwtEvent.Type<DiskResourcesDeletedEvent.FilesDeletedEventHandler> getAssociatedType() {
+    public GwtEvent.Type<DiskResourcesDeletedEventHandler> getAssociatedType() {
         return TYPE;
     }
 
     @Override
-    protected void dispatch(DiskResourcesDeletedEvent.FilesDeletedEventHandler handler) {
-        handler.onFilesDeleted(resources);
+    protected void dispatch(DiskResourcesDeletedEventHandler handler) {
+        handler.onDiskResourcesDeleted(resources);
     }
 }

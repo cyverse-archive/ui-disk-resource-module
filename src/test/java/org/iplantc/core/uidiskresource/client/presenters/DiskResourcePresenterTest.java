@@ -488,9 +488,7 @@ public class DiskResourcePresenterTest {
 
                 allowing(view).getSelectedFolder();
                 will(returnValue(parentFolder));
-                never(diskResourceService).deleteFiles(with(any(List.class)),
-                        with(any(AsyncCallback.class)));
-                never(diskResourceService).deleteFolders(with(any(List.class)),
+                never(diskResourceService).deleteDiskResources(with(any(Set.class)),
                         with(any(AsyncCallback.class)));
             }
         });

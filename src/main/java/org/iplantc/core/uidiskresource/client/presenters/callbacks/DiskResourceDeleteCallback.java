@@ -50,7 +50,6 @@ public class DiskResourceDeleteCallback extends DiskResourceServiceCallback {
 
     @Override
     protected String getErrorMessageByCode(ErrorCode code, JSONObject jsonError) {
-        // TODO Auto-generated method stub
         return null;
     }
 

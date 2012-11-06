@@ -174,44 +174,12 @@ public interface DiskResourceServiceFacade {
             Set<T> diskResources, AsyncCallback<String> callback);
 
     /**
-     * Call service to delete folders.
-     * 
-     * @param folders
-     * @param callback executed when RPC call completes.
-     */
-    void deleteFolders(List<Folder> folders, AsyncCallback<String> callback);
-
-    /**
-     * Call service to delete folders.
-     * 
-     * @param paths
-     * @param callback executed when RPC call completes.
-     */
-    void deleteFiles(List<File> files, AsyncCallback<String> callback);
-
-    /**
      * @param resource the <code>DiskResource</code> for which metadata will be retrieved.
      * @param callback callback executed when service call completes.
      */
     void getDiskResourceMetaData(
             org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource resource,
             AsyncCallback<String> callback);
-
-    /**
-     * call service to get file metadata
-     * 
-     * @param path path of resource
-     * @param callback execute when RPC call complete
-     */
-    void getFileMetaData(String path, AsyncCallback<String> callback);
-
-    /**
-     * call service to get folder metadata
-     * 
-     * @param path path of resource
-     * @param callback execute when RPC call complete
-     */
-    void getFolderMetaData(String path, AsyncCallback<String> callback);
 
     /**
      * Calls service to set disk resource metadata.
