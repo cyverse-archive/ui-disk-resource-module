@@ -19,4 +19,6 @@ public interface DiskResourceAutoBeanFactory extends AutoBeanFactory {
 
     AutoBean<DiskResourceMetadata> metadata();
 
+    AutoBean<DiskResourceMetadataList> metadataList();
+
 }

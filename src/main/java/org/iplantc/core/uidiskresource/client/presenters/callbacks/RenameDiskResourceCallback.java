@@ -22,11 +22,13 @@ import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 public class RenameDiskResourceCallback extends DiskResourceServiceCallback {
 
     private final DiskResource dr;
-    private final DiskResourceAutoBeanFactory factory = GWT.create(DiskResourceAutoBeanFactory.class);
+    private final DiskResourceAutoBeanFactory factory;
 
-    public RenameDiskResourceCallback(DiskResource dr, IsMaskable maskable) {
+    public RenameDiskResourceCallback(DiskResource dr, IsMaskable maskable,
+            final DiskResourceAutoBeanFactory factory) {
         super(maskable);
         this.dr = dr;
+        this.factory = factory;
     }
 
     @Override
@@ -37,8 +39,6 @@ public class RenameDiskResourceCallback extends DiskResourceServiceCallback {
         Splittable encode = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(dr));
         AutoBean<DiskResource> newDr = AutoBeanCodex.decode(factory, DiskResource.class, encode);   // AutoBeanUtils.getAutoBean(dr);
         String newId = split.get("dest").asString();
-        // dr.setId(newId);
-        // dr.setName(newId.substring(newId.lastIndexOf("/") + 1));
         if (newDr.isWrapper()) {
             GWT.log("Is Wrapper");
         }

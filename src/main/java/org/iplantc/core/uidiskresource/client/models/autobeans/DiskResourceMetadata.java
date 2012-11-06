@@ -18,8 +18,4 @@ public interface DiskResourceMetadata {
     String getUnit();
 
     void setUnit(String unit);
-
-    String getId();
-
-    void setId(String id);
 }

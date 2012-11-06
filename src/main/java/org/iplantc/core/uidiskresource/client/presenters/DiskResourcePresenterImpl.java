@@ -27,9 +27,14 @@ import org.iplantc.core.uidiskresource.client.events.RequestSimpleDownloadEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestSimpleUploadEvent;
 import org.iplantc.core.uidiskresource.client.events.ShowFilePreviewEvent;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.autobeans.File;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
+import org.iplantc.core.uidiskresource.client.presenters.callbacks.CreateFolderCallback;
 import org.iplantc.core.uidiskresource.client.presenters.callbacks.DiskResourceDeleteCallback;
+import org.iplantc.core.uidiskresource.client.presenters.callbacks.DiskResourceMetadataUpdateCallback;
+import org.iplantc.core.uidiskresource.client.presenters.callbacks.RenameDiskResourceCallback;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.metadata.DiskResourceMetadataDialog;
@@ -41,6 +46,7 @@ import com.google.common.collect.Sets;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.inject.Inject;
 import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
@@ -84,14 +90,17 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private final HashMap<EventHandler, HandlerRegistration> registeredHandlers = new HashMap<EventHandler, HandlerRegistration>();
     private DiskResourceServiceFacade diskResourceService;
     private final DiskResourceDisplayStrings DISPLAY;
+    private final DiskResourceAutoBeanFactory drFactory;
 
     @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
-            final DiskResourceServiceFacade diskResourceService, final DiskResourceDisplayStrings display) {
+            final DiskResourceServiceFacade diskResourceService,
+            final DiskResourceDisplayStrings display, final DiskResourceAutoBeanFactory factory) {
         this.view = view;
         this.proxy = proxy;
         this.diskResourceService = diskResourceService;
         this.DISPLAY = display;
+        this.drFactory = factory;
 
         initHandlers();
         initDragAndDrop();
@@ -227,8 +236,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     }
 
     @Override
-    public void doCreateNewFolder() {
-        new CreateFolderDialog(getSelectedFolder(), view, diskResourceService).show();
+    public void doCreateNewFolder(final Folder parentFolder, final String newFolderName) {
+        view.mask(DISPLAY.loadingMask());
+        diskResourceService.createFolder(parentFolder, newFolderName,
+                new CreateFolderCallback(parentFolder, view, newFolderName));
     }
 
     @Override
@@ -248,23 +259,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     }
 
     @Override
-    public void doRename() {
-        if (!getSelectedDiskResources().isEmpty() && (getSelectedDiskResources().size() == 1)) {
-            DiskResource dr = getSelectedDiskResources().iterator().next();
-            if (dr instanceof File) {
-                RenameFileDialog dlg = new RenameFileDialog((File)dr, view, diskResourceService);
-                dlg.show();
-
-            } else {
-                RenameFolderDialog dlg = new RenameFolderDialog((Folder)dr, view, diskResourceService);
-                dlg.show();
-
-            }
-        } else if (getSelectedFolder() != null) {
-            RenameFolderDialog dlg = new RenameFolderDialog(getSelectedFolder(), view,
-                    diskResourceService);
-            dlg.show();
-        }
+    public void doRename(final DiskResource dr, final String newName) {
+        view.mask(DISPLAY.loadingMask());
+        diskResourceService.renameDiskResource(dr, newName, new RenameDiskResourceCallback(dr, view,
+                drFactory));
     }
 
     @Override
@@ -327,7 +325,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void doMetadata() {
         if (getSelectedDiskResources().size() == 1) {
             DiskResourceMetadataDialog dlg = new DiskResourceMetadataDialog(getSelectedDiskResources()
-                    .iterator().next());
+                    .iterator().next(), this);
             dlg.show();
         }
 
@@ -380,6 +378,19 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     @Override
     public void addEventHandlerRegistration(EventHandler handler, HandlerRegistration reg) {
         registeredHandlers.put(handler, reg);
+    }
+
+    @Override
+    public void getDiskResourceMetadata(DiskResource resource, AsyncCallback<String> callback) {
+        diskResourceService.getDiskResourceMetaData(resource, callback);
+    }
+
+    @Override
+    public void setDiskResourceMetaData(DiskResource resource, Set<DiskResourceMetadata> metadataToAdd,
+            Set<DiskResourceMetadata> metadataToDelete,
+            DiskResourceMetadataUpdateCallback diskResourceMetadataUpdateCallback) {
+        diskResourceService.setDiskResourceMetaData(resource, metadataToAdd, metadataToDelete,
+                diskResourceMetadataUpdateCallback);
     }
 
 }

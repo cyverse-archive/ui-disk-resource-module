@@ -9,6 +9,8 @@ import java.util.Set;
 
 import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.autobeans.File;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Permissions;
@@ -48,6 +50,7 @@ public class DiskResourcePresenterTest {
     private DiskResourceView.Proxy proxy;
     private DiskResourceServiceFacade diskResourceService;
     private DiskResourceDisplayStrings display;
+    private DiskResourceAutoBeanFactory drFactory;
 
     /**
      * @throws java.lang.Exception
@@ -70,6 +73,7 @@ public class DiskResourcePresenterTest {
         proxy = context.mock(DiskResourceView.Proxy.class);
         diskResourceService = context.mock(DiskResourceServiceFacade.class);
         display = context.mock(DiskResourceDisplayStrings.class);
+        drFactory = context.mock(DiskResourceAutoBeanFactory.class);
     }
 
     /**
@@ -108,7 +112,7 @@ public class DiskResourcePresenterTest {
 
         checkConstruction();
         DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
-                diskResourceService, display);
+                diskResourceService, display, drFactory);
 
         final Folder folder = context.mock(Folder.class);
 
@@ -159,7 +163,7 @@ public class DiskResourcePresenterTest {
         final Folder retFolder = context.mock(Folder.class, "retFolder");
         checkConstruction();
         DiskResourcePresenterImpl presenter = new DiskResourcePresenterImpl(view, proxy,
-                diskResourceService, display);
+                diskResourceService, display, drFactory);
         context.checking(new Expectations() {
             {
                 atLeast(1).of(view).getSelectedFolder();
@@ -184,7 +188,7 @@ public class DiskResourcePresenterTest {
         final Set<DiskResource> folderChildren = Sets.newHashSet();
         checkConstruction();
         DiskResourcePresenterImpl presenter = new DiskResourcePresenterImpl(view, proxy,
-                diskResourceService, display);
+                diskResourceService, display, drFactory);
         context.checking(new Expectations() {
             {
                 atLeast(1).of(view).getSelectedFolder();
@@ -358,7 +362,7 @@ public class DiskResourcePresenterTest {
     public void testDoDelete_diskResourcesSelected_noFolders_isOwner() {
         checkConstruction();
         DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
-                diskResourceService, display);
+                diskResourceService, display, drFactory);
         final File file = context.mock(File.class);
         final Permissions permissions = context.mock(Permissions.class);
         context.checking(new Expectations() {
@@ -388,7 +392,7 @@ public class DiskResourcePresenterTest {
     public void testDoDelete_diskResourcesSelected_withFolders_isOwner() {
         checkConstruction();
         DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
-                diskResourceService, display);
+                diskResourceService, display, drFactory);
         final File file = context.mock(File.class);
         final Folder folder = context.mock(Folder.class);
         final Set<DiskResource> resSet = Sets.newHashSet();
@@ -424,7 +428,7 @@ public class DiskResourcePresenterTest {
     public void testDoDelete_folderSelected_noDiskResourcesSelected_isOwner() {
         checkConstruction();
         DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
-                diskResourceService, display);
+                diskResourceService, display, drFactory);
         final Folder folder = context.mock(Folder.class);
         final Permissions permissions = context.mock(Permissions.class);
         context.checking(new Expectations() {
@@ -454,7 +458,7 @@ public class DiskResourcePresenterTest {
     public void testDoDelete_diskResourcesSelected_oneNotOwner() {
         checkConstruction();
         DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
-                diskResourceService, display);
+                diskResourceService, display, drFactory);
         final File file = context.mock(File.class);
         final Folder folder = context.mock(Folder.class);
         final Folder parentFolder = context.mock(Folder.class, "ParentFolder");
@@ -495,16 +499,92 @@ public class DiskResourcePresenterTest {
 
     }
 
+    /**
+     * This test simply verifies that the proper disk resource service method is invoked.
+     */
+    @SuppressWarnings("unchecked")
     @Test
     public void testDoRename() {
-        // FIXME JDS Implement this test; testDoRename
+        checkConstruction();
+        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
+                diskResourceService, display, drFactory);
+        final DiskResource resource = context.mock(DiskResource.class);
+        final String newName = "new name";
+        context.checking(new Expectations() {
+            {
+                oneOf(display).loadingMask();
+                oneOf(view).mask(with(aNonNull(String.class)));
+                oneOf(diskResourceService).renameDiskResource(with(resource), with(newName),
+                        with(any(AsyncCallback.class)));
+            }
+        });
 
+        presenter.doRename(resource, newName);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testDoFolderCreate() {
-        // FIXME JDS Implement this test; testDoFolderCreate
+        checkConstruction();
+        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
+                diskResourceService, display, drFactory);
+        final Folder parentFolder = context.mock(Folder.class);
+        final String newFolderName = "new folder name";
+        context.checking(new Expectations() {
+            {
+                oneOf(display).loadingMask();
+                oneOf(view).mask(with(aNonNull(String.class)));
+                oneOf(diskResourceService).createFolder(with(parentFolder), with(newFolderName),
+                        with(any(AsyncCallback.class)));
+            }
+        });
 
+        presenter.doCreateNewFolder(parentFolder, newFolderName);
+    }
+
+    /**
+     * This test simply verifies that the proper disk resource service method is invoked.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testGetMetadata() {
+        checkConstruction();
+        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
+                diskResourceService, display, drFactory);
+
+        final DiskResource resource = context.mock(DiskResource.class);
+        context.checking(new Expectations() {
+            {
+                oneOf(diskResourceService).getDiskResourceMetaData(with(resource),
+                        with(any(AsyncCallback.class)));
+            }
+        });
+
+        presenter.getDiskResourceMetadata(resource, null);
+    }
+
+    /**
+     * This test simply verifies that the proper disk resource service method is invoked.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testSetMetadata() {
+        checkConstruction();
+        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
+                diskResourceService, display, drFactory);
+        
+        final Set<DiskResourceMetadata> metadataToDelete = Sets.newHashSet();
+        final Set<DiskResourceMetadata> metadataToAdd = Sets.newHashSet();
+        final DiskResource resource = context.mock(DiskResource.class);
+        context.checking(new Expectations() {
+            {
+                oneOf(diskResourceService).setDiskResourceMetaData(with(resource), with(metadataToAdd),
+                        with(metadataToDelete),
+                        with(any(AsyncCallback.class)));
+            }
+        });
+
+        presenter.setDiskResourceMetaData(resource, metadataToAdd, metadataToDelete, null);
     }
 
 }

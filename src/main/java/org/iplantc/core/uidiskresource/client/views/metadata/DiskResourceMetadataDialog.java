@@ -6,13 +6,13 @@ import java.util.Set;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.I18N;
-import org.iplantc.core.uidiskresource.client.Services;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadataList;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadataProperties;
 import org.iplantc.core.uidiskresource.client.presenters.callbacks.DiskResourceMetadataUpdateCallback;
+import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Lists;
@@ -109,13 +109,13 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
 
     private final DiskResourceAutoBeanFactory autoBeanFactory = GWT
             .create(DiskResourceAutoBeanFactory.class);
-    private int uniqueMetadataIdNum;
 
     private GridInlineEditing<DiskResourceMetadata> gridInlineEditing;
 
     private AttributeCell attributeCell;
 
-    public DiskResourceMetadataDialog(final DiskResource resource) {
+    public DiskResourceMetadataDialog(final DiskResource resource,
+            final DiskResourceView.Presenter presenter) {
         this.resource = resource;
         setSize("500", "300");
         add(uiBinder.createAndBindUi(this));
@@ -126,7 +126,7 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
             
             @Override
             public void onSelect(SelectEvent event) {
-                Services.DISK_RESOURCE_SERVICE.setDiskResourceMetaData(resource, getMetadataToAdd(),
+                presenter.setDiskResourceMetaData(resource, getMetadataToAdd(),
                         getMetadataToDelete(), new DiskResourceMetadataUpdateCallback());
             }
         });
@@ -135,7 +135,8 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
                 new MetadataSelectionChangedListener(deleteMetadataButton, grid.getSelectionModel(),
                         gridInlineEditing));
 
-        retrieveMetadata(listStore, autoBeanFactory);
+        presenter.getDiskResourceMetadata(resource, new RetrieveMetadataCallback(listStore,
+                autoBeanFactory));
     }
     
     private void initGridEditing(final Grid<DiskResourceMetadata> grid,
@@ -144,19 +145,15 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
                 grid);
         ColumnConfig<DiskResourceMetadata, String> column1 = grid.getColumnModel().getColumn(0);
         ColumnConfig<DiskResourceMetadata, String> column2 = grid.getColumnModel().getColumn(1);
-        // ColumnConfig<DiskResourceMetadata, String> column3 = grid.getColumnModel().getColumn(2);
 
         TextField field1 = new TextField();
         TextField field2 = new TextField();
-        // TextField field3 = new TextField();
 
         field1.setAutoValidate(true);
         field2.setAutoValidate(true);
-        // field3.setAutoValidate(true);
 
         field1.setAllowBlank(false);
         field2.setAllowBlank(false);
-        // field3.setAllowBlank(true);
 
         field1.addValidator(new DuplicateAttributeValidator(listStore));
         AttributeValidationHandler validationHandler = new AttributeValidationHandler(okButton);
@@ -165,7 +162,6 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
 
         gridInlineEditing.addEditor(column1, field1);
         gridInlineEditing.addEditor(column2, field2);
-        // gridInlineEditing.addEditor(column3, field3);
 
     }
 
@@ -175,7 +171,7 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
 
             @Override
             public String getKey(DiskResourceMetadata item) {
-                return item.getId();
+                return item.getAttribute();
             }
         });
     }
@@ -201,14 +197,23 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
             return;
         }
         DiskResourceMetadata md = autoBeanFactory.metadata().as();
-        md.setAttribute("New Attribute");
+        md.setAttribute(getUniqeAttrName("New Attribute", 0));
         md.setValue("New Value");
         md.setUnit(USER_UNIT_TAG);
-        md.setId("mdId:" + (listStore.getAll().size() + ++uniqueMetadataIdNum));
         listStore.add(0, md);
         gridInlineEditing.startEditing(new GridCell(0, 0));
         gridInlineEditing.getEditor(grid.getColumnModel().getColumn(0)).validate();
 
+    }
+
+    private String getUniqeAttrName(String attrName, int i) {
+        String retName = i > 0 ? attrName + "_(" + i + ")" : attrName;
+        for (DiskResourceMetadata md : listStore.getAll()) {
+            if (md.getAttribute().equals(retName)) {
+                return getUniqeAttrName(attrName + "", ++i);
+            }
+        }
+        return retName;
     }
 
     @UiFactory
@@ -219,15 +224,11 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
                 props.attribute(), 150, "Attribute");
         ColumnConfig<DiskResourceMetadata, String> valueColumn = new ColumnConfig<DiskResourceMetadata, String>(
                 props.value(), 150, "Value");
-        // ColumnConfig<DiskResourceMetadata, String> unitColumn = new ColumnConfig<DiskResourceMetadata,
-        // String>(
-        // props.unit(), 75, "Unit");
     
         attributeCell = new AttributeCell(listStore);
         attributeColumn.setCell(attributeCell);
         columns.add(attributeColumn);
         columns.add(valueColumn);
-        // columns.add(unitColumn);
 
         ColumnModel<DiskResourceMetadata> cm = new ColumnModel<DiskResourceMetadata>(columns);
         return cm;
@@ -239,12 +240,6 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
 
     protected Set<DiskResourceMetadata> getMetadataToAdd() {
         return Sets.newHashSet(listStore.getAll());
-    }
-
-    private void retrieveMetadata(final ListStore<DiskResourceMetadata> listStore,
-            final DiskResourceAutoBeanFactory factory) {
-        Services.DISK_RESOURCE_SERVICE.getDiskResourceMetaData(resource, new RetrieveMetadataCallback(
-                listStore, factory));
     }
 
     private final class AttributeCell extends AbstractCell<String> {
@@ -325,9 +320,9 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
         public void onSuccess(String result) {
             AutoBean<DiskResourceMetadataList> bean = AutoBeanCodex.decode(autoBeanFactory,
                     DiskResourceMetadataList.class, result);
-            for (DiskResourceMetadata md : bean.as().getMetadata()) {
-                md.setId("mdId:" + bean.as().getMetadata().indexOf(md));
-            }
+            // for (DiskResourceMetadata md : bean.as().getMetadata()) {
+            // md.setId("mdId:" + bean.as().getMetadata().indexOf(md));
+            // }
             store.addAll(bean.as().getMetadata());
 
         }

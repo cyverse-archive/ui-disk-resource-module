@@ -1,5 +1,10 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
+import java.util.Set;
+
+import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
+
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -14,8 +19,6 @@ public interface DiskResourceViewToolbar extends IsWidget {
 
         void doImport();
 
-        void doCreateNewFolder();
-
         /**
          * Reloads all the view's root folders.
          */
@@ -24,8 +27,6 @@ public interface DiskResourceViewToolbar extends IsWidget {
         void doSimpleDownload();
 
         void doBulkDownload();
-
-        void doRename();
 
         void doShare();
 
@@ -36,6 +37,14 @@ public interface DiskResourceViewToolbar extends IsWidget {
         void doMetadata();
 
         void doDataQuota();
+
+        Set<DiskResource> getSelectedDiskResources();
+
+        Folder getSelectedFolder();
+
+        void doRename(DiskResource dr, String newName);
+
+        void doCreateNewFolder(Folder parentFolder, String folderName);
 
     }
 

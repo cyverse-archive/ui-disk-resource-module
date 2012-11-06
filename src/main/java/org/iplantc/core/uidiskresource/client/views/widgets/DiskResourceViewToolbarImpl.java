@@ -1,5 +1,12 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
+import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.autobeans.File;
+import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
+import org.iplantc.core.uidiskresource.client.presenters.CreateFolderDialog;
+import org.iplantc.core.uidiskresource.client.presenters.RenameFileDialog;
+import org.iplantc.core.uidiskresource.client.presenters.RenameFolderDialog;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -91,7 +98,8 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
 
     @UiHandler("newFolderButton")
     void onNewFolderClicked(SelectEvent event) {
-        presenter.doCreateNewFolder();
+        CreateFolderDialog dlg = new CreateFolderDialog(presenter.getSelectedFolder(), presenter);
+        dlg.show();
     }
 
     @UiHandler("refreshButton")
@@ -111,7 +119,22 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
 
     @UiHandler("renameButton")
     void onRenameClicked(SelectEvent event) {
-        presenter.doRename();
+        if (!presenter.getSelectedDiskResources().isEmpty()
+                && (presenter.getSelectedDiskResources().size() == 1)) {
+            DiskResource dr = presenter.getSelectedDiskResources().iterator().next();
+            if (dr instanceof File) {
+                RenameFileDialog dlg = new RenameFileDialog((File)dr, presenter);
+                dlg.show();
+
+            } else {
+                RenameFolderDialog dlg = new RenameFolderDialog((Folder)dr, presenter);
+                dlg.show();
+
+            }
+        } else if (presenter.getSelectedFolder() != null) {
+            RenameFolderDialog dlg = new RenameFolderDialog(presenter.getSelectedFolder(), presenter);
+            dlg.show();
+        }
     }
 
     @UiHandler("deleteButton")

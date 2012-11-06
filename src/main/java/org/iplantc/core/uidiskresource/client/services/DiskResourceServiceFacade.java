@@ -56,10 +56,10 @@ public interface DiskResourceServiceFacade {
     /**
      * Call service to create a new folder
      * 
-     * @param folderpath path of the folder to be created
+     * @param parentFolder parent folder where the new folder will be created
      * @param callback executed when RPC call completes.
      */
-    void createFolder(String folderpath, AsyncCallback<String> callback);
+    void createFolder(Folder parentFolder, String newFolderName, AsyncCallback<String> callback);
 
     /**
      * Check if a list of files or folders exist.

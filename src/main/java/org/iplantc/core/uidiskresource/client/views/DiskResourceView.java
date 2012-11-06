@@ -7,12 +7,15 @@ import java.util.Set;
 
 import org.iplantc.core.uicommons.client.views.IsMaskable;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
+import org.iplantc.core.uidiskresource.client.presenters.callbacks.DiskResourceMetadataUpdateCallback;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
 
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.sencha.gxt.data.shared.TreeStore;
@@ -83,6 +86,19 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
         void setSelectedDiskResourcesById(Set<String> diskResourceIdList);
 
         DiskResourceView getView();
+
+        /**
+         * Retrieves a collection of metadata for the given resource.
+         * 
+         * @param resource
+         * @param callback
+         * @return a collection of the given resource's metadata.
+         */
+        void getDiskResourceMetadata(DiskResource resource, AsyncCallback<String> callback);
+
+        void setDiskResourceMetaData(DiskResource resource, Set<DiskResourceMetadata> metadataToAdd,
+                Set<DiskResourceMetadata> metadataToDelete,
+                DiskResourceMetadataUpdateCallback diskResourceMetadataUpdateCallback);
 
     }
 
