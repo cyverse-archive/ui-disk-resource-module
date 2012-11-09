@@ -3,6 +3,8 @@
  */
 package org.iplantc.core.uidiskresource.client.util;
 
+import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
+
 /**
  * @author sriram
  *
@@ -50,5 +52,21 @@ public class DiskResourceUtil {
         }
 
         return ret;
+    }
+    
+    public static boolean isOwner(DiskResource resource) {
+        return resource.getPermissions().isOwner();
+    }
+
+    public static boolean isOwner(Iterable<DiskResource> resources) {
+        // Use predicate to determine if user is owner of all disk resources
+        boolean isDeletable = true;
+        for (DiskResource dr : resources) {
+            if (!dr.getPermissions().isOwner()) {
+                isDeletable = false;
+                break;
+            }
+        }
+        return isDeletable;
     }
 }

@@ -8,4 +8,6 @@ public interface DiskResourceErrorAutoBeanFactory extends AutoBeanFactory {
     AutoBean<DiskResourceDeleteError> diskResourceDeleteError();
 
     AutoBean<CreateFolderError> createFolderError();
+    
+    AutoBean<MoveDiskResourceError> moveDiskResourceError();
 }

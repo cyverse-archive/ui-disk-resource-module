@@ -14,14 +14,17 @@ import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.loader.DataProxy;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
+import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 
 /**
  * @author jstroot
@@ -35,8 +38,10 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
         void go(HasOneWidget container, boolean hideWestWidget, boolean hideCenterWidget,
                 boolean hideEastWidget, boolean hideNorthWidget);
 
+        @Override
         Folder getSelectedFolder();
 
+        @Override
         Set<DiskResource> getSelectedDiskResources();
 
         /**
@@ -99,6 +104,34 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
         void setDiskResourceMetaData(DiskResource resource, Set<DiskResourceMetadata> metadataToAdd,
                 Set<DiskResourceMetadata> metadataToDelete,
                 DiskResourceMetadataUpdateCallback diskResourceMetadataUpdateCallback);
+
+        boolean resourcesContainAncestorsOfTargetFolder(Folder targetFolder, Collection<DiskResource> resources);
+
+        void doMoveDiskResources(Folder targetFolder, Set<DiskResource> resources);
+
+        /**
+         * A convenience method for looking up drop target folders for View components
+         * @param widget
+         * @param el
+         * @return
+         */
+        Folder getDropTargetFolder(IsWidget widget, Element el);
+        
+        /**
+         * Determines if the given widget is this view's <code>Tree</code> object.
+         * 
+         * @param widget
+         * @return
+         */
+        boolean isViewTree(IsWidget widget);
+        
+        /**
+         * Determines if the given widget is this view's <code>Grid</code> object.
+         * 
+         * @param widget
+         * @return
+         */
+        boolean isViewGrid(IsWidget widget);
 
     }
 
@@ -185,5 +218,29 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
     <D extends DiskResource> void removeDiskResources(Collection<D> resources);
 
     void updateDiskResource(DiskResource originalDr, DiskResource newDr);
+
+    /**
+     * Determines if the given widget is this view's <code>Tree</code> object.
+     * 
+     * @param widget
+     * @return
+     */
+    boolean isViewTree(IsWidget widget);
+
+    /**
+     * Determines if the given widget is this view's <code>Grid</code> object.
+     * 
+     * @param widget
+     * @return
+     */
+    boolean isViewGrid(IsWidget widget);
+
+    TreeNode<Folder> findTreeNode(Element el);
+
+    Element findGridRow(Element el);
+
+    int findRowIndex(Element targetRow);
+
+    ListStore<DiskResource> getListStore();
 
 }

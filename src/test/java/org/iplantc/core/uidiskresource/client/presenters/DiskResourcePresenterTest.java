@@ -68,7 +68,7 @@ public class DiskResourcePresenterTest {
      * @throws java.lang.Exception
      */
     @Before
-    public void setUp() throws Exception {
+    public void setUp() throws Exception { 
         view = context.mock(DiskResourceView.class);
         proxy = context.mock(DiskResourceView.Proxy.class);
         diskResourceService = context.mock(DiskResourceServiceFacade.class);

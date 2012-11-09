@@ -86,4 +86,10 @@ public interface DiskResourceErrorStrings extends CommonUIErrorStrings {
 
     String metadataUpdateFailed();
 
+    String noFolderSelected();
+
+    String resourcesContainAncestors();
+
+    String moveFailed();
+
 }

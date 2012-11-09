@@ -11,6 +11,7 @@ import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewTool
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -25,6 +26,11 @@ import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
+import com.sencha.gxt.dnd.core.client.DND.Operation;
+import com.sencha.gxt.dnd.core.client.GridDragSource;
+import com.sencha.gxt.dnd.core.client.GridDropTarget;
+import com.sencha.gxt.dnd.core.client.TreeDragSource;
+import com.sencha.gxt.dnd.core.client.TreeDropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
@@ -39,7 +45,7 @@ import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 
 public class DiskResourceViewImpl implements DiskResourceView {
-
+ 
     @UiTemplate("DiskResourceView.ui.xml")
     interface DiskResourceViewUiBinder extends UiBinder<Widget, DiskResourceViewImpl> {
     }
@@ -174,6 +180,30 @@ public class DiskResourceViewImpl implements DiskResourceView {
     public void setPresenter(Presenter presenter) {
         this.presenter = presenter;
         toolbar.setPresenter(presenter);
+        initDragAndDrop();
+    }
+
+    private void initDragAndDrop() {
+        DiskResourceViewDnDHandler dndHandler = new DiskResourceViewDnDHandler(presenter);
+        GridDropTarget<DiskResource> gridDropTarget = new GridDropTarget<DiskResource>(grid);
+        gridDropTarget.setOperation(Operation.COPY);
+        gridDropTarget.addDragEnterHandler(dndHandler);
+        gridDropTarget.addDragMoveHandler(dndHandler);
+        gridDropTarget.addDropHandler(dndHandler);
+        
+        GridDragSource<DiskResource> gridDragSource = new GridDragSource<DiskResource>(grid);
+        gridDragSource.addDragStartHandler(dndHandler);
+
+        TreeDropTarget<Folder> treeDropTarget = new TreeDropTarget<Folder>(tree);
+        treeDropTarget.setOperation(Operation.COPY);
+        treeDropTarget.setAllowDropOnLeaf(true);
+        treeDropTarget.addDragEnterHandler(dndHandler);
+        treeDropTarget.addDragMoveHandler(dndHandler);
+        treeDropTarget.addDropHandler(dndHandler);
+        
+        TreeDragSource<Folder> treeDragSource = new TreeDragSource<Folder>(tree);
+        treeDragSource.addDragStartHandler(dndHandler);
+        
     }
 
     @Override
@@ -205,6 +235,11 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @Override
     public TreeStore<Folder> getTreeStore() {
         return treeStore;
+    }
+
+    @Override
+    public ListStore<DiskResource> getListStore() {
+        return listStore;
     }
 
     @Override
@@ -360,5 +395,30 @@ public class DiskResourceViewImpl implements DiskResourceView {
             listStore.add(newDr);
         }
     }
+
+    @Override
+    public boolean isViewTree(IsWidget widget){
+        return widget.asWidget() == tree;
+    }
+    
+    @Override
+    public boolean isViewGrid(IsWidget widget){
+        return widget.asWidget() == grid;
+    }
+    
+    @Override
+    public TreeNode<Folder> findTreeNode(Element el){
+        return tree.findNode(el);
+    }
+
+    @Override
+    public Element findGridRow(Element el) {
+        return grid.getView().findRow(el);
+    }
+
+    @Override
+    public int findRowIndex(Element targetRow) {
+        return grid.getView().findRowIndex(targetRow);
+    }    
 
 }

@@ -44,5 +44,7 @@ public interface DiskResourceDisplayStrings extends CommonUIDisplayStrings {
     String lastModified();
 
     String size();
+    
+    String dataDragDropStatusText(int numSelectedItems);
 
 }

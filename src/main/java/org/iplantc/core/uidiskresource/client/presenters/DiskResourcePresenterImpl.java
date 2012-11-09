@@ -9,13 +9,14 @@ import java.util.Set;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.ErrorDialog3;
 import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
-import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent.DiskResourceRenamedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent.DiskResourceSelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent.DiskResourcesDeletedEventHandler;
+import org.iplantc.core.uidiskresource.client.events.DiskResourcesMovedEvent;
+import org.iplantc.core.uidiskresource.client.events.DiskResourcesMovedEvent.DiskResourcesMovedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent;
 import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent.FolderCreatedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.RequestBulkDownloadEvent;
@@ -32,8 +33,10 @@ import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 import org.iplantc.core.uidiskresource.client.presenters.callbacks.CreateFolderCallback;
 import org.iplantc.core.uidiskresource.client.presenters.callbacks.DiskResourceDeleteCallback;
 import org.iplantc.core.uidiskresource.client.presenters.callbacks.DiskResourceMetadataUpdateCallback;
+import org.iplantc.core.uidiskresource.client.presenters.callbacks.DiskResourceMoveCallback;
 import org.iplantc.core.uidiskresource.client.presenters.callbacks.RenameDiskResourceCallback;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
+import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.metadata.DiskResourceMetadataDialog;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
@@ -41,11 +44,13 @@ import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewTool
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasOneWidget;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
@@ -55,6 +60,7 @@ import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
+import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 
 /**
  * 
@@ -153,6 +159,13 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
                 }
             }
         });
+        eventBus.addHandler(DiskResourcesMovedEvent.TYPE, new DiskResourcesMovedEventHandler(){
+
+            @Override
+            public void onDiskResourcesMoved(DiskResourcesMovedEvent event) {
+                // TODO JDS Auto-generated method stub
+                
+            }});
     }
 
     @Override
@@ -270,8 +283,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void requestDelete() {
-        final ConfirmMessageBox mb = new ConfirmMessageBox(I18N.DISPLAY.deleteFilesTitle(),
-                I18N.DISPLAY.deleteFilesMsg());
+        final ConfirmMessageBox mb = new ConfirmMessageBox(DISPLAY.deleteFilesTitle(),
+                DISPLAY.deleteFilesMsg());
         mb.addHideHandler(new HideHandler() {
             @Override
             public void onHide(HideEvent event) {
@@ -285,33 +298,17 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doDelete() {
-        if (!getSelectedDiskResources().isEmpty() && isDeletable(getSelectedDiskResources())) {
+        if (!getSelectedDiskResources().isEmpty() && DiskResourceUtil.isOwner(getSelectedDiskResources())) {
             view.mask(DISPLAY.loadingMask());
 
             HashSet<DiskResource> drSet = Sets.newHashSet(getSelectedDiskResources());
             diskResourceService.deleteDiskResources(drSet, new DiskResourceDeleteCallback(drSet, view));
 
-        } else if ((getSelectedFolder() != null) && isDeletable(getSelectedFolder())) {
+        } else if ((getSelectedFolder() != null) && DiskResourceUtil.isOwner(getSelectedFolder())) {
             view.mask(DISPLAY.loadingMask());
             HashSet<DiskResource> drSet = Sets.newHashSet((DiskResource)getSelectedFolder());
             diskResourceService.deleteDiskResources(drSet, new DiskResourceDeleteCallback(drSet, view));
         }
-    }
-
-    private boolean isDeletable(DiskResource resource) {
-        return resource.getPermissions().isOwner();
-    }
-
-    private boolean isDeletable(Iterable<DiskResource> resources) {
-        // Use predicate to determine if user is owner of all disk resources
-        boolean isDeletable = true;
-        for (DiskResource dr : resources) {
-            if (!dr.getPermissions().isOwner()) {
-                isDeletable = false;
-                break;
-            }
-        }
-        return isDeletable;
     }
 
     @Override
@@ -386,4 +383,46 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
                 diskResourceMetadataUpdateCallback);
     }
 
+    @Override
+    public boolean resourcesContainAncestorsOfTargetFolder(Folder targetFolder, Collection<DiskResource> resources) {
+        for (DiskResource dr : resources) {
+            if ((dr instanceof Folder) && targetFolder.getId().startsWith(dr.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void doMoveDiskResources(Folder targetFolder, Set<DiskResource> resources) {
+        diskResourceService.moveDiskResources(resources, targetFolder, new DiskResourceMoveCallback(view, targetFolder, resources));
+    }
+
+    @Override
+    public Folder getDropTargetFolder(IsWidget target, Element eventTargetElement){
+        Folder ret = null;
+        if (view.isViewTree(target)) {
+            TreeNode<Folder> targetTreeNode = view.findTreeNode(eventTargetElement);
+            ret = targetTreeNode.getModel();
+        } else if (view.isViewGrid(target)) {
+            Element targetRow = view.findGridRow(target.asWidget().getElement()).cast();
+
+            if (targetRow != null) {
+                int dropIndex = view.findRowIndex(targetRow);
+                ret = (Folder)view.getListStore().get(dropIndex);
+            }
+        }
+        return ret;
+    }
+    
+    @Override
+    public boolean isViewGrid(IsWidget widget){
+        return view.isViewGrid(widget);
+    }
+    
+    @Override
+    public boolean isViewTree(IsWidget widget){
+        return view.isViewTree(widget);
+    }
+    
 }
