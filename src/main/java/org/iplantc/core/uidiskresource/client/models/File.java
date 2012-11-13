@@ -51,7 +51,7 @@ public class File extends DiskResource {
         setLastModified(new Date());
         setPath(""); //$NON-NLS-1$
         setDescription(""); //$NON-NLS-1$
-        set(SIZE, ""); //$NON-NLS-1$
+        set(SIZE, new Long(0)); //$NON-NLS-1$
         set(TYPE, ""); //$NON-NLS-1$
     }
 
