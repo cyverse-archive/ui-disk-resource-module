@@ -105,8 +105,6 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
                 Set<DiskResourceMetadata> metadataToDelete,
                 DiskResourceMetadataUpdateCallback diskResourceMetadataUpdateCallback);
 
-        boolean resourcesContainAncestorsOfTargetFolder(Folder targetFolder, Collection<DiskResource> resources);
-
         void doMoveDiskResources(Folder targetFolder, Set<DiskResource> resources);
 
         /**
@@ -132,6 +130,8 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
          * @return
          */
         boolean isViewGrid(IsWidget widget);
+
+        boolean canDragDataToTargetFolder(Folder targetFolder, Collection<DiskResource> dropData);
 
     }
 

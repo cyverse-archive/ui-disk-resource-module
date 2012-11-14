@@ -163,8 +163,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
             @Override
             public void onDiskResourcesMoved(DiskResourcesMovedEvent event) {
-                // TODO JDS Auto-generated method stub
-                
+                // Determine which folder is the ancestor, then refresh it
+                if(DiskResourceUtil.isDescendantOfFolder(event.getDestinationFolder(), getSelectedFolder())){
+                    view.refreshFolder(event.getDestinationFolder());
+                }else{
+                    view.refreshFolder(getSelectedFolder());
+                }
             }});
     }
 
@@ -382,15 +386,27 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         diskResourceService.setDiskResourceMetaData(resource, metadataToAdd, metadataToDelete,
                 diskResourceMetadataUpdateCallback);
     }
-
+    
     @Override
-    public boolean resourcesContainAncestorsOfTargetFolder(Folder targetFolder, Collection<DiskResource> resources) {
-        for (DiskResource dr : resources) {
-            if ((dr instanceof Folder) && targetFolder.getId().startsWith(dr.getId())) {
-                return true;
+    public boolean canDragDataToTargetFolder(final Folder targetFolder, final Collection<DiskResource> dropData){
+        // Assuming that ownership is of no concern.
+        for (DiskResource dr : dropData) {
+            // if the resource is a direct child of target folder
+            if(DiskResourceUtil.isChildOfFolder(targetFolder, dr)){
+                return false;
+            }
+            if (dr instanceof Folder) {
+
+                // cannot drag an ancestor (parent, grandparent, etc) onto a child and/or descendant
+                if(DiskResourceUtil.isDescendantOfFolder(targetFolder, (Folder)dr)){
+                    return false;
+                }
+                
+            } else if (dr instanceof File) {
+
             }
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -401,7 +417,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     @Override
     public Folder getDropTargetFolder(IsWidget target, Element eventTargetElement){
         Folder ret = null;
-        if (view.isViewTree(target)) {
+        if (view.isViewTree(target) && (view.findTreeNode(eventTargetElement) != null)) {
             TreeNode<Folder> targetTreeNode = view.findTreeNode(eventTargetElement);
             ret = targetTreeNode.getModel();
         } else if (view.isViewGrid(target)) {
@@ -409,7 +425,9 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
             if (targetRow != null) {
                 int dropIndex = view.findRowIndex(targetRow);
-                ret = (Folder)view.getListStore().get(dropIndex);
+                // TODO JDS Do some type checking here. got errors last time for casting file to folder
+                DiskResource selDiskResource = view.getListStore().get(dropIndex);
+                ret = (selDiskResource instanceof Folder) ? (Folder)selDiskResource : null;
             }
         }
         return ret;

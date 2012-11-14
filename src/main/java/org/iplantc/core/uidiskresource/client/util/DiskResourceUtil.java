@@ -3,7 +3,14 @@
  */
 package org.iplantc.core.uidiskresource.client.util;
 
+import java.util.LinkedList;
+
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 
 /**
  * @author sriram
@@ -17,24 +24,9 @@ public class DiskResourceUtil {
      * @return the parent folder.
      */
     public static String parseParent(String path) {
-        String ret = ""; //$NON-NLS-1$
-        if (path == null || path.trim().isEmpty()) {
-            return ret;
-        }
-        String[] items = path.split("/"); //$NON-NLS-1$
-        boolean firstPass = true;
-
-        for (int i = 0; i < items.length - 1; i++) {
-            if (firstPass) {
-                firstPass = false;
-            } else {
-                ret += "/"; //$NON-NLS-1$
-            }
-
-            ret += items[i];
-        }
-
-        return ret;
+        LinkedList<String> split = Lists.newLinkedList(Splitter.on("/").trimResults().omitEmptyStrings().split(path));
+        split.removeLast();
+        return "/".concat(Joiner.on("/").join(split));
     }
 
     /**
@@ -44,14 +36,9 @@ public class DiskResourceUtil {
      * @return the display name.
      */
     public static String parseNameFromPath(String path) {
-        String ret = ""; //$NON-NLS-1$
+        LinkedList<String> split = Lists.newLinkedList(Splitter.on("/").trimResults().omitEmptyStrings().split(path));
 
-        if (path != null && !path.trim().isEmpty()) {
-            String[] items = path.split("/"); //$NON-NLS-1$
-            ret = items[items.length - 1];
-        }
-
-        return ret;
+        return split.removeLast();
     }
     
     public static boolean isOwner(DiskResource resource) {
@@ -68,5 +55,31 @@ public class DiskResourceUtil {
             }
         }
         return isDeletable;
+    }
+
+    /**
+     * Determines if the given <code>DiskResource</code> is a direct child of the given parent <code>Folder</code>.
+     * @param parent
+     * @param resource
+     * @return
+     */
+    public static boolean isChildOfFolder(Folder parent, DiskResource resource) {
+        return parseParent(resource.getId()).equals(parent.getId());
+    }
+
+    /**
+     * Determines if the given folder is a descendant of the given ancestor folder.
+     * This is done by verifying that the given folder's path starts with the ancestor's path.
+     *  
+     * @param ancestor the ancestor folder.
+     * @param folder the folder whose ancestry is verified.
+     * @return true if the folder is a descendant of the given ancestor, false otherwise.
+     */
+    public static boolean isDescendantOfFolder(Folder ancestor, Folder folder) {
+        return folder.getId().startsWith(ancestor.getId());
+    }
+
+    public static boolean isMovable(Iterable<DiskResource> dropData) {
+        return isOwner(dropData);
     }
 }

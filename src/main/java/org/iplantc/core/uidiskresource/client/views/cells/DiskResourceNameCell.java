@@ -63,7 +63,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
      */
     interface Templates extends SafeHtmlTemplates {
 
-        @SafeHtmlTemplates.Template("<span class=\"{0}\"> </span>&nbsp;<span name=\"drName\" class=\"{1}\" >{2}</span>")
+        @SafeHtmlTemplates.Template("<span><span class=\"{0}\"> </span>&nbsp;<span name=\"drName\" class=\"{1}\" >{2}</span></span>")
         SafeHtml cell(String imgClassName, String diskResourceClassName, SafeHtml diskResourceName);
     }
 
@@ -132,8 +132,11 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
 
     private void doOnClick(Element eventTarget, DiskResource value,
             ValueUpdater<DiskResource> valueUpdater) {
+        
+        if (eventTarget.getAttribute("name").equalsIgnoreCase("drName")) {
+            EventBus.getInstance().fireEvent(new DiskResourceSelectedEvent(this, value));
+        }
 
-        EventBus.getInstance().fireEvent(new DiskResourceSelectedEvent(this, value));
     }
 
 }

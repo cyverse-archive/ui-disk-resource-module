@@ -27,10 +27,8 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.dnd.core.client.DND.Operation;
-import com.sencha.gxt.dnd.core.client.GridDragSource;
-import com.sencha.gxt.dnd.core.client.GridDropTarget;
-import com.sencha.gxt.dnd.core.client.TreeDragSource;
-import com.sencha.gxt.dnd.core.client.TreeDropTarget;
+import com.sencha.gxt.dnd.core.client.DragSource;
+import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
@@ -185,23 +183,25 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     private void initDragAndDrop() {
         DiskResourceViewDnDHandler dndHandler = new DiskResourceViewDnDHandler(presenter);
-        GridDropTarget<DiskResource> gridDropTarget = new GridDropTarget<DiskResource>(grid);
+        
+        DropTarget gridDropTarget = new DropTarget(grid);
+        gridDropTarget.setAllowSelfAsSource(true);
         gridDropTarget.setOperation(Operation.COPY);
         gridDropTarget.addDragEnterHandler(dndHandler);
         gridDropTarget.addDragMoveHandler(dndHandler);
         gridDropTarget.addDropHandler(dndHandler);
         
-        GridDragSource<DiskResource> gridDragSource = new GridDragSource<DiskResource>(grid);
+        DragSource gridDragSource = new DragSource(grid);
         gridDragSource.addDragStartHandler(dndHandler);
 
-        TreeDropTarget<Folder> treeDropTarget = new TreeDropTarget<Folder>(tree);
+        DropTarget treeDropTarget = new DropTarget(tree);
+        treeDropTarget.setAllowSelfAsSource(true);
         treeDropTarget.setOperation(Operation.COPY);
-        treeDropTarget.setAllowDropOnLeaf(true);
         treeDropTarget.addDragEnterHandler(dndHandler);
         treeDropTarget.addDragMoveHandler(dndHandler);
         treeDropTarget.addDropHandler(dndHandler);
         
-        TreeDragSource<Folder> treeDragSource = new TreeDragSource<Folder>(tree);
+        DragSource treeDragSource = new DragSource(tree);
         treeDragSource.addDragStartHandler(dndHandler);
         
     }
@@ -413,7 +413,11 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     @Override
     public Element findGridRow(Element el) {
-        return grid.getView().findRow(el);
+        Element row = grid.getView().findRow(el);
+        if (row == null && listStore.size() > 0) {
+            row = grid.getView().getRow(grid.getStore().size() - 1).cast();
+        }
+        return row;
     }
 
     @Override
