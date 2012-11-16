@@ -14,7 +14,7 @@ import com.google.gwt.json.client.JSONObject;
  * @author amuir
  * 
  */
-public abstract class DiskResource extends BaseTreeModel {
+public abstract class DiskResource extends BaseTreeModel implements IDiskResource {
     private static final long serialVersionUID = 557899228357342079L;
 
     public static final String ID = "id"; //$NON-NLS-1$
@@ -61,11 +61,10 @@ public abstract class DiskResource extends BaseTreeModel {
         set(ID, id);
     }
 
-    /**
-     * Retrieve unique id.
-     * 
-     * @return resource id.
+    /* (non-Javadoc)
+     * @see org.iplantc.core.uidiskresource.client.models.IDiskResource#getId()
      */
+    @Override
     public String getId() {
         return get(ID);
     }
@@ -79,11 +78,10 @@ public abstract class DiskResource extends BaseTreeModel {
         set(NAME, name);
     }
 
-    /**
-     * Retrieve our id.
-     * 
-     * @return resource name.
+    /* (non-Javadoc)
+     * @see org.iplantc.core.uidiskresource.client.models.IDiskResource#getName()
      */
+    @Override
     public String getName() {
         return get(NAME);
     }
@@ -112,11 +110,10 @@ public abstract class DiskResource extends BaseTreeModel {
         set(DATE_MODIFIED, date);
     }
 
-    /**
-     * Gets the last modified date
-     * 
-     * @return a Date object for the last modified date
+    /* (non-Javadoc)
+     * @see org.iplantc.core.uidiskresource.client.models.IDiskResource#getLastModified()
      */
+    @Override
     public Date getLastModified() {
         return get(DATE_MODIFIED);
     }
@@ -130,11 +127,10 @@ public abstract class DiskResource extends BaseTreeModel {
         set(DATE_CREATED, date);
     }
 
-    /**
-     * Gets the created date.
-     * 
-     * @return a Date object for the created date
+    /* (non-Javadoc)
+     * @see org.iplantc.core.uidiskresource.client.models.IDiskResource#getDateCreated()
      */
+    @Override
     public Date getDateCreated() {
         return get(DATE_CREATED);
     }
