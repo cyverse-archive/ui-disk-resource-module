@@ -11,7 +11,7 @@ import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceAutoB
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadataList;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadataProperties;
-import org.iplantc.core.uidiskresource.client.presenters.callbacks.DiskResourceMetadataUpdateCallback;
+import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
 import com.google.common.collect.HashMultiset;

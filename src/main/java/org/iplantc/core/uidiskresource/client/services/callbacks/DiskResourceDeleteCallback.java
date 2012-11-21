@@ -1,4 +1,4 @@
-package org.iplantc.core.uidiskresource.client.presenters.callbacks;
+package org.iplantc.core.uidiskresource.client.services.callbacks;
 
 import java.util.Collection;
 
@@ -8,8 +8,8 @@ import org.iplantc.core.uicommons.client.views.IsMaskable;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.autobeans.errors.DiskResourceDeleteError;
-import org.iplantc.core.uidiskresource.client.models.autobeans.errors.DiskResourceErrorAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.services.errors.ErrorDiskResourceDelete;
+import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceErrorAutoBeanFactory;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.json.client.JSONObject;
@@ -36,8 +36,8 @@ public class DiskResourceDeleteCallback extends DiskResourceServiceCallback {
     public void onFailure(Throwable caught) {
         unmaskCaller();
         DiskResourceErrorAutoBeanFactory factory = GWT.create(DiskResourceErrorAutoBeanFactory.class);
-        AutoBean<DiskResourceDeleteError> errorBean = AutoBeanCodex.decode(factory,
-                DiskResourceDeleteError.class, caught.getMessage());
+        AutoBean<ErrorDiskResourceDelete> errorBean = AutoBeanCodex.decode(factory,
+                ErrorDiskResourceDelete.class, caught.getMessage());
 
         ErrorHandler.post(errorBean.as(), caught);
 

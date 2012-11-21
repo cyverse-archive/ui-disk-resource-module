@@ -1,4 +1,4 @@
-package org.iplantc.core.uidiskresource.client.presenters.callbacks;
+package org.iplantc.core.uidiskresource.client.services.callbacks;
 
 import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.uicommons.client.ErrorHandler;

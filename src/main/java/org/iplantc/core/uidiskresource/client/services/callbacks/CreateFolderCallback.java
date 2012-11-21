@@ -1,4 +1,4 @@
-package org.iplantc.core.uidiskresource.client.presenters.callbacks;
+package org.iplantc.core.uidiskresource.client.services.callbacks;
 
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
@@ -7,8 +7,8 @@ import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
-import org.iplantc.core.uidiskresource.client.models.autobeans.errors.CreateFolderError;
-import org.iplantc.core.uidiskresource.client.models.autobeans.errors.DiskResourceErrorAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.services.errors.ErrorCreateFolder;
+import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceErrorAutoBeanFactory;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONObject;
@@ -52,7 +52,7 @@ public class CreateFolderCallback extends DiskResourceServiceCallback {
     public void onFailure(Throwable caught) {
         unmaskCaller();
         DiskResourceErrorAutoBeanFactory factory = GWT.create(DiskResourceErrorAutoBeanFactory.class);
-        AutoBean<CreateFolderError> errorBean = AutoBeanCodex.decode(factory, CreateFolderError.class,
+        AutoBean<ErrorCreateFolder> errorBean = AutoBeanCodex.decode(factory, ErrorCreateFolder.class,
                 caught.getMessage());
 
         ErrorHandler.post(errorBean.as(), caught);

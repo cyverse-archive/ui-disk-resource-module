@@ -30,12 +30,12 @@ import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceAutoB
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.autobeans.File;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
-import org.iplantc.core.uidiskresource.client.presenters.callbacks.CreateFolderCallback;
-import org.iplantc.core.uidiskresource.client.presenters.callbacks.DiskResourceDeleteCallback;
-import org.iplantc.core.uidiskresource.client.presenters.callbacks.DiskResourceMetadataUpdateCallback;
-import org.iplantc.core.uidiskresource.client.presenters.callbacks.DiskResourceMoveCallback;
-import org.iplantc.core.uidiskresource.client.presenters.callbacks.RenameDiskResourceCallback;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
+import org.iplantc.core.uidiskresource.client.services.callbacks.CreateFolderCallback;
+import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceDeleteCallback;
+import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
+import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMoveCallback;
+import org.iplantc.core.uidiskresource.client.services.callbacks.RenameDiskResourceCallback;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.metadata.DiskResourceMetadataDialog;

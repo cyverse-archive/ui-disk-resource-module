@@ -1,4 +1,4 @@
-package org.iplantc.core.uidiskresource.client.presenters.callbacks;
+package org.iplantc.core.uidiskresource.client.services.callbacks;
 
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
@@ -7,8 +7,8 @@ import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uidiskresource.client.models.autobeans.errors.DiskResourceErrorAutoBeanFactory;
-import org.iplantc.core.uidiskresource.client.models.autobeans.errors.DiskResourceRenameError;
+import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceErrorAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.services.errors.ErrorDiskResourceRename;
 
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.core.shared.GWT;
@@ -52,8 +52,8 @@ public class RenameDiskResourceCallback extends DiskResourceServiceCallback {
         unmaskCaller();
         DiskResourceErrorAutoBeanFactory factory = GWT.create(DiskResourceErrorAutoBeanFactory.class);
         if (JsonUtils.safeToEval(caught.getMessage())) {
-            AutoBean<DiskResourceRenameError> errorBean = AutoBeanCodex.decode(factory,
-                    DiskResourceRenameError.class, caught.getMessage());
+            AutoBean<ErrorDiskResourceRename> errorBean = AutoBeanCodex.decode(factory,
+                    ErrorDiskResourceRename.class, caught.getMessage());
 
             ErrorHandler.post(errorBean.as(), caught);
         } else {
