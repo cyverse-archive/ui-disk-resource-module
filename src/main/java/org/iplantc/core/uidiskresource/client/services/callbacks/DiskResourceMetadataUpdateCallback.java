@@ -6,7 +6,6 @@ import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceErrorA
 import org.iplantc.core.uidiskresource.client.services.errors.ErrorUpdateMetadata;
 
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.json.client.JSONObject;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
@@ -16,11 +15,6 @@ public class DiskResourceMetadataUpdateCallback extends DiskResourceServiceCallb
         super(null);
     }
 
-    @Override
-    protected String getErrorMessageDefault() {
-        return I18N.ERROR.metadataUpdateFailed();
-    }
-    
     @Override
     public void onFailure(Throwable caught) {
         unmaskCaller();
@@ -33,8 +27,8 @@ public class DiskResourceMetadataUpdateCallback extends DiskResourceServiceCallb
     }
 
     @Override
-    protected String getErrorMessageByCode(ErrorCode code, JSONObject jsonError) {
-        return null;
+    protected String getErrorMessageDefault() {
+        return I18N.ERROR.metadataUpdateFailed();
     }
 
 }

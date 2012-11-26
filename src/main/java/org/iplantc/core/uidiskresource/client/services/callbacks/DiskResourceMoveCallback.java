@@ -10,10 +10,9 @@ import org.iplantc.core.uidiskresource.client.events.DiskResourcesMovedEvent;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceErrorAutoBeanFactory;
-import org.iplantc.core.uidiskresource.client.services.errors.ErrorMoveDiskResource;
+import org.iplantc.core.uidiskresource.client.services.errors.ErrorDiskResourceMove;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.json.client.JSONObject;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
@@ -45,7 +44,7 @@ public class DiskResourceMoveCallback extends DiskResourceServiceCallback{
     public void onFailure(Throwable caught){
         unmaskCaller();
         DiskResourceErrorAutoBeanFactory factory = GWT.create(DiskResourceErrorAutoBeanFactory.class);
-        AutoBean<ErrorMoveDiskResource> errorBean = AutoBeanCodex.decode(factory, ErrorMoveDiskResource.class, caught.getMessage());
+        AutoBean<ErrorDiskResourceMove> errorBean = AutoBeanCodex.decode(factory, ErrorDiskResourceMove.class, caught.getMessage());
         
         ErrorHandler.post(errorBean.as(), caught);
     }
@@ -53,11 +52,6 @@ public class DiskResourceMoveCallback extends DiskResourceServiceCallback{
     @Override
     protected String getErrorMessageDefault() {
         return I18N.ERROR.moveFailed();
-    }
-
-    @Override
-    protected String getErrorMessageByCode(ErrorCode code, JSONObject jsonError) {
-        return null;
     }
 
 }

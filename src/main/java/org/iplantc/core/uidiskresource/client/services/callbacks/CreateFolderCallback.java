@@ -7,11 +7,10 @@ import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
-import org.iplantc.core.uidiskresource.client.services.errors.ErrorCreateFolder;
 import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceErrorAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.services.errors.ErrorCreateFolder;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.json.client.JSONObject;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.Splittable;
@@ -61,11 +60,6 @@ public class CreateFolderCallback extends DiskResourceServiceCallback {
     @Override
     protected String getErrorMessageDefault() {
         return I18N.ERROR.createFolderFailed();
-    }
-
-    @Override
-    protected String getErrorMessageByCode(ErrorCode code, JSONObject jsonError) {
-        return null;
     }
 
 }

@@ -8,11 +8,10 @@ import org.iplantc.core.uicommons.client.views.IsMaskable;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
-import org.iplantc.core.uidiskresource.client.services.errors.ErrorDiskResourceDelete;
 import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceErrorAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.services.errors.ErrorDiskResourceDelete;
 
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.json.client.JSONObject;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
@@ -46,11 +45,6 @@ public class DiskResourceDeleteCallback extends DiskResourceServiceCallback {
     @Override
     protected String getErrorMessageDefault() {
         return I18N.ERROR.deleteFileFailed();
-    }
-
-    @Override
-    protected String getErrorMessageByCode(ErrorCode code, JSONObject jsonError) {
-        return null;
     }
 
 }

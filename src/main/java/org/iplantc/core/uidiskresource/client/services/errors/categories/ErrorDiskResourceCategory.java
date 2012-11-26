@@ -1,4 +1,8 @@
-package org.iplantc.core.uidiskresource.client.services.errors;
+package org.iplantc.core.uidiskresource.client.services.errors.categories;
+
+import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceErrorCode;
+import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceServiceErrorStrings;
+import org.iplantc.core.uidiskresource.client.services.errors.ErrorDiskResource;
 
 import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;
@@ -10,16 +14,16 @@ import com.google.web.bindery.autobean.shared.AutoBean;
  * @author jstroot
  * 
  */
-public class DiskResourceCategory {
+public class ErrorDiskResourceCategory {
     private static DiskResourceServiceErrorStrings errStrings = GWT.create(DiskResourceServiceErrorStrings.class);
 
-    public static String getErrorMsg(AutoBean<ErrorCreateFolder> instance) {
+    public static String getErrorMsg(AutoBean<ErrorDiskResource> instance) {
         return getErrorMessage(DiskResourceErrorCode.valueOf(instance.as().getErrorCode()), null);
     }
     
-    
     @SuppressWarnings("incomplete-switch")
-    private static String getErrorMessage(DiskResourceErrorCode code, String resourceNames) {
+    protected static String getErrorMessage(DiskResourceErrorCode code, String resourceNames) {
+        
         switch (code) {
             case ERR_DOES_NOT_EXIST:
                 return errStrings.diskResourceDoesNotExist(resourceNames);

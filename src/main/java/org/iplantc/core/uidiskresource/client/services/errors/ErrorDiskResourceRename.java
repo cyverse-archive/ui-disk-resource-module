@@ -1,8 +1,6 @@
 package org.iplantc.core.uidiskresource.client.services.errors;
 
-import org.iplantc.core.uicommons.client.errorHandling.models.ServiceError;
 
-public interface ErrorDiskResourceRename extends ServiceError {
+public interface ErrorDiskResourceRename extends ErrorDiskResource, HasPath {
 
-    String getPath();
 }

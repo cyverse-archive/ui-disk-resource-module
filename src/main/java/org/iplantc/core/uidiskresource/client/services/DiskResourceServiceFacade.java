@@ -90,6 +90,7 @@ public interface DiskResourceServiceFacade {
     /**
      * Call service to move the given file ids to the given folder.
      * 
+     * TODO JDS DELETE THIS METHOD
      * @param idSrcFiles list of file ids to move.
      * @param idDestFolder id of the destination folder.
      * @param callback service success/failure callback
@@ -99,6 +100,7 @@ public interface DiskResourceServiceFacade {
     /**
      * Call service to move the given folder ids to the given destination folder.
      * 
+     * TODO JDS DELETE THIS METHOD
      * @param idSrcFolders list of folder ids to move.
      * @param idDestFolder id of the destination folder.
      * @param callback service success/failure callback

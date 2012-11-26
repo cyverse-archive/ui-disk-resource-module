@@ -12,7 +12,6 @@ import org.iplantc.core.uidiskresource.client.services.errors.ErrorDiskResourceR
 
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.json.client.JSONObject;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
@@ -39,9 +38,6 @@ public class RenameDiskResourceCallback extends DiskResourceServiceCallback {
         Splittable encode = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(dr));
         AutoBean<DiskResource> newDr = AutoBeanCodex.decode(factory, DiskResource.class, encode);   // AutoBeanUtils.getAutoBean(dr);
         String newId = split.get("dest").asString();
-        if (newDr.isWrapper()) {
-            GWT.log("Is Wrapper");
-        }
         newDr.as().setId(newId);
         newDr.as().setName(newId.substring(newId.lastIndexOf("/") + 1));
         EventBus.getInstance().fireEvent(new DiskResourceRenamedEvent(dr, newDr.as()));
@@ -66,12 +62,6 @@ public class RenameDiskResourceCallback extends DiskResourceServiceCallback {
     @Override
     protected String getErrorMessageDefault() {
         return I18N.ERROR.renameFolderFailed();
-    }
-
-    @Override
-    protected String getErrorMessageByCode(ErrorCode code, JSONObject jsonError) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }
