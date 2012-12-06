@@ -287,6 +287,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void requestDelete() {
+        // TODO JDS Need to give feedback to user if there are selections in both the nav and the main.
         final ConfirmMessageBox mb = new ConfirmMessageBox(DISPLAY.deleteFilesTitle(),
                 DISPLAY.deleteFilesMsg());
         mb.addHideHandler(new HideHandler() {
