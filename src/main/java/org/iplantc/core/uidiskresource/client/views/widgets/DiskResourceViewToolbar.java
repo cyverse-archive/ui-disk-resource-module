@@ -79,6 +79,8 @@ public interface DiskResourceViewToolbar extends IsWidget {
     }
 
     void setPresenter(Presenter presenter);
+    
+    void setUploadsEnabled(boolean enabled);
 
     void setBulkUploadEnabled(boolean enabled);
 
@@ -90,6 +92,8 @@ public interface DiskResourceViewToolbar extends IsWidget {
 
     void setRefreshButtonEnabled(boolean enabled);
 
+    void setDownloadsEnabled(boolean enabled);
+    
     void setSimpleDowloadButtonEnabled(boolean enabled);
 
     void setBulkDownloadButtonEnabled(boolean enabled);

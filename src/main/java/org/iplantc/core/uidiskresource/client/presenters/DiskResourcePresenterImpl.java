@@ -112,9 +112,9 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         };
 
         // Add selection handlers which will control the visibility of the toolbar buttons
-        addFolderSelectionHandler(new ToolbarButtonVisibilityFolderSelectionHandler(
+        addFileSelectChangedHandler(new ToolbarButtonVisibilitySelectionHandler<DiskResource>(
                 view.getToolbar()));
-        addFileSelectChangedHandler(new ToolbarButtonVisibilityDiskResourceSelectionChangedHandler(
+        addFolderSelectionHandler(new ToolbarButtonVisibilitySelectionHandler<Folder>(
                 view.getToolbar()));
 
         treeLoader.addLoadHandler(new ChildTreeStoreBinding<Folder>(this.view.getTreeStore()));

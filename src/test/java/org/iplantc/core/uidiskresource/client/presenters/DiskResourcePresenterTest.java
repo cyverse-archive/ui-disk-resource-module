@@ -91,9 +91,9 @@ public class DiskResourcePresenterTest {
                 will(returnValue(context.mock(DiskResourceViewToolbar.class)));
                 oneOf(view)
                         .addDiskResourceSelectChangedHandler(
-                                with(aNonNull(ToolbarButtonVisibilityDiskResourceSelectionChangedHandler.class)));
+                                with(aNonNull(ToolbarButtonVisibilitySelectionHandler.class)));
                 oneOf(view).addFolderSelectionHandler(
-                        with(aNonNull(ToolbarButtonVisibilityFolderSelectionHandler.class)));
+                        with(aNonNull(ToolbarButtonVisibilitySelectionHandler.class)));
 
                 oneOf(view).setTreeLoader(with(aNonNull(TreeLoader.class)));
                 oneOf(view).setPresenter(with(aNonNull(DiskResourceView.Presenter.class)));
@@ -208,27 +208,30 @@ public class DiskResourcePresenterTest {
         final DiskResourceViewToolbar toolbar = context.mock(DiskResourceViewToolbar.class, "tb");
         final Folder folder = context.mock(Folder.class);
         final Permissions permissions = context.mock(Permissions.class);
-        ToolbarButtonVisibilityFolderSelectionHandler selChangedHandler = new ToolbarButtonVisibilityFolderSelectionHandler(
+        ToolbarButtonVisibilitySelectionHandler<Folder> selChangedHandler = new ToolbarButtonVisibilitySelectionHandler<Folder>(
                 toolbar);
         // Test the case where one folder is selected, and user IS the owner
         context.checking(new Expectations() {
             {
+                oneOf(toolbar).setUploadsEnabled(with(true));
+                oneOf(toolbar).setDownloadsEnabled(with(true));
+
                 oneOf(toolbar).setBulkUploadEnabled(with(true));
                 oneOf(toolbar).setSimpleUploadEnabled(with(true));
                 oneOf(toolbar).setImportButtonEnabled(with(true));
                 oneOf(toolbar).setNewFolderButtonEnabled(with(true));
                 oneOf(toolbar).setRefreshButtonEnabled(with(true));
-                oneOf(toolbar).setSimpleDowloadButtonEnabled(with(true));
+                oneOf(toolbar).setSimpleDowloadButtonEnabled(with(false));
                 oneOf(toolbar).setBulkDownloadButtonEnabled(with(true));
                 oneOf(toolbar).setRenameButtonEnabled(with(true));
                 oneOf(toolbar).setDeleteButtonEnabled(with(true));
                 oneOf(toolbar).setShareButtonEnabled(with(true));
-                oneOf(toolbar).setMetadataButtonEnabled(with(false));
+                oneOf(toolbar).setMetadataButtonEnabled(with(true));
                 oneOf(toolbar).setDataQuotaButtonEnabled(with(false));
 
-                oneOf(permissions).isOwner();
+                allowing(permissions).isOwner();
                 will(returnValue(true));
-                oneOf(folder).getPermissions();
+                allowing(folder).getPermissions();
                 will(returnValue(permissions));
 
             }
@@ -245,28 +248,31 @@ public class DiskResourcePresenterTest {
         final DiskResourceViewToolbar toolbar = context.mock(DiskResourceViewToolbar.class);
         final Folder folder = context.mock(Folder.class);
         final Permissions permissions = context.mock(Permissions.class);
-        ToolbarButtonVisibilityFolderSelectionHandler selChangedHandler = new ToolbarButtonVisibilityFolderSelectionHandler(
+        ToolbarButtonVisibilitySelectionHandler<Folder> selChangedHandler = new ToolbarButtonVisibilitySelectionHandler<Folder>(
                 toolbar);
 
         // Test the case where one folder is selected, and user IS NOT the owner
         context.checking(new Expectations() {
             {
+                oneOf(toolbar).setUploadsEnabled(with(false));
+                oneOf(toolbar).setDownloadsEnabled(with(true));
+                
                 oneOf(toolbar).setBulkUploadEnabled(with(false));
                 oneOf(toolbar).setSimpleUploadEnabled(with(false));
                 oneOf(toolbar).setImportButtonEnabled(with(false));
                 oneOf(toolbar).setNewFolderButtonEnabled(with(false));
                 oneOf(toolbar).setRefreshButtonEnabled(with(true));
                 oneOf(toolbar).setSimpleDowloadButtonEnabled(with(false));
-                oneOf(toolbar).setBulkDownloadButtonEnabled(with(false));
+                oneOf(toolbar).setBulkDownloadButtonEnabled(with(true));
                 oneOf(toolbar).setRenameButtonEnabled(with(false));
                 oneOf(toolbar).setDeleteButtonEnabled(with(false));
                 oneOf(toolbar).setShareButtonEnabled(with(false));
                 oneOf(toolbar).setMetadataButtonEnabled(with(false));
                 oneOf(toolbar).setDataQuotaButtonEnabled(with(false));
 
-                oneOf(permissions).isOwner();
+                allowing(permissions).isOwner();
                 will(returnValue(false));
-                oneOf(folder).getPermissions();
+                allowing(folder).getPermissions();
                 will(returnValue(permissions));
 
             }
@@ -283,17 +289,20 @@ public class DiskResourcePresenterTest {
         final DiskResourceViewToolbar toolbar = context.mock(DiskResourceViewToolbar.class);
         final Folder folder = context.mock(Folder.class);
         final Permissions permissions = context.mock(Permissions.class);
-        ToolbarButtonVisibilityDiskResourceSelectionChangedHandler selChangedHandler = new ToolbarButtonVisibilityDiskResourceSelectionChangedHandler(
+        ToolbarButtonVisibilitySelectionHandler<DiskResource> selChangedHandler = new ToolbarButtonVisibilitySelectionHandler<DiskResource>(
                 toolbar);
         // Test the case where one folder is selected, and user IS the owner
         context.checking(new Expectations() {
             {
+                oneOf(toolbar).setUploadsEnabled(with(true));
+                oneOf(toolbar).setDownloadsEnabled(with(true));
+                
                 oneOf(toolbar).setBulkUploadEnabled(with(true));
                 oneOf(toolbar).setSimpleUploadEnabled(with(true));
                 oneOf(toolbar).setImportButtonEnabled(with(true));
                 oneOf(toolbar).setNewFolderButtonEnabled(with(true));
                 oneOf(toolbar).setRefreshButtonEnabled(with(true));
-                oneOf(toolbar).setSimpleDowloadButtonEnabled(with(true));
+                oneOf(toolbar).setSimpleDowloadButtonEnabled(with(false));
                 oneOf(toolbar).setBulkDownloadButtonEnabled(with(true));
                 oneOf(toolbar).setRenameButtonEnabled(with(true));
                 oneOf(toolbar).setDeleteButtonEnabled(with(true));
@@ -301,9 +310,9 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setMetadataButtonEnabled(with(true));
                 oneOf(toolbar).setDataQuotaButtonEnabled(with(false));
 
-                oneOf(permissions).isOwner();
+                allowing(permissions).isOwner();
                 will(returnValue(true));
-                oneOf(folder).getPermissions();
+                allowing(folder).getPermissions();
                 will(returnValue(permissions));
 
             }
@@ -323,28 +332,31 @@ public class DiskResourcePresenterTest {
         final DiskResourceViewToolbar toolbar = context.mock(DiskResourceViewToolbar.class);
         final Folder folder = context.mock(Folder.class);
         final Permissions permissions = context.mock(Permissions.class);
-        ToolbarButtonVisibilityDiskResourceSelectionChangedHandler selChangedHandler = new ToolbarButtonVisibilityDiskResourceSelectionChangedHandler(
+        ToolbarButtonVisibilitySelectionHandler<DiskResource> selChangedHandler = new ToolbarButtonVisibilitySelectionHandler<DiskResource>(
                 toolbar);
 
         // Test the case where one folder is selected, and user IS NOT the owner
         context.checking(new Expectations() {
             {
+                oneOf(toolbar).setUploadsEnabled(with(false));
+                oneOf(toolbar).setDownloadsEnabled(with(true));
+                
                 oneOf(toolbar).setBulkUploadEnabled(with(false));
                 oneOf(toolbar).setSimpleUploadEnabled(with(false));
                 oneOf(toolbar).setImportButtonEnabled(with(false));
                 oneOf(toolbar).setNewFolderButtonEnabled(with(false));
                 oneOf(toolbar).setRefreshButtonEnabled(with(true));
                 oneOf(toolbar).setSimpleDowloadButtonEnabled(with(false));
-                oneOf(toolbar).setBulkDownloadButtonEnabled(with(false));
+                oneOf(toolbar).setBulkDownloadButtonEnabled(with(true));
                 oneOf(toolbar).setRenameButtonEnabled(with(false));
                 oneOf(toolbar).setDeleteButtonEnabled(with(false));
                 oneOf(toolbar).setShareButtonEnabled(with(false));
                 oneOf(toolbar).setMetadataButtonEnabled(with(false));
                 oneOf(toolbar).setDataQuotaButtonEnabled(with(false));
 
-                oneOf(permissions).isOwner();
+                allowing(permissions).isOwner();
                 will(returnValue(false));
-                oneOf(folder).getPermissions();
+                allowing(folder).getPermissions();
                 will(returnValue(permissions));
 
             }

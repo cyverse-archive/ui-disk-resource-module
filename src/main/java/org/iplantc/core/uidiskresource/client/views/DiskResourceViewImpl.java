@@ -288,7 +288,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     public void addDiskResourceSelectChangedHandler(SelectionChangedHandler<DiskResource> selectionChangedHandler) {
         grid.getSelectionModel().addSelectionChangedHandler(selectionChangedHandler);
     }
-
+    
     @Override
     public void addFolderSelectionHandler(SelectionHandler<Folder> selectionHandler) {
         tree.getSelectionModel().addSelectionHandler(selectionHandler);

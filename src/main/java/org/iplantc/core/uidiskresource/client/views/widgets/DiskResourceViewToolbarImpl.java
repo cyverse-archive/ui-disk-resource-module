@@ -32,6 +32,9 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     private final Widget widget;
 
     @UiField
+    TextButton uploads;
+    
+    @UiField
     MenuItem bulkUploadButton;
 
     @UiField
@@ -46,6 +49,9 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     @UiField
     TextButton refreshButton;
 
+    @UiField
+    TextButton downloads;
+    
     @UiField
     MenuItem simpleDownloadButton;
 
@@ -158,6 +164,11 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     }
 
     @Override
+    public void setUploadsEnabled(boolean enabled) {
+        uploads.setEnabled(enabled);
+    }
+
+    @Override
     public void setBulkUploadEnabled(boolean enabled) {
         bulkUploadButton.setEnabled(enabled);
     }
@@ -180,6 +191,11 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     @Override
     public void setRefreshButtonEnabled(boolean enabled) {
         refreshButton.setEnabled(enabled);
+    }
+
+    @Override
+    public void setDownloadsEnabled(boolean enabled) {
+        downloads.setEnabled(enabled);
     }
 
     @Override

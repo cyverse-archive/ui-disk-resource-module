@@ -80,7 +80,8 @@
             <gxt:ContentPanel ui:field="westPanel"
                               headerVisible="false"
                               bodyBorder="false">
-               <tree:Tree ui:field="tree"/>
+               <tree:Tree ui:field="tree"
+                          autoSelect="true"/>
             </gxt:ContentPanel>
          </container:west>
           <!-- This is the main panel -->

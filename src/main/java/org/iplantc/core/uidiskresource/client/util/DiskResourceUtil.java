@@ -82,4 +82,17 @@ public class DiskResourceUtil {
     public static boolean isMovable(Iterable<DiskResource> dropData) {
         return isOwner(dropData);
     }
+
+    public static boolean canUploadTo(DiskResource resource) {
+        return isOwner(resource) && (resource instanceof Folder);
+    }
+
+    public static <R extends DiskResource> boolean containsFolder(Iterable<R> selection) {
+        for(DiskResource resource : selection){
+            if(resource instanceof Folder){
+                return true;
+            }
+        }
+        return false;
+    }
 }

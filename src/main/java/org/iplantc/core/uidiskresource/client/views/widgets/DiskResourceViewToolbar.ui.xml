@@ -13,7 +13,8 @@
    <toolbar:ToolBar>
          <!-- Upload Menu -->
       <toolbar:child>
-         <button:TextButton text="{display.upload}"
+         <button:TextButton ui:field="uploads" 
+                            text="{display.upload}"
                             icon="{res.uploadButtonIcon}">
             <button:menu>
                <menu:Menu>
@@ -49,7 +50,8 @@
       
       <!-- Download menu -->
       <toolbar:child>
-         <button:TextButton text="{display.download}"
+         <button:TextButton ui:field="downloads" 
+                            text="{display.download}"
                             icon="{res.downloadButtonIcon}">
             <button:menu>
                <menu:Menu>
