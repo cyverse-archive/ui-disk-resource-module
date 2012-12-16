@@ -4,8 +4,10 @@
 package org.iplantc.core.uidiskresource.client.util;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.autobeans.File;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 
 import com.google.common.base.Joiner;
@@ -41,6 +43,18 @@ public class DiskResourceUtil {
         return split.removeLast();
     }
     
+    public static List<String> parseNamesFromIdList(Iterable<String> idList) {
+        List<String> nameList = Lists.newArrayList();
+        for (String s : idList) {
+            nameList.add(parseNameFromPath(s));
+        }
+        return nameList;
+    }
+
+    public static String asCommaSeperatedNameList(Iterable<String> idList) {
+        return Joiner.on(",").join(parseNamesFromIdList(idList));
+    }
+
     public static boolean isOwner(DiskResource resource) {
         return resource.getPermissions().isOwner();
     }
@@ -94,5 +108,24 @@ public class DiskResourceUtil {
             }
         }
         return false;
+    }
+
+    public static Iterable<File> extractFiles(Iterable<DiskResource> diskresources) {
+        List<File> files = Lists.newArrayList();
+        for (DiskResource dr : diskresources) {
+            if (dr instanceof File) {
+                files.add((File)dr);
+            }
+        }
+        return files;
+    }
+
+    public static <R extends DiskResource> List<String> asStringIdList(List<R> diskResourceList) {
+        List<String> ids = Lists.newArrayList();
+        for (R dr : diskResourceList) {
+            ids.add(dr.getId());
+        }
+
+        return ids;
     }
 }

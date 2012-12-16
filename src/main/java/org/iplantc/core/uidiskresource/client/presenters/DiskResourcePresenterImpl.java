@@ -38,6 +38,7 @@ import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMov
 import org.iplantc.core.uidiskresource.client.services.callbacks.RenameDiskResourceCallback;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
+import org.iplantc.core.uidiskresource.client.views.DiskResourceView.Presenter;
 import org.iplantc.core.uidiskresource.client.views.metadata.DiskResourceMetadataDialog;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
 
@@ -91,6 +92,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private DiskResourceServiceFacade diskResourceService;
     private final DiskResourceDisplayStrings DISPLAY;
     private final DiskResourceAutoBeanFactory drFactory;
+    private final Builder builder;
 
     @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
@@ -101,6 +103,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         this.diskResourceService = diskResourceService;
         this.DISPLAY = display;
         this.drFactory = factory;
+
+        builder = new MyBuilder(this);
 
         initHandlers();
         initDragAndDrop();
@@ -179,18 +183,17 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void go(HasOneWidget container) {
-        go(container, false, false, false, false);
-    }
-
-    @Override
-    public void go(HasOneWidget container, boolean hideWestWidget, boolean hideCenterWidget,
-            boolean hideEastWidget, boolean hideNorthWidget) {
-        view.setWestWidgetHidden(hideWestWidget);
-        view.setCenterWidgetHidden(hideCenterWidget);
-        view.setEastWidgetHidden(hideEastWidget);
-        view.setNorthWidgetHidden(hideNorthWidget);
         container.setWidget(view);
     }
+
+    // @Override
+    // public void go(HasOneWidget container, boolean hideWestWidget, boolean hideCenterWidget,
+    // boolean hideEastWidget, boolean hideNorthWidget) {
+    // view.setWestWidgetHidden(hideWestWidget);
+    // view.setCenterWidgetHidden(hideCenterWidget);
+    // view.setEastWidgetHidden(hideEastWidget);
+    // view.setNorthWidgetHidden(hideNorthWidget);
+    // }
 
     @Override
     public Folder getSelectedFolder() {
@@ -442,6 +445,62 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     @Override
     public boolean isViewTree(IsWidget widget){
         return view.isViewTree(widget);
+    }
+
+    @Override
+    public Builder builder() {
+        return builder;
+    }
+
+    private class MyBuilder implements Builder {
+
+        private final Presenter presenter;
+
+        public MyBuilder(DiskResourceView.Presenter presenter) {
+            this.presenter = presenter;
+        }
+
+        @Override
+        public void go(HasOneWidget container) {
+            presenter.go(container);
+        }
+
+        @Override
+        public Builder hideNorth() {
+            presenter.getView().setNorthWidgetHidden(true);
+            return this;
+        }
+
+        @Override
+        public Builder hideWest() {
+            presenter.getView().setWestWidgetHidden(true);
+            return this;
+        }
+
+        @Override
+        public Builder hideCenter() {
+            presenter.getView().setCenterWidgetHidden(true);
+            return this;
+        }
+
+        @Override
+        public Builder hideEast() {
+            presenter.getView().setEastWidgetHidden(true);
+            return this;
+        }
+
+        @Override
+        public Builder singleSelect() {
+            presenter.getView().setSingleSelect();
+            return this;
+        }
+
+        @Override
+        public Builder disableDiskResourceHyperlink() {
+            presenter.getView().disableDiskResourceHyperlink();
+            return this;
+        }
+
     }
     
 }

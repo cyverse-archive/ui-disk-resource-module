@@ -6,10 +6,12 @@ import java.util.Set;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
+import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gwt.cell.client.Cell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -423,6 +425,22 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @Override
     public int findRowIndex(Element targetRow) {
         return grid.getView().findRowIndex(targetRow);
+    }
+
+    @Override
+    public void setSingleSelect() {
+        grid.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        // Hide the checkbox column
+        cm.setHidden(0, true);
+    }
+
+    @Override
+    public void disableDiskResourceHyperlink() {
+        Cell<DiskResource> cell = cm.getCell(1);
+        if (cell instanceof DiskResourceNameCell) {
+            ((DiskResourceNameCell)cell).setHyperlinkEnabled(false);
+        }
+
     }    
 
 }

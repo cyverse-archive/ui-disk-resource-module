@@ -45,6 +45,8 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         String drFolder();
 
         String nameStyle();
+
+        String nameStyleNoPointer();
     }
 
     interface Resources extends ClientBundle {
@@ -69,6 +71,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
 
     final Resources res = GWT.create(Resources.class);
     final Templates templates = GWT.create(Templates.class);
+    private boolean hyperlinkEnabled = true;
 
     public DiskResourceNameCell() {
         super(CLICK, MOUSEOVER, MOUSEOUT);
@@ -81,14 +84,14 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
             return;
         }
 
+        String nameStyle = hyperlinkEnabled ? res.css().nameStyle() : res.css().nameStyleNoPointer();
         if (value instanceof File) {
-            sb.append(templates.cell(res.css().drFile(), res.css().nameStyle(),
+            sb.append(templates.cell(res.css().drFile(), nameStyle,
                     SafeHtmlUtils.fromString(value.getName())));
 
         } else if (value instanceof Folder) {
-            sb.append(templates.cell(res.css().drFolder(), res.css().nameStyle(),
+            sb.append(templates.cell(res.css().drFolder(), nameStyle,
                     SafeHtmlUtils.fromString(value.getName())));
-
         }
     }
 
@@ -119,13 +122,13 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
     }
 
     private void doOnMouseOut(Element eventTarget, DiskResource value) {
-        if (eventTarget.getAttribute("name").equalsIgnoreCase("drName")) {
+        if (eventTarget.getAttribute("name").equalsIgnoreCase("drName") && hyperlinkEnabled) {
             eventTarget.getStyle().setTextDecoration(TextDecoration.NONE);
         }
     }
 
     private void doOnMouseOver(Element eventTarget, DiskResource value) {
-        if (eventTarget.getAttribute("name").equalsIgnoreCase("drName")) {
+        if (eventTarget.getAttribute("name").equalsIgnoreCase("drName") && hyperlinkEnabled) {
             eventTarget.getStyle().setTextDecoration(TextDecoration.UNDERLINE);
         }
     }
@@ -133,10 +136,14 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
     private void doOnClick(Element eventTarget, DiskResource value,
             ValueUpdater<DiskResource> valueUpdater) {
         
-        if (eventTarget.getAttribute("name").equalsIgnoreCase("drName")) {
+        if (eventTarget.getAttribute("name").equalsIgnoreCase("drName") && hyperlinkEnabled) {
             EventBus.getInstance().fireEvent(new DiskResourceSelectedEvent(this, value));
         }
 
+    }
+
+    public void setHyperlinkEnabled(boolean hyperlinkEnabled) {
+        this.hyperlinkEnabled = hyperlinkEnabled;
     }
 
 }

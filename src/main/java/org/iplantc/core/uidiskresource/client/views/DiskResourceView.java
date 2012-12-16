@@ -34,9 +34,35 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
 
     public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter,
             DiskResourceViewToolbarImpl.Presenter {
+        interface Builder extends org.iplantc.core.uicommons.client.presenter.Presenter {
+            Builder hideNorth();
 
-        void go(HasOneWidget container, boolean hideWestWidget, boolean hideCenterWidget,
-                boolean hideEastWidget, boolean hideNorthWidget);
+            Builder hideWest();
+
+            Builder hideCenter();
+
+            Builder hideEast();
+
+            Builder singleSelect();
+
+            Builder disableDiskResourceHyperlink();
+
+        }
+
+        /**
+         * FIXME JDS Implement this with a builder pattern to make it more readable.
+         * i.e. presenter.getBuilder().showWest().showEast().showNorth().showSouth().go(container)
+         * 
+         * @param container
+         * @param hideWestWidget
+         * @param hideCenterWidget
+         * @param hideEastWidget
+         * @param hideNorthWidget
+         */
+        // void go(HasOneWidget container, boolean hideWestWidget, boolean hideCenterWidget,
+        // boolean hideEastWidget, boolean hideNorthWidget);
+
+        Builder builder();
 
         @Override
         Folder getSelectedFolder();
@@ -242,5 +268,9 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
     int findRowIndex(Element targetRow);
 
     ListStore<DiskResource> getListStore();
+
+    void setSingleSelect();
+
+    void disableDiskResourceHyperlink();
 
 }

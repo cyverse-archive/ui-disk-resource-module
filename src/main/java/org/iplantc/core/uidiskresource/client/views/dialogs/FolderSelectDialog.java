@@ -1,13 +1,17 @@
 package org.iplantc.core.uidiskresource.client.views.dialogs;
 
+import java.util.List;
+
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.gin.DiskResourceInjector;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.TakesValue;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
@@ -20,11 +24,11 @@ import com.sencha.gxt.widget.core.client.form.TextField;
  * @author jstroot
  * 
  */
-public class FolderSelectDialog extends IPlantDialog {
+public class FolderSelectDialog extends IPlantDialog implements TakesValue<List<String>> {
 
     private final DiskResourceView.Presenter presenter;
     private final TextField selectedFileField = new TextField();
-    private String selectedFolderId;
+    private List<String> selectedFolderId;
 
     public FolderSelectDialog() {
         setResizable(true);
@@ -39,7 +43,8 @@ public class FolderSelectDialog extends IPlantDialog {
         presenter.addFolderSelectionHandler(new FileSelectionChangedHandler(selectedFileField));
 
         // Tell the presenter to add the view with the north, east, and center widgets hidden.
-        presenter.go(this, false, true, true, true);
+        // presenter.go(this, false, true, true, true);
+        presenter.builder().hideNorth().hideCenter().hideEast().singleSelect().go(this);
 
     }
 
@@ -57,16 +62,18 @@ public class FolderSelectDialog extends IPlantDialog {
             }
             Folder diskResource = event.getSelectedItem();
             selectedFileField.setValue(diskResource.getName());
-            setSelectedFolderId(diskResource.getId());
+            setValue(Lists.newArrayList(diskResource.getId()));
         }
     }
 
-    public String getSelectedFolderId() {
+    @Override
+    public List<String> getValue() {
         return selectedFolderId;
     }
 
-    private void setSelectedFolderId(String id) {
-        this.selectedFolderId = id;
+    @Override
+    public void setValue(List<String> value) {
+        this.selectedFolderId = value;
     }
 
 }

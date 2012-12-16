@@ -36,7 +36,6 @@ public class DiskResourceMoveCallback extends DiskResourceServiceCallback{
          * 
          * TODO JDS Verify returned keys to the objects we have already.
          */
-        // FIXME JDS Implement this success callback(get json, etc)
         EventBus.getInstance().fireEvent(new DiskResourcesMovedEvent(destFolder, resourcesToMove));
     }
 

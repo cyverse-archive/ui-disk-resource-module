@@ -1,32 +1,40 @@
 package org.iplantc.core.uidiskresource.client.views.dialogs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.gin.DiskResourceInjector;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.File;
+import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
+import com.google.common.collect.Lists;
+import com.google.gwt.user.client.TakesValue;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
 /**
- * An <code>IPlantDialog</code> which wraps the standard <code>DiskResourceView</code> for file selection.
+ * An <code>IPlantDialog</code> which wraps the standard <code>DiskResourceView</code> for file
+ * selection.
  * 
  * Users of this class are responsible adding hide handlers to get the selected file.
+ * FIXME JDS Needs to support MultiSelect, TakesValue<List<String>>
  * 
  * @author jstroot
  * 
  */
-public class FileSelectDialog extends IPlantDialog {
+public class FileSelectDialog extends IPlantDialog implements TakesValue<List<String>> {
 
     private final DiskResourceView.Presenter presenter;
     private final TextField selectedFileField = new TextField();
-    private String selectedFileId;
+    private List<String> selectedFileIds;
 
-    public FileSelectDialog() {
+    protected FileSelectDialog(boolean singleSelect) {
         setResizable(true);
         setSize("640", "480");
         setHeadingText(I18N.DISPLAY.selectAFile());
@@ -39,8 +47,16 @@ public class FileSelectDialog extends IPlantDialog {
         presenter.addFileSelectChangedHandler(new FileSelectionChangedHandler(selectedFileField));
 
         // Tell the presenter to add the view with the north and east widgets hidden.
-        presenter.go(this, false, false, true, true);
+        DiskResourceView.Presenter.Builder b = presenter.builder().hideNorth().hideEast().disableDiskResourceHyperlink();
+        if (singleSelect) {
+            b.singleSelect();
+        }
 
+        b.go(this);
+    }
+
+    public FileSelectDialog() {
+        this(false);
     }
 
     private final class FileSelectionChangedHandler implements SelectionChangedHandler<DiskResource> {
@@ -55,20 +71,26 @@ public class FileSelectDialog extends IPlantDialog {
             if ((event.getSelection() == null) || event.getSelection().isEmpty()) {
                 return;
             }
-            DiskResource diskResource = event.getSelection().get(0);
-            if (diskResource instanceof File) {
-                selectedFileField.setValue(((File)diskResource).getName());
-                setSelectedFileId(((File)diskResource).getId());
-            }
+            ArrayList<File> newArrayList = Lists.newArrayList(DiskResourceUtil.extractFiles(event.getSelection()));
+            List<String> idList = DiskResourceUtil.asStringIdList(newArrayList);
+            setValue(idList);
+            selectedFileField.setValue(DiskResourceUtil.asCommaSeperatedNameList(idList));
         }
     }
     
-    public String getSelectedFileId() {
-        return selectedFileId;
+    @Override
+    public void setValue(List<String> value) {
+        this.selectedFileIds = value;
+
     }
 
-    private void setSelectedFileId(String id) {
-        this.selectedFileId = id;
+    @Override
+    public List<String> getValue() {
+        return selectedFileIds;
+    }
+
+    public static FileSelectDialog singleSelect() {
+        return new FileSelectDialog(true);
     }
 
 }
