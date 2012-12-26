@@ -47,4 +47,52 @@ public interface DiskResourceDisplayStrings extends CommonUIDisplayStrings {
     
     String dataDragDropStatusText(int numSelectedItems);
 
+    /**
+     * Text to be displayed when share / unshare request is submitted
+     * 
+     * @return
+     */
+    String sharingCompleteMsg();
+
+    /**
+     * shared with 0 people
+     * 
+     * @return
+     */
+    String nosharing();
+
+    /**
+     * select collabs
+     * 
+     * @return
+     */
+    String selectCollabs();
+
+    /**
+     * select files / folders
+     * 
+     * @return
+     */
+    String selectFilesFolders();
+
+    /**
+     * change permissions
+     * 
+     * @return
+     */
+    String changePermissions();
+
+    /**
+     * Manage sharing
+     * 
+     * @return
+     */
+    String manageSharing();
+
+    /**
+     * 
+     * @return
+     */
+    String unshare();
+
 }

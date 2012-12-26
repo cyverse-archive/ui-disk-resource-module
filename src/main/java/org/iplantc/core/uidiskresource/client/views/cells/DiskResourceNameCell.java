@@ -20,6 +20,7 @@ import com.google.gwt.dom.client.Style.TextDecoration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ClientBundle.Source;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -49,17 +50,6 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         String nameStyleNoPointer();
     }
 
-    interface Resources extends ClientBundle {
-        @Source("DiskResourceNameCell.css")
-        DiskResourceNameCellStyle css();
-
-        @Source("images/file.gif")
-        ImageResource file();
-
-        @Source("images/folder.gif")
-        ImageResource folder();
-    }
-
     /**
      * The HTML templates used to render the cell.
      */
@@ -67,6 +57,17 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
 
         @SafeHtmlTemplates.Template("<span><span class=\"{0}\"> </span>&nbsp;<span name=\"drName\" class=\"{1}\" >{2}</span></span>")
         SafeHtml cell(String imgClassName, String diskResourceClassName, SafeHtml diskResourceName);
+    }
+
+    interface Resources extends ClientBundle {
+        @Source("DiskResourceNameCell.css")
+        DiskResourceNameCellStyle css();
+
+        @Source("file.gif")
+        ImageResource file();
+
+        @Source("folder.gif")
+        ImageResource folder();
     }
 
     final Resources res = GWT.create(Resources.class);
@@ -84,7 +85,8 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
             return;
         }
 
-        String nameStyle = hyperlinkEnabled ? res.css().nameStyle() : res.css().nameStyleNoPointer();
+        String nameStyle = hyperlinkEnabled ? res.css().nameStyle() : res.css()
+                .nameStyleNoPointer();
         if (value instanceof File) {
             sb.append(templates.cell(res.css().drFile(), nameStyle,
                     SafeHtmlUtils.fromString(value.getName())));

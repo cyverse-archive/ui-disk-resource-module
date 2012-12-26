@@ -36,6 +36,7 @@ import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceDel
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMoveCallback;
 import org.iplantc.core.uidiskresource.client.services.callbacks.RenameDiskResourceCallback;
+import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView.Presenter;
@@ -280,11 +281,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doShare() {
-        // TODO Auto-generated method stub
-        Info.display("You clicked something!", "doShare");
-        ErrorDialog3 dlg = new ErrorDialog3(
-                "Sample Err msg",
-                "Sample Err Msg description asdffasdfasdfasdfasdfasdfasfasdfasfasdfasdfasdfasdfasdfasdfasdfasdfasfasdfasdfasdf\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nsadfasdfasdfasdfasdfasdf");
+        DataSharingDialog dlg = new DataSharingDialog(getSelectedDiskResources());
         dlg.show();
     }
 
