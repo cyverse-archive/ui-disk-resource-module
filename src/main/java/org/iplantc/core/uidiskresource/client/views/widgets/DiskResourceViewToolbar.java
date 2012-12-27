@@ -46,6 +46,8 @@ public interface DiskResourceViewToolbar extends IsWidget {
 
         void doCreateNewFolder(Folder parentFolder, String folderName);
 
+        void doSearch(String val);
+
     }
 
     interface Resources extends ClientBundle {

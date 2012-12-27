@@ -240,4 +240,14 @@ public interface DiskResourceServiceFacade {
      */
     void getPermissions(JSONObject body, AsyncCallback<String> callback);
 
+    /**
+     * search users irods directory structure
+     * 
+     * @param term search term
+     * @param size limit for results to return
+     * @param type file or folder
+     * @param callback callback object
+     */
+    void search(String term, int size, String type, AsyncCallback<String> callback);
+
 }

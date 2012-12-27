@@ -443,4 +443,10 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     }    
 
+    @Override
+    public void showSearchResultWidget(Widget w) {
+        centerPanel.clear();
+        centerPanel.add(w, centerData);
+    }
+
 }

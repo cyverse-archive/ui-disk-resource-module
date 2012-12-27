@@ -7,7 +7,15 @@ import org.iplantc.core.uidiskresource.client.presenters.CreateFolderDialog;
 import org.iplantc.core.uidiskresource.client.presenters.RenameFileDialog;
 import org.iplantc.core.uidiskresource.client.presenters.RenameFolderDialog;
 
+
+import com.sencha.gxt.widget.core.client.form.TextField;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -73,8 +81,23 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     @UiField
     TextButton dataQuotaButton;
 
+    @UiField
+    TextField searchField;
+
     public DiskResourceViewToolbarImpl() {
         widget = BINDER.createAndBindUi(this);
+
+        searchField.addKeyUpHandler(new KeyUpHandler() {
+
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                String val = searchField.getCurrentValue();
+                if(val!=null && !val.isEmpty()&& val.length()>2) {
+                    presenter.doSearch(val);
+                }
+
+            }
+        });
     }
 
     @Override

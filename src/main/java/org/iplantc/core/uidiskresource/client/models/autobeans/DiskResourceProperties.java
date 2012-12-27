@@ -12,6 +12,9 @@ public interface DiskResourceProperties extends PropertyAccess<DiskResource> {
 
     ModelKeyProvider<DiskResource> id();
 
+    @Path("id")
+    ValueProvider<DiskResource, String> path();
+
     @Path("name")
     LabelProvider<DiskResource> nameLabel();
 
@@ -20,4 +23,5 @@ public interface DiskResourceProperties extends PropertyAccess<DiskResource> {
     ValueProvider<DiskResource, Date> dateCreated();
 
     ValueProvider<DiskResource, Date> lastModified();
+
 }

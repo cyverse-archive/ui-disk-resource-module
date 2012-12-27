@@ -19,6 +19,7 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.loader.DataProxy;
@@ -46,6 +47,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
             Builder singleSelect();
 
             Builder disableDiskResourceHyperlink();
+
 
         }
 
@@ -272,5 +274,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
     void setSingleSelect();
 
     void disableDiskResourceHyperlink();
+
+    void showSearchResultWidget(Widget w);
 
 }

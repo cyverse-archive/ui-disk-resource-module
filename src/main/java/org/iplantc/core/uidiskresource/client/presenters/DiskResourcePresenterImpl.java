@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.ErrorDialog3;
 import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
@@ -30,6 +32,10 @@ import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceAutoB
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.autobeans.File;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
+import org.iplantc.core.uidiskresource.client.models.autobeans.Permissions;
+import org.iplantc.core.uidiskresource.client.search.models.DataSearch;
+import org.iplantc.core.uidiskresource.client.search.models.DataSearchAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.search.models.DataSearchResult;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.services.callbacks.CreateFolderCallback;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceDeleteCallback;
@@ -38,6 +44,7 @@ import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMov
 import org.iplantc.core.uidiskresource.client.services.callbacks.RenameDiskResourceCallback;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
+import org.iplantc.core.uidiskresource.client.views.DiskResourceSearchView;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView.Presenter;
 import org.iplantc.core.uidiskresource.client.views.metadata.DiskResourceMetadataDialog;
@@ -46,6 +53,7 @@ import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewTool
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventHandler;
@@ -54,6 +62,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
+import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
@@ -498,6 +508,52 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             return this;
         }
 
+    }
+
+    @Override
+    public void doSearch(String val) {
+        diskResourceService.search(val, 50, null, new AsyncCallback<String>() {
+
+            private DiskResourceSearchView searchView;
+
+            @Override
+            public void onFailure(Throwable caught) {
+                ErrorHandler.post(caught);
+                
+            }
+
+            @Override
+            public void onSuccess(String result) {
+                DataSearchAutoBeanFactory factory = GWT.create(DataSearchAutoBeanFactory.class);
+                AutoBean<DataSearchResult> bean = AutoBeanCodex.decode(factory, DataSearchResult.class,
+                        result);
+                List<DataSearch> results = bean.as().getSearchResults();
+                List<DiskResource> resources = new ArrayList<DiskResource>();
+                for (DataSearch ds : bean.as().getSearchResults()) {
+                    if (ds.getType().equalsIgnoreCase("file")) {
+                        AutoBean<File> file = AutoBeanCodex.decode(drFactory, File.class, "{}");
+                        File f = file.as();
+                        f.setId(ds.getId());
+                        f.setName(ds.getName());
+                        resources.add(f);
+                    } else {
+                        AutoBean<Folder> folder = AutoBeanCodex.decode(drFactory, Folder.class, "{}");
+                        Folder fo = folder.as();
+                        fo.setId(ds.getId());
+                        fo.setName(ds.getName());
+                        resources.add(fo);
+                    }
+
+                }
+
+                if (searchView == null) {
+                    searchView = new DiskResourceSearchView();
+                }
+                searchView.loadResults(resources);
+                view.showSearchResultWidget(searchView.asWidget());
+            }
+        });
+        
     }
     
 }

@@ -3,7 +3,8 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:toolbar="urn:import:com.sencha.gxt.widget.core.client.toolbar"
              xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button"
-             xmlns:menu="urn:import:com.sencha.gxt.widget.core.client.menu">
+             xmlns:menu="urn:import:com.sencha.gxt.widget.core.client.menu"
+             xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form">
              
    <ui:with field="res"
             type="org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar.Resources"/>
@@ -100,8 +101,7 @@
       
       <!-- Data Search box -->
       <toolbar:child>
-         <button:TextButton text="Data Search Place Holder">
-         </button:TextButton>
+      	<form:TextField ui:field="searchField" emptyText="search by name"> </form:TextField>
       </toolbar:child>
 
       <!-- Data Quota button -->
