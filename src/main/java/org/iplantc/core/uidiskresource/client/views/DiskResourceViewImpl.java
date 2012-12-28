@@ -85,7 +85,10 @@ public class DiskResourceViewImpl implements DiskResourceView {
     GridView<DiskResource> gridView;
 
     @UiField
-    ContentPanel eastPanel;
+    ContentPanel detailsPanel;
+
+    @UiField
+    ContentPanel historyPanel;
 
     @UiField
     BorderLayoutData westData;
@@ -445,6 +448,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     @Override
     public void showSearchResultWidget(Widget w) {
+        w.setHeight(centerPanel.getOffsetHeight(true) + "px");
         centerPanel.clear();
         centerPanel.add(w, centerData);
     }

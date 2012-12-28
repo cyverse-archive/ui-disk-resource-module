@@ -10,6 +10,10 @@ public interface DiskResource {
 
     void setId(String id);
 
+    void setPath(String path);
+
+    String getPath();
+
     @PropertyName("label")
     String getName();
 

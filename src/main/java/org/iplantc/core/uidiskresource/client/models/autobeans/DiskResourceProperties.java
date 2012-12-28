@@ -12,7 +12,7 @@ public interface DiskResourceProperties extends PropertyAccess<DiskResource> {
 
     ModelKeyProvider<DiskResource> id();
 
-    @Path("id")
+    @Path("path")
     ValueProvider<DiskResource, String> path();
 
     @Path("name")

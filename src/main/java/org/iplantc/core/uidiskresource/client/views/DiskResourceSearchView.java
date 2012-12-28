@@ -11,6 +11,7 @@ import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceProperties;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
+import org.iplantc.core.uidiskresource.client.views.cells.DiskResourcePathCell;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -59,17 +60,16 @@ public class DiskResourceSearchView implements IsWidget {
     private List<ColumnConfig<DiskResource, ?>> createColumnConfigList() {
         List<ColumnConfig<DiskResource, ?>> list = new ArrayList<ColumnConfig<DiskResource, ?>>();
 
-        DiskResourceProperties props = GWT.create(DiskResourceProperties.class);
-
         sm = new CheckBoxSelectionModel<DiskResource>(new IdentityValueProvider<DiskResource>());
         ColumnConfig<DiskResource, DiskResource> name = new ColumnConfig<DiskResource, DiskResource>(
                 new IdentityValueProvider<DiskResource>(), 130, I18N.DISPLAY.name());
         name.setCell(new DiskResourceNameCell());
 
 
-        ColumnConfig<DiskResource, String> path = new ColumnConfig<DiskResource, String>(props.path(),
-                130, "Path");
-        name.setCell(new DiskResourceNameCell());
+        ColumnConfig<DiskResource, DiskResource> path = new ColumnConfig<DiskResource, DiskResource>(
+                new IdentityValueProvider<DiskResource>(),
+                200, "Path");
+        path.setCell(new DiskResourcePathCell());
 
         list.add(sm.getColumn());
         list.add(name);

@@ -47,7 +47,7 @@
    <ui:with field="westData"
             type="com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData">
       <ui:attributes margins="{westMargins}"
-                     size="200"
+                     size="175"
                      collapsible="true"
                      split="true" />
    </ui:with>
@@ -59,8 +59,8 @@
    </ui:with>
    <ui:with field="eastData"
             type="com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData">
-      <ui:attributes size="150"
-                     hidden="true"/>
+      <ui:attributes size="175"
+                     hidden="false"/>
    </ui:with>
    <ui:with field="southData"
             type="com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData">
@@ -98,8 +98,12 @@
          </container:center>
          <!-- This is the details panel -->
          <container:east layoutData="{eastData}">
-            <gxt:ContentPanel ui:field="eastPanel" 
-                              headingText="{DISPLAY.details}"/>
+           <container:VerticalLayoutContainer>
+            <gxt:ContentPanel ui:field="detailsPanel" 
+                              headingText="{DISPLAY.details}" height="180" />
+             <gxt:ContentPanel ui:field="historyPanel" 
+                              headingText="Search History" height="180"/>
+                              </container:VerticalLayoutContainer>
          </container:east>
          <container:south layoutData="{southData}"/>
       </container:BorderLayoutContainer>

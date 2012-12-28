@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.ErrorDialog3;
 import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
+import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent.DiskResourceRenamedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
@@ -29,6 +32,7 @@ import org.iplantc.core.uidiskresource.client.events.RequestSimpleUploadEvent;
 import org.iplantc.core.uidiskresource.client.events.ShowFilePreviewEvent;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceInfo;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.autobeans.File;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
@@ -58,6 +62,9 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -235,6 +242,33 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void onDiskResourceSelected(Set<DiskResource> selection) {
+        if (selection != null && selection.size() == 1) {
+            Iterator<DiskResource> it = selection.iterator();
+            JSONObject obj = new JSONObject();
+            JSONArray arr = new JSONArray();
+            final String path = it.next().getId();
+            arr.set(0, new JSONString(path));
+            obj.put("paths", arr);
+            diskResourceService.getStat(obj.toString(), new AsyncCallback<String>() {
+
+                @Override
+                public void onFailure(Throwable caught) {
+                    ErrorHandler.post(I18N.ERROR.retrieveStatFailed(), caught);
+                    
+                }
+
+                @Override
+                public void onSuccess(String result) {
+                    JSONObject json = JsonUtil.getObject(result);
+                    JSONObject pathsObj = JsonUtil.getObject(json, "paths");
+                    JSONObject details = JsonUtil.getObject(pathsObj, path);
+                    AutoBean<DiskResourceInfo> bean = AutoBeanCodex.decode(drFactory,
+                            DiskResourceInfo.class,
+ details.toString());
+                    System.out.println(bean.as().getType());
+                }
+            });
+        }
     }
 
     @Override
@@ -535,12 +569,14 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
                         File f = file.as();
                         f.setId(ds.getId());
                         f.setName(ds.getName());
+                        f.setPath(DiskResourceUtil.parseParent(ds.getId()));
                         resources.add(f);
                     } else {
                         AutoBean<Folder> folder = AutoBeanCodex.decode(drFactory, Folder.class, "{}");
                         Folder fo = folder.as();
                         fo.setId(ds.getId());
                         fo.setName(ds.getName());
+                        fo.setPath(ds.getId());
                         resources.add(fo);
                     }
 

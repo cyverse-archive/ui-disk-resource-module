@@ -249,5 +249,13 @@ public interface DiskResourceServiceFacade {
      * @param callback callback object
      */
     void search(String term, int size, String type, AsyncCallback<String> callback);
+    
+    /**
+     * Get info about a selected file or folder
+     * 
+     * @param body request body
+     * @param callback callback object
+     */
+    void getStat(String body, AsyncCallback<String> callback);
 
 }

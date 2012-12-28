@@ -35,16 +35,16 @@ public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
         sm = new CheckBoxSelectionModel<DiskResource>(new IdentityValueProvider<DiskResource>());
         ColumnConfig<DiskResource, DiskResource> name = new ColumnConfig<DiskResource, DiskResource>(
                 new IdentityValueProvider<DiskResource>(),
-                130, I18N.DISPLAY.name());
+                100, I18N.DISPLAY.name());
         name.setCell(new DiskResourceNameCell());
 
         ColumnConfig<DiskResource, Date> lastModified = new ColumnConfig<DiskResource, Date>(
-                props.lastModified(), 150, I18N.DISPLAY.lastModified());
+                props.lastModified(), 120, I18N.DISPLAY.lastModified());
         lastModified.setCell(new DateCell(DateTimeFormat
                 .getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM)));
         ColumnConfig<DiskResource, String> size = new ColumnConfig<DiskResource, String>(
                 new DiskResourceSizeValueProvider(),
-                100, I18N.DISPLAY.size());
+                50, I18N.DISPLAY.size());
 
         list.add(sm.getColumn());
         list.add(name);

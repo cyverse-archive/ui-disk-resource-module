@@ -92,4 +92,6 @@ public interface DiskResourceErrorStrings extends CommonUIErrorStrings {
 
     String moveFailed();
 
+    String retrieveStatFailed();
+
 }
