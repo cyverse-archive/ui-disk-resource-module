@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.iplantc.core.uicommons.client.views.IsMaskable;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceInfo;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
@@ -276,5 +277,9 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
     void disableDiskResourceHyperlink();
 
     void showSearchResultWidget(Widget w);
+
+    void updateDetails(String path, DiskResourceInfo info);
+
+    void resetDetailsPanel();
 
 }

@@ -95,4 +95,40 @@ public interface DiskResourceDisplayStrings extends CommonUIDisplayStrings {
      */
     String unshare();
 
+    /**
+     * 
+     * @return
+     */
+    String dateSubmitted();
+
+    /**
+     * 
+     * @return
+     */
+    String permissions();
+
+    /**
+     * 
+     * @return
+     */
+    String readOnly();
+
+    /**
+     * 
+     * @return
+     */
+    String readWrite();
+
+    /**
+     * 
+     * @return
+     */
+    String owner();
+
+    /**
+     * 
+     * @return
+     */
+    String noDetails();
+
 }

@@ -1,30 +1,50 @@
 package org.iplantc.core.uidiskresource.client.views;
 
 import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.Set;
 
+import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceInfo;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
+import org.iplantc.core.uidiskresource.client.models.autobeans.Permissions;
+import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
+import com.extjs.gxt.ui.client.widget.Html;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Text;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
+import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
@@ -32,8 +52,13 @@ import com.sencha.gxt.dnd.core.client.DND.Operation;
 import com.sencha.gxt.dnd.core.client.DragSource;
 import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.container.AbstractHtmlLayoutContainer.HtmlData;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HtmlLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.GridView;
@@ -134,6 +159,8 @@ public class DiskResourceViewImpl implements DiskResourceView {
             public void onSelectionChanged(SelectionChangedEvent<DiskResource> event) {
                 if ((event.getSelection() != null) && !event.getSelection().isEmpty()) {
                     presenter.onDiskResourceSelected(Sets.newHashSet(event.getSelection()));
+                } else {
+                    resetDetailsPanel();
                 }
             }
 
@@ -451,6 +478,172 @@ public class DiskResourceViewImpl implements DiskResourceView {
         w.setHeight(centerPanel.getOffsetHeight(true) + "px");
         centerPanel.clear();
         centerPanel.add(w, centerData);
+    }
+
+
+    @Override
+    public void updateDetails(String path, DiskResourceInfo info) {
+        detailsPanel.clear();
+        Set<DiskResource> selection = getSelectedDiskResources();
+        VerticalLayoutContainer c = new VerticalLayoutContainer();
+        detailsPanel.setWidget(c);
+
+        // gaurd race condition
+        if (selection != null && selection.size() == 1) {
+            Iterator<DiskResource> it = selection.iterator();
+            if (it.next().getId().equals(path)) {
+                c.add(getDateLabel(I18N.DISPLAY.lastModified(), new Date(info.getModified())));
+                c.add(getDateLabel(I18N.DISPLAY.createdDate(), new Date(info.getCreated())));
+                c.add(getPermissionsLabel(I18N.DISPLAY.permissions(), info.getPermissions()));
+                c.add(getSharingLabel(I18N.DISPLAY.share(), info.getShareCount()));
+                if (info.getType().equalsIgnoreCase("file")) {
+                    c.add(getNumberLabel(I18N.DISPLAY.size(), info.getSize()));
+
+                } else {
+                    c.add(getDirFileCount(I18N.DISPLAY.files() + " / " + I18N.DISPLAY.folders(),
+                            info.getFileCount(), info.getDirCount()));
+                }
+            }
+
+        }
+    }
+
+    @Override
+    public void resetDetailsPanel() {
+        detailsPanel.clear();
+        FieldLabel fl = new FieldLabel();
+        fl.setLabelSeparator("");
+        fl.setHTML("<span style='font-size:10px'><b>" + I18N.DISPLAY.noDetails() + "</b> </span>");
+        detailsPanel.add(fl);
+    }
+    /**
+     * Parses a timestamp string into a formatted date string and adds it to this panel.
+     * 
+     * @param label
+     * @param value
+     */
+    private HorizontalPanel getDateLabel(String label, Date date) {
+        HorizontalPanel panel = buildDeatilsRow();
+        String value = "";
+
+        if (date != null) {
+            DateTimeFormat formatter = DateTimeFormat
+                    .getFormat(DateTimeFormat.PredefinedFormat.DATE_MEDIUM);
+
+            value = formatter.format(date);
+        }
+
+       
+        FieldLabel fl = new FieldLabel();
+        fl.setHTML("<span style='font-size:10px'><b>" + label + "</b> </span>");
+        panel.add(fl);
+
+        FieldLabel fv = new FieldLabel();
+        fv.setLabelSeparator("");
+        fv.setHTML("<span style='font-size:10px'>" + value + "</span>");
+        panel.add(fv);
+
+        return panel;
+
+    }
+
+    private HorizontalPanel getNumberLabel(String label, long value) {
+        HorizontalPanel panel = buildDeatilsRow();
+        FieldLabel fl = new FieldLabel();
+        fl.setHTML("<span style='font-size:10px'><b>" + label + "</b></span>");
+        panel.add(fl);
+
+        FieldLabel fv = new FieldLabel();
+        fv.setLabelSeparator("");
+        fv.setHTML("<span style='font-size:10px'>" + value + "</span>");
+        panel.add(fv);
+
+        return panel;
+    }
+
+    private HorizontalPanel getDirFileCount(String label, int file_count, int dir_count) {
+        HorizontalPanel panel = buildDeatilsRow();
+        FieldLabel fl = new FieldLabel();
+        fl.setHTML("<span style='font-size:10px'><b>" + label + "</b></span>");
+        panel.add(fl);
+
+        FieldLabel fv = new FieldLabel();
+        fv.setLabelSeparator("");
+        fv.setHTML("<span style='font-size:10px'>" + file_count + " / " + dir_count + "</span>");
+        panel.add(fv);
+
+        return panel;
+    }
+
+
+
+
+    /**
+     * Add permissions detail
+     * 
+     */
+    private HorizontalPanel getPermissionsLabel(String label, Permissions p) {
+        HorizontalPanel panel = buildDeatilsRow();
+        String value;
+        if (p.isOwner()) {
+            value = I18N.DISPLAY.owner();
+        }
+        if (!p.isWritable()) {
+            value = I18N.DISPLAY.readOnly();
+        } else {
+            value = I18N.DISPLAY.readWrite();
+        }
+
+        FieldLabel fl = new FieldLabel();
+        fl.setHTML("<span style='font-size:10px'><b>" + label + "</b></span>");
+        panel.add(fl);
+
+        FieldLabel fv = new FieldLabel();
+        fv.setLabelSeparator("");
+        fv.setHTML("<span style='font-size:10px'>" + value + "</span>");
+        panel.add(fv);
+
+        return panel;
+    }
+
+    private HorizontalPanel buildDeatilsRow() {
+        HorizontalPanel panel = new HorizontalPanel();
+        panel.setHeight("25px");
+        panel.setSpacing(3);
+        return panel;
+    }
+
+    /**
+     * 
+     * Add sharing info
+     * 
+     */
+
+    private HorizontalPanel getSharingLabel(String label, int shareCount) {
+        Anchor link = null;
+        HorizontalPanel panel = buildDeatilsRow();
+        if (shareCount == 0) {
+            link = new Anchor(I18N.DISPLAY.nosharing());
+        } else {
+            link = new Anchor("" + shareCount);
+        }
+
+        link.addClickHandler(new ClickHandler() {
+            
+            @Override
+            public void onClick(ClickEvent event) {
+                DataSharingDialog dsd = new DataSharingDialog(getSelectedDiskResources());
+                dsd.show();
+                
+            }
+        });
+
+        FieldLabel fl = new FieldLabel();
+        fl.setHTML("<span style='font-size:10px'><b>" + label + "</b></span>");
+        panel.add(fl);
+        panel.add(link);
+        return panel;
+
     }
 
 }

@@ -244,32 +244,39 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void onDiskResourceSelected(Set<DiskResource> selection) {
         if (selection != null && selection.size() == 1) {
             Iterator<DiskResource> it = selection.iterator();
-            JSONObject obj = new JSONObject();
-            JSONArray arr = new JSONArray();
-            final String path = it.next().getId();
-            arr.set(0, new JSONString(path));
-            obj.put("paths", arr);
-            diskResourceService.getStat(obj.toString(), new AsyncCallback<String>() {
-
-                @Override
-                public void onFailure(Throwable caught) {
-                    ErrorHandler.post(I18N.ERROR.retrieveStatFailed(), caught);
-                    
-                }
-
-                @Override
-                public void onSuccess(String result) {
-                    JSONObject json = JsonUtil.getObject(result);
-                    JSONObject pathsObj = JsonUtil.getObject(json, "paths");
-                    JSONObject details = JsonUtil.getObject(pathsObj, path);
-                    AutoBean<DiskResourceInfo> bean = AutoBeanCodex.decode(drFactory,
-                            DiskResourceInfo.class,
- details.toString());
-                    System.out.println(bean.as().getType());
-                }
-            });
+            getDetails(it.next());
+        } else {
+            view.resetDetailsPanel();
         }
+           
     }
+
+    private void getDetails(DiskResource resource) {
+        JSONObject obj = new JSONObject();
+        JSONArray arr = new JSONArray();
+        final String path = resource.getId();
+        arr.set(0, new JSONString(path));
+        obj.put("paths", arr);
+        diskResourceService.getStat(obj.toString(), new AsyncCallback<String>() {
+            @Override
+            public void onFailure(Throwable caught) {
+                ErrorHandler.post(I18N.ERROR.retrieveStatFailed(), caught);
+
+            }
+
+            @Override
+            public void onSuccess(String result) {
+                JSONObject json = JsonUtil.getObject(result);
+                JSONObject pathsObj = JsonUtil.getObject(json, "paths");
+                JSONObject details = JsonUtil.getObject(pathsObj, path);
+                AutoBean<DiskResourceInfo> bean = AutoBeanCodex.decode(drFactory,
+                        DiskResourceInfo.class, details.toString());
+                view.updateDetails(path, bean.as());
+            }
+        });
+
+    }
+
 
     @Override
     public void onFolderLoad(Folder loadedFolder, Set<DiskResource> folderChildren) {

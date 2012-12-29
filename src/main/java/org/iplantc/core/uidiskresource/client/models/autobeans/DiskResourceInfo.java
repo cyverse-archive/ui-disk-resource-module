@@ -57,5 +57,5 @@ public interface DiskResourceInfo {
     void setSize(int size);
 
     @PropertyName("size")
-    int getSize();
+    long getSize();
 }
