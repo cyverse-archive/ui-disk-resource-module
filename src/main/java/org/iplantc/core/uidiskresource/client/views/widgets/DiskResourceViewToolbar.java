@@ -20,7 +20,7 @@ public interface DiskResourceViewToolbar extends IsWidget {
         void doImport();
 
         /**
-         * Reloads all the view's root folders.
+         * Reloads the view's current selected folders.
          */
         void doRefresh();
 
