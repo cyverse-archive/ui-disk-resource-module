@@ -11,7 +11,6 @@ import java.util.Set;
 import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
-import org.iplantc.core.uicommons.client.views.gxt3.dialogs.ErrorDialog3;
 import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
@@ -36,7 +35,6 @@ import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceInfo;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.autobeans.File;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
-import org.iplantc.core.uidiskresource.client.models.autobeans.Permissions;
 import org.iplantc.core.uidiskresource.client.search.models.DataSearch;
 import org.iplantc.core.uidiskresource.client.search.models.DataSearchAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.search.models.DataSearchResult;
@@ -57,7 +55,6 @@ import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewTool
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventHandler;
@@ -111,16 +108,19 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private final DiskResourceDisplayStrings DISPLAY;
     private final DiskResourceAutoBeanFactory drFactory;
     private final Builder builder;
+    private final DataSearchAutoBeanFactory dataSearchFactory;
 
     @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
             final DiskResourceServiceFacade diskResourceService,
-            final DiskResourceDisplayStrings display, final DiskResourceAutoBeanFactory factory) {
+            final DiskResourceDisplayStrings display,
+            final DiskResourceAutoBeanFactory factory, final DataSearchAutoBeanFactory dataSearchFactory) {
         this.view = view;
         this.proxy = proxy;
         this.diskResourceService = diskResourceService;
         this.DISPLAY = display;
         this.drFactory = factory;
+        this.dataSearchFactory = dataSearchFactory;
 
         builder = new MyBuilder(this);
 
@@ -565,10 +565,9 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
             @Override
             public void onSuccess(String result) {
-                DataSearchAutoBeanFactory factory = GWT.create(DataSearchAutoBeanFactory.class);
-                AutoBean<DataSearchResult> bean = AutoBeanCodex.decode(factory, DataSearchResult.class,
+                AutoBean<DataSearchResult> bean = AutoBeanCodex.decode(dataSearchFactory, DataSearchResult.class,
                         result);
-                List<DataSearch> results = bean.as().getSearchResults();
+                // List<DataSearch> results = bean.as().getSearchResults();
                 List<DiskResource> resources = new ArrayList<DiskResource>();
                 for (DataSearch ds : bean.as().getSearchResults()) {
                     if (ds.getType().equalsIgnoreCase("file")) {
