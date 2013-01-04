@@ -34,6 +34,10 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<St
     private final TextField selectedFileField = new TextField();
     private List<String> selectedFileIds;
 
+    public static FileSelectDialog singleSelect() {
+        return new FileSelectDialog(true);
+    }
+
     protected FileSelectDialog(boolean singleSelect) {
         setResizable(true);
         setSize("640", "480");
@@ -75,6 +79,8 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<St
             List<String> idList = DiskResourceUtil.asStringIdList(newArrayList);
             setValue(idList);
             selectedFileField.setValue(DiskResourceUtil.asCommaSeperatedNameList(idList));
+
+            // FIXME JDS On single select, a valid selection should cause the window to hide.
         }
     }
     
@@ -87,10 +93,6 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<St
     @Override
     public List<String> getValue() {
         return selectedFileIds;
-    }
-
-    public static FileSelectDialog singleSelect() {
-        return new FileSelectDialog(true);
     }
 
 }
