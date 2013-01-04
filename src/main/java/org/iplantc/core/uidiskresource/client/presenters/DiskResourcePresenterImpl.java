@@ -603,5 +603,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         });
         
     }
+
+    @Override
+    public void deSelectDiskResources() {
+        view.deSelectDiskResources();
+    }
     
 }

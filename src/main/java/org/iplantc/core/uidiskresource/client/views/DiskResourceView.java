@@ -156,6 +156,8 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
 
         boolean canDragDataToTargetFolder(Folder targetFolder, Collection<DiskResource> dropData);
 
+        void deSelectDiskResources();
+
     }
 
     /**
