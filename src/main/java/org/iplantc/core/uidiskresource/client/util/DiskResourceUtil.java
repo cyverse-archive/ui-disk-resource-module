@@ -6,6 +6,7 @@ package org.iplantc.core.uidiskresource.client.util;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.File;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
@@ -13,6 +14,9 @@ import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.gwt.json.client.JSONArray;
+import com.google.web.bindery.autobean.shared.Splittable;
+import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
 /**
  * @author sriram
@@ -120,7 +124,7 @@ public class DiskResourceUtil {
         return files;
     }
 
-    public static <R extends DiskResource> List<String> asStringIdList(List<R> diskResourceList) {
+    public static <R extends DiskResource> List<String> asStringIdList(Iterable<R> diskResourceList) {
         List<String> ids = Lists.newArrayList();
         for (R dr : diskResourceList) {
             ids.add(dr.getId());
@@ -128,4 +132,11 @@ public class DiskResourceUtil {
 
         return ids;
     }
+
+    public static <R extends DiskResource> Splittable createStringIdListSplittable(Iterable<R> diskResources) {
+        JSONArray jArr = JsonUtil.buildArrayFromStrings(asStringIdList(diskResources));
+
+        return StringQuoter.split(jArr.toString());
+    }
+
 }

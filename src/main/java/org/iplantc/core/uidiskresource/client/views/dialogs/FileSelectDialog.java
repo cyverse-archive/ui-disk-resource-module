@@ -2,6 +2,7 @@ package org.iplantc.core.uidiskresource.client.views.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.I18N;
@@ -47,6 +48,10 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<St
         return new FileSelectDialog(true);
     }
 
+    public FileSelectDialog() {
+        this(false);
+    }
+
     protected FileSelectDialog(boolean singleSelect) {
         // Get a reference to the OK button, and disable it by default.
         Widget w = getButtonBar().getItemByItemId(PredefinedButton.OK.name());
@@ -77,10 +82,6 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<St
         b.go(this);
     }
 
-    public FileSelectDialog() {
-        this(false);
-    }
-
     @Override
     public void setValue(List<String> value) {
         this.selectedFileIds = value;
@@ -90,6 +91,10 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<St
     @Override
     public List<String> getValue() {
         return selectedFileIds;
+    }
+
+    public Set<DiskResource> getDiskResources() {
+        return presenter.getSelectedDiskResources();
     }
 
     private final class SelectedFileFieldKeyUpHandler implements KeyUpHandler {
