@@ -18,7 +18,6 @@ import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewTool
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.TreeStore;
@@ -101,11 +100,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
 
         /**
          * Selects the folder with the given Id by adding a {@link SelectFolderByIdLoadHandler} to the
-         * view's corresponding {@link TreeLoader}.
-         * This method is typically called before the
-         * {@link org.iplantc.core.uicommons.client.presenter.Presenter#go(HasOneWidget)} method is
-         * called.
-         * The intent is to have the
+         * view's corresponding {@link TreeLoader}, then triggering a remote load.
          * 
          * @param folderId
          */
@@ -214,6 +209,12 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
 
     void addFolderSelectionHandler(SelectionHandler<Folder> selectionHandler);
 
+    /**
+     * Selects the given Folder.
+     * This method will also ensure that the Data listing widget is shown.
+     * 
+     * @param folder
+     */
     void setSelectedFolder(Folder folder);
 
     void addFolder(Folder parent, Folder newChild);

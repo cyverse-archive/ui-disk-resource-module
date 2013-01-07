@@ -318,6 +318,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     public void setSelectedFolder(Folder folder) {
 
         if (treeStore.findModelWithKey(folder.getId()) != null) {
+            showDataListingWidget();
             tree.getSelectionModel().setSelection(
                     Lists.newArrayList(treeStore.findModelWithKey(folder.getId())));
         }
