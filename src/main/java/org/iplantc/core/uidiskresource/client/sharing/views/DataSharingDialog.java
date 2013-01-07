@@ -13,6 +13,7 @@ import org.iplantc.core.uicommons.client.models.collaborators.Collaborator;
 import org.iplantc.core.uicommons.client.models.collaborators.CollaboratorKeyProvider;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceModelKeyProvider;
+import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceErrorCode;
 import org.iplantc.core.uidiskresource.client.sharing.presenter.DataSharingPresenter;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingView.Presenter;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
@@ -101,7 +102,7 @@ public class DataSharingDialog extends Dialog {
                 new IdentityValueProvider<DiskResource>());
         ColumnConfig<DiskResource, DiskResource> name = new ColumnConfig<DiskResource, DiskResource>(
                 new IdentityValueProvider<DiskResource>(), 130, I18N.DISPLAY.name());
-        name.setCell(new DiskResourceNameCell());
+        name.setCell(new DiskResourceNameCell(DiskResourceNameCell.CALLER_TAG.SHARING));
 
         list.add(drCheckBoxModel.getColumn());
         list.add(name);

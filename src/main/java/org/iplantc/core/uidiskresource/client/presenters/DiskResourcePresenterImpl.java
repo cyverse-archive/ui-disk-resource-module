@@ -13,7 +13,9 @@ import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
 import org.iplantc.core.uidiskresource.client.I18N;
+import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
+import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent.DataSearchNameSelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent.DiskResourceRenamedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent.DiskResourceSelectedEventHandler;
@@ -192,6 +194,18 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
                     view.refreshFolder(getSelectedFolder());
                 }
             }});
+        
+        eventBus.addHandler(DataSearchNameSelectedEvent.TYPE, new DataSearchNameSelectedEventHandler() {
+
+            @Override
+            public void onNameSelected(DataSearchNameSelectedEvent event) {
+                Folder f = (Folder)event.getResource();
+                view.setSelectedFolder(f);
+                onFolderSelected(f);
+                view.showDataListingWidget();
+            }
+            
+        });
     }
 
     @Override

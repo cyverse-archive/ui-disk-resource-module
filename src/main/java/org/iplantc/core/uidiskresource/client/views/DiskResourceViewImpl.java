@@ -459,7 +459,13 @@ public class DiskResourceViewImpl implements DiskResourceView {
             ((DiskResourceNameCell)cell).setHyperlinkEnabled(false);
         }
 
-    }    
+    }
+
+    @Override
+    public void showDataListingWidget() {
+        centerPanel.clear();
+        centerPanel.add(grid, centerData);
+    }
 
     @Override
     public void showSearchResultWidget(IsWidget w) {

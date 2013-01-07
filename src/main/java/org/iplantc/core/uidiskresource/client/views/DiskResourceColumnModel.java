@@ -36,7 +36,7 @@ public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
         ColumnConfig<DiskResource, DiskResource> name = new ColumnConfig<DiskResource, DiskResource>(
                 new IdentityValueProvider<DiskResource>(),
                 100, I18N.DISPLAY.name());
-        name.setCell(new DiskResourceNameCell());
+        name.setCell(new DiskResourceNameCell(DiskResourceNameCell.CALLER_TAG.DATA));
 
         ColumnConfig<DiskResource, Date> lastModified = new ColumnConfig<DiskResource, Date>(
                 props.lastModified(), 120, I18N.DISPLAY.lastModified());

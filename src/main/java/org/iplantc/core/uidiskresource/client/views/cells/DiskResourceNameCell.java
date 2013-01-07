@@ -5,6 +5,7 @@ import static com.google.gwt.dom.client.BrowserEvents.MOUSEOUT;
 import static com.google.gwt.dom.client.BrowserEvents.MOUSEOVER;
 
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.File;
@@ -20,7 +21,6 @@ import com.google.gwt.dom.client.Style.TextDecoration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.resources.client.ClientBundle.Source;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -38,6 +38,10 @@ import com.sencha.gxt.widget.core.client.tips.Tip;
  * 
  */
 public class DiskResourceNameCell extends AbstractCell<DiskResource> {
+
+    public static enum CALLER_TAG {
+        DATA, SEARCH, SHARING;
+    }
 
     interface DiskResourceNameCellStyle extends CssResource {
 
@@ -74,8 +78,11 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
     final Templates templates = GWT.create(Templates.class);
     private boolean hyperlinkEnabled = true;
 
-    public DiskResourceNameCell() {
+    final CALLER_TAG tag;
+
+    public DiskResourceNameCell(CALLER_TAG tag) {
         super(CLICK, MOUSEOVER, MOUSEOUT);
+        this.tag = tag;
         res.css().ensureInjected();
     }
 
@@ -138,8 +145,12 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
     private void doOnClick(Element eventTarget, DiskResource value,
             ValueUpdater<DiskResource> valueUpdater) {
         
-        if (eventTarget.getAttribute("name").equalsIgnoreCase("drName") && hyperlinkEnabled) {
+        if (eventTarget.getAttribute("name").equalsIgnoreCase("drName") && hyperlinkEnabled ) {
+            if(tag.equals(CALLER_TAG.DATA)) {
             EventBus.getInstance().fireEvent(new DiskResourceSelectedEvent(this, value));
+            } else if (tag.equals(CALLER_TAG.SEARCH) && value instanceof Folder) {
+                EventBus.getInstance().fireEvent(new DataSearchNameSelectedEvent(value));
+            }
         }
 
     }

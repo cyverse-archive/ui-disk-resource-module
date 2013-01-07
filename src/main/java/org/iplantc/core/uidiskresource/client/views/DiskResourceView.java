@@ -275,6 +275,8 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
 
     void disableDiskResourceHyperlink();
 
+    void showDataListingWidget();
+
     void showSearchResultWidget(IsWidget w);
 
     void updateDetails(String path, DiskResourceInfo info);

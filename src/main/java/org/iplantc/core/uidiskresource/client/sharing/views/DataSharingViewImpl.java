@@ -86,7 +86,6 @@ public class DataSharingViewImpl implements DataSharingView {
         widget = uiBinder.createAndBindUi(this);
         collaboratorsGrid.setSelectionModel(collabSm);
         diskResourcesGrid.setSelectionModel(drSm);
-        permissionsPnl.setHeight(380);
         initDragAndDrop();
     }
 
