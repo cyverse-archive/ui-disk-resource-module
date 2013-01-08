@@ -148,7 +148,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         if (eventTarget.getAttribute("name").equalsIgnoreCase("drName") && hyperlinkEnabled ) {
             if(tag.equals(CALLER_TAG.DATA)) {
             EventBus.getInstance().fireEvent(new DiskResourceSelectedEvent(this, value));
-            } else if (tag.equals(CALLER_TAG.SEARCH) && value instanceof Folder) {
+            } else if (tag.equals(CALLER_TAG.SEARCH)) {
                 EventBus.getInstance().fireEvent(new DataSearchNameSelectedEvent(value));
             }
         }

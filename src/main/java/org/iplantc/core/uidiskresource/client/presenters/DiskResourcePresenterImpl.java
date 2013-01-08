@@ -14,8 +14,11 @@ import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent;
-import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent.DataSearchNameSelectedEventHandler;
+import org.iplantc.core.uidiskresource.client.events.DataSearchPathSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
+import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent.DataSearchNameSelectedEventHandler;
+import org.iplantc.core.uidiskresource.client.events.DataSearchPathSelectedEvent.DataSearchPathSelectedEventHandler;
+
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent.DiskResourceRenamedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent.DiskResourceSelectedEventHandler;
@@ -87,6 +90,30 @@ import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         DiskResourceViewToolbarImpl.Presenter, HasHandlerRegistrationMgmt {
 
+    private final class DiskResourceMovedEventHandlerImpl implements DiskResourcesMovedEventHandler {
+        @Override
+        public void onDiskResourcesMoved(DiskResourcesMovedEvent event) {
+            // Determine which folder is the ancestor, then refresh it
+            if(DiskResourceUtil.isDescendantOfFolder(event.getDestinationFolder(), getSelectedFolder())){
+                view.refreshFolder(event.getDestinationFolder());
+            }else{
+                view.refreshFolder(getSelectedFolder());
+            }
+        }
+    }
+
+    private final class DiskResourceSelectedEventHandlerImpl implements DiskResourceSelectedEventHandler {
+        @Override
+        public void onSelect(DiskResourceSelectedEvent event) {
+            if (event.getSelectedItem() instanceof Folder) {
+                view.setSelectedFolder((Folder)event.getSelectedItem());
+            } else if (event.getSelectedItem() instanceof File) {
+                EventBus.getInstance().fireEvent(
+                        new ShowFilePreviewEvent((File)event.getSelectedItem(), this));
+            }
+        }
+    }
+
     private final class DiskResourcesDeletedEventHandlerImpl implements DiskResourcesDeletedEventHandler {
         private final DiskResourceView view;
 
@@ -110,6 +137,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private final DiskResourceAutoBeanFactory drFactory;
     private final Builder builder;
     private final DataSearchAutoBeanFactory dataSearchFactory;
+    private List<String> searchHistory;
 
     @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
@@ -144,9 +172,37 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         this.view.setTreeLoader(treeLoader);
         this.view.setPresenter(this);
         this.proxy.setPresenter(this);
+        searchHistory = new ArrayList<String>();
+        loadSearchHistory();
     }
 
     private void initDragAndDrop() {
+
+    }
+
+    @Override
+    public void loadSearchHistory() {
+        diskResourceService.getDataSearchHistory(new AsyncCallback<String>() {
+            @Override
+            public void onFailure(Throwable caught) {
+                ErrorHandler.post(caught);
+            }
+
+            @Override
+            public void onSuccess(String result) {
+                JSONObject obj = JsonUtil.getObject(result);
+                if (obj != null) {
+                    JSONArray arr = JsonUtil.getArray(obj, "data-search");
+                    if (arr != null) {
+                        for (int i = 0; i < arr.size(); i++) {
+                            searchHistory.add((JsonUtil.trim(arr.get(i).isString().toString())));
+                        }
+                    }
+                }
+                view.renderSearchHistory(searchHistory);
+            }
+
+        });
 
     }
 
@@ -170,41 +226,42 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
             }
         });
-        eventBus.addHandler(DiskResourceSelectedEvent.TYPE, new DiskResourceSelectedEventHandler() {
-
-            @Override
-            public void onSelect(DiskResourceSelectedEvent event) {
-                if (event.getSelectedItem() instanceof Folder) {
-                    view.setSelectedFolder((Folder)event.getSelectedItem());
-                } else if (event.getSelectedItem() instanceof File) {
-                    EventBus.getInstance().fireEvent(
-                            new ShowFilePreviewEvent((File)event.getSelectedItem(), this));
-                }
-            }
-        });
-        eventBus.addHandler(DiskResourcesMovedEvent.TYPE, new DiskResourcesMovedEventHandler(){
-
-            @Override
-            public void onDiskResourcesMoved(DiskResourcesMovedEvent event) {
-                // Determine which folder is the ancestor, then refresh it
-                if(DiskResourceUtil.isDescendantOfFolder(event.getDestinationFolder(), getSelectedFolder())){
-                    view.refreshFolder(event.getDestinationFolder());
-                }else{
-                    view.refreshFolder(getSelectedFolder());
-                }
-            }});
+        eventBus.addHandler(DiskResourceSelectedEvent.TYPE, new DiskResourceSelectedEventHandlerImpl());
+        eventBus.addHandler(DiskResourcesMovedEvent.TYPE, new DiskResourceMovedEventHandlerImpl());
         
         eventBus.addHandler(DataSearchNameSelectedEvent.TYPE, new DataSearchNameSelectedEventHandler() {
 
             @Override
             public void onNameSelected(DataSearchNameSelectedEvent event) {
-                Folder f = (Folder)event.getResource();
-                view.setSelectedFolder(f);
-                onFolderSelected(f);
-                view.showDataListingWidget();
+                handleSearchEvent(event.getResource());
             }
             
         });
+
+        eventBus.addHandler(DataSearchPathSelectedEvent.TYPE, new DataSearchPathSelectedEventHandler() {
+
+            @Override
+            public void onPathSelected(DataSearchPathSelectedEvent event) {
+                handleSearchEventByPath(event.getResource().getPath());
+            }
+
+        });
+
+    }
+
+    private void handleSearchEvent(DiskResource resource) {
+        if (resource instanceof Folder) {
+            Folder f = (Folder)resource;
+            view.setSelectedFolder(f);
+            onFolderSelected(f);
+            view.showDataListingWidget();
+        } else {
+            EventBus.getInstance().fireEvent(new ShowFilePreviewEvent((File)resource, this));
+        }
+    }
+
+    private void handleSearchEventByPath(String path) {
+        setSelectedFolderById(path);
     }
 
     @Override
@@ -230,6 +287,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void onFolderSelected(Folder folder) {
+        view.showDataListingWidget();
         view.deSelectDiskResources();
         if (view.isLoaded(folder)) {
             Set<DiskResource> children = Sets.newHashSet();
@@ -607,6 +665,28 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     @Override
     public void deSelectDiskResources() {
         view.deSelectDiskResources();
+    }
+     
+    public void addToSearchHistory(String searchTerm) {
+        if(!searchHistory.contains(searchTerm)) {
+            searchHistory.add(searchTerm);
+        }
+
+        saveSearchHistory();
+    }
+
+    @Override
+    public void removeFromSearchHistory(String searchTerm) {
+        if (searchHistory.contains(searchTerm)) {
+            searchHistory.remove(searchTerm);
+        }
+        saveSearchHistory();
+
+    }
+
+    @Override
+    public void saveSearchHistory() {
+
     }
     
 }

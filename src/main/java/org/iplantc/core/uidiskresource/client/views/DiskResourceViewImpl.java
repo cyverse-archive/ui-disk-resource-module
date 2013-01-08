@@ -3,8 +3,10 @@ package org.iplantc.core.uidiskresource.client.views;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
+import org.iplantc.core.uicommons.client.widgets.PushButton;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceInfo;
@@ -36,6 +38,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
@@ -45,6 +48,7 @@ import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.Container;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
@@ -153,6 +157,9 @@ public class DiskResourceViewImpl implements DiskResourceView {
             }
 
         });
+        
+        // by default no details to show...
+        resetDetailsPanel();
     }
 
     @Override
@@ -464,15 +471,19 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     @Override
     public void showDataListingWidget() {
-        centerPanel.clear();
-        centerPanel.add(grid, centerData);
+        if (!grid.isAttached()) {
+            centerPanel.clear();
+            centerPanel.add(grid, centerData);
+        }
     }
 
     @Override
     public void showSearchResultWidget(IsWidget w) {
+        if (!w.asWidget().isAttached()) {
         w.asWidget().setHeight(centerPanel.getOffsetHeight(true) + "px");
         centerPanel.clear();
         centerPanel.add(w.asWidget(), centerData);
+        }
     }
 
 
@@ -507,10 +518,20 @@ public class DiskResourceViewImpl implements DiskResourceView {
     public void resetDetailsPanel() {
         detailsPanel.clear();
         FieldLabel fl = new FieldLabel();
+        fl.setLabelWidth(detailsPanel.getOffsetWidth(true) - 10);
         fl.setLabelSeparator("");
-        fl.setHTML("<span style='font-size:10px'><b>" + I18N.DISPLAY.noDetails() + "</b> </span>");
+        fl.setHTML(getDetailAsHtml("&nbsp;&nbsp;" + I18N.DISPLAY.noDetails(), true));
         detailsPanel.add(fl);
     }
+
+    private String getDetailAsHtml(String detail, boolean bolded) {
+        if (bolded) {
+            return "<span style='font-size:10px'><b>" + detail + "</b> </span>";
+        } else {
+            return "<span style='font-size:10px'>" + detail + "</span>";
+        }
+    }
+
     /**
      * Parses a timestamp string into a formatted date string and adds it to this panel.
      * 
@@ -530,12 +551,12 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
        
         FieldLabel fl = new FieldLabel();
-        fl.setHTML("<span style='font-size:10px'><b>" + label + "</b> </span>");
+        fl.setHTML(getDetailAsHtml(label, true));
         panel.add(fl);
 
         FieldLabel fv = new FieldLabel();
         fv.setLabelSeparator("");
-        fv.setHTML("<span style='font-size:10px'>" + value + "</span>");
+        fv.setHTML(getDetailAsHtml(value, false));
         panel.add(fv);
 
         return panel;
@@ -545,12 +566,12 @@ public class DiskResourceViewImpl implements DiskResourceView {
     private HorizontalPanel getNumberLabel(String label, long value) {
         HorizontalPanel panel = buildDeatilsRow();
         FieldLabel fl = new FieldLabel();
-        fl.setHTML("<span style='font-size:10px'><b>" + label + "</b></span>");
+        fl.setHTML(getDetailAsHtml(label, true));
         panel.add(fl);
 
         FieldLabel fv = new FieldLabel();
         fv.setLabelSeparator("");
-        fv.setHTML("<span style='font-size:10px'>" + value + "</span>");
+        fv.setHTML(getDetailAsHtml(value + "", false));
         panel.add(fv);
 
         return panel;
@@ -559,12 +580,12 @@ public class DiskResourceViewImpl implements DiskResourceView {
     private HorizontalPanel getDirFileCount(String label, int file_count, int dir_count) {
         HorizontalPanel panel = buildDeatilsRow();
         FieldLabel fl = new FieldLabel();
-        fl.setHTML("<span style='font-size:10px'><b>" + label + "</b></span>");
+        fl.setHTML(getDetailAsHtml(label, true));
         panel.add(fl);
 
         FieldLabel fv = new FieldLabel();
         fv.setLabelSeparator("");
-        fv.setHTML("<span style='font-size:10px'>" + file_count + " / " + dir_count + "</span>");
+        fv.setHTML(getDetailAsHtml(file_count + " / " + dir_count, false));
         panel.add(fv);
 
         return panel;
@@ -590,12 +611,12 @@ public class DiskResourceViewImpl implements DiskResourceView {
         }
 
         FieldLabel fl = new FieldLabel();
-        fl.setHTML("<span style='font-size:10px'><b>" + label + "</b></span>");
+        fl.setHTML(getDetailAsHtml(label, true));
         panel.add(fl);
 
         FieldLabel fv = new FieldLabel();
         fv.setLabelSeparator("");
-        fv.setHTML("<span style='font-size:10px'>" + value + "</span>");
+        fv.setHTML(getDetailAsHtml(value, false));
         panel.add(fv);
 
         return panel;
@@ -634,11 +655,31 @@ public class DiskResourceViewImpl implements DiskResourceView {
         });
 
         FieldLabel fl = new FieldLabel();
-        fl.setHTML("<span style='font-size:10px'><b>" + label + "</b></span>");
+        fl.setHTML(getDetailAsHtml(label, true));
         panel.add(fl);
         panel.add(link);
         return panel;
 
     }
+    
+    private PushButton buildSearchHistoryLink(String searchTerm) {
+        PushButton button = new PushButton(searchTerm, 120);
+        return button;
+    }
+
+    @Override
+    public void renderSearchHistory(List<String> history) {
+        VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+        if (history != null && history.size() > 0) {
+            vlc.setScrollMode(ScrollMode.AUTO);
+            for (String term : history) {
+                vlc.add(buildSearchHistoryLink(term));
+            }
+        }
+
+        historyPanel.clear();
+        historyPanel.setWidget(vlc);
+    }
+
 
 }

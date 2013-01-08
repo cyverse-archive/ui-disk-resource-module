@@ -59,6 +59,7 @@ final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, List<Fold
                 // Trigger remote load by expanding folder
                 view.expandFolder(folder);
                 if (pathsToLoad.isEmpty()) {
+                    view.showDataListingWidget();
                     view.setSelectedFolder(folder);
                     regMgr.unregisterHandler(this);
                 }

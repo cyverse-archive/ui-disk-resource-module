@@ -3,6 +3,8 @@
  */
 package org.iplantc.core.uidiskresource.client.views.cells;
 
+import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uidiskresource.client.events.DataSearchPathSelectedEvent;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -39,7 +41,7 @@ public class DiskResourcePathCell extends AbstractCell<DiskResource> {
         super.onBrowserEvent(context, parent, value, event, valueUpdater);
 
         if ("click".equals(event.getType())) {
-
+            EventBus.getInstance().fireEvent(new DataSearchPathSelectedEvent(value));
         }
     }
 
