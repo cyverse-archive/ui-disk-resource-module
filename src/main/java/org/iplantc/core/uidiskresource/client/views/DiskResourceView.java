@@ -161,6 +161,14 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
 
         boolean canDragDataToTargetFolder(Folder targetFolder, Collection<DiskResource> dropData);
 
+        void loadSearchHistory();
+
+        void addToSearchHistory(String searchTerm);
+
+        void removeFromSearchHistory(String searchTerm);
+
+        void saveSearchHistory();
+
     }
 
     /**
@@ -282,5 +290,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
     void updateDetails(String path, DiskResourceInfo info);
 
     void resetDetailsPanel();
+
+    void renderSearchHistory(List<String> history);
 
 }

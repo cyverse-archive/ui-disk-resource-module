@@ -257,5 +257,20 @@ public interface DiskResourceServiceFacade {
      * @param callback callback object
      */
     void getStat(String body, AsyncCallback<String> callback);
+    
+    /**
+     * get data search history
+     * 
+     * @param callback callback object
+     * 
+     */
+    void getDataSearchHistory(AsyncCallback<String> callback);
 
+    /**
+     * save users data search history
+     * 
+     * @param body json object search history
+     * @param callback callback object
+     */
+    void saveDataSearchHistory(String body, AsyncCallback<String> callback);
 }
