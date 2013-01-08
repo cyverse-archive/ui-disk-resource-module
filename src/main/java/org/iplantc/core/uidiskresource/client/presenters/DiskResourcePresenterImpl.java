@@ -18,6 +18,7 @@ import org.iplantc.core.uidiskresource.client.events.DataSearchPathSelectedEvent
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
 import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent.DataSearchNameSelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DataSearchPathSelectedEvent.DataSearchPathSelectedEventHandler;
+
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent.DiskResourceRenamedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent.DiskResourceSelectedEventHandler;
@@ -52,7 +53,6 @@ import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceSearchView;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
-import org.iplantc.core.uidiskresource.client.views.DiskResourceView.Presenter;
 import org.iplantc.core.uidiskresource.client.views.metadata.DiskResourceMetadataDialog;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
 
@@ -272,16 +272,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     @Override
     public void go(HasOneWidget container) {
         container.setWidget(view);
+        // JDS May need to call doRefresh here.
     }
-
-    // @Override
-    // public void go(HasOneWidget container, boolean hideWestWidget, boolean hideCenterWidget,
-    // boolean hideEastWidget, boolean hideNorthWidget) {
-    // view.setWestWidgetHidden(hideWestWidget);
-    // view.setCenterWidgetHidden(hideCenterWidget);
-    // view.setEastWidgetHidden(hideEastWidget);
-    // view.setNorthWidgetHidden(hideNorthWidget);
-    // }
 
     @Override
     public Folder getSelectedFolder() {
@@ -574,7 +566,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     private class MyBuilder implements Builder {
 
-        private final Presenter presenter;
+        private final DiskResourceView.Presenter presenter;
 
         public MyBuilder(DiskResourceView.Presenter presenter) {
             this.presenter = presenter;
