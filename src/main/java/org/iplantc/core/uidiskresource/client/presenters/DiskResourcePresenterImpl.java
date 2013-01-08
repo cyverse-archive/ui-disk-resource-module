@@ -14,11 +14,10 @@ import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent;
-import org.iplantc.core.uidiskresource.client.events.DataSearchPathSelectedEvent;
-import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
 import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent.DataSearchNameSelectedEventHandler;
+import org.iplantc.core.uidiskresource.client.events.DataSearchPathSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DataSearchPathSelectedEvent.DataSearchPathSelectedEventHandler;
-
+import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent.DiskResourceRenamedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent.DiskResourceSelectedEventHandler;
@@ -254,7 +253,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             Folder f = (Folder)resource;
             view.setSelectedFolder(f);
             onFolderSelected(f);
-            view.showDataListingWidget();
         } else {
             EventBus.getInstance().fireEvent(new ShowFilePreviewEvent((File)resource, this));
         }
@@ -667,6 +665,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         view.deSelectDiskResources();
     }
      
+    @Override
     public void addToSearchHistory(String searchTerm) {
         if(!searchHistory.contains(searchTerm)) {
             searchHistory.add(searchTerm);
