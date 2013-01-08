@@ -101,6 +101,7 @@ public class DiskResourcePresenterTest {
                 oneOf(view).setTreeLoader(with(aNonNull(TreeLoader.class)));
                 oneOf(view).setPresenter(with(aNonNull(DiskResourceView.Presenter.class)));
                 oneOf(proxy).setPresenter(with(aNonNull(DiskResourceView.Presenter.class)));
+                oneOf(diskResourceService).getDataSearchHistory(with(aNonNull(AsyncCallback.class)));
             }
         });
     }
@@ -126,6 +127,7 @@ public class DiskResourcePresenterTest {
                 oneOf(view).isLoaded(folder);
                 will(returnValue(true));
                 oneOf(view).setDiskResources(with(aNonNull(Set.class)));
+                oneOf(view).showDataListingWidget();
                 exactly(2).of(folder).getFolders();
                 will(returnValue(Lists.newArrayList()));
                 exactly(2).of(folder).getFiles();
@@ -141,6 +143,7 @@ public class DiskResourcePresenterTest {
         context.checking(new Expectations() {
             {
                 oneOf(view).deSelectDiskResources();
+                oneOf(view).showDataListingWidget();
                 oneOf(view).isLoaded(folder);
                 will(returnValue(false));
                 oneOf(proxy).load(with(folder), with(aNonNull(Callback.class)));
