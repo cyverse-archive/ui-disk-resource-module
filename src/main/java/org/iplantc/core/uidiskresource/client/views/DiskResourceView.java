@@ -163,6 +163,10 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
         void removeFromSearchHistory(String searchTerm);
 
         void saveSearchHistory();
+        
+        String getCurrentSearchTerm();
+        
+        void setCurrentSearchTerm(String searchTerm);
 
     }
 
@@ -293,5 +297,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
     void resetDetailsPanel();
 
     void renderSearchHistory(List<String> history);
+
+    void deSelectNavigationFolder();
 
 }

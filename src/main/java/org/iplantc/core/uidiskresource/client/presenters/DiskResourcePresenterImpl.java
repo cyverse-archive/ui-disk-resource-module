@@ -139,6 +139,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private final Builder builder;
     private final DataSearchAutoBeanFactory dataSearchFactory;
     private List<String> searchHistory;
+    private String currentSearchTerm;
 
     @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
@@ -268,10 +269,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         } else {
             EventBus.getInstance().fireEvent(new ShowFilePreviewEvent((File)resource, this));
         }
+        addToSearchHistory(getCurrentSearchTerm());
     }
 
     private void handleSearchEventByPath(String path) {
         setSelectedFolderById(path);
+        addToSearchHistory(getCurrentSearchTerm());
     }
 
     @Override
@@ -628,7 +631,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     }
 
     @Override
-    public void doSearch(String val) {
+    public void doSearch(final String val) {
         diskResourceService.search(val, 50, null, new AsyncCallback<String>() {
 
             private DiskResourceSearchView searchView;
@@ -647,18 +650,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
                 List<DiskResource> resources = new ArrayList<DiskResource>();
                 for (DataSearch ds : bean.as().getSearchResults()) {
                     if (ds.getType().equalsIgnoreCase("file")) {
-                        AutoBean<File> file = AutoBeanCodex.decode(drFactory, File.class, "{}");
-                        File f = file.as();
-                        f.setId(ds.getId());
-                        f.setName(ds.getName());
-                        f.setPath(DiskResourceUtil.parseParent(ds.getId()));
+                        File f = buildDummyFile(ds);
                         resources.add(f);
                     } else {
-                        AutoBean<Folder> folder = AutoBeanCodex.decode(drFactory, Folder.class, "{}");
-                        Folder fo = folder.as();
-                        fo.setId(ds.getId());
-                        fo.setName(ds.getName());
-                        fo.setPath(ds.getId());
+                        Folder fo = buildDummyFolder(ds);
                         resources.add(fo);
                     }
 
@@ -667,8 +662,28 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
                 if (searchView == null) {
                     searchView = new DiskResourceSearchView();
                 }
+                view.deSelectNavigationFolder();
                 searchView.loadResults(resources);
                 view.showSearchResultWidget(searchView.asWidget());
+                setCurrentSearchTerm(val);
+            }
+
+            private Folder buildDummyFolder(DataSearch ds) {
+                AutoBean<Folder> folder = AutoBeanCodex.decode(drFactory, Folder.class, "{}");
+                Folder fo = folder.as();
+                fo.setId(ds.getId());
+                fo.setName(ds.getName());
+                fo.setPath(ds.getId());
+                return fo;
+            }
+
+            private File buildDummyFile(DataSearch ds) {
+                AutoBean<File> file = AutoBeanCodex.decode(drFactory, File.class, "{}");
+                File f = file.as();
+                f.setId(ds.getId());
+                f.setName(ds.getName());
+                f.setPath(DiskResourceUtil.parseParent(ds.getId()));
+                return f;
             }
         });
 
@@ -681,6 +696,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         }
 
         saveSearchHistory();
+        view.renderSearchHistory(searchHistory);
     }
 
     @Override
@@ -689,11 +705,46 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             searchHistory.remove(searchTerm);
         }
         saveSearchHistory();
+        view.renderSearchHistory(searchHistory);
+    }
 
+    private JSONObject getSearchHistoryAsJson() {
+        JSONObject obj = new JSONObject();
+        if (searchHistory.size() > 0) {
+            obj.put("data-search", JsonUtil.buildArrayFromStrings(searchHistory));
+        } else {
+            obj.put("data-search", new JSONArray());
+        }
+        return obj;
     }
 
     @Override
     public void saveSearchHistory() {
+        JSONObject obj = getSearchHistoryAsJson();
+        diskResourceService.saveDataSearchHistory(obj.toString(), new AsyncCallback<String>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                ErrorHandler.post(I18N.ERROR.searchHistoryError(), caught);
+
+            }
+
+            @Override
+            public void onSuccess(String result) {
+                // do nothing
+
+            }
+        });
+    }
+
+    @Override
+    public String getCurrentSearchTerm() {
+        return currentSearchTerm;
+    }
+
+    @Override
+    public void setCurrentSearchTerm(String searchTerm) {
+        this.currentSearchTerm = searchTerm;
 
     }
 

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.images.Resources;
 import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
 import org.iplantc.core.uicommons.client.widgets.IPlantAnchorDefaultAppearance;
 import org.iplantc.core.uicommons.client.widgets.PushButton;
@@ -21,6 +22,7 @@ import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
+import com.google.gwt.user.client.Event;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.cell.client.Cell;
@@ -28,6 +30,10 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -37,6 +43,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
@@ -358,6 +365,11 @@ public class DiskResourceViewImpl implements DiskResourceView {
     }
 
     @Override
+    public void deSelectNavigationFolder() {
+        tree.getSelectionModel().deselectAll();
+    }
+
+    @Override
     public Set<Folder> getRootFolders() {
         return Sets.newHashSet(treeStore.getRootItems());
     }
@@ -479,6 +491,8 @@ public class DiskResourceViewImpl implements DiskResourceView {
         if (!grid.isAttached()) {
             centerPanel.clear();
             centerPanel.add(grid, centerData);
+            // reset search
+            presenter.setCurrentSearchTerm(null);
         }
     }
 
@@ -546,7 +560,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
      * @param value
      */
     private HorizontalPanel getDateLabel(String label, Date date) {
-        HorizontalPanel panel = buildDeatilsRow();
+        HorizontalPanel panel = buildRow();
         String value = "";
 
         if (date != null) {
@@ -571,7 +585,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     }
 
     private HorizontalPanel getNumberLabel(String label, long value) {
-        HorizontalPanel panel = buildDeatilsRow();
+        HorizontalPanel panel = buildRow();
         FieldLabel fl = new FieldLabel();
         fl.setHTML(getDetailAsHtml(label, true));
         panel.add(fl);
@@ -585,7 +599,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     }
 
     private HorizontalPanel getDirFileCount(String label, int file_count, int dir_count) {
-        HorizontalPanel panel = buildDeatilsRow();
+        HorizontalPanel panel = buildRow();
         FieldLabel fl = new FieldLabel();
         fl.setHTML(getDetailAsHtml(label, true));
         panel.add(fl);
@@ -606,7 +620,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
      * 
      */
     private HorizontalPanel getPermissionsLabel(String label, Permissions p) {
-        HorizontalPanel panel = buildDeatilsRow();
+        HorizontalPanel panel = buildRow();
         String value;
         if (p.isOwner()) {
             value = I18N.DISPLAY.owner();
@@ -629,7 +643,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
         return panel;
     }
 
-    private HorizontalPanel buildDeatilsRow() {
+    private HorizontalPanel buildRow() {
         HorizontalPanel panel = new HorizontalPanel();
         panel.setHeight("25px");
         panel.setSpacing(3);
@@ -644,7 +658,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     private HorizontalPanel getSharingLabel(String label, int shareCount) {
         Anchor link = null;
-        HorizontalPanel panel = buildDeatilsRow();
+        HorizontalPanel panel = buildRow();
         if (shareCount == 0) {
             link = new Anchor(I18N.DISPLAY.nosharing());
         } else {
@@ -686,17 +700,54 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     @Override
     public void renderSearchHistory(List<String> history) {
-        VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+        final VerticalLayoutContainer vlc = new VerticalLayoutContainer();
         vlc.setScrollMode(ScrollMode.AUTOY);
         historyPanel.clear();
         historyPanel.setWidget(vlc);
         if (history != null && history.size() > 0) {
-            for (String term : history) {
-                vlc.add(buildSearchHistoryLink(term));
+            for (final String term : history) {
+                IPlantAnchor link = buildSearchHistoryLink(term);
+                final HorizontalPanel hp = buildRow();
+                hp.sinkEvents(Event.ONMOUSEOVER);
+                hp.sinkEvents(Event.ONMOUSEOUT);
+                final Image closeImg = new Image(Resources.ICONS.close());
+                addDomHandlers(hp, closeImg);
+                closeImg.addClickHandler(new ClickHandler() {
+                    
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        vlc.remove(hp);
+                        presenter.removeFromSearchHistory(term);
+                    }
+                });
+                hp.add(link);
+                closeImg.setVisible(false);
+                hp.add(closeImg);
+                vlc.add(hp);
             }
         }
         // Kludge:
         historyPanel.forceLayout();
+    }
+
+    private void addDomHandlers(HorizontalPanel hp, final Image closeImg) {
+        hp.addDomHandler(new MouseOverHandler() {
+
+            @Override
+            public void onMouseOver(MouseOverEvent event) {
+                closeImg.setVisible(true);
+
+            }
+        }, MouseOverEvent.getType());
+        
+        hp.addDomHandler(new MouseOutHandler() {
+            
+            @Override
+            public void onMouseOut(MouseOutEvent event) {
+                closeImg.setVisible(false);
+                
+            }
+        }, MouseOutEvent.getType());
     }
 
 

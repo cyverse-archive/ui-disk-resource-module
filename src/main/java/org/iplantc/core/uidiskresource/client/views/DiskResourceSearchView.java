@@ -76,5 +76,4 @@ public class DiskResourceSearchView implements IsWidget {
         return list;
     }
 
-
 }
