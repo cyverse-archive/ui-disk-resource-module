@@ -10,7 +10,6 @@ import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.images.Resources;
 import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
 import org.iplantc.core.uicommons.client.widgets.IPlantAnchorDefaultAppearance;
-import org.iplantc.core.uicommons.client.widgets.PushButton;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
@@ -57,10 +56,8 @@ import com.sencha.gxt.dnd.core.client.DND.Operation;
 import com.sencha.gxt.dnd.core.client.DragSource;
 import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.Window;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
-import com.sencha.gxt.widget.core.client.container.Container;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
@@ -726,7 +723,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
                 vlc.add(hp);
             }
         }
-        // Kludge:
+        // KLUDGE:
         historyPanel.forceLayout();
     }
 

@@ -68,52 +68,42 @@
                      hidden="true"/>
    </ui:with>
    
-   <ui:with type="com.sencha.gxt.core.client.util.Margins" field="margins0050">
-    <ui:attributes top="0" right="0" bottom="0" left="0" />
-  </ui:with>
-   
- <ui:with type="com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData" field="boxLayoutDataMargins0050Flex1">
-    <ui:attributes margins="{margins0050}" flex="1" />
-  </ui:with>
-   
-   <container:SimpleContainer>
-      <container:BorderLayoutContainer ui:field="con"
-                                       borders="true">
-             <!-- This is the tool bar -->
-         <container:north layoutData="{northData}">
-            <toolbar:DiskResourceViewToolbar ui:field="toolbar"/>
-         </container:north>
-             <!-- This is the navigation panel -->
-         <container:west layoutData="{westData}">
-            <gxt:ContentPanel ui:field="westPanel"
-                              headerVisible="false"
-                              bodyBorder="false">
-               <tree:Tree ui:field="tree"
-                          autoSelect="true"/>
-            </gxt:ContentPanel>
-         </container:west>
-          <!-- This is the main panel -->
-         <container:center layoutData="{centerData}">
-            <gxt:ContentPanel ui:field="centerPanel"
-                              headerVisible="false"
-                              resize="true" 
-                              bodyBorder="false">
-                     <grid:Grid ui:field="grid"
-                                cm="{cm}"
-                                store="{listStore}"
-                                view="{gridView}" />
-            </gxt:ContentPanel>
-         </container:center>
-         <!-- This is the details panel -->
-         <container:east layoutData="{eastData}">
-           <container:VBoxLayoutContainer vBoxLayoutAlign="STRETCH">
-            <gxt:ContentPanel ui:field="detailsPanel" 
-                              headingText="{DISPLAY.details}"  layoutData="{boxLayoutDataMargins0050Flex1}" />
-             <gxt:ContentPanel ui:field="historyPanel" 
-                              headingText="Search History" layoutData="{boxLayoutDataMargins0050Flex1}"/>
-               </container:VBoxLayoutContainer>
-         </container:east>
-         <container:south layoutData="{southData}"/>
-      </container:BorderLayoutContainer>
-   </container:SimpleContainer>
+   <container:BorderLayoutContainer ui:field="con"
+                                    borders="true">
+          <!-- This is the tool bar -->
+      <container:north layoutData="{northData}">
+         <toolbar:DiskResourceViewToolbar ui:field="toolbar"/>
+      </container:north>
+          <!-- This is the navigation panel -->
+      <container:west layoutData="{westData}">
+         <gxt:ContentPanel ui:field="westPanel"
+                           headerVisible="false"
+                           bodyBorder="false">
+            <tree:Tree ui:field="tree"
+                       autoSelect="true"/>
+         </gxt:ContentPanel>
+      </container:west>
+       <!-- This is the main panel -->
+      <container:center layoutData="{centerData}">
+         <gxt:ContentPanel ui:field="centerPanel"
+                           headerVisible="false"
+                           resize="true" 
+                           bodyBorder="false">
+                  <grid:Grid ui:field="grid"
+                             cm="{cm}"
+                             store="{listStore}"
+                             view="{gridView}" />
+         </gxt:ContentPanel>
+      </container:center>
+      <!-- This is the details panel -->
+      <container:east layoutData="{eastData}">
+        <container:VerticalLayoutContainer>
+         <gxt:ContentPanel ui:field="detailsPanel" 
+                           headingText="{DISPLAY.details}" height="180" />
+          <gxt:ContentPanel ui:field="historyPanel" 
+                           headingText="Search History" height="180"/>
+                           </container:VerticalLayoutContainer>
+      </container:east>
+      <container:south layoutData="{southData}"/>
+   </container:BorderLayoutContainer>
 </ui:UiBinder> 

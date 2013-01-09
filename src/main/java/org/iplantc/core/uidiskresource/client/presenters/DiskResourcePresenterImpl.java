@@ -690,6 +690,11 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     }
 
     @Override
+    public void deSelectDiskResources() {
+        view.deSelectDiskResources();
+    }
+     
+    @Override
     public void addToSearchHistory(String searchTerm) {
         if (!searchHistory.contains(searchTerm)) {
             searchHistory.add(searchTerm);
