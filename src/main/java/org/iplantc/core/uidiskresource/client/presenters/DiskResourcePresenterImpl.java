@@ -13,6 +13,7 @@ import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
 import org.iplantc.core.uidiskresource.client.I18N;
+import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent.DataSearchNameSelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DataSearchPathSelectedEvent;
@@ -54,6 +55,7 @@ import org.iplantc.core.uidiskresource.client.views.DiskResourceSearchView;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.metadata.DiskResourceMetadataDialog;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
+import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent.DataSearchHistorySelectedEventHandler;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -93,9 +95,9 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         @Override
         public void onDiskResourcesMoved(DiskResourcesMovedEvent event) {
             // Determine which folder is the ancestor, then refresh it
-            if(DiskResourceUtil.isDescendantOfFolder(event.getDestinationFolder(), getSelectedFolder())){
+            if (DiskResourceUtil.isDescendantOfFolder(event.getDestinationFolder(), getSelectedFolder())) {
                 view.refreshFolder(event.getDestinationFolder());
-            }else{
+            } else {
                 view.refreshFolder(getSelectedFolder());
             }
         }
@@ -141,8 +143,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
             final DiskResourceServiceFacade diskResourceService,
-            final DiskResourceDisplayStrings display,
-            final DiskResourceAutoBeanFactory factory, final DataSearchAutoBeanFactory dataSearchFactory) {
+            final DiskResourceDisplayStrings display, final DiskResourceAutoBeanFactory factory,
+            final DataSearchAutoBeanFactory dataSearchFactory) {
         this.view = view;
         this.proxy = proxy;
         this.diskResourceService = diskResourceService;
@@ -164,8 +166,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         // Add selection handlers which will control the visibility of the toolbar buttons
         addFileSelectChangedHandler(new ToolbarButtonVisibilitySelectionHandler<DiskResource>(
                 view.getToolbar()));
-        addFolderSelectionHandler(new ToolbarButtonVisibilitySelectionHandler<Folder>(
-                view.getToolbar()));
+        addFolderSelectionHandler(new ToolbarButtonVisibilitySelectionHandler<Folder>(view.getToolbar()));
 
         treeLoader.addLoadHandler(new ChildTreeStoreBinding<Folder>(this.view.getTreeStore()));
         this.view.setTreeLoader(treeLoader);
@@ -208,7 +209,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private void initHandlers() {
         EventBus eventBus = EventBus.getInstance();
 
-        DiskResourcesDeletedEventHandlerImpl diskResourcesDeletedHandler = new DiskResourcesDeletedEventHandlerImpl(view);
+        DiskResourcesDeletedEventHandlerImpl diskResourcesDeletedHandler = new DiskResourcesDeletedEventHandlerImpl(
+                view);
         eventBus.addHandler(DiskResourcesDeletedEvent.TYPE, diskResourcesDeletedHandler);
         eventBus.addHandler(FolderCreatedEvent.TYPE, new FolderCreatedEventHandler() {
 
@@ -227,14 +229,14 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         });
         eventBus.addHandler(DiskResourceSelectedEvent.TYPE, new DiskResourceSelectedEventHandlerImpl());
         eventBus.addHandler(DiskResourcesMovedEvent.TYPE, new DiskResourceMovedEventHandlerImpl());
-        
+
         eventBus.addHandler(DataSearchNameSelectedEvent.TYPE, new DataSearchNameSelectedEventHandler() {
 
             @Override
             public void onNameSelected(DataSearchNameSelectedEvent event) {
                 handleSearchEvent(event.getResource());
             }
-            
+
         });
 
         eventBus.addHandler(DataSearchPathSelectedEvent.TYPE, new DataSearchPathSelectedEventHandler() {
@@ -245,6 +247,16 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             }
 
         });
+        eventBus.addHandler(DataSearchHistorySelectedEvent.TYPE,
+                new DataSearchHistorySelectedEventHandler() {
+
+                    @Override
+                    public void onSelection(DataSearchHistorySelectedEvent event) {
+                        doSearch(event.getSearchHistoryTerm());
+
+                    }
+
+                });
 
     }
 
@@ -309,7 +321,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         } else {
             view.resetDetailsPanel();
         }
-           
+
     }
 
     private void getDetails(DiskResource resource) {
@@ -338,7 +350,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     }
 
-
     @Override
     public void onFolderLoad(Folder loadedFolder, Set<DiskResource> folderChildren) {
         if ((getSelectedFolder() != null) && getSelectedFolder().equals(loadedFolder)) {
@@ -364,8 +375,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     @Override
     public void doCreateNewFolder(final Folder parentFolder, final String newFolderName) {
         view.mask(DISPLAY.loadingMask());
-        diskResourceService.createFolder(parentFolder, newFolderName,
-                new CreateFolderCallback(parentFolder, view, newFolderName));
+        diskResourceService.createFolder(parentFolder, newFolderName, new CreateFolderCallback(
+                parentFolder, view, newFolderName));
     }
 
     @Override
@@ -415,7 +426,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doDelete() {
-        if (!getSelectedDiskResources().isEmpty() && DiskResourceUtil.isOwner(getSelectedDiskResources())) {
+        if (!getSelectedDiskResources().isEmpty()
+                && DiskResourceUtil.isOwner(getSelectedDiskResources())) {
             view.mask(DISPLAY.loadingMask());
 
             HashSet<DiskResource> drSet = Sets.newHashSet(getSelectedDiskResources());
@@ -500,22 +512,23 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         diskResourceService.setDiskResourceMetaData(resource, metadataToAdd, metadataToDelete,
                 diskResourceMetadataUpdateCallback);
     }
-    
+
     @Override
-    public boolean canDragDataToTargetFolder(final Folder targetFolder, final Collection<DiskResource> dropData){
+    public boolean canDragDataToTargetFolder(final Folder targetFolder,
+            final Collection<DiskResource> dropData) {
         // Assuming that ownership is of no concern.
         for (DiskResource dr : dropData) {
             // if the resource is a direct child of target folder
-            if(DiskResourceUtil.isChildOfFolder(targetFolder, dr)){
+            if (DiskResourceUtil.isChildOfFolder(targetFolder, dr)) {
                 return false;
             }
             if (dr instanceof Folder) {
 
                 // cannot drag an ancestor (parent, grandparent, etc) onto a child and/or descendant
-                if(DiskResourceUtil.isDescendantOfFolder(targetFolder, (Folder)dr)){
+                if (DiskResourceUtil.isDescendantOfFolder(targetFolder, (Folder)dr)) {
                     return false;
                 }
-                
+
             } else if (dr instanceof File) {
 
             }
@@ -525,11 +538,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doMoveDiskResources(Folder targetFolder, Set<DiskResource> resources) {
-        diskResourceService.moveDiskResources(resources, targetFolder, new DiskResourceMoveCallback(view, targetFolder, resources));
+        diskResourceService.moveDiskResources(resources, targetFolder, new DiskResourceMoveCallback(
+                view, targetFolder, resources));
     }
 
     @Override
-    public Folder getDropTargetFolder(IsWidget target, Element eventTargetElement){
+    public Folder getDropTargetFolder(IsWidget target, Element eventTargetElement) {
         Folder ret = null;
         if (view.isViewTree(target) && (view.findTreeNode(eventTargetElement) != null)) {
             TreeNode<Folder> targetTreeNode = view.findTreeNode(eventTargetElement);
@@ -546,14 +560,14 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         }
         return ret;
     }
-    
+
     @Override
-    public boolean isViewGrid(IsWidget widget){
+    public boolean isViewGrid(IsWidget widget) {
         return view.isViewGrid(widget);
     }
-    
+
     @Override
-    public boolean isViewTree(IsWidget widget){
+    public boolean isViewTree(IsWidget widget) {
         return view.isViewTree(widget);
     }
 
@@ -622,13 +636,13 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             @Override
             public void onFailure(Throwable caught) {
                 ErrorHandler.post(caught);
-                
+
             }
 
             @Override
             public void onSuccess(String result) {
-                AutoBean<DataSearchResult> bean = AutoBeanCodex.decode(dataSearchFactory, DataSearchResult.class,
-                        result);
+                AutoBean<DataSearchResult> bean = AutoBeanCodex.decode(dataSearchFactory,
+                        DataSearchResult.class, result);
                 // List<DataSearch> results = bean.as().getSearchResults();
                 List<DiskResource> resources = new ArrayList<DiskResource>();
                 for (DataSearch ds : bean.as().getSearchResults()) {
@@ -657,7 +671,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
                 view.showSearchResultWidget(searchView.asWidget());
             }
         });
-        
+
     }
 
     @Override
@@ -667,7 +681,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
      
     @Override
     public void addToSearchHistory(String searchTerm) {
-        if(!searchHistory.contains(searchTerm)) {
+        if (!searchHistory.contains(searchTerm)) {
             searchHistory.add(searchTerm);
         }
 
@@ -687,5 +701,5 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void saveSearchHistory() {
 
     }
-    
+
 }
