@@ -68,6 +68,14 @@
                      hidden="true"/>
    </ui:with>
    
+   <ui:with type="com.sencha.gxt.core.client.util.Margins" field="margins0050">
+    <ui:attributes top="0" right="0" bottom="0" left="0" />
+  </ui:with>
+   
+ <ui:with type="com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData" field="boxLayoutDataMargins0050Flex1">
+    <ui:attributes margins="{margins0050}" flex="1" />
+  </ui:with>
+   
    <container:SimpleContainer>
       <container:BorderLayoutContainer ui:field="con"
                                        borders="true">
@@ -98,12 +106,12 @@
          </container:center>
          <!-- This is the details panel -->
          <container:east layoutData="{eastData}">
-           <container:VerticalLayoutContainer>
+           <container:VBoxLayoutContainer vBoxLayoutAlign="STRETCH">
             <gxt:ContentPanel ui:field="detailsPanel" 
-                              headingText="{DISPLAY.details}" height="180" />
+                              headingText="{DISPLAY.details}"  layoutData="{boxLayoutDataMargins0050Flex1}" />
              <gxt:ContentPanel ui:field="historyPanel" 
-                              headingText="Search History" height="180"/>
-                              </container:VerticalLayoutContainer>
+                              headingText="Search History" layoutData="{boxLayoutDataMargins0050Flex1}"/>
+               </container:VBoxLayoutContainer>
          </container:east>
          <container:south layoutData="{southData}"/>
       </container:BorderLayoutContainer>

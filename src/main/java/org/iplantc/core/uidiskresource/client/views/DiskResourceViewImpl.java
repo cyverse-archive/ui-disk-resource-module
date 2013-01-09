@@ -6,8 +6,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
+import org.iplantc.core.uicommons.client.widgets.IPlantAnchorDefaultAppearance;
 import org.iplantc.core.uicommons.client.widgets.PushButton;
 import org.iplantc.core.uidiskresource.client.I18N;
+import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceInfo;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceModelKeyProvider;
@@ -46,6 +50,7 @@ import com.sencha.gxt.dnd.core.client.DND.Operation;
 import com.sencha.gxt.dnd.core.client.DragSource;
 import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.Window;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.Container;
@@ -521,7 +526,9 @@ public class DiskResourceViewImpl implements DiskResourceView {
         fl.setLabelWidth(detailsPanel.getOffsetWidth(true) - 10);
         fl.setLabelSeparator("");
         fl.setHTML(getDetailAsHtml("&nbsp;&nbsp;" + I18N.DISPLAY.noDetails(), true));
-        detailsPanel.add(fl);
+        HorizontalPanel hp = new HorizontalPanel();
+        hp.add(fl);
+        detailsPanel.add(hp);
     }
 
     private String getDetailAsHtml(String detail, boolean bolded) {
@@ -662,23 +669,34 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     }
     
-    private PushButton buildSearchHistoryLink(String searchTerm) {
-        PushButton button = new PushButton(searchTerm, 120);
-        return button;
+    private IPlantAnchor buildSearchHistoryLink(final String searchTerm) {
+        IPlantAnchor anchor = new IPlantAnchor(searchTerm, 120,new IPlantAnchorDefaultAppearance(), new ClickHandler() {
+            
+            @Override
+            public void onClick(ClickEvent event) {
+                        DataSearchHistorySelectedEvent dsh = new DataSearchHistorySelectedEvent(
+                                searchTerm);
+                        EventBus.getInstance().fireEvent(dsh);
+                
+            }
+                });
+
+        return anchor;
     }
 
     @Override
     public void renderSearchHistory(List<String> history) {
         VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+        vlc.setScrollMode(ScrollMode.AUTOY);
+        historyPanel.clear();
+        historyPanel.setWidget(vlc);
         if (history != null && history.size() > 0) {
-            vlc.setScrollMode(ScrollMode.AUTO);
             for (String term : history) {
                 vlc.add(buildSearchHistoryLink(term));
             }
         }
-
-        historyPanel.clear();
-        historyPanel.setWidget(vlc);
+        // Kludge:
+        historyPanel.forceLayout();
     }
 
 
