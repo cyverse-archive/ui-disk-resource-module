@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceAutoBeanFactory;
@@ -58,7 +59,11 @@ public class DiskResourcePresenterTest {
      * @throws java.lang.Exception
      */
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {}
+    public static void setUpBeforeClass() throws Exception {
+        UserInfo userInfo = UserInfo.getInstance();
+        userInfo.setUsername("TestUser");
+        userInfo.setTrashPath("Test_TrashPath");
+    }
 
     /**
      * @throws java.lang.Exception
@@ -102,6 +107,7 @@ public class DiskResourcePresenterTest {
                 oneOf(view).setPresenter(with(aNonNull(DiskResourceView.Presenter.class)));
                 oneOf(proxy).setPresenter(with(aNonNull(DiskResourceView.Presenter.class)));
                 oneOf(diskResourceService).getDataSearchHistory(with(aNonNull(AsyncCallback.class)));
+                oneOf(diskResourceService).getUserTrashPath(with(aNonNull(String.class)), with(aNonNull(AsyncCallback.class)));
             }
         });
     }
@@ -232,8 +238,7 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setRenameButtonEnabled(with(true));
                 oneOf(toolbar).setDeleteButtonEnabled(with(true));
                 oneOf(toolbar).setShareButtonEnabled(with(true));
-                oneOf(toolbar).setMetadataButtonEnabled(with(true));
-                oneOf(toolbar).setDataQuotaButtonEnabled(with(false));
+                oneOf(toolbar).setRestoreMenuItemEnabled(with(false));
 
                 oneOf(view).isRoot(with(folder));
                 will(returnValue(false));
@@ -242,6 +247,9 @@ public class DiskResourcePresenterTest {
                 will(returnValue(true));
                 allowing(folder).getPermissions();
                 will(returnValue(permissions));
+
+                allowing(folder).getId();
+                will(returnValue(""));
 
             }
         });
@@ -276,14 +284,15 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setRenameButtonEnabled(with(false));
                 oneOf(toolbar).setDeleteButtonEnabled(with(false));
                 oneOf(toolbar).setShareButtonEnabled(with(false));
-                oneOf(toolbar).setMetadataButtonEnabled(with(false));
-                oneOf(toolbar).setDataQuotaButtonEnabled(with(false));
+                oneOf(toolbar).setRestoreMenuItemEnabled(with(false));
 
                 allowing(permissions).isOwner();
                 will(returnValue(false));
                 allowing(folder).getPermissions();
                 will(returnValue(permissions));
 
+                allowing(folder).getId();
+                will(returnValue(""));
             }
         });
 
@@ -316,8 +325,7 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setRenameButtonEnabled(with(true));
                 oneOf(toolbar).setDeleteButtonEnabled(with(true));
                 oneOf(toolbar).setShareButtonEnabled(with(true));
-                oneOf(toolbar).setMetadataButtonEnabled(with(true));
-                oneOf(toolbar).setDataQuotaButtonEnabled(with(false));
+                oneOf(toolbar).setRestoreMenuItemEnabled(with(false));
 
                 oneOf(view).isRoot(with(folder));
                 will(returnValue(false));
@@ -327,6 +335,8 @@ public class DiskResourcePresenterTest {
                 allowing(folder).getPermissions();
                 will(returnValue(permissions));
 
+                allowing(folder).getId();
+                will(returnValue(""));
             }
         });
 
@@ -363,14 +373,15 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setRenameButtonEnabled(with(false));
                 oneOf(toolbar).setDeleteButtonEnabled(with(false));
                 oneOf(toolbar).setShareButtonEnabled(with(false));
-                oneOf(toolbar).setMetadataButtonEnabled(with(false));
-                oneOf(toolbar).setDataQuotaButtonEnabled(with(false));
+                oneOf(toolbar).setRestoreMenuItemEnabled(with(false));
 
                 allowing(permissions).isOwner();
                 will(returnValue(false));
                 allowing(folder).getPermissions();
                 will(returnValue(permissions));
 
+                allowing(folder).getId();
+                will(returnValue(""));
             }
         });
 
