@@ -1,6 +1,7 @@
 package org.iplantc.core.uidiskresource.client.presenters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,8 @@ import java.util.Set;
 import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.models.UserInfo;
+import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
@@ -90,6 +93,30 @@ import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
  */
 public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         DiskResourceViewToolbarImpl.Presenter, HasHandlerRegistrationMgmt {
+
+    private final class DetailsCallbackImpl implements AsyncCallback<String> {
+        private final String path;
+
+        private DetailsCallbackImpl(String path) {
+            this.path = path;
+        }
+
+        @Override
+        public void onFailure(Throwable caught) {
+            ErrorHandler.post(I18N.ERROR.retrieveStatFailed(), caught);
+
+        }
+
+        @Override
+        public void onSuccess(String result) {
+            JSONObject json = JsonUtil.getObject(result);
+            JSONObject pathsObj = JsonUtil.getObject(json, "paths");
+            JSONObject details = JsonUtil.getObject(pathsObj, path);
+            AutoBean<DiskResourceInfo> bean = AutoBeanCodex.decode(drFactory, DiskResourceInfo.class,
+                    details.toString());
+            view.updateDetails(path, bean.as());
+        }
+    }
 
     private final class DiskResourceMovedEventHandlerImpl implements DiskResourcesMovedEventHandler {
         @Override
@@ -175,6 +202,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         this.proxy.setPresenter(this);
         searchHistory = new ArrayList<String>();
         loadSearchHistory();
+        loadUserTrashPath();
     }
 
     private void initDragAndDrop() {
@@ -205,6 +233,25 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
         });
 
+    }
+
+    @Override
+    public void loadUserTrashPath() {
+        final String userName = UserInfo.getInstance().getUsername();
+        diskResourceService.getUserTrashPath(userName, new AsyncCallback<String>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                // best guess of user name. this is horrible
+                UserInfo.getInstance().setTrashPath("/iplant/trash/home/rods/" + userName);
+            }
+
+            @Override
+            public void onSuccess(String result) {
+                JSONObject obj = JsonUtil.getObject(result);
+                UserInfo.getInstance().setTrashPath(JsonUtil.getString(obj, "trash"));
+            }
+        });
     }
 
     private void initHandlers() {
@@ -253,7 +300,9 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
                     @Override
                     public void onSelection(DataSearchHistorySelectedEvent event) {
-                        doSearch(event.getSearchHistoryTerm());
+                        String searchHistoryTerm = event.getSearchHistoryTerm();
+                        view.getToolbar().setSearchTerm(searchHistoryTerm);
+                        doSearch(searchHistoryTerm);
 
                     }
 
@@ -333,23 +382,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         final String path = resource.getId();
         arr.set(0, new JSONString(path));
         obj.put("paths", arr);
-        diskResourceService.getStat(obj.toString(), new AsyncCallback<String>() {
-            @Override
-            public void onFailure(Throwable caught) {
-                ErrorHandler.post(I18N.ERROR.retrieveStatFailed(), caught);
-
-            }
-
-            @Override
-            public void onSuccess(String result) {
-                JSONObject json = JsonUtil.getObject(result);
-                JSONObject pathsObj = JsonUtil.getObject(json, "paths");
-                JSONObject details = JsonUtil.getObject(pathsObj, path);
-                AutoBean<DiskResourceInfo> bean = AutoBeanCodex.decode(drFactory,
-                        DiskResourceInfo.class, details.toString());
-                view.updateDetails(path, bean.as());
-            }
-        });
+        diskResourceService.getStat(obj.toString(), new DetailsCallbackImpl(path));
 
     }
 
@@ -646,7 +679,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             public void onSuccess(String result) {
                 AutoBean<DataSearchResult> bean = AutoBeanCodex.decode(dataSearchFactory,
                         DataSearchResult.class, result);
-                // List<DataSearch> results = bean.as().getSearchResults();
                 List<DiskResource> resources = new ArrayList<DiskResource>();
                 for (DataSearch ds : bean.as().getSearchResults()) {
                     if (ds.getType().equalsIgnoreCase("file")) {
@@ -693,7 +725,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void deSelectDiskResources() {
         view.deSelectDiskResources();
     }
-     
+
     @Override
     public void addToSearchHistory(String searchTerm) {
         if (!searchHistory.contains(searchTerm)) {
@@ -751,6 +783,54 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void setCurrentSearchTerm(String searchTerm) {
         this.currentSearchTerm = searchTerm;
 
+    }
+
+    @Override
+    public void emptyTrash() {
+        diskResourceService.emptyTrash(UserInfo.getInstance().getUsername(),
+                new AsyncCallback<String>() {
+
+                    @Override
+                    public void onSuccess(String result) {
+                        Folder f = view.getFolderById(UserInfo.getInstance().getTrashPath());
+                        if (f != null) {
+                            view.refreshFolder(f);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        ErrorHandler.post(caught);
+                    }
+                });
+
+    }
+
+    @Override
+    public void restore() {
+        Iterator<DiskResource> it = getSelectedDiskResources().iterator();
+        JSONObject obj = new JSONObject();
+        JSONArray pathArr = new JSONArray();
+        int i = 0;
+        while (it.hasNext()) {
+            DiskResource r = it.next();
+            pathArr.set(i++, new JSONString(r.getId()));
+        }
+        obj.put("paths", pathArr);
+
+        diskResourceService.restoreDiskResource(obj, new AsyncCallback<String>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                ErrorHandler.post(caught);
+
+            }
+
+            @Override
+            public void onSuccess(String result) {
+                view.removeDiskResources(getSelectedDiskResources());
+            }
+        });
     }
 
 }

@@ -273,4 +273,28 @@ public interface DiskResourceServiceFacade {
      * @param callback callback object
      */
     void saveDataSearchHistory(String body, AsyncCallback<String> callback);
+
+    /**
+     * empty user's trash
+     * 
+     * @param user
+     * @param callback
+     */
+    public void emptyTrash(String user, AsyncCallback<String> callback);
+    
+    /**
+    * get users trash path
+    *
+    * @param userName
+    * @param callback
+    */
+    public void getUserTrashPath(String userName, AsyncCallback<String> callback);
+
+    /**
+     * restore a deleted disk resources
+     * 
+     * @param body
+     * @param callback
+     */
+    public void restoreDiskResource(JSONObject body, AsyncCallback<String> callback);
 }

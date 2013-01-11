@@ -91,25 +91,28 @@
          </button:TextButton>
       </toolbar:child>
       
-      <!-- Metadata button -->
-      <toolbar:child>
-         <button:TextButton ui:field="metadataButton" 
-                            text="{display.metadata}"
-                            icon="{res.metadataButtonIcon}">
+       <toolbar:child>
+         <button:TextButton ui:field="trash" 
+                            icon="{res.deleteButtonIcon}"
+                            text="Trash">
+                             <button:menu>
+               <menu:Menu>
+                  <menu:MenuItem ui:field="emptyTrash" 
+                                 text="{display.emptyTrash}">
+                  </menu:MenuItem>
+                  <menu:MenuItem ui:field="restore" 
+                                 text="{display.restore}">
+                  </menu:MenuItem>
+               </menu:Menu>
+            </button:menu>
          </button:TextButton>
-      </toolbar:child>      
+      </toolbar:child>     
       
       <!-- Data Search box -->
       <toolbar:child>
       	<form:TextField ui:field="searchField" emptyText="search by name"> </form:TextField>
-      </toolbar:child>
+      </toolbar:child> 
 
-      <!-- Data Quota button -->
-      <toolbar:child>
-         <button:TextButton ui:field="dataQuotaButton" 
-                            icon="{res.dataQuotaButtonIcon}">
-         </button:TextButton>
-      </toolbar:child>      
       
    </toolbar:ToolBar>        
 </ui:UiBinder> 

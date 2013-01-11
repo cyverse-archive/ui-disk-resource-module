@@ -490,6 +490,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
             centerPanel.add(grid, centerData);
             // reset search
             presenter.setCurrentSearchTerm(null);
+            toolbar.clearSearchTerm();
         }
     }
 

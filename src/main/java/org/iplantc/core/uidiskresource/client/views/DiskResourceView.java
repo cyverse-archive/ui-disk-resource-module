@@ -160,6 +160,8 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
 
         void loadSearchHistory();
 
+        void loadUserTrashPath();
+
         void addToSearchHistory(String searchTerm);
 
         void removeFromSearchHistory(String searchTerm);
@@ -170,6 +172,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable {
         String getCurrentSearchTerm();
         
         void setCurrentSearchTerm(String searchTerm);
+
 
     }
 

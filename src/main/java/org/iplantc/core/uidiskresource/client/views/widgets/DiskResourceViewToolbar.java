@@ -47,6 +47,10 @@ public interface DiskResourceViewToolbar extends IsWidget {
         void doCreateNewFolder(Folder parentFolder, String folderName);
 
         void doSearch(String val);
+        
+        void emptyTrash();
+
+        void restore();
 
     }
 
@@ -106,8 +110,10 @@ public interface DiskResourceViewToolbar extends IsWidget {
 
     void setShareButtonEnabled(boolean enabled);
 
-    void setMetadataButtonEnabled(boolean enabled);
+    void setSearchTerm(String searchTerm);
 
-    void setDataQuotaButtonEnabled(boolean enabled);
+    void clearSearchTerm();
+
+    void setRestoreMenuItemEnabled(boolean b);
 
 }
