@@ -2,6 +2,8 @@ package org.iplantc.core.uidiskresource.client.presenters;
 
 import java.util.List;
 
+import org.iplantc.core.uicommons.client.models.UserInfo;
+import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.IsDiskResourceRoot;
@@ -46,8 +48,6 @@ final class ToolbarButtonVisibilitySelectionHandler<R extends DiskResource> impl
             toolbar.setRenameButtonEnabled(false);
             toolbar.setDeleteButtonEnabled(false);
             toolbar.setShareButtonEnabled(false);
-            toolbar.setMetadataButtonEnabled(false);
-            toolbar.setDataQuotaButtonEnabled(false);
         } else if (selection.size() == 1) {
             toolbar.setRefreshButtonEnabled(true);
             // Check Ownership
@@ -57,15 +57,11 @@ final class ToolbarButtonVisibilitySelectionHandler<R extends DiskResource> impl
                 toolbar.setRenameButtonEnabled(true);
                 toolbar.setDeleteButtonEnabled(true);
                 toolbar.setShareButtonEnabled(true);
-                toolbar.setMetadataButtonEnabled(true);
-                toolbar.setDataQuotaButtonEnabled(false);
             } else {
                 toolbar.setNewFolderButtonEnabled(false);
                 toolbar.setRenameButtonEnabled(false);
                 toolbar.setDeleteButtonEnabled(false);
                 toolbar.setShareButtonEnabled(false);
-                toolbar.setMetadataButtonEnabled(false);
-                toolbar.setDataQuotaButtonEnabled(false);
             }
 
         } else {
@@ -74,9 +70,30 @@ final class ToolbarButtonVisibilitySelectionHandler<R extends DiskResource> impl
             toolbar.setRenameButtonEnabled(false);
             toolbar.setDeleteButtonEnabled(true);
             toolbar.setShareButtonEnabled(true);
-            toolbar.setMetadataButtonEnabled(false);
-            toolbar.setDataQuotaButtonEnabled(false);
         }
+
+        updateRestoreMenuItem(selection);
+    }
+
+    private void updateRestoreMenuItem(List<R> selection) {
+        if (selection.isEmpty()) {
+            toolbar.setRestoreMenuItemEnabled(false);
+            return;
+        }
+        for (R item : selection) {
+                DiskResource dr = (DiskResource) item;
+                String trashPath = UserInfo.getInstance().getTrashPath();
+                if(dr.getId().equals(trashPath)) {
+                    toolbar.setRestoreMenuItemEnabled(false);
+                    return;
+                }
+                    
+                if (!dr.getId().startsWith(trashPath)) {
+                    toolbar.setRestoreMenuItemEnabled(false);
+                    return;
+                }
+        }
+        toolbar.setRestoreMenuItemEnabled(true);
     }
 
     private void updateToolbarDownloadButtons(List<R> selection) {

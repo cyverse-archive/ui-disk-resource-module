@@ -1,5 +1,6 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
+import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.File;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
@@ -16,7 +17,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
+import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.event.HideEvent;
+import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.menu.Item;
@@ -71,13 +76,13 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     TextButton shareButton;
 
     @UiField
-    TextButton metadataButton;
-
-    @UiField
-    TextButton dataQuotaButton;
-
-    @UiField
     TextField searchField;
+
+    @UiField
+    MenuItem emptyTrash;
+
+    @UiField
+    MenuItem restore;
 
     public DiskResourceViewToolbarImpl() {
         widget = BINDER.createAndBindUi(this);
@@ -171,14 +176,26 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
         presenter.doShare();
     }
 
-    @UiHandler("metadataButton")
-    void onMetadataClicked(SelectEvent event) {
-        presenter.doMetadata();
+
+    @UiHandler("emptyTrash")
+    void onEmptyTrashClicked(SelectionEvent<Item> event) {
+        final ConfirmMessageBox cmb = new ConfirmMessageBox(I18N.DISPLAY.emptyTrash(),
+                I18N.DISPLAY.emptyTrashWarning());
+        cmb.addHideHandler(new HideHandler() {
+            public void onHide(HideEvent event) {
+                if (cmb.getHideButton() == cmb.getButtonById(PredefinedButton.YES.name())) {
+                    presenter.emptyTrash();
+                }
+            }
+        });
+
+        cmb.setWidth(300);
+        cmb.show();
     }
 
-    @UiHandler("dataQuotaButton")
-    void onDataQuotaClicked(SelectEvent event) {
-        presenter.doDataQuota();
+    @UiHandler("restore")
+    void onRestoreClicked(SelectionEvent<Item> event) {
+        presenter.restore();
     }
 
     @Override
@@ -241,13 +258,21 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
         shareButton.setEnabled(enabled);
     }
 
+
+
     @Override
-    public void setMetadataButtonEnabled(boolean enabled) {
-        metadataButton.setEnabled(enabled);
+    public void setSearchTerm(String searchTerm) {
+        searchField.setValue(searchTerm, true);
+
     }
 
     @Override
-    public void setDataQuotaButtonEnabled(boolean enabled) {
-        dataQuotaButton.setEnabled(enabled);
+    public void clearSearchTerm() {
+        searchField.clear();
+    }
+
+    @Override
+    public void setRestoreMenuItemEnabled(boolean enabled) {
+        restore.setEnabled(enabled);
     }
 }

@@ -131,4 +131,32 @@ public interface DiskResourceDisplayStrings extends CommonUIDisplayStrings {
      */
     String noDetails();
 
+    /**
+     * restore message
+     * 
+     * @return
+     */
+    String restoreMsg();
+
+    /**
+     * delete message
+     * 
+     * @return
+     */
+    String deleteMsg();
+
+    /**
+     * empty trash warning msg
+     * 
+     * @return
+     */
+    String emptyTrashWarning();
+
+    /**
+     * empty trash label
+     * 
+     * @return
+     */
+    String emptyTrash();
+
 }
