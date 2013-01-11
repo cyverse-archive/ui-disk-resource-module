@@ -21,7 +21,6 @@ import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
-import com.google.gwt.user.client.Event;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.cell.client.Cell;
@@ -40,6 +39,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -747,5 +747,17 @@ public class DiskResourceViewImpl implements DiskResourceView {
         }, MouseOutEvent.getType());
     }
 
+    @Override
+    public boolean isRoot(DiskResource dr) {
+        if (!(dr instanceof Folder))
+            return false;
+
+        for (Folder f : treeStore.getRootItems()) {
+            if (f.getId().equalsIgnoreCase(dr.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

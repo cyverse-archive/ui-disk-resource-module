@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
+import org.iplantc.core.uidiskresource.client.views.IsDiskResourceRoot;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
 import com.google.common.collect.Lists;
@@ -15,9 +16,11 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 final class ToolbarButtonVisibilitySelectionHandler<R extends DiskResource> implements
         SelectionChangedHandler<R>, SelectionHandler<R> {
     private final DiskResourceViewToolbar toolbar;
+    private final IsDiskResourceRoot rootFinder;
 
-    ToolbarButtonVisibilitySelectionHandler(DiskResourceViewToolbar toolbar) {
+    ToolbarButtonVisibilitySelectionHandler(final DiskResourceViewToolbar toolbar, final IsDiskResourceRoot rootFinder) {
         this.toolbar = toolbar;
+        this.rootFinder = rootFinder;
     }
 
     @Override
@@ -48,7 +51,8 @@ final class ToolbarButtonVisibilitySelectionHandler<R extends DiskResource> impl
         } else if (selection.size() == 1) {
             toolbar.setRefreshButtonEnabled(true);
             // Check Ownership
-            if (selection.get(0).getPermissions().isOwner()) {
+            if (selection.get(0).getPermissions().isOwner() 
+                    && !rootFinder.isRoot(selection.get(0))) {
                 toolbar.setNewFolderButtonEnabled(true);
                 toolbar.setRenameButtonEnabled(true);
                 toolbar.setDeleteButtonEnabled(true);

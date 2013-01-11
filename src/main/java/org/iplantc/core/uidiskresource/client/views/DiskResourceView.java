@@ -30,7 +30,7 @@ import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
  * @author jstroot
  * 
  */
-public interface DiskResourceView extends IsWidget, IsMaskable {
+public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRoot {
 
     public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter,
             DiskResourceViewToolbarImpl.Presenter {

@@ -215,7 +215,7 @@ public class DiskResourcePresenterTest {
         final Folder folder = context.mock(Folder.class);
         final Permissions permissions = context.mock(Permissions.class);
         ToolbarButtonVisibilitySelectionHandler<Folder> selChangedHandler = new ToolbarButtonVisibilitySelectionHandler<Folder>(
-                toolbar);
+                toolbar, view);
         // Test the case where one folder is selected, and user IS the owner
         context.checking(new Expectations() {
             {
@@ -234,6 +234,9 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setShareButtonEnabled(with(true));
                 oneOf(toolbar).setMetadataButtonEnabled(with(true));
                 oneOf(toolbar).setDataQuotaButtonEnabled(with(false));
+
+                oneOf(view).isRoot(with(folder));
+                will(returnValue(false));
 
                 allowing(permissions).isOwner();
                 will(returnValue(true));
@@ -255,7 +258,7 @@ public class DiskResourcePresenterTest {
         final Folder folder = context.mock(Folder.class);
         final Permissions permissions = context.mock(Permissions.class);
         ToolbarButtonVisibilitySelectionHandler<Folder> selChangedHandler = new ToolbarButtonVisibilitySelectionHandler<Folder>(
-                toolbar);
+                toolbar, view);
 
         // Test the case where one folder is selected, and user IS NOT the owner
         context.checking(new Expectations() {
@@ -296,7 +299,7 @@ public class DiskResourcePresenterTest {
         final Folder folder = context.mock(Folder.class);
         final Permissions permissions = context.mock(Permissions.class);
         ToolbarButtonVisibilitySelectionHandler<DiskResource> selChangedHandler = new ToolbarButtonVisibilitySelectionHandler<DiskResource>(
-                toolbar);
+                toolbar, view);
         // Test the case where one folder is selected, and user IS the owner
         context.checking(new Expectations() {
             {
@@ -315,6 +318,9 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setShareButtonEnabled(with(true));
                 oneOf(toolbar).setMetadataButtonEnabled(with(true));
                 oneOf(toolbar).setDataQuotaButtonEnabled(with(false));
+
+                oneOf(view).isRoot(with(folder));
+                will(returnValue(false));
 
                 allowing(permissions).isOwner();
                 will(returnValue(true));
@@ -339,7 +345,7 @@ public class DiskResourcePresenterTest {
         final Folder folder = context.mock(Folder.class);
         final Permissions permissions = context.mock(Permissions.class);
         ToolbarButtonVisibilitySelectionHandler<DiskResource> selChangedHandler = new ToolbarButtonVisibilitySelectionHandler<DiskResource>(
-                toolbar);
+                toolbar, view);
 
         // Test the case where one folder is selected, and user IS NOT the owner
         context.checking(new Expectations() {
