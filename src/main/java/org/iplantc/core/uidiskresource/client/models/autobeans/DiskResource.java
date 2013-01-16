@@ -2,11 +2,12 @@ package org.iplantc.core.uidiskresource.client.models.autobeans;
 
 import java.util.Date;
 
+import org.iplantc.core.uicommons.client.models.HasId;
+
+import com.google.gwt.user.client.ui.HasName;
 import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
 
-public interface DiskResource {
-
-    String getId();
+public interface DiskResource extends HasId, HasName {
 
     void setId(String id);
 
@@ -14,9 +15,11 @@ public interface DiskResource {
 
     String getPath();
 
+    @Override
     @PropertyName("label")
     String getName();
 
+    @Override
     @PropertyName("label")
     void setName(String name);
 

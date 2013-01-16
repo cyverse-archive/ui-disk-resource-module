@@ -223,6 +223,8 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
     void setSouthWidget(IsWidget fl);
 
+    void setSouthWidget(IsWidget fl, double size);
+
     void addDiskResourceSelectChangedHandler(SelectionChangedHandler<DiskResource> selectionChangedHandler);
 
     void addFolderSelectionHandler(SelectionHandler<Folder> selectionHandler);

@@ -71,7 +71,7 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<St
         selectedFileField.addKeyUpHandler(new SelectedFileFieldKeyUpHandler(presenter, selectedFileField));
 
         presenter.getView().setSouthWidget(fl);
-        presenter.addFileSelectChangedHandler(new FileSelectionChangedHandler(selectedFileField, okButton));
+        presenter.addFileSelectChangedHandler(new FileSelectionChangedHandler(this, selectedFileField, okButton));
 
         // Tell the presenter to add the view with the north and east widgets hidden.
         DiskResourceView.Presenter.Builder b = presenter.builder().hideNorth().hideEast().disableDiskResourceHyperlink();
@@ -119,27 +119,29 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<St
     }
 
     private final class FileSelectionChangedHandler implements SelectionChangedHandler<DiskResource> {
-        private final TextField selectedFileField;
-        private final HasEnabled hasEnabled;
+        private final HasValue<String> textbox;
+        private final HasEnabled okButton;
+        private final TakesValue<List<String>> dlg;
 
-        private FileSelectionChangedHandler(final TextField selectedFileField, final HasEnabled hasEnabled) {
-            this.selectedFileField = selectedFileField;
-            this.hasEnabled = hasEnabled;
+        private FileSelectionChangedHandler(final TakesValue<List<String>> dlg, final HasValue<String> textBox, final HasEnabled okButton) {
+            this.textbox = textBox;
+            this.okButton = okButton;
+            this.dlg = dlg;
         }
 
         @Override
         public void onSelectionChanged(SelectionChangedEvent<DiskResource> event) {
             if ((event.getSelection() == null) || event.getSelection().isEmpty()) {
                 // Disable the okButton
-                hasEnabled.setEnabled(false);
+                okButton.setEnabled(false);
                 return;
             }
             ArrayList<File> newArrayList = Lists.newArrayList(DiskResourceUtil.extractFiles(event.getSelection()));
             List<String> idList = DiskResourceUtil.asStringIdList(newArrayList);
-            setValue(idList);
-            selectedFileField.setValue(DiskResourceUtil.asCommaSeperatedNameList(idList));
+            dlg.setValue(idList);
+            textbox.setValue(DiskResourceUtil.asCommaSeperatedNameList(idList));
             // Enable the okButton
-            hasEnabled.setEnabled(true);
+            okButton.setEnabled(true);
         }
     }
 

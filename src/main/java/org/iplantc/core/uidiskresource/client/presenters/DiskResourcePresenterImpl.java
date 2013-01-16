@@ -1,7 +1,6 @@
 package org.iplantc.core.uidiskresource.client.presenters;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,10 +12,10 @@ import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.models.UserInfo;
-import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
+import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent.DataSearchHistorySelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent.DataSearchNameSelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DataSearchPathSelectedEvent;
@@ -58,7 +57,6 @@ import org.iplantc.core.uidiskresource.client.views.DiskResourceSearchView;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.metadata.DiskResourceMetadataDialog;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
-import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent.DataSearchHistorySelectedEventHandler;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -256,6 +254,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     private void initHandlers() {
         EventBus eventBus = EventBus.getInstance();
+        
+        // FIXME JDS Add DiskResourceRefreshEventHandler
 
         DiskResourcesDeletedEventHandlerImpl diskResourcesDeletedHandler = new DiskResourcesDeletedEventHandlerImpl(
                 view);
@@ -422,13 +422,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doSimpleDownload() {
-        EventBus.getInstance().fireEvent(
-                new RequestSimpleDownloadEvent(this, getSelectedDiskResources()));
+        EventBus.getInstance().fireEvent(new RequestSimpleDownloadEvent(this, getSelectedDiskResources(), getSelectedFolder()));
     }
 
     @Override
     public void doBulkDownload() {
-        EventBus.getInstance().fireEvent(new RequestBulkDownloadEvent(this, getSelectedDiskResources()));
+        EventBus.getInstance().fireEvent(new RequestBulkDownloadEvent(this, getSelectedDiskResources(), getSelectedFolder()));
     }
 
     @Override

@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.iplantc.core.jsonutil.JsonUtil;
+import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.File;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
@@ -114,7 +115,7 @@ public class DiskResourceUtil {
         return false;
     }
 
-    public static Iterable<File> extractFiles(Iterable<DiskResource> diskresources) {
+    public static <R extends DiskResource> Iterable<File> extractFiles(Iterable<R> diskresources) {
         List<File> files = Lists.newArrayList();
         for (DiskResource dr : diskresources) {
             if (dr instanceof File) {
@@ -124,7 +125,17 @@ public class DiskResourceUtil {
         return files;
     }
 
-    public static <R extends DiskResource> List<String> asStringIdList(Iterable<R> diskResourceList) {
+    public static <R extends DiskResource> Iterable<Folder> extractFolders(Iterable<R> diskresources) {
+        List<Folder> folders = Lists.newArrayList();
+        for (DiskResource dr : diskresources) {
+            if (dr instanceof Folder) {
+                folders.add((Folder)dr);
+            }
+        }
+        return folders;
+    }
+
+    public static <R extends HasId> List<String> asStringIdList(Iterable<R> diskResourceList) {
         List<String> ids = Lists.newArrayList();
         for (R dr : diskResourceList) {
             ids.add(dr.getId());

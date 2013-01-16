@@ -12,6 +12,10 @@ import com.google.common.collect.Lists;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.TakesValue;
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
@@ -27,20 +31,29 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 public class FolderSelectDialog extends IPlantDialog implements TakesValue<List<String>> {
 
     private final DiskResourceView.Presenter presenter;
-    private final TextField selectedFileField = new TextField();
+    private final TextField selectedFolderField = new TextField();
+
     private List<String> selectedFolderId;
 
     public FolderSelectDialog() {
+        // Get a reference to the OK button, and disable it by default.
+        TextButton okButton = null;
+        Widget w = getButtonBar().getItemByItemId(PredefinedButton.OK.name());
+        if ((w != null) && (w instanceof TextButton)) {
+            okButton = (TextButton)w;
+            okButton.setEnabled(false);
+        }
+        
         setResizable(true);
         setSize("640", "480");
         setHeadingText(I18N.DISPLAY.selectAFolder());
 
         presenter = DiskResourceInjector.INSTANCE.getDiskResourceViewPresenter();
 
-        final FieldLabel fl = new FieldLabel(selectedFileField, I18N.DISPLAY.selectedFolder());
+        final FieldLabel fl = new FieldLabel(selectedFolderField, I18N.DISPLAY.selectedFolder());
 
         presenter.getView().setSouthWidget(fl);
-        presenter.addFolderSelectionHandler(new FileSelectionChangedHandler(selectedFileField));
+        presenter.addFolderSelectionHandler(new FolderSelectionChangedHandler(this, selectedFolderField, okButton));
 
         // Tell the presenter to add the view with the north, east, and center widgets hidden.
         // presenter.go(this, false, true, true, true);
@@ -48,21 +61,29 @@ public class FolderSelectDialog extends IPlantDialog implements TakesValue<List<
 
     }
 
-    private final class FileSelectionChangedHandler implements SelectionHandler<Folder> {
-        private final TextField selectedFileField;
+    private final class FolderSelectionChangedHandler implements SelectionHandler<Folder> {
+        private final HasValue<String> textBox;
+        private final HasEnabled okButton;
+        private final TakesValue<List<String>> dlg;
 
-        private FileSelectionChangedHandler(final TextField selectedFileField) {
-            this.selectedFileField = selectedFileField;
+        private FolderSelectionChangedHandler(final TakesValue<List<String>> dlg, final HasValue<String> textBox, final HasEnabled okButton) {
+            this.textBox = textBox;
+            this.okButton = okButton;
+            this.dlg = dlg;
         }
 
         @Override
         public void onSelection(SelectionEvent<Folder> event) {
             if (event.getSelectedItem() == null) {
+                // Disable the okButton
+                okButton.setEnabled(false);
                 return;
             }
             Folder diskResource = event.getSelectedItem();
-            selectedFileField.setValue(diskResource.getName());
-            setValue(Lists.newArrayList(diskResource.getId()));
+            dlg.setValue(Lists.newArrayList(diskResource.getId()));
+            textBox.setValue(diskResource.getName());
+            // Enable the okButton
+            okButton.setEnabled(true);
         }
     }
 

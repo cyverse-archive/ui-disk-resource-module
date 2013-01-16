@@ -321,6 +321,13 @@ public class DiskResourceViewImpl implements DiskResourceView {
     }
 
     @Override
+    public void setSouthWidget(IsWidget widget, double size) {
+        southData.setHidden(false);
+        southData.setSize(size);
+        con.setSouthWidget(widget, southData);
+    }
+
+    @Override
     public void addDiskResourceSelectChangedHandler(SelectionChangedHandler<DiskResource> selectionChangedHandler) {
         grid.getSelectionModel().addSelectionChangedHandler(selectionChangedHandler);
     }
