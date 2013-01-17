@@ -23,7 +23,6 @@ import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingView;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingView.Presenter;
 import org.iplantc.core.uidiskresource.client.sharing.views.PermissionsLayoutContainer;
 
-import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONBoolean;
@@ -36,8 +35,6 @@ import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.core.shared.FastMap;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
 
-;
-
 /**
  * @author sriram
  *
@@ -48,8 +45,8 @@ public class DataSharingPresenter implements Presenter {
     List<DiskResource> selectedResources;
     private FastMap<Sharing> sharingList;
     private FastMap<List<Sharing>> dataSharingMap;
-    private DiskResourceServiceFacade facade;
-    private PermissionsLayoutContainer permissionsPanel;
+    private final DiskResourceServiceFacade facade;
+    private final PermissionsLayoutContainer permissionsPanel;
 
     public DataSharingPresenter(List<DiskResource> selectedResources, DataSharingView view) {
         facade = GWT.create(DiskResourceServiceFacade.class);

@@ -17,8 +17,6 @@ import org.iplantc.core.uidiskresource.client.views.cells.Resources;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -46,9 +44,9 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
+import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 import com.sencha.gxt.widget.core.client.treegrid.TreeGrid;
 import com.sencha.gxt.widget.core.client.treegrid.TreeGridSelectionModel;
-import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 
 /**
  * @author sriram
@@ -60,8 +58,8 @@ public class PermissionsLayoutContainer extends VerticalLayoutContainer implemen
     private TreeStore<Sharing> treeStore;
     private ToolBar toolbar;
     private FastMap<List<Sharing>> originalList;
-    private Presenter presenter;
-    private FastMap<List<Sharing>> unshareList;
+    private final Presenter presenter;
+    private final FastMap<List<Sharing>> unshareList;
 
     private static final String ID_PERM_GROUP = "idPermGroup";
     private static final String ID_BTN_REMOVE = "idBtnRemove";
@@ -140,7 +138,6 @@ public class PermissionsLayoutContainer extends VerticalLayoutContainer implemen
                 List<Sharing> items = grid.getSelectionModel().getSelectedItems();
                 if (items != null) {
                     for (Sharing s : items) {
-                        @SuppressWarnings("unchecked")
                         String value = permCombo.getCurrentValue();
                         if (value != null) {
                             if (s instanceof DataSharing) {
@@ -438,7 +435,6 @@ public class PermissionsLayoutContainer extends VerticalLayoutContainer implemen
         @Override
         public void onDragMove(DndDragMoveEvent e) {
             super.onDragMove(e);
-            @SuppressWarnings("rawtypes")
             Element tn = e.getDragMoveEvent().getNativeEvent().getEventTarget().cast();
             if (tn == null) {
                 e.getStatusProxy().setStatus(false);
@@ -450,7 +446,6 @@ public class PermissionsLayoutContainer extends VerticalLayoutContainer implemen
         @Override
         public void onDragEnter(DndDragEnterEvent e) {
             super.onDragEnter(e);
-            @SuppressWarnings("rawtypes")
             Element tn = e.getDragEnterEvent().getNativeEvent().getEventTarget().cast();
             if (tn == null) {
                 e.getStatusProxy().setStatus(false);
@@ -477,7 +472,6 @@ public class PermissionsLayoutContainer extends VerticalLayoutContainer implemen
                 }
             }
 
-            @SuppressWarnings("rawtypes")
             TreeNode<Sharing> node = grid.findNode(tn);
             if(node != null) {
                 Sharing s = node.getModel();

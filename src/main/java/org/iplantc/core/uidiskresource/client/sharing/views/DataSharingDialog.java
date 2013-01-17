@@ -13,7 +13,6 @@ import org.iplantc.core.uicommons.client.models.collaborators.Collaborator;
 import org.iplantc.core.uicommons.client.models.collaborators.CollaboratorKeyProvider;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceModelKeyProvider;
-import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceErrorCode;
 import org.iplantc.core.uidiskresource.client.sharing.presenter.DataSharingPresenter;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingView.Presenter;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;

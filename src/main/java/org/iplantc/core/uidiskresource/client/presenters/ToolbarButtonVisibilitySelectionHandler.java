@@ -3,7 +3,6 @@ package org.iplantc.core.uidiskresource.client.presenters;
 import java.util.List;
 
 import org.iplantc.core.uicommons.client.models.UserInfo;
-import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.IsDiskResourceRoot;
@@ -81,7 +80,7 @@ final class ToolbarButtonVisibilitySelectionHandler<R extends DiskResource> impl
             return;
         }
         for (R item : selection) {
-                DiskResource dr = (DiskResource) item;
+                DiskResource dr = item;
                 String trashPath = UserInfo.getInstance().getTrashPath();
                 if(dr.getId().equals(trashPath)) {
                     toolbar.setRestoreMenuItemEnabled(false);
