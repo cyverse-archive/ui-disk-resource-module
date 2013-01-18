@@ -20,8 +20,6 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
@@ -42,7 +40,6 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<St
     private final DiskResourceView.Presenter presenter;
     private final TextField selectedFileField = new TextField();
     private List<String> selectedFileIds;
-    private TextButton okButton;
 
     public static FileSelectDialog singleSelect() {
         return new FileSelectDialog(true);
@@ -53,12 +50,8 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<St
     }
 
     protected FileSelectDialog(boolean singleSelect) {
-        // Get a reference to the OK button, and disable it by default.
-        Widget w = getButtonBar().getItemByItemId(PredefinedButton.OK.name());
-        if ((w != null) && (w instanceof TextButton)) {
-            okButton = (TextButton)w;
-            okButton.setEnabled(false);
-        }
+        // Disable Ok button by default.
+        getOkButton().setEnabled(false);
 
         setResizable(true);
         setSize("640", "480");
@@ -71,7 +64,7 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<St
         selectedFileField.addKeyUpHandler(new SelectedFileFieldKeyUpHandler(presenter, selectedFileField));
 
         presenter.getView().setSouthWidget(fl);
-        presenter.addFileSelectChangedHandler(new FileSelectionChangedHandler(this, selectedFileField, okButton));
+        presenter.addFileSelectChangedHandler(new FileSelectionChangedHandler(this, selectedFileField, getOkButton()));
 
         // Tell the presenter to add the view with the north and east widgets hidden.
         DiskResourceView.Presenter.Builder b = presenter.builder().hideNorth().hideEast().disableDiskResourceHyperlink();

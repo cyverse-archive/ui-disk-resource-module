@@ -14,8 +14,6 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
@@ -36,13 +34,8 @@ public class FolderSelectDialog extends IPlantDialog implements TakesValue<List<
     private List<String> selectedFolderId;
 
     public FolderSelectDialog() {
-        // Get a reference to the OK button, and disable it by default.
-        TextButton okButton = null;
-        Widget w = getButtonBar().getItemByItemId(PredefinedButton.OK.name());
-        if ((w != null) && (w instanceof TextButton)) {
-            okButton = (TextButton)w;
-            okButton.setEnabled(false);
-        }
+        // Disable Ok button by default.
+        getOkButton().setEnabled(false);
         
         setResizable(true);
         setSize("640", "480");
@@ -53,7 +46,7 @@ public class FolderSelectDialog extends IPlantDialog implements TakesValue<List<
         final FieldLabel fl = new FieldLabel(selectedFolderField, I18N.DISPLAY.selectedFolder());
 
         presenter.getView().setSouthWidget(fl);
-        presenter.addFolderSelectionHandler(new FolderSelectionChangedHandler(this, selectedFolderField, okButton));
+        presenter.addFolderSelectionHandler(new FolderSelectionChangedHandler(this, selectedFolderField, getOkButton()));
 
         // Tell the presenter to add the view with the north, east, and center widgets hidden.
         // presenter.go(this, false, true, true, true);

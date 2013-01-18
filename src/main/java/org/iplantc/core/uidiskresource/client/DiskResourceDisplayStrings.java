@@ -159,4 +159,13 @@ public interface DiskResourceDisplayStrings extends CommonUIDisplayStrings {
      */
     String emptyTrash();
 
+    /**
+     * Formats a message indicating the path of the folder receiving the files on upload.
+     * 
+     * @param folderId the path to the folder
+     * 
+     * @return the formatted message
+     */
+    String fileUploadFolder(String folderId);
+
 }
