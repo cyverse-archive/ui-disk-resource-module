@@ -3,6 +3,7 @@ package org.iplantc.core.uidiskresource.client.services;
 import java.util.List;
 import java.util.Set;
 
+import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.autobeans.File;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
@@ -172,16 +173,13 @@ public interface DiskResourceServiceFacade {
      * @param diskResources a set of <code>DiskResource</code>s to be deleted
      * @param callback callback executed when service call completes.
      */
-    <T extends org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource> void deleteDiskResources(
-            Set<T> diskResources, AsyncCallback<String> callback);
+    <T extends DiskResource> void deleteDiskResources(Set<T> diskResources, AsyncCallback<String> callback);
 
     /**
      * @param resource the <code>DiskResource</code> for which metadata will be retrieved.
      * @param callback callback executed when service call completes.
      */
-    void getDiskResourceMetaData(
-            org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource resource,
-            AsyncCallback<String> callback);
+    void getDiskResourceMetaData(DiskResource resource, AsyncCallback<String> callback);
 
     /**
      * Calls service to set disk resource metadata.
@@ -191,9 +189,7 @@ public interface DiskResourceServiceFacade {
      * @param mdToDelete a list of <code>DiskResourceMetadata</code> objects which will be deleted
      * @param callback executed when the service call completes.
      */
-    void setDiskResourceMetaData(
-            org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource resource,
-            Set<DiskResourceMetadata> mdToUpdate, Set<DiskResourceMetadata> mdToDelete,
+    void setDiskResourceMetaData(DiskResource resource, Set<DiskResourceMetadata> mdToUpdate, Set<DiskResourceMetadata> mdToDelete,
             AsyncCallback<String> callback);
 
     /**
