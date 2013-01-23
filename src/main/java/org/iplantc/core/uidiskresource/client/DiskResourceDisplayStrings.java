@@ -168,4 +168,6 @@ public interface DiskResourceDisplayStrings extends CommonUIDisplayStrings {
      */
     String fileUploadFolder(String folderId);
 
+    String urlPrompt();
+
 }

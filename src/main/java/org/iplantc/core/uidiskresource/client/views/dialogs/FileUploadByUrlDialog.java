@@ -2,6 +2,7 @@ package org.iplantc.core.uidiskresource.client.views.dialogs;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.iplantc.core.uicommons.client.models.HasId;
@@ -15,11 +16,13 @@ import org.iplantc.core.uidiskresource.client.services.callbacks.DuplicateDiskRe
 
 import com.google.common.collect.Lists;
 import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.shared.FastMap;
 import com.sencha.gxt.widget.core.client.Status;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -35,27 +38,31 @@ import com.sencha.gxt.widget.core.client.form.FormPanel.Method;
 import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
 import com.sencha.gxt.widget.core.client.form.IsField;
 import com.sencha.gxt.widget.core.client.form.TextArea;
+import com.sencha.gxt.widget.core.client.form.ValueBaseField;
 
 public class FileUploadByUrlDialog extends IPlantDialog {
-    private static final int MAX_UPLOADS = 5;
+    private static final String FIELD_HEIGHT = "50";
     private static final String FIELD_WIDTH = "475";
-    private final Status formStatus = new Status();
-    private final Folder uploadDest;
-    private final FormPanel form;
+    private static final int MAX_UPLOADS = 5;
 
     public FileUploadByUrlDialog(Folder uploadDest, DiskResourceServiceFacade drService, SafeUri servletActionUrl) {
-        this.uploadDest = uploadDest;
         setAutoHide(false);
         setHideOnButtonClick(false);
         // Reset the "OK" button text.
         getOkButton().setText(I18N.DISPLAY.upload());
+        getOkButton().setEnabled(false);
+        setHeadingText(I18N.DISPLAY.upload());
 
-        form = initForm(servletActionUrl);
-        VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+        Status formStatus = new Status();
+        FormPanel form = initForm(servletActionUrl);
+        FlowLayoutContainer flc = new FlowLayoutContainer();
+
+        flc.add(new HTML(I18N.DISPLAY.fileUploadFolder(uploadDest.getId())));
+        flc.add(new HTML(I18N.DISPLAY.urlPrompt()));
         for (int i = 0; i < MAX_UPLOADS; i++) {
-            vlc.add(buildUrlField());
+            flc.add(buildUrlField());
         }
-        form.add(vlc);
+        form.add(flc);
         add(form);
 
         addCancleButtonSelectHandler(new CancelButtonSelectHandler(this));
@@ -73,11 +80,12 @@ public class FileUploadByUrlDialog extends IPlantDialog {
 
     private TextArea buildUrlField() {
         TextArea urlField = new TextArea();
-        urlField.setWidth(FIELD_WIDTH);
+        urlField.setSize(FIELD_WIDTH, FIELD_HEIGHT);
         urlField.addValidator(new UrlValidator());
         urlField.setAutoValidate(true);
-        urlField.addInvalidHandler(new ValidationHandler(getOkButton(), this));
-        urlField.addValidHandler(new ValidationHandler(getOkButton(), this));
+        ValidationHandler handler = new ValidationHandler(getOkButton(), this);
+        urlField.addInvalidHandler(handler);
+        urlField.addValidHandler(handler);
         return urlField;
     }
 
@@ -97,7 +105,29 @@ public class FileUploadByUrlDialog extends IPlantDialog {
 
         @Override
         public void onValid(ValidEvent event) {
-            okButton.setEnabled(FormPanelHelper.isValid(dlg, true));
+            okButton.setEnabled(FormPanelHelper.isValid(dlg, true)
+                    && textAreasHaveText(dlg));
+        }
+
+        private boolean textAreasHaveText(HasWidgets container) {
+            Iterator<Widget> it = container.iterator();
+            while (it.hasNext()) {
+                Widget w = it.next();
+
+                if ((w instanceof ValueBaseField) 
+                        && (((ValueBaseField<?>)w).getCurrentValue() instanceof String)) {
+                    @SuppressWarnings("unchecked")
+                    ValueBaseField<String> vbf = (ValueBaseField<String>)w;
+                    if(!vbf.getCurrentValue().isEmpty()){
+                        return true;
+                    }
+                }
+
+                if (w instanceof HasWidgets) {
+                    return textAreasHaveText((HasWidgets)w);
+                }
+            }
+            return false;
         }
     }
 
