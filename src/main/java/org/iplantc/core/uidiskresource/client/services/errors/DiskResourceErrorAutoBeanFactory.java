@@ -18,4 +18,6 @@ public interface DiskResourceErrorAutoBeanFactory extends AutoBeanFactory {
     AutoBean<ErrorDiskResourceMove> moveDiskResourceError();
     
     AutoBean<ErrorUpdateMetadata> errorUpdateMetadata();
+
+    AutoBean<ErrorDuplicateDiskResource> errorDuplicateDiskResource();
 }

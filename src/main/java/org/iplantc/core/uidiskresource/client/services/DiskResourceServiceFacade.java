@@ -84,9 +84,7 @@ public interface DiskResourceServiceFacade {
      * @param diskResources list of file and folder ids to move.
      * @param destFolder the destination folder where the disk resources will be moved.
      */
-    void moveDiskResources(
-            Set<org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource> diskResources,
-            Folder destFolder, AsyncCallback<String> callback);
+    void moveDiskResources(Set<DiskResource> diskResources, Folder destFolder, AsyncCallback<String> callback);
 
     /**
      * Call service to move the given file ids to the given folder.

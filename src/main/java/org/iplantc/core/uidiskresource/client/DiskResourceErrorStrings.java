@@ -64,10 +64,13 @@ public interface DiskResourceErrorStrings extends CommonUIErrorStrings {
 
     String fileReadable(String fileNames);
 
+    @Override
     String serviceErrorStatus(String status);
 
+    @Override
     String serviceErrorCode(String errCode);
 
+    @Override
     String serviceErrorReason(String reason);
 
     String renameFolderFailed();
@@ -95,5 +98,9 @@ public interface DiskResourceErrorStrings extends CommonUIErrorStrings {
     String retrieveStatFailed();
     
     String searchHistoryError();
+
+    String duplicateCheckFailed();
+
+    String fileExist();
 
 }
