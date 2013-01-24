@@ -19,6 +19,7 @@ import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.shared.FastMap;
 import com.sencha.gxt.widget.core.client.Status;
@@ -44,8 +45,11 @@ public class FileUploadByUrlDialog extends IPlantDialog {
     private static final String FIELD_HEIGHT = "50";
     private static final String FIELD_WIDTH = "475";
     private static final int MAX_UPLOADS = 5;
+    private static final String URL_FIELD = "url";
+    private static final String HDN_PARENT_ID_KEY = "parentfolderid";
+    private static final String HDN_USER_ID_KEY = "user";
 
-    public FileUploadByUrlDialog(Folder uploadDest, DiskResourceServiceFacade drService, SafeUri servletActionUrl) {
+    public FileUploadByUrlDialog(Folder uploadDest, DiskResourceServiceFacade drService, SafeUri servletActionUrl, String userName) {
         setAutoHide(false);
         setHideOnButtonClick(false);
         // Reset the "OK" button text.
@@ -57,6 +61,8 @@ public class FileUploadByUrlDialog extends IPlantDialog {
         FormPanel form = initForm(servletActionUrl);
         FlowLayoutContainer flc = new FlowLayoutContainer();
 
+        flc.add(new Hidden(HDN_PARENT_ID_KEY, uploadDest.getId()));
+        flc.add(new Hidden(HDN_USER_ID_KEY, userName));
         flc.add(new HTML(I18N.DISPLAY.fileUploadFolder(uploadDest.getId())));
         flc.add(new HTML(I18N.DISPLAY.urlPrompt()));
         for (int i = 0; i < MAX_UPLOADS; i++) {
@@ -75,11 +81,13 @@ public class FileUploadByUrlDialog extends IPlantDialog {
         ret.setMethod(Method.POST);
         ret.setEncoding(Encoding.MULTIPART);
         ret.addSubmitCompleteHandler(new FormSubmitHandler());
+
         return ret;
     }
 
     private TextArea buildUrlField() {
         TextArea urlField = new TextArea();
+        urlField.setName(URL_FIELD);
         urlField.setSize(FIELD_WIDTH, FIELD_HEIGHT);
         urlField.addValidator(new UrlValidator());
         urlField.setAutoValidate(true);
@@ -164,11 +172,17 @@ public class FileUploadByUrlDialog extends IPlantDialog {
             for (IsField<?> field : FormPanelHelper.getFields(dlg)) {
                 if (field.getValue() instanceof String) {
                     Field<String> stringField = (Field<String>)field;
-                    String url = stringField.getValue();
-                    url.trim();
-                    stringField.setValue(url);
-                    destResourceMap.put(buildResourceId(url), stringField);
+                    String url = stringField.getValue().trim();
+                    if (!url.isEmpty()) {
+                        stringField.setValue(url);
+                        destResourceMap.put(buildResourceId(url), stringField);
+                    } else {
 
+                        stringField.setEnabled(false);
+                    }
+
+                } else {
+                    ((Field<?>)field).setEnabled(false);
                 }
             }
 
