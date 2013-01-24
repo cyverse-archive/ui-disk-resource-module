@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent.DiskResourcesDeletedEventHandler;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
@@ -13,14 +14,16 @@ public class DiskResourcesDeletedEvent extends GwtEvent<DiskResourcesDeletedEven
     public interface DiskResourcesDeletedEventHandler extends EventHandler {
 
 
-        void onDiskResourcesDeleted(Collection<DiskResource> resources);
+        void onDiskResourcesDeleted(Collection<DiskResource> resources, Folder parentFolder);
     }
 
     public static final GwtEvent.Type<DiskResourcesDeletedEventHandler> TYPE = new GwtEvent.Type<DiskResourcesDeletedEventHandler>();
     private final Collection<DiskResource> resources;
+    private final Folder parentFolder;
 
-    public DiskResourcesDeletedEvent(Collection<DiskResource> resources) {
+    public DiskResourcesDeletedEvent(Collection<DiskResource> resources, Folder parentFolder) {
         this.resources = resources;
+        this.parentFolder = parentFolder;
     }
 
     @Override
@@ -30,6 +33,6 @@ public class DiskResourcesDeletedEvent extends GwtEvent<DiskResourcesDeletedEven
 
     @Override
     protected void dispatch(DiskResourcesDeletedEventHandler handler) {
-        handler.onDiskResourcesDeleted(resources);
+        handler.onDiskResourcesDeleted(resources, parentFolder);
     }
 }

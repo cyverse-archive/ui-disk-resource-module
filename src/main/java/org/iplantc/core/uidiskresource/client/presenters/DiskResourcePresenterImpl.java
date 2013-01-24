@@ -28,6 +28,8 @@ import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent.DiskResourcesDeletedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesMovedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesMovedEvent.DiskResourcesMovedEventHandler;
+import org.iplantc.core.uidiskresource.client.events.FileUploadedEvent;
+import org.iplantc.core.uidiskresource.client.events.FileUploadedEvent.FileUploadedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent;
 import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent.FolderCreatedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.RequestBulkDownloadEvent;
@@ -86,11 +88,26 @@ import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 
 /**
  * 
+ * TODO JDS Consolidate handlers into one handler.
+ * 
  * @author jstroot
  * 
  */
 public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         DiskResourceViewToolbarImpl.Presenter, HasHandlerRegistrationMgmt {
+
+    private final class FileUploadedEventHandlerImpl implements FileUploadedEventHandler {
+        private final DiskResourceView view;
+
+        public FileUploadedEventHandlerImpl(DiskResourceView view) {
+            this.view = view;
+        }
+
+        @Override
+        public void onFileUploaded(FileUploadedEvent event) {
+            view.refreshFolder(event.getUploadDestFolderFolder());
+        }
+    }
 
     private final class DetailsCallbackImpl implements AsyncCallback<String> {
         private final String path;
@@ -148,8 +165,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         }
 
         @Override
-        public void onDiskResourcesDeleted(Collection<DiskResource> resources) {
-            view.removeDiskResources(resources);
+        public void onDiskResourcesDeleted(Collection<DiskResource> resources, Folder parentFolder) {
+            view.refreshFolder(parentFolder);
         }
 
     }
@@ -256,6 +273,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         EventBus eventBus = EventBus.getInstance();
         
         // FIXME JDS Add DiskResourceRefreshEventHandler
+        eventBus.addHandler(FileUploadedEvent.TYPE, new FileUploadedEventHandlerImpl(view));
 
         DiskResourcesDeletedEventHandlerImpl diskResourcesDeletedHandler = new DiskResourcesDeletedEventHandlerImpl(
                 view);
@@ -466,12 +484,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             view.mask(DISPLAY.loadingMask());
 
             HashSet<DiskResource> drSet = Sets.newHashSet(getSelectedDiskResources());
-            diskResourceService.deleteDiskResources(drSet, new DiskResourceDeleteCallback(drSet, view));
+            diskResourceService.deleteDiskResources(drSet, new DiskResourceDeleteCallback(drSet, getSelectedFolder(), view));
 
         } else if ((getSelectedFolder() != null) && DiskResourceUtil.isOwner(getSelectedFolder())) {
             view.mask(DISPLAY.loadingMask());
             HashSet<DiskResource> drSet = Sets.newHashSet((DiskResource)getSelectedFolder());
-            diskResourceService.deleteDiskResources(drSet, new DiskResourceDeleteCallback(drSet, view));
+            diskResourceService.deleteDiskResources(drSet, new DiskResourceDeleteCallback(drSet, getSelectedFolder(), view));
         }
     }
 

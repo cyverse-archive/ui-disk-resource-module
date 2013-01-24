@@ -1,4 +1,4 @@
-package org.iplantc.core.uidiskresource.client.presenters;
+package org.iplantc.core.uidiskresource.client.views.dialogs;
 
 import org.iplantc.core.uicommons.client.validators.NameValidator3;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantPromptDialog;

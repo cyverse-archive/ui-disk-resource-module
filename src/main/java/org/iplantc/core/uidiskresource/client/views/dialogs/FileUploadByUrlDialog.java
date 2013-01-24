@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.validators.UrlValidator;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IsHideable;
@@ -13,9 +13,10 @@ import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DuplicateDiskResourceCallback;
+import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 
 import com.google.common.collect.Lists;
-import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -28,14 +29,10 @@ import com.sencha.gxt.widget.core.client.event.InvalidEvent;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.event.SubmitCompleteEvent;
-import com.sencha.gxt.widget.core.client.event.SubmitCompleteEvent.SubmitCompleteHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.Field;
 import com.sencha.gxt.widget.core.client.form.FormPanel;
-import com.sencha.gxt.widget.core.client.form.FormPanel.Encoding;
-import com.sencha.gxt.widget.core.client.form.FormPanel.Method;
 import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
 import com.sencha.gxt.widget.core.client.form.IsField;
 import com.sencha.gxt.widget.core.client.form.TextArea;
@@ -49,7 +46,7 @@ public class FileUploadByUrlDialog extends IPlantDialog {
     private static final String HDN_PARENT_ID_KEY = "parentfolderid";
     private static final String HDN_USER_ID_KEY = "user";
 
-    public FileUploadByUrlDialog(Folder uploadDest, DiskResourceServiceFacade drService, SafeUri servletActionUrl, String userName) {
+    public FileUploadByUrlDialog(Folder uploadDest, DiskResourceServiceFacade drService, String userName) {
         setAutoHide(false);
         setHideOnButtonClick(false);
         // Reset the "OK" button text.
@@ -58,13 +55,14 @@ public class FileUploadByUrlDialog extends IPlantDialog {
         setHeadingText(I18N.DISPLAY.upload());
 
         Status formStatus = new Status();
-        FormPanel form = initForm(servletActionUrl);
+        FormPanel form = new FormPanel();
         FlowLayoutContainer flc = new FlowLayoutContainer();
 
         flc.add(new Hidden(HDN_PARENT_ID_KEY, uploadDest.getId()));
         flc.add(new Hidden(HDN_USER_ID_KEY, userName));
         flc.add(new HTML(I18N.DISPLAY.fileUploadFolder(uploadDest.getId())));
         flc.add(new HTML(I18N.DISPLAY.urlPrompt()));
+        flc.add(formStatus);
         for (int i = 0; i < MAX_UPLOADS; i++) {
             flc.add(buildUrlField());
         }
@@ -72,17 +70,7 @@ public class FileUploadByUrlDialog extends IPlantDialog {
         add(form);
 
         addCancleButtonSelectHandler(new CancelButtonSelectHandler(this));
-        addOkButtonSelectHandler(new OkButtonSelectHandler(formStatus, uploadDest, getOkButton(), this, drService, form));
-    }
-
-    private FormPanel initForm(SafeUri actionUrl) {
-        FormPanel ret = new FormPanel();
-        ret.setAction(actionUrl);
-        ret.setMethod(Method.POST);
-        ret.setEncoding(Encoding.MULTIPART);
-        ret.addSubmitCompleteHandler(new FormSubmitHandler());
-
-        return ret;
+        addOkButtonSelectHandler(new OkButtonSelectHandler<FileUploadByUrlDialog>(formStatus, uploadDest, getOkButton(), this, drService));
     }
 
     private TextArea buildUrlField() {
@@ -139,23 +127,19 @@ public class FileUploadByUrlDialog extends IPlantDialog {
         }
     }
 
-    private final class OkButtonSelectHandler implements SelectHandler {
+    private final class OkButtonSelectHandler<D extends HasWidgets & IsHideable> implements SelectHandler {
         private final Status formStatus;
-        private final HasId uploadDest;
+        private final Folder uploadDest;
         private final HasEnabled okButton;
-        private final HasWidgets dlg;
+        private final D dlg;
         private final DiskResourceServiceFacade drService;
-        private final FormPanel form;
 
-        public OkButtonSelectHandler(Status formStatus, HasId uploadDest, 
-                HasEnabled okButton, HasWidgets dlg, 
-                DiskResourceServiceFacade drService, FormPanel form) {
+        public OkButtonSelectHandler(Status formStatus, Folder uploadDest, HasEnabled okButton, D dlg, DiskResourceServiceFacade drService) {
             this.formStatus = formStatus;
             this.uploadDest = uploadDest;
             this.okButton = okButton;
             this.dlg = dlg;
             this.drService = drService;
-            this.form = form;
         }
 
         @SuppressWarnings("unchecked")
@@ -163,10 +147,8 @@ public class FileUploadByUrlDialog extends IPlantDialog {
         public void onSelect(SelectEvent event) {
             formStatus.setBusy(I18N.DISPLAY.fileUploadFolder(uploadDest.getId()));
             formStatus.show();
-            
             okButton.setEnabled(false);
 
-            // Get the
             final FastMap<Field<String>> destResourceMap = new FastMap<Field<String>>();
 
             for (IsField<?> field : FormPanelHelper.getFields(dlg)) {
@@ -175,7 +157,7 @@ public class FileUploadByUrlDialog extends IPlantDialog {
                     String url = stringField.getValue().trim();
                     if (!url.isEmpty()) {
                         stringField.setValue(url);
-                        destResourceMap.put(buildResourceId(url), stringField);
+                        destResourceMap.put(buildResourceId(DiskResourceUtil.parseNameFromPath(url)), stringField);
                     } else {
 
                         stringField.setEnabled(false);
@@ -188,13 +170,13 @@ public class FileUploadByUrlDialog extends IPlantDialog {
 
             if (!destResourceMap.isEmpty()) {
                 ArrayList<String> ids = Lists.newArrayList(destResourceMap.keySet());
-                drService.diskResourcesExist(ids, new CheckDuplicatesCallback(ids, destResourceMap, formStatus, form));
+                drService.diskResourcesExist(ids, new CheckDuplicatesCallback(ids, destResourceMap, formStatus, uploadDest, drService, dlg));
             }
-
         }
 
         private String buildResourceId(String filename) {
-            return uploadDest.getId() + "/" + filename; //$NON-NLS-1$
+            String string = uploadDest.getId() + "/" + filename;
+            return string;
         }
     }
 
@@ -202,14 +184,19 @@ public class FileUploadByUrlDialog extends IPlantDialog {
 
         private final FastMap<Field<String>> destResourceMap;
         private final Status formStatus;
-        private final FormPanel form;
+        private final Folder uploadDest;
+        private final DiskResourceServiceFacade drService;
+        private final IsHideable dlg;
 
-        public CheckDuplicatesCallback(List<String> ids, FastMap<Field<String>> destResourceMap, Status formStatus, FormPanel form) {
+        public CheckDuplicatesCallback(List<String> ids, FastMap<Field<String>> destResourceMap, Status formStatus, Folder uploadDest, DiskResourceServiceFacade drService, IsHideable dlg) {
             super(ids, null);
             this.destResourceMap = destResourceMap;
             this.formStatus = formStatus;
-            this.form = form;
+            this.uploadDest = uploadDest;
+            this.drService = drService;
+            this.dlg = dlg;
         }
+
 
         @Override
         public void markDuplicates(Collection<String> duplicates) {
@@ -220,9 +207,35 @@ public class FileUploadByUrlDialog extends IPlantDialog {
                 formStatus.clearStatus(formStatus.getText());
                 return;
             } else {
-                form.submit();
+                for (Field<String> url : destResourceMap.values()) {
+                    drService.importFromUrl(url.getValue(), uploadDest, new ImportFromUrlCallback(dlg, formStatus));
+                }
             }
         }
+    }
+
+    private final class ImportFromUrlCallback implements AsyncCallback<String> {
+        private final IsHideable dlg;
+        private final Status formStatus;
+
+        public ImportFromUrlCallback(IsHideable dlg, Status formStatus) {
+            this.dlg = dlg;
+            this.formStatus = formStatus;
+        }
+
+        @Override
+        public void onSuccess(String result) {
+            formStatus.clearStatus(formStatus.getText());
+            dlg.hide();
+        }
+
+        @Override
+        public void onFailure(Throwable caught) {
+            // TODO JDS Determine how to update the UI
+            ErrorHandler.post(caught);
+            dlg.hide();
+        }
+
     }
 
     private final class CancelButtonSelectHandler implements SelectHandler {
@@ -238,12 +251,4 @@ public class FileUploadByUrlDialog extends IPlantDialog {
         }
     }
 
-    private final class FormSubmitHandler implements SubmitCompleteHandler {
-
-        @Override
-        public void onSubmitComplete(SubmitCompleteEvent event) {
-            String results = event.getResults();
-
-        }
-    }
 }

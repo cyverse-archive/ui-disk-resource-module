@@ -3,6 +3,7 @@ package org.iplantc.core.uidiskresource.client.services;
 import java.util.List;
 import java.util.Set;
 
+import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.autobeans.File;
@@ -139,10 +140,9 @@ public interface DiskResourceServiceFacade {
      * 
      * @param url
      * @param dest id of the destination folder.
-     * @param description description of the file to upload.
      * @param callback service success/failure callback
      */
-    void importFromUrl(String url, String dest, String description, AsyncCallback<String> callback);
+    void importFromUrl(String url, HasId dest, AsyncCallback<String> callback);
 
     /**
      * Call service to retrieve upload configuration values for idrop-lite.

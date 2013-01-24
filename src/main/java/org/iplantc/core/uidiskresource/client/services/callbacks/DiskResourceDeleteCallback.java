@@ -8,6 +8,7 @@ import org.iplantc.core.uicommons.client.views.IsMaskable;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent;
 import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
 import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceErrorAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.services.errors.ErrorDiskResourceDelete;
 
@@ -18,17 +19,19 @@ import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 public class DiskResourceDeleteCallback extends DiskResourceServiceCallback {
 
     private final Collection<DiskResource> resources;
+    private final Folder parentFolder;
 
-    public DiskResourceDeleteCallback(Collection<DiskResource> resources, IsMaskable maskedCaller) {
+    public DiskResourceDeleteCallback(Collection<DiskResource> resources, Folder parentFolder, IsMaskable maskedCaller) {
         super(maskedCaller);
         this.resources = resources;
+        this.parentFolder = parentFolder;
     }
 
     @Override
     public void onSuccess(String result) {
         unmaskCaller();
 
-        EventBus.getInstance().fireEvent(new DiskResourcesDeletedEvent(resources));
+        EventBus.getInstance().fireEvent(new DiskResourcesDeletedEvent(resources, parentFolder));
     }
 
     @Override
