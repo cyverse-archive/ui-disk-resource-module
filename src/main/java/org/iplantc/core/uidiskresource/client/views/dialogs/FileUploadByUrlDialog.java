@@ -1,11 +1,11 @@
 package org.iplantc.core.uidiskresource.client.views.dialogs;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
-import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.validators.UrlValidator;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IsHideable;
@@ -16,34 +16,48 @@ import org.iplantc.core.uidiskresource.client.services.callbacks.DuplicateDiskRe
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.thirdparty.guava.common.collect.Sets;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiFactory;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.shared.FastMap;
+import com.sencha.gxt.fx.client.FxElement;
 import com.sencha.gxt.widget.core.client.Status;
-import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent;
-import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent;
-import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.Field;
-import com.sencha.gxt.widget.core.client.form.FormPanel;
 import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
-import com.sencha.gxt.widget.core.client.form.IsField;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.ValueBaseField;
 
-public class FileUploadByUrlDialog extends IPlantDialog {
+public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<Entry<Field<String>, Status>> {
+    
+    private static FileUploadByUrlPanelUiBinder UIBINDER = GWT.create(FileUploadByUrlPanelUiBinder.class);
+
+    @UiTemplate("FileUploadByUrlPanel.ui.xml")
+    interface FileUploadByUrlPanelUiBinder extends UiBinder<Widget, FileUploadByUrlDialog> {}
+    
     private static final String FIELD_HEIGHT = "50";
     private static final String FIELD_WIDTH = "475";
-    private static final int MAX_UPLOADS = 5;
-    private final Status formStatus;
     private final Folder uploadDest;
     private final DiskResourceServiceFacade drService;
+    private Set<Entry<Field<String>, Status>> pendingList = Sets.newHashSet();
+    private final Map<Field<String>, Status> fieldToStatusMap = Maps.newHashMap();
+    
+    @UiField
+    HTML htmlDestText;
+    @UiField
+    TextArea url0, url1, url2, url3, url4;
+    @UiField
+    Status formStatus0, formStatus1, formStatus2, formStatus3, formStatus4;
 
     public FileUploadByUrlDialog(Folder uploadDest, DiskResourceServiceFacade drService, String userName) {
         this.uploadDest = uploadDest;
@@ -54,213 +68,173 @@ public class FileUploadByUrlDialog extends IPlantDialog {
         getOkButton().setText(I18N.DISPLAY.upload());
         getOkButton().setEnabled(false);
         setHeadingText(I18N.DISPLAY.upload());
+        
+        Widget w = UIBINDER.createAndBindUi(this);
+        add(w);
 
-        formStatus = new Status();
-        FormPanel form = new FormPanel();
-        FlowLayoutContainer flc = new FlowLayoutContainer();
-
-        flc.add(new HTML(I18N.DISPLAY.uploadingToFolder(uploadDest.getId())));
-        flc.add(new HTML(I18N.DISPLAY.urlPrompt()));
-        flc.add(formStatus);
-        for (int i = 0; i < MAX_UPLOADS; i++) {
-            flc.add(buildUrlField());
-        }
-        form.add(flc);
-        add(form);
+        // Load up our field to status map
+        fieldToStatusMap.put(url0, formStatus0);
+        fieldToStatusMap.put(url1, formStatus1);
+        fieldToStatusMap.put(url2, formStatus2);
+        fieldToStatusMap.put(url3, formStatus3);
+        fieldToStatusMap.put(url4, formStatus4);
+        htmlDestText.setHTML(I18N.DISPLAY.uploadingToFolder(uploadDest.getId()));
 
         addCancelButtonSelectHandler(new HideSelectHandler(this));
-        addOkButtonSelectHandler(new OkButtonSelectHandler<FileUploadByUrlDialog>(formStatus, uploadDest, getOkButton(), this, drService));
     }
 
-    private TextArea buildUrlField() {
+    @UiFactory
+    TextArea buildUrlField() {
         TextArea urlField = new TextArea();
         urlField.setSize(FIELD_WIDTH, FIELD_HEIGHT);
         urlField.addValidator(new UrlValidator());
         urlField.setAutoValidate(true);
-        ValidationHandler handler = new ValidationHandler(getOkButton(), this);
-        urlField.addInvalidHandler(handler);
-        urlField.addValidHandler(handler);
         return urlField;
     }
 
+    @UiHandler({"url0", "url1", "url2", "url3", "url4"})
+    void onFieldValid(ValidEvent event) {
+        getOkButton().setEnabled(FormPanelHelper.isValid(this, true) && isValidForm());
+    }
+    
+    @UiHandler({"url0", "url1", "url2", "url3", "url4"})
+    void onFieldInvalid(InvalidEvent event){
+        getOkButton().setEnabled(false);
+    }
+    
+    private boolean isValidForm(){
+        for(Entry<Field<String>, Status> entry : fieldToStatusMap.entrySet()){
+            ValueBaseField<String> valueBaseField = (ValueBaseField<String>)entry.getKey();
+            if(!valueBaseField.getCurrentValue().isEmpty()){
+                return true;
+            }
+        }
+        return false;
+    }
+    
     @Override
     protected void onOkButtonClicked() {
-        formStatus.setBusy(I18N.DISPLAY.uploadingToFolder(uploadDest.getId()));
-        formStatus.show();
+//        formStatus.setBusy(I18N.DISPLAY.uploadingToFolder(uploadDest.getId()));
+//        formStatus.show();
         getOkButton().setEnabled(false);
 
         final FastMap<Field<String>> destResourceMap = new FastMap<Field<String>>();
 
-        for (IsField<?> field : FormPanelHelper.getFields(this)) {
-            if (field.getValue() instanceof String) {
-                @SuppressWarnings("unchecked")
-                Field<String> stringField = (Field<String>)field;
-                String url = stringField.getValue().trim();
-                if (!url.isEmpty()) {
-                    stringField.setValue(url);
-                    String resourceId = uploadDest.getId() + "/" + DiskResourceUtil.parseNameFromPath(url);
-                    destResourceMap.put(resourceId, stringField);
-                } else {
-
-                    stringField.setEnabled(false);
-                }
-
+        for (Entry<Field<String>, Status> entry : fieldToStatusMap.entrySet()) {
+            Field<String> field = entry.getKey();
+            String url = field.getValue().trim();
+            if (!url.isEmpty()) {
+                Status status = entry.getValue();
+                status.setBusy("");
+                status.show();
+                field.setValue(url);
+                String resourceId = uploadDest.getId() + "/" + DiskResourceUtil.parseNameFromPath(url);
+                destResourceMap.put(resourceId, field);
             } else {
-                ((Field<?>)field).setEnabled(false);
+                field.setEnabled(false);
             }
         }
 
         if (!destResourceMap.isEmpty()) {
-            ArrayList<String> ids = Lists.newArrayList(destResourceMap.keySet());
-            drService.diskResourcesExist(ids, new CheckDuplicatesCallback(ids, destResourceMap, formStatus, uploadDest, drService, this));
+            List<String> constructedIds = Lists.newArrayList(destResourceMap.keySet());
+            drService.diskResourcesExist(constructedIds, new CheckDuplicatesCallback<FileUploadByUrlDialog>(destResourceMap, fieldToStatusMap, uploadDest, drService, this));
         }
     }
 
-    private final class OkButtonSelectHandler<D extends HasWidgets & IsHideable> implements SelectHandler {
-        private final Status formStatus;
+    @Override
+    public boolean addPending(Entry<Field<String>, Status> obj) {
+        return pendingList.add(obj);
+    }
+
+    @Override
+    public boolean hasPending() {
+        return !pendingList.isEmpty();
+    }
+
+    @Override
+    public boolean removePending(Entry<Field<String>, Status> obj) {
+        return pendingList.remove(obj);
+    }
+
+    @Override
+    public int getNumPending() {
+        return pendingList.size();
+    }
+
+    private final class CheckDuplicatesCallback <D extends UIObject & IsHideable & HasPending<Entry<Field<String>, Status>>> extends DuplicateDiskResourceCallback {
+        private final Map<String, Field<String>> destResourceMap;
         private final Folder uploadDest;
-        private final HasEnabled okButton;
+        private final DiskResourceServiceFacade drService;
         private final D dlg;
-        private final DiskResourceServiceFacade drService;
+        private Map<Field<String>, Status> fieldToStatusMap;
 
-        public OkButtonSelectHandler(Status formStatus, Folder uploadDest, HasEnabled okButton, D dlg, DiskResourceServiceFacade drService) {
-            this.formStatus = formStatus;
-            this.uploadDest = uploadDest;
-            this.okButton = okButton;
-            this.dlg = dlg;
-            this.drService = drService;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public void onSelect(SelectEvent event) {
-            formStatus.setBusy(I18N.DISPLAY.uploadingToFolder(uploadDest.getId()));
-            formStatus.show();
-            okButton.setEnabled(false);
-
-            final FastMap<Field<String>> destResourceMap = new FastMap<Field<String>>();
-
-            for (IsField<?> field : FormPanelHelper.getFields(dlg)) {
-                if (field.getValue() instanceof String) {
-                    Field<String> stringField = (Field<String>)field;
-                    String url = stringField.getValue().trim();
-                    if (!url.isEmpty()) {
-                        stringField.setValue(url);
-                        String resourceId = uploadDest.getId() + "/" + DiskResourceUtil.parseNameFromPath(url);
-                        destResourceMap.put(resourceId, stringField);
-                    } else {
-
-                        stringField.setEnabled(false);
-                    }
-
-                } else {
-                    ((Field<?>)field).setEnabled(false);
-                }
-            }
-
-            if (!destResourceMap.isEmpty()) {
-                ArrayList<String> ids = Lists.newArrayList(destResourceMap.keySet());
-                drService.diskResourcesExist(ids, new CheckDuplicatesCallback(ids, destResourceMap, formStatus, uploadDest, drService, dlg));
-            }
-        }
-    }
-
-    private final class ValidationHandler implements InvalidHandler, ValidHandler {
-        private final HasEnabled okButton;
-        private final HasWidgets dlg;
-
-        public ValidationHandler(HasEnabled okButton, HasWidgets dlg) {
-            this.okButton = okButton;
-            this.dlg = dlg;
-        }
-
-        @Override
-        public void onInvalid(InvalidEvent event) {
-            okButton.setEnabled(false);
-        }
-
-        @Override
-        public void onValid(ValidEvent event) {
-            okButton.setEnabled(FormPanelHelper.isValid(dlg, true) && textAreasHaveText(dlg));
-        }
-
-        private boolean textAreasHaveText(HasWidgets container) {
-            Iterator<Widget> it = container.iterator();
-            while (it.hasNext()) {
-                Widget w = it.next();
-
-                if ((w instanceof ValueBaseField) && (((ValueBaseField<?>)w).getCurrentValue() instanceof String)) {
-                    @SuppressWarnings("unchecked")
-                    ValueBaseField<String> vbf = (ValueBaseField<String>)w;
-                    if (!vbf.getCurrentValue().isEmpty()) {
-                        return true;
-                    }
-                }
-
-                if (w instanceof HasWidgets) {
-                    return textAreasHaveText((HasWidgets)w);
-                }
-            }
-            return false;
-        }
-    }
-
-    private final class CheckDuplicatesCallback extends DuplicateDiskResourceCallback {
-
-        private final FastMap<Field<String>> destResourceMap;
-        private final Status formStatus;
-        private final Folder uploadDest;
-        private final DiskResourceServiceFacade drService;
-        private final IsHideable dlg;
-
-        public CheckDuplicatesCallback(List<String> ids, FastMap<Field<String>> destResourceMap, Status formStatus, Folder uploadDest, DiskResourceServiceFacade drService, IsHideable dlg) {
-            super(ids, null);
+        public CheckDuplicatesCallback(Map<String, Field<String>> destResourceMap, Map<Field<String>, Status> fieldToStatusMap, Folder uploadDest, DiskResourceServiceFacade drService, D dlg) {
+            super(Lists.newArrayList(destResourceMap.keySet()), null);
             this.destResourceMap = destResourceMap;
-            this.formStatus = formStatus;
+            this.fieldToStatusMap = fieldToStatusMap;
             this.uploadDest = uploadDest;
             this.drService = drService;
             this.dlg = dlg;
         }
-
 
         @Override
         public void markDuplicates(Collection<String> duplicates) {
-            if ((duplicates != null) && !duplicates.isEmpty()) {
-                for (String id : duplicates) {
-                    destResourceMap.get(id).markInvalid(I18N.ERROR.fileExist());
-                }
-                formStatus.clearStatus(formStatus.getText());
-                return;
-            } else {
-                for (Field<String> url : destResourceMap.values()) {
-                    drService.importFromUrl(url.getValue(), uploadDest, new ImportFromUrlCallback(dlg, formStatus));
+            for(Entry<String, Field<String>> entry : destResourceMap.entrySet()){
+                Field<String> urlField = entry.getValue();
+                Status formStatus = fieldToStatusMap.get(urlField);
+                
+                if(duplicates.contains(entry.getKey())){
+                    urlField.markInvalid(I18N.ERROR.fileExist());
+                    formStatus.clearStatus("");
+                }else{
+                    Entry<Field<String>, Status> e = getEntry(formStatus);
+                    dlg.addPending(e);
+                    drService.importFromUrl(urlField.getValue(), uploadDest, new ImportFromUrlCallback<D>(dlg, e));
                 }
             }
         }
+        
+        private Entry<Field<String>, Status> getEntry(Status status){
+            for(Entry<Field<String>, Status> e : fieldToStatusMap.entrySet()){
+                if(e.getValue() == status){
+                    return e;
+                }
+            }
+            return null;
+        }
     }
 
-    private final class ImportFromUrlCallback implements AsyncCallback<String> {
-        private final IsHideable dlg;
-        private final Status formStatus;
+    private final class ImportFromUrlCallback <D extends UIObject & IsHideable & HasPending<Entry<Field<String>, Status>>> implements AsyncCallback<String> {
+        private final D dlg;
+        private final Entry<Field<String>, Status> pending;
 
-        public ImportFromUrlCallback(IsHideable dlg, Status formStatus) {
+        public ImportFromUrlCallback(D dlg, Entry<Field<String>, Status> pending) {
             this.dlg = dlg;
-            this.formStatus = formStatus;
+            this.pending = pending;
         }
 
         @Override
         public void onSuccess(String result) {
-            formStatus.clearStatus(formStatus.getText());
-            dlg.hide();
+            dlg.removePending(pending);
+            pending.getValue().clearStatus("");
+            if(!dlg.hasPending()){
+                dlg.hide();
+            }
         }
 
         @Override
         public void onFailure(Throwable caught) {
             // TODO JDS Determine how to update the UI
-            ErrorHandler.post(caught);
-            dlg.hide();
+            if(dlg.getNumPending() == 1){
+//                ErrorHandler.post(caught);
+                // "Blink" the window on the last pending element.
+                dlg.getElement().<FxElement>cast().blink();
+                
+            }
+            
+            pending.getKey().markInvalid("Url Failed to upload");
+            dlg.removePending(pending);
         }
-
     }
 
 }

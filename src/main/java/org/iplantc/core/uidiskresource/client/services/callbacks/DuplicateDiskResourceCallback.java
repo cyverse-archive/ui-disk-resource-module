@@ -44,31 +44,6 @@ public abstract class DuplicateDiskResourceCallback extends DiskResourceServiceC
         // always call mark duplicates. if no duplicates are found the list is empty.
         // clients implementing this class then just needs to override only on method
         markDuplicates(Sets.intersection(dupes, diskResourceIds));
-
-        // JSONObject jsonResponse = JsonUtil.getObject(response);
-        //
-        //        String status = JsonUtil.getString(jsonResponse, "status"); //$NON-NLS-1$
-        //        JSONObject paths = JsonUtil.getObject(jsonResponse, "paths"); //$NON-NLS-1$
-        //
-        //        if (!status.equalsIgnoreCase("success") || paths == null) { //$NON-NLS-1$
-        //            onFailure(new Exception(JsonUtil.getString(jsonResponse, "reason"))); //$NON-NLS-1$
-        // return;
-        // }
-        //
-        // List<String> duplicateFiles = new ArrayList<String>();
-        //
-        // for (final String resourceId : diskResourceIds) {
-        // // TODO add an extra check to make sure the resourceId key is found in paths?
-        // boolean fileExists = JsonUtil.getBoolean(paths, resourceId, false);
-        //
-        // if (fileExists) {
-        // duplicateFiles.add(DiskResourceUtil.parseNameFromPath(resourceId));
-        // }
-        // }
-        //
-        // // always call mark duplicates. if no duplicates are found the list is empty.
-        // // clients implementing this class then just needs to override only on method
-        // markDuplicates(duplicateFiles);
     }
     
     @Override

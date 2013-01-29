@@ -50,52 +50,19 @@ public class SimpleFileUploadDialog extends IPlantDialog {
     private static SimpleFileUploadPanelUiBinder BINDER = GWT.create(SimpleFileUploadPanelUiBinder.class);
 
     @UiTemplate("SimpleFileUploadPanel.ui.xml")
-    interface SimpleFileUploadPanelUiBinder extends UiBinder<Widget, SimpleFileUploadDialog> {
-    }
+    interface SimpleFileUploadPanelUiBinder extends UiBinder<Widget, SimpleFileUploadDialog> {}
 
     @UiField
-    FormPanel form0;
-    @UiField
-    FormPanel form1;
-    @UiField
-    FormPanel form2;
-    @UiField
-    FormPanel form3;
-    @UiField
-    FormPanel form4;
+    FormPanel form0, form1, form2, form3, form4;
 
     @UiField
-    IPCFileUploadField fuf0;
-    @UiField
-    IPCFileUploadField fuf1;
-    @UiField
-    IPCFileUploadField fuf2;
-    @UiField
-    IPCFileUploadField fuf3;
-    @UiField
-    IPCFileUploadField fuf4;
+    IPCFileUploadField fuf0, fuf1, fuf2, fuf3, fuf4;
 
     @UiField
-    TextButton btn0;
-    @UiField
-    TextButton btn1;
-    @UiField
-    TextButton btn2;
-    @UiField
-    TextButton btn3;
-    @UiField
-    TextButton btn4;
+    TextButton btn0, btn1, btn2, btn3, btn4;
 
     @UiField
-    Status status0;
-    @UiField
-    Status status1;
-    @UiField
-    Status status2;
-    @UiField
-    Status status3;
-    @UiField
-    Status status4;
+    Status status0, status1, status2, status3, status4;
 
     private final List<FormPanel> formList;
     private final List<IPCFileUploadField> fufList;
