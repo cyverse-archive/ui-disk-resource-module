@@ -412,7 +412,7 @@ public class DiskResourcePresenterTest {
                 allowing(permissions).isOwner();
                 will(returnValue(true));
 
-                never(view).getSelectedFolder();
+                oneOf(view).getSelectedFolder();
                 oneOf(diskResourceService).deleteDiskResources(with(Sets.newHashSet(file)),
                         with(aNonNull(AsyncCallback.class)));
             }
@@ -448,7 +448,7 @@ public class DiskResourcePresenterTest {
                 allowing(permissions).isOwner();
                 will(returnValue(true));
 
-                never(view).getSelectedFolder();
+                oneOf(view).getSelectedFolder();
                 oneOf(diskResourceService).deleteDiskResources(with(Sets.newHashSet(file, folder)),
                         with(aNonNull(AsyncCallback.class)));
             }

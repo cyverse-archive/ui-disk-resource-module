@@ -166,7 +166,7 @@ public interface DiskResourceDisplayStrings extends CommonUIDisplayStrings {
      * 
      * @return the formatted message
      */
-    String fileUploadFolder(String folderId);
+    String uploadingToFolder(String folderId);
 
     String urlPrompt();
 

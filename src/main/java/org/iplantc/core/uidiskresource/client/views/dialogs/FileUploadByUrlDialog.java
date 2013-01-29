@@ -20,7 +20,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.shared.FastMap;
 import com.sencha.gxt.widget.core.client.Status;
@@ -42,11 +41,13 @@ public class FileUploadByUrlDialog extends IPlantDialog {
     private static final String FIELD_HEIGHT = "50";
     private static final String FIELD_WIDTH = "475";
     private static final int MAX_UPLOADS = 5;
-    private static final String URL_FIELD = "url";
-    private static final String HDN_PARENT_ID_KEY = "parentfolderid";
-    private static final String HDN_USER_ID_KEY = "user";
+    private final Status formStatus;
+    private final Folder uploadDest;
+    private final DiskResourceServiceFacade drService;
 
     public FileUploadByUrlDialog(Folder uploadDest, DiskResourceServiceFacade drService, String userName) {
+        this.uploadDest = uploadDest;
+        this.drService = drService;
         setAutoHide(false);
         setHideOnButtonClick(false);
         // Reset the "OK" button text.
@@ -54,13 +55,11 @@ public class FileUploadByUrlDialog extends IPlantDialog {
         getOkButton().setEnabled(false);
         setHeadingText(I18N.DISPLAY.upload());
 
-        Status formStatus = new Status();
+        formStatus = new Status();
         FormPanel form = new FormPanel();
         FlowLayoutContainer flc = new FlowLayoutContainer();
 
-        flc.add(new Hidden(HDN_PARENT_ID_KEY, uploadDest.getId()));
-        flc.add(new Hidden(HDN_USER_ID_KEY, userName));
-        flc.add(new HTML(I18N.DISPLAY.fileUploadFolder(uploadDest.getId())));
+        flc.add(new HTML(I18N.DISPLAY.uploadingToFolder(uploadDest.getId())));
         flc.add(new HTML(I18N.DISPLAY.urlPrompt()));
         flc.add(formStatus);
         for (int i = 0; i < MAX_UPLOADS; i++) {
@@ -69,13 +68,12 @@ public class FileUploadByUrlDialog extends IPlantDialog {
         form.add(flc);
         add(form);
 
-        addCancleButtonSelectHandler(new CancelButtonSelectHandler(this));
+        addCancelButtonSelectHandler(new HideSelectHandler(this));
         addOkButtonSelectHandler(new OkButtonSelectHandler<FileUploadByUrlDialog>(formStatus, uploadDest, getOkButton(), this, drService));
     }
 
     private TextArea buildUrlField() {
         TextArea urlField = new TextArea();
-        urlField.setName(URL_FIELD);
         urlField.setSize(FIELD_WIDTH, FIELD_HEIGHT);
         urlField.addValidator(new UrlValidator());
         urlField.setAutoValidate(true);
@@ -85,45 +83,36 @@ public class FileUploadByUrlDialog extends IPlantDialog {
         return urlField;
     }
 
-    private final class ValidationHandler implements InvalidHandler, ValidHandler {
-        private final HasEnabled okButton;
-        private final HasWidgets dlg;
+    @Override
+    protected void onOkButtonClicked() {
+        formStatus.setBusy(I18N.DISPLAY.uploadingToFolder(uploadDest.getId()));
+        formStatus.show();
+        getOkButton().setEnabled(false);
 
-        public ValidationHandler(HasEnabled okButton, HasWidgets dlg) {
-            this.okButton = okButton;
-            this.dlg = dlg;
-        }
+        final FastMap<Field<String>> destResourceMap = new FastMap<Field<String>>();
 
-        @Override
-        public void onInvalid(InvalidEvent event) {
-            okButton.setEnabled(false);
-        }
+        for (IsField<?> field : FormPanelHelper.getFields(this)) {
+            if (field.getValue() instanceof String) {
+                @SuppressWarnings("unchecked")
+                Field<String> stringField = (Field<String>)field;
+                String url = stringField.getValue().trim();
+                if (!url.isEmpty()) {
+                    stringField.setValue(url);
+                    String resourceId = uploadDest.getId() + "/" + DiskResourceUtil.parseNameFromPath(url);
+                    destResourceMap.put(resourceId, stringField);
+                } else {
 
-        @Override
-        public void onValid(ValidEvent event) {
-            okButton.setEnabled(FormPanelHelper.isValid(dlg, true)
-                    && textAreasHaveText(dlg));
-        }
-
-        private boolean textAreasHaveText(HasWidgets container) {
-            Iterator<Widget> it = container.iterator();
-            while (it.hasNext()) {
-                Widget w = it.next();
-
-                if ((w instanceof ValueBaseField) 
-                        && (((ValueBaseField<?>)w).getCurrentValue() instanceof String)) {
-                    @SuppressWarnings("unchecked")
-                    ValueBaseField<String> vbf = (ValueBaseField<String>)w;
-                    if(!vbf.getCurrentValue().isEmpty()){
-                        return true;
-                    }
+                    stringField.setEnabled(false);
                 }
 
-                if (w instanceof HasWidgets) {
-                    return textAreasHaveText((HasWidgets)w);
-                }
+            } else {
+                ((Field<?>)field).setEnabled(false);
             }
-            return false;
+        }
+
+        if (!destResourceMap.isEmpty()) {
+            ArrayList<String> ids = Lists.newArrayList(destResourceMap.keySet());
+            drService.diskResourcesExist(ids, new CheckDuplicatesCallback(ids, destResourceMap, formStatus, uploadDest, drService, this));
         }
     }
 
@@ -145,7 +134,7 @@ public class FileUploadByUrlDialog extends IPlantDialog {
         @SuppressWarnings("unchecked")
         @Override
         public void onSelect(SelectEvent event) {
-            formStatus.setBusy(I18N.DISPLAY.fileUploadFolder(uploadDest.getId()));
+            formStatus.setBusy(I18N.DISPLAY.uploadingToFolder(uploadDest.getId()));
             formStatus.show();
             okButton.setEnabled(false);
 
@@ -157,7 +146,8 @@ public class FileUploadByUrlDialog extends IPlantDialog {
                     String url = stringField.getValue().trim();
                     if (!url.isEmpty()) {
                         stringField.setValue(url);
-                        destResourceMap.put(buildResourceId(DiskResourceUtil.parseNameFromPath(url)), stringField);
+                        String resourceId = uploadDest.getId() + "/" + DiskResourceUtil.parseNameFromPath(url);
+                        destResourceMap.put(resourceId, stringField);
                     } else {
 
                         stringField.setEnabled(false);
@@ -173,10 +163,45 @@ public class FileUploadByUrlDialog extends IPlantDialog {
                 drService.diskResourcesExist(ids, new CheckDuplicatesCallback(ids, destResourceMap, formStatus, uploadDest, drService, dlg));
             }
         }
+    }
 
-        private String buildResourceId(String filename) {
-            String string = uploadDest.getId() + "/" + filename;
-            return string;
+    private final class ValidationHandler implements InvalidHandler, ValidHandler {
+        private final HasEnabled okButton;
+        private final HasWidgets dlg;
+
+        public ValidationHandler(HasEnabled okButton, HasWidgets dlg) {
+            this.okButton = okButton;
+            this.dlg = dlg;
+        }
+
+        @Override
+        public void onInvalid(InvalidEvent event) {
+            okButton.setEnabled(false);
+        }
+
+        @Override
+        public void onValid(ValidEvent event) {
+            okButton.setEnabled(FormPanelHelper.isValid(dlg, true) && textAreasHaveText(dlg));
+        }
+
+        private boolean textAreasHaveText(HasWidgets container) {
+            Iterator<Widget> it = container.iterator();
+            while (it.hasNext()) {
+                Widget w = it.next();
+
+                if ((w instanceof ValueBaseField) && (((ValueBaseField<?>)w).getCurrentValue() instanceof String)) {
+                    @SuppressWarnings("unchecked")
+                    ValueBaseField<String> vbf = (ValueBaseField<String>)w;
+                    if (!vbf.getCurrentValue().isEmpty()) {
+                        return true;
+                    }
+                }
+
+                if (w instanceof HasWidgets) {
+                    return textAreasHaveText((HasWidgets)w);
+                }
+            }
+            return false;
         }
     }
 
@@ -236,19 +261,6 @@ public class FileUploadByUrlDialog extends IPlantDialog {
             dlg.hide();
         }
 
-    }
-
-    private final class CancelButtonSelectHandler implements SelectHandler {
-        private final IsHideable dlg;
-    
-        public CancelButtonSelectHandler(IsHideable dlg) {
-            this.dlg = dlg;
-        }
-    
-        @Override
-        public void onSelect(SelectEvent event) {
-            dlg.hide();
-        }
     }
 
 }
