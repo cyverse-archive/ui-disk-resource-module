@@ -3,10 +3,10 @@ package org.iplantc.core.uidiskresource.client.services;
 
 import java.util.List;
 
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
-import org.iplantc.core.uidiskresource.client.models.autobeans.Permissions;
-import org.iplantc.core.uidiskresource.client.models.autobeans.RootFolders;
+import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.models.Folder;
+import org.iplantc.core.uidiskresource.client.models.Permissions;
+import org.iplantc.core.uidiskresource.client.models.RootFolders;
 import org.junit.Test;
 
 import com.google.gwt.core.client.GWT;

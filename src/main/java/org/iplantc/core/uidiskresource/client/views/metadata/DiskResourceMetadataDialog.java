@@ -6,11 +6,11 @@ import java.util.Set;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.I18N;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadata;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadataList;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadataProperties;
+import org.iplantc.core.uidiskresource.client.models.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadata;
+import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadataList;
+import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadataProperties;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 

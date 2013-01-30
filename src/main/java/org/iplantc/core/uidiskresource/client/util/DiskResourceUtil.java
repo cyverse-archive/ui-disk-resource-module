@@ -8,9 +8,9 @@ import java.util.List;
 
 import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.autobeans.File;
-import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
+import org.iplantc.core.uidiskresource.client.models.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.File;
+import org.iplantc.core.uidiskresource.client.models.Folder;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;

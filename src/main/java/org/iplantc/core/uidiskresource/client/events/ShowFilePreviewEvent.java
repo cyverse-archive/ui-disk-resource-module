@@ -1,7 +1,7 @@
 package org.iplantc.core.uidiskresource.client.events;
 
 import org.iplantc.core.uidiskresource.client.events.ShowFilePreviewEvent.ShowFilePreviewEventHandler;
-import org.iplantc.core.uidiskresource.client.models.autobeans.File;
+import org.iplantc.core.uidiskresource.client.models.File;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;

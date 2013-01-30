@@ -5,9 +5,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.iplantc.core.uidiskresource.client.I18N;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceProperties;
-import org.iplantc.core.uidiskresource.client.models.autobeans.File;
+import org.iplantc.core.uidiskresource.client.models.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.DiskResourceProperties;
+import org.iplantc.core.uidiskresource.client.models.File;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
 
 import com.google.gwt.cell.client.DateCell;

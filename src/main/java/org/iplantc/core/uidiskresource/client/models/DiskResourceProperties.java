@@ -1,4 +1,4 @@
-package org.iplantc.core.uidiskresource.client.models.autobeans;
+package org.iplantc.core.uidiskresource.client.models;
 
 import java.util.Date;
 

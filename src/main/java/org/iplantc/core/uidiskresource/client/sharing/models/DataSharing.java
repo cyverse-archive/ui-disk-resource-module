@@ -7,8 +7,8 @@ package org.iplantc.core.uidiskresource.client.sharing.models;
 
 import org.iplantc.core.uicommons.client.models.collaborators.Collaborator;
 import org.iplantc.core.uicommons.client.models.sharing.Sharing;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uidiskresource.client.models.autobeans.Permissions;
+import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.models.Permissions;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 
 import com.google.gwt.core.client.GWT;

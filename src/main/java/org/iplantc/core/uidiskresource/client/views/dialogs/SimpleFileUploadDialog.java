@@ -7,7 +7,7 @@ import java.util.List;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uicommons.client.widgets.IPCFileUploadField;
 import org.iplantc.core.uidiskresource.client.I18N;
-import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
+import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DuplicateDiskResourceCallback;
 

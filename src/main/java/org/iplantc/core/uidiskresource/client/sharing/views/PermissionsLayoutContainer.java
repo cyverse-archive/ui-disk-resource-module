@@ -9,7 +9,7 @@ import java.util.List;
 import org.iplantc.core.uicommons.client.models.collaborators.Collaborator;
 import org.iplantc.core.uicommons.client.models.sharing.Sharing;
 import org.iplantc.core.uidiskresource.client.I18N;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing.TYPE;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingView.Presenter;

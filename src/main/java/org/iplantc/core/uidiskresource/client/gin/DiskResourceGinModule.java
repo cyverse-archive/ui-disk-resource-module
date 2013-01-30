@@ -1,6 +1,6 @@
 package org.iplantc.core.uidiskresource.client.gin;
 
-import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
+import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.presenters.DiskResourcePresenterImpl;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderRpcProxy;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;

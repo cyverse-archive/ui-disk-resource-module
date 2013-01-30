@@ -10,7 +10,7 @@ import org.iplantc.core.uicommons.client.validators.UrlValidator;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IsHideable;
 import org.iplantc.core.uidiskresource.client.I18N;
-import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
+import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DuplicateDiskResourceCallback;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;

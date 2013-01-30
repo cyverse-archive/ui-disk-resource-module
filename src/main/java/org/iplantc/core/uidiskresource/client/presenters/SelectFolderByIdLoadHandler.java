@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Stack;
 
 import org.iplantc.core.uidiskresource.client.Services;
-import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
+import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
 import com.google.common.base.Joiner;

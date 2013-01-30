@@ -9,12 +9,12 @@ import java.util.Set;
 
 import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadata;
-import org.iplantc.core.uidiskresource.client.models.autobeans.File;
-import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
-import org.iplantc.core.uidiskresource.client.models.autobeans.Permissions;
+import org.iplantc.core.uidiskresource.client.models.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadata;
+import org.iplantc.core.uidiskresource.client.models.File;
+import org.iplantc.core.uidiskresource.client.models.Folder;
+import org.iplantc.core.uidiskresource.client.models.Permissions;
 import org.iplantc.core.uidiskresource.client.search.models.DataSearchAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;

@@ -1,4 +1,4 @@
-package org.iplantc.core.uidiskresource.client.models.autobeans;
+package org.iplantc.core.uidiskresource.client.models;
 
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;

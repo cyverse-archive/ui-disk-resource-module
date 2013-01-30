@@ -1,9 +1,9 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
 import org.iplantc.core.uidiskresource.client.I18N;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.autobeans.File;
-import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
+import org.iplantc.core.uidiskresource.client.models.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.File;
+import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.views.dialogs.CreateFolderDialog;
 import org.iplantc.core.uidiskresource.client.views.dialogs.RenameFileDialog;
 import org.iplantc.core.uidiskresource.client.views.dialogs.RenameFolderDialog;

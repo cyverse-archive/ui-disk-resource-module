@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.autobeans.DiskResourceMetadata;
-import org.iplantc.core.uidiskresource.client.models.autobeans.File;
-import org.iplantc.core.uidiskresource.client.models.autobeans.Folder;
+import org.iplantc.core.uidiskresource.client.models.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadata;
+import org.iplantc.core.uidiskresource.client.models.File;
+import org.iplantc.core.uidiskresource.client.models.Folder;
 
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
@@ -114,7 +114,7 @@ public interface DiskResourceServiceFacade {
      * @param destName
      * @param callback service success/failure callback
      */
-    void renameDiskResource(org.iplantc.core.uidiskresource.client.models.autobeans.DiskResource src,
+    void renameDiskResource(org.iplantc.core.uidiskresource.client.models.DiskResource src,
             String destName, AsyncCallback<String> callback);
 
     /**
