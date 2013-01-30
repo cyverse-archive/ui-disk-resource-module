@@ -25,6 +25,9 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.autobean.shared.Splittable;
+import com.google.web.bindery.autobean.shared.impl.StringQuoter;
+import com.sencha.gxt.core.client.util.Format;
 import com.sencha.gxt.core.shared.FastMap;
 import com.sencha.gxt.widget.core.client.Status;
 import com.sencha.gxt.widget.core.client.button.TextButton;
@@ -154,13 +157,21 @@ public class SimpleFileUploadDialog extends IPlantDialog {
 
     @UiHandler({"form0", "form1", "form2", "form3", "form4"})
     void onSubmitComplete(SubmitCompleteEvent event) {
-        String results = event.getResults();
-
         if (submittedForms.contains(event.getSource())) {
             submittedForms.remove(event.getSource());
             statList.get(formList.indexOf(event.getSource())).clearStatus("");
-            hide();
         }
+
+        String results = Format.stripTags(event.getResults());
+        Splittable split = StringQuoter.split(results);
+        if ((split.get("results") != null)) {
+            // TODO JDS Inform user that submission was successful (not through service, more immediate)
+            hide();
+        } else {
+            IPCFileUploadField field = fufList.get(formList.indexOf(event.getSource()));
+            field.markInvalid(I18N.ERROR.fileUploadFailed(field.getValue()));
+        }
+
     }
 
     @UiHandler({"fuf0", "fuf1", "fuf2", "fuf3", "fuf4"})

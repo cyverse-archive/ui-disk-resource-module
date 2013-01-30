@@ -103,4 +103,6 @@ public interface DiskResourceErrorStrings extends CommonUIErrorStrings {
 
     String fileExist();
 
+    String fileUploadFailed(String fileName);
+
 }

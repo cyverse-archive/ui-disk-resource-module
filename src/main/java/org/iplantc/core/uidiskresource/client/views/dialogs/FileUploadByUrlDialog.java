@@ -17,8 +17,8 @@ import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
@@ -31,6 +31,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.shared.FastMap;
 import com.sencha.gxt.fx.client.FxElement;
 import com.sencha.gxt.widget.core.client.Status;
+import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent;
 import com.sencha.gxt.widget.core.client.event.ValidEvent;
 import com.sencha.gxt.widget.core.client.form.Field;
@@ -49,7 +50,7 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
     private static final String FIELD_WIDTH = "475";
     private final Folder uploadDest;
     private final DiskResourceServiceFacade drService;
-    private Set<Entry<Field<String>, Status>> pendingList = Sets.newHashSet();
+    private final Set<Entry<Field<String>, Status>> pendingList = Sets.newHashSet();
     private final Map<Field<String>, Status> fieldToStatusMap = Maps.newHashMap();
     
     @UiField
@@ -69,8 +70,7 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
         getOkButton().setEnabled(false);
         setHeadingText(I18N.DISPLAY.upload());
         
-        Widget w = UIBINDER.createAndBindUi(this);
-        add(w);
+        add(UIBINDER.createAndBindUi(this));
 
         // Load up our field to status map
         fieldToStatusMap.put(url0, formStatus0);
@@ -84,12 +84,25 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
     }
 
     @UiFactory
+    SimpleContainer buildHlc() {
+        SimpleContainer hlc = new SimpleContainer();
+        hlc.setSize(FIELD_WIDTH, FIELD_HEIGHT);
+        return hlc;
+    }
+
+    @UiFactory
     TextArea buildUrlField() {
         TextArea urlField = new TextArea();
-        urlField.setSize(FIELD_WIDTH, FIELD_HEIGHT);
         urlField.addValidator(new UrlValidator());
         urlField.setAutoValidate(true);
         return urlField;
+    }
+
+    @UiFactory
+    Status createFormStatus() {
+        Status status = new Status();
+        status.setWidth(15);
+        return status;
     }
 
     @UiHandler({"url0", "url1", "url2", "url3", "url4"})
@@ -105,7 +118,7 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
     private boolean isValidForm(){
         for(Entry<Field<String>, Status> entry : fieldToStatusMap.entrySet()){
             ValueBaseField<String> valueBaseField = (ValueBaseField<String>)entry.getKey();
-            if(!valueBaseField.getCurrentValue().isEmpty()){
+            if ((valueBaseField.getCurrentValue() != null) && !valueBaseField.getCurrentValue().isEmpty()) {
                 return true;
             }
         }
@@ -122,6 +135,8 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
 
         for (Entry<Field<String>, Status> entry : fieldToStatusMap.entrySet()) {
             Field<String> field = entry.getKey();
+            if(field.getValue() == null)
+                continue;
             String url = field.getValue().trim();
             if (!url.isEmpty()) {
                 Status status = entry.getValue();
@@ -166,7 +181,7 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
         private final Folder uploadDest;
         private final DiskResourceServiceFacade drService;
         private final D dlg;
-        private Map<Field<String>, Status> fieldToStatusMap;
+        private final Map<Field<String>, Status> fieldToStatusMap;
 
         public CheckDuplicatesCallback(Map<String, Field<String>> destResourceMap, Map<Field<String>, Status> fieldToStatusMap, Folder uploadDest, DiskResourceServiceFacade drService, D dlg) {
             super(Lists.newArrayList(destResourceMap.keySet()), null);
@@ -225,11 +240,10 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
         @Override
         public void onFailure(Throwable caught) {
             // TODO JDS Determine how to update the UI
-            if(dlg.getNumPending() == 1){
-//                ErrorHandler.post(caught);
+            if (dlg.getNumPending() == 1) {
+                // ErrorHandler.post(caught);
                 // "Blink" the window on the last pending element.
                 dlg.getElement().<FxElement>cast().blink();
-                
             }
             
             pending.getKey().markInvalid("Url Failed to upload");
