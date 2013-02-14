@@ -88,26 +88,6 @@ public interface DiskResourceServiceFacade {
     void moveDiskResources(Set<DiskResource> diskResources, Folder destFolder, AsyncCallback<String> callback);
 
     /**
-     * Call service to move the given file ids to the given folder.
-     * 
-     * TODO JDS DELETE THIS METHOD
-     * @param idSrcFiles list of file ids to move.
-     * @param idDestFolder id of the destination folder.
-     * @param callback service success/failure callback
-     */
-    void moveFile(List<String> idSrcFiles, String idDestFolder, AsyncCallback<String> callback);
-
-    /**
-     * Call service to move the given folder ids to the given destination folder.
-     * 
-     * TODO JDS DELETE THIS METHOD
-     * @param idSrcFolders list of folder ids to move.
-     * @param idDestFolder id of the destination folder.
-     * @param callback service success/failure callback
-     */
-    void moveFolder(List<String> idSrcFolders, String idDestFolder, AsyncCallback<String> callback);
-
-    /**
      * Call service rename a file or folder.
      * 
      * @param src
@@ -116,24 +96,6 @@ public interface DiskResourceServiceFacade {
      */
     void renameDiskResource(org.iplantc.core.uidiskresource.client.models.DiskResource src,
             String destName, AsyncCallback<String> callback);
-
-    /**
-     * Call service rename a folder.
-     * 
-     * @param srcName
-     * @param destName
-     * @param callback service success/failure callback
-     */
-    void renameFolder(String srcName, String destName, AsyncCallback<String> callback);
-
-    /**
-     * Call service to rename a file.
-     * 
-     * @param srcId
-     * @param destId
-     * @param callback service success/failure callback
-     */
-    void renameFile(String srcId, String destId, AsyncCallback<String> callback);
 
     /**
      * Call service to upload a file from a given URL.
