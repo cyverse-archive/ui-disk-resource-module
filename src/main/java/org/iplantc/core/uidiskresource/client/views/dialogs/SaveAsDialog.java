@@ -26,7 +26,7 @@ public class SaveAsDialog extends IPlantDialog {
     private final DiskResourceView.Presenter presenter;
     private final TextField selectedFolderField = new TextField();
     private final TextField fileNameField = new TextField();
-    private final Folder selectedFolder = null;
+    private Folder selectedFolder = null;
 
     public SaveAsDialog() {
         // Get a reference to the OK button, and disable it by default.
@@ -58,10 +58,8 @@ public class SaveAsDialog extends IPlantDialog {
         // presenter.go(this, false, true, true, true);
         presenter.builder().hideNorth().hideCenter().hideEast().singleSelect().go(this);
 
-        // FIXME JDS THE CODE BELOW NEEDS TO BE INTEGRATED INTO DISK Resources classes.
-
-        // // if not refresh and currently nothing was selected and remember path is enabled, the go
-        // // back to last back
+        // if not refresh and currently nothing was selected and remember path is enabled, the go
+        // back to last selected folder
         UserSettings instance = UserSettings.getInstance();
         String id = instance.getDefaultFileSelectorPath();
         boolean remember = instance.isRememberLastPath();
@@ -105,8 +103,8 @@ public class SaveAsDialog extends IPlantDialog {
                 okButton.setEnabled(false);
                 return;
             }
-            Folder diskResource = event.getSelectedItem();
-            textBox.setValue(diskResource.getName());
+            selectedFolder = event.getSelectedItem();
+            textBox.setValue(selectedFolder.getName());
             // Enable the okButton
             okButton.setEnabled(!Strings.isNullOrEmpty(fileNameTextBox.getValue()));
         }
