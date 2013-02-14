@@ -9,7 +9,6 @@ import java.util.Set;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.images.Resources;
 import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
-import org.iplantc.core.uicommons.client.widgets.IPlantAnchorDefaultAppearance;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
@@ -689,8 +688,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     }
     
     private IPlantAnchor buildSearchHistoryLink(final String searchTerm) {
-        IPlantAnchor anchor = new IPlantAnchor(searchTerm, 120,new IPlantAnchorDefaultAppearance(), new ClickHandler() {
-            
+        IPlantAnchor anchor = new IPlantAnchor(searchTerm, 120, new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                         DataSearchHistorySelectedEvent dsh = new DataSearchHistorySelectedEvent(
