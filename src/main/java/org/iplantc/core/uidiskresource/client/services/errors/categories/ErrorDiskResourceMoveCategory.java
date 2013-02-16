@@ -7,7 +7,7 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 
 public class ErrorDiskResourceMoveCategory {
 
-    public static String getErrorMsg(AutoBean<ErrorDiskResourceMove> instance) {
+    public static String generateErrorMsg(AutoBean<ErrorDiskResourceMove> instance) {
         return ErrorDiskResourceCategory.getErrorMessage(DiskResourceErrorCode.valueOf(instance.as().getErrorCode()), instance.as().getPaths());
     }
 }

@@ -29,6 +29,8 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
 
     @Override
     public void load(final Folder parentFolder, final AsyncCallback<List<Folder>> callback) {
+
+        presenter.maskView();
         if (parentFolder == null) {
             Services.DISK_RESOURCE_SERVICE.getHomeFolder(new AsyncCallback<String>() {
 
@@ -41,6 +43,7 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
                     if (callback != null) {
                         callback.onSuccess(roots);
                     }
+                    presenter.unMaskView();
                 }
 
                 @Override
@@ -50,6 +53,7 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
                     if (callback != null) {
                         callback.onFailure(caught);
                     }
+                    presenter.unMaskView();
                 }
 
             });
@@ -75,6 +79,7 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
                             if (callback != null) {
                                 callback.onSuccess(parentFolder.getFolders());
                             }
+                            presenter.unMaskView();
                         }
 
                         @Override
@@ -83,6 +88,7 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
                             if (callback != null) {
                                 callback.onFailure(caught);
                             }
+                            presenter.unMaskView();
                         }
                     });
         }

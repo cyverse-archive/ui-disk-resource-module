@@ -173,6 +173,9 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
         
         void setCurrentSearchTerm(String searchTerm);
 
+        void maskView();
+
+        void unMaskView();
 
     }
 

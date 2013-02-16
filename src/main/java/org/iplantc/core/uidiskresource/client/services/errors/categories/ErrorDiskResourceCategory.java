@@ -17,13 +17,13 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 public class ErrorDiskResourceCategory {
     private static DiskResourceServiceErrorStrings errStrings = GWT.create(DiskResourceServiceErrorStrings.class);
 
-    public static String getErrorMsg(AutoBean<ErrorDiskResource> instance) {
+    public static String generateErrorMsg(AutoBean<ErrorDiskResource> instance) {
         return getErrorMessage(DiskResourceErrorCode.valueOf(instance.as().getErrorCode()), null);
     }
-    
+
     @SuppressWarnings("incomplete-switch")
     protected static String getErrorMessage(DiskResourceErrorCode code, String resourceNames) {
-        
+
         switch (code) {
             case ERR_DOES_NOT_EXIST:
                 return errStrings.diskResourceDoesNotExist(resourceNames);

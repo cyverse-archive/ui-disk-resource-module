@@ -60,6 +60,7 @@
    <ui:with field="eastData"
             type="com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData">
       <ui:attributes size="175"
+                     collapsible="true"
                      hidden="false"/>
    </ui:with>
    <ui:with field="southData"
@@ -68,42 +69,64 @@
                      hidden="true"/>
    </ui:with>
    
+    <ui:with
+        type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData"
+        field="detailsLayoutDataTop">
+        <ui:attributes
+            width="1"
+            height="0.45"/>
+    </ui:with>
+    <ui:with
+        type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData"
+        field="detailsLayoutDataBottom">
+        <ui:attributes
+            width="1"
+            height="0.55"/>
+    </ui:with>
+   
    <container:BorderLayoutContainer ui:field="con"
                                     borders="true">
-          <!-- This is the tool bar -->
+      <!-- Tool Bar -->
       <container:north layoutData="{northData}">
          <toolbar:DiskResourceViewToolbar ui:field="toolbar"/>
       </container:north>
-          <!-- This is the navigation panel -->
+      
+      <!-- Navigation Panel -->
       <container:west layoutData="{westData}">
          <gxt:ContentPanel ui:field="westPanel"
-                           headerVisible="false"
-                           bodyBorder="false">
-            <tree:Tree ui:field="tree"
-                       autoSelect="true"/>
+                           headerVisible="false">
+            <tree:Tree ui:field="tree"/>
          </gxt:ContentPanel>
       </container:west>
-       <!-- This is the main panel -->
+       
+      <!-- Main Panel -->
       <container:center layoutData="{centerData}">
          <gxt:ContentPanel ui:field="centerPanel"
                            headerVisible="false"
-                           resize="true" 
-                           bodyBorder="false">
+                           resize="true">
                   <grid:Grid ui:field="grid"
                              cm="{cm}"
                              store="{listStore}"
                              view="{gridView}" />
          </gxt:ContentPanel>
       </container:center>
-      <!-- This is the details panel -->
+      
+      <!-- Details Panel -->
       <container:east layoutData="{eastData}">
-        <container:VerticalLayoutContainer>
-         <gxt:ContentPanel ui:field="detailsPanel" 
-                           headingText="{DISPLAY.details}" height="180" />
-          <gxt:ContentPanel ui:field="historyPanel" 
-                           headingText="Search History" height="180"/>
-                           </container:VerticalLayoutContainer>
+        <gxt:ContentPanel headingText="{DISPLAY.details}">
+	        <container:VerticalLayoutContainer>
+	            <container:child layoutData="{detailsLayoutDataTop}">
+	               <container:SimpleContainer ui:field="detailsPanel" /> 
+	            </container:child>
+	            <container:child layoutData="{detailsLayoutDataBottom}">
+		            <gxt:ContentPanel ui:field="historyPanel" 
+		                              headingText="{DISPLAY.searchHistory}" 
+		                              bodyBorder="false"/> 
+	            </container:child>
+	        </container:VerticalLayoutContainer>
+        </gxt:ContentPanel>
       </container:east>
+      
       <container:south layoutData="{southData}"/>
    </container:BorderLayoutContainer>
 </ui:UiBinder> 

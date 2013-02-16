@@ -76,6 +76,8 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.google.web.bindery.autobean.shared.Splittable;
+import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
@@ -353,6 +355,11 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void go(HasOneWidget container) {
         container.setWidget(view);
         // JDS May need to call doRefresh here.
+        if (getSelectedFolder() != null) {
+            Folder tmp = getSelectedFolder();
+            view.deSelectNavigationFolder();
+            view.setSelectedFolder(tmp);
+        }
     }
 
     @Override
@@ -762,32 +769,28 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         view.renderSearchHistory(searchHistory);
     }
 
-    private JSONObject getSearchHistoryAsJson() {
-        JSONObject obj = new JSONObject();
+    private Splittable getSearchHistoryAsSplittable() {
+        Splittable split = StringQuoter.createSplittable();
         if (searchHistory.size() > 0) {
-            obj.put("data-search", JsonUtil.buildArrayFromStrings(searchHistory));
+            DiskResourceUtil.createSplittableFromStringList(searchHistory).assign(split, "data-search");
         } else {
-            obj.put("data-search", new JSONArray());
+            StringQuoter.createIndexed().assign(split, "data-search");
         }
-        return obj;
+        return split;
     }
 
     @Override
     public void saveSearchHistory() {
-        JSONObject obj = getSearchHistoryAsJson();
-        diskResourceService.saveDataSearchHistory(obj.toString(), new AsyncCallback<String>() {
+        Splittable split = getSearchHistoryAsSplittable();
+        diskResourceService.saveDataSearchHistory(split.getPayload(), new AsyncCallback<String>() {
 
             @Override
             public void onFailure(Throwable caught) {
                 ErrorHandler.post(I18N.ERROR.searchHistoryError(), caught);
-
             }
 
             @Override
-            public void onSuccess(String result) {
-                // do nothing
-
-            }
+            public void onSuccess(String result) {/* DO NOTHING */}
         });
     }
 
@@ -848,6 +851,16 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
                 view.removeDiskResources(getSelectedDiskResources());
             }
         });
+    }
+
+    @Override
+    public void maskView() {
+        view.mask(I18N.DISPLAY.loadingMask());
+    }
+
+    @Override
+    public void unMaskView() {
+        view.unmask();
     }
 
 }

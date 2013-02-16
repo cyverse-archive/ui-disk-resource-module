@@ -170,4 +170,6 @@ public interface DiskResourceDisplayStrings extends CommonUIDisplayStrings {
 
     String urlPrompt();
 
+    String searchHistory();
+
 }

@@ -57,6 +57,7 @@ import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
@@ -110,7 +111,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     GridView<DiskResource> gridView;
 
     @UiField
-    ContentPanel detailsPanel;
+    SimpleContainer detailsPanel;
 
     @UiField
     ContentPanel historyPanel;
@@ -546,7 +547,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
         fl.setHTML(getDetailAsHtml("&nbsp;&nbsp;" + I18N.DISPLAY.noDetails(), true));
         HorizontalPanel hp = new HorizontalPanel();
         hp.add(fl);
-        detailsPanel.add(hp);
+        detailsPanel.setWidget(hp);
     }
 
     private String getDetailAsHtml(String detail, boolean bolded) {

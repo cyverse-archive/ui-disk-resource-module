@@ -150,4 +150,8 @@ public class DiskResourceUtil {
         return StringQuoter.split(jArr.toString());
     }
 
+    public static Splittable createSplittableFromStringList(List<String> strings) {
+        return StringQuoter.split(JsonUtil.buildArrayFromStrings(strings).toString());
+    }
+
 }

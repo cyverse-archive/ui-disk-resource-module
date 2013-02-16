@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uicommons.client.widgets.IPCFileUploadField;
 import org.iplantc.core.uidiskresource.client.I18N;
+import org.iplantc.core.uidiskresource.client.events.FileUploadedEvent;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DuplicateDiskResourceCallback;
@@ -78,10 +80,12 @@ public class SimpleFileUploadDialog extends IPlantDialog {
     private final List<FormPanel> submittedForms = Lists.newArrayList();
     private final SafeUri fileUploadServlet;
     private final String userName;
+    private final EventBus eventBus;
 
-    public SimpleFileUploadDialog(Folder uploadDest, DiskResourceServiceFacade drService, SafeUri fileUploadServlet, String userName) {
+    public SimpleFileUploadDialog(Folder uploadDest, DiskResourceServiceFacade drService, EventBus eventBus, SafeUri fileUploadServlet, String userName) {
         this.uploadDest = uploadDest;
         this.drService = drService;
+        this.eventBus = eventBus;
         this.fileUploadServlet = fileUploadServlet;
         this.userName = userName;
         setAutoHide(false);
@@ -164,10 +168,11 @@ public class SimpleFileUploadDialog extends IPlantDialog {
             statList.get(formList.indexOf(event.getSource())).clearStatus("");
         }
 
-        String results = Format.stripTags(event.getResults());
+        String results2 = event.getResults();
+        String results = Format.stripTags(results2);
         Splittable split = StringQuoter.split(results);
-        if ((split.get("results") != null)) {
-            // TODO JDS Inform user that submission was successful (not through service, more immediate)
+        if ((split.get("file") != null)) {
+            eventBus.fireEvent(new FileUploadedEvent(uploadDest));
             hide();
         } else {
             IPCFileUploadField field = fufList.get(formList.indexOf(event.getSource()));
