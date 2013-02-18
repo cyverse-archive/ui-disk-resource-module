@@ -5,11 +5,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.views.IsMaskable;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceInfo;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.Folder;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectFolderByIdLoadHandler;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
@@ -18,6 +20,7 @@ import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewTool
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.TreeStore;
@@ -33,7 +36,7 @@ import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRoot {
 
     public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter,
-            DiskResourceViewToolbarImpl.Presenter {
+ DiskResourceViewToolbarImpl.Presenter, HasHandlerRegistrationMgmt {
         interface Builder extends org.iplantc.core.uicommons.client.presenter.Presenter {
             Builder hideNorth();
 
@@ -46,22 +49,9 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
             Builder singleSelect();
 
             Builder disableDiskResourceHyperlink();
-
-
         }
 
-        /**
-         * FIXME JDS Implement this with a builder pattern to make it more readable.
-         * i.e. presenter.getBuilder().showWest().showEast().showNorth().showSouth().go(container)
-         * 
-         * @param container
-         * @param hideWestWidget
-         * @param hideCenterWidget
-         * @param hideEastWidget
-         * @param hideNorthWidget
-         */
-        // void go(HasOneWidget container, boolean hideWestWidget, boolean hideCenterWidget,
-        // boolean hideEastWidget, boolean hideNorthWidget);
+        void go(HasOneWidget container, HasId folderToSelect, List<HasId> diskResourcesToSelect);
 
         Builder builder();
 
@@ -83,17 +73,6 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
         void onDiskResourceSelected(Set<DiskResource> selection);
 
-        /**
-         * Called by the {@link DiskResourceView.Proxy} when a folder is successfully loaded. If the
-         * loaded folder is the currently selected folder, the presenter will set its view's
-         * <code>DiskResource</code> collection with a call to
-         * {@link DiskResourceView#setDiskResources(ArrayList)}.
-         * 
-         * @param loadedFolder
-         * @param folderChildren
-         */
-        void onFolderLoad(Folder loadedFolder, Set<DiskResource> folderChildren);
-
         void addFileSelectChangedHandler(SelectionChangedHandler<DiskResource> selectionChangedHandler);
 
         void addFolderSelectionHandler(SelectionHandler<Folder> selectionHandler);
@@ -111,7 +90,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
          * 
          * @param diskResourceIdList
          */
-        void setSelectedDiskResourcesById(Set<String> diskResourceIdList);
+//        void setSelectedDiskResourcesById(Set<String> diskResourceIdList);
 
         DiskResourceView getView();
 
@@ -177,6 +156,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
         void unMaskView();
 
+        void handleSearchEvent(DiskResource resource);
     }
 
     /**
@@ -190,8 +170,6 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
      * 
      */
     public interface Proxy extends DataProxy<Folder, List<Folder>> {
-        void load(Folder folder);
-
         void setPresenter(Presenter presenter);
 
     }
@@ -203,8 +181,6 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
     Folder getSelectedFolder();
 
     Set<DiskResource> getSelectedDiskResources();
-
-    void setRootFolders(Set<Folder> rootFolders);
 
     TreeStore<Folder> getTreeStore();
 
@@ -240,6 +216,8 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
      */
     void setSelectedFolder(Folder folder);
 
+    void setSelectedDiskResources(List<HasId> diskResourcesToSelect);
+
     void addFolder(Folder parent, Folder newChild);
 
     Folder getFolderById(String folderId);
@@ -247,16 +225,6 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
     void expandFolder(Folder folder);
 
     void deSelectDiskResources();
-
-    /**
-     * @return a list of root folders from the view's tree store.
-     */
-    Set<Folder> getRootFolders();
-
-    /**
-     * Clears all children from the tree store and reloads all root folders.
-     */
-    void refreshAll();
 
     void refreshFolder(Folder folder);
 
@@ -310,5 +278,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
     void renderSearchHistory(List<String> history);
 
     void deSelectNavigationFolder();
+
+    boolean isCenterHidden();
 
 }

@@ -6,32 +6,26 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.models.CommonModelAutoBeanFactory;
+import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
-import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent.DataSearchHistorySelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent;
-import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent.DataSearchNameSelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DataSearchPathSelectedEvent;
-import org.iplantc.core.uidiskresource.client.events.DataSearchPathSelectedEvent.DataSearchPathSelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
-import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent.DiskResourceRenamedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
-import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent.DiskResourceSelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent;
-import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent.DiskResourcesDeletedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesMovedEvent;
-import org.iplantc.core.uidiskresource.client.events.DiskResourcesMovedEvent.DiskResourcesMovedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.FileUploadedEvent;
-import org.iplantc.core.uidiskresource.client.events.FileUploadedEvent.FileUploadedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent;
-import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent.FolderCreatedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.RequestBulkDownloadEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestBulkUploadEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestImportFromUrlEvent;
@@ -40,10 +34,15 @@ import org.iplantc.core.uidiskresource.client.events.RequestSimpleUploadEvent;
 import org.iplantc.core.uidiskresource.client.events.ShowFilePreviewEvent;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uidiskresource.client.models.DiskResourceInfo;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.File;
 import org.iplantc.core.uidiskresource.client.models.Folder;
+import org.iplantc.core.uidiskresource.client.presenters.handlers.DataSearchHandler;
+import org.iplantc.core.uidiskresource.client.presenters.handlers.DiskResourcesEventHandler;
+import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilitySelectionHandler;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.DiskResourceViewLoadHandler;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectDiskResourceByIdStoreAddHandler;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectFolderByIdLoadHandler;
 import org.iplantc.core.uidiskresource.client.search.models.DataSearch;
 import org.iplantc.core.uidiskresource.client.search.models.DataSearchAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.search.models.DataSearchResult;
@@ -57,12 +56,14 @@ import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceSearchView;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
+import org.iplantc.core.uidiskresource.client.views.HasHandlerRegistrationMgmt;
 import org.iplantc.core.uidiskresource.client.views.metadata.DiskResourceMetadataDialog;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventHandler;
@@ -78,7 +79,7 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
-import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
+import com.sencha.gxt.data.shared.loader.LoadHandler;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
@@ -90,90 +91,13 @@ import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 
 /**
  * 
- * TODO JDS Consolidate handlers into one handler.
- * 
  * @author jstroot
  * 
  */
 public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         DiskResourceViewToolbarImpl.Presenter, HasHandlerRegistrationMgmt {
 
-    private final class FileUploadedEventHandlerImpl implements FileUploadedEventHandler {
-        private final DiskResourceView view;
-
-        public FileUploadedEventHandlerImpl(DiskResourceView view) {
-            this.view = view;
-        }
-
-        @Override
-        public void onFileUploaded(FileUploadedEvent event) {
-            view.refreshFolder(event.getUploadDestFolderFolder());
-        }
-    }
-
-    private final class DetailsCallbackImpl implements AsyncCallback<String> {
-        private final String path;
-
-        private DetailsCallbackImpl(String path) {
-            this.path = path;
-        }
-
-        @Override
-        public void onFailure(Throwable caught) {
-            ErrorHandler.post(I18N.ERROR.retrieveStatFailed(), caught);
-
-        }
-
-        @Override
-        public void onSuccess(String result) {
-            JSONObject json = JsonUtil.getObject(result);
-            JSONObject pathsObj = JsonUtil.getObject(json, "paths");
-            JSONObject details = JsonUtil.getObject(pathsObj, path);
-            AutoBean<DiskResourceInfo> bean = AutoBeanCodex.decode(drFactory, DiskResourceInfo.class,
-                    details.toString());
-            view.updateDetails(path, bean.as());
-        }
-    }
-
-    private final class DiskResourceMovedEventHandlerImpl implements DiskResourcesMovedEventHandler {
-        @Override
-        public void onDiskResourcesMoved(DiskResourcesMovedEvent event) {
-            // Determine which folder is the ancestor, then refresh it
-            if (DiskResourceUtil.isDescendantOfFolder(event.getDestinationFolder(), getSelectedFolder())) {
-                view.refreshFolder(event.getDestinationFolder());
-            } else {
-                view.refreshFolder(getSelectedFolder());
-            }
-        }
-    }
-
-    private final class DiskResourceSelectedEventHandlerImpl implements DiskResourceSelectedEventHandler {
-        @Override
-        public void onSelect(DiskResourceSelectedEvent event) {
-            if (event.getSelectedItem() instanceof Folder) {
-                view.setSelectedFolder((Folder)event.getSelectedItem());
-            } else if (event.getSelectedItem() instanceof File) {
-                EventBus.getInstance().fireEvent(
-                        new ShowFilePreviewEvent((File)event.getSelectedItem(), this));
-            }
-        }
-    }
-
-    private final class DiskResourcesDeletedEventHandlerImpl implements DiskResourcesDeletedEventHandler {
-        private final DiskResourceView view;
-
-        public DiskResourcesDeletedEventHandlerImpl(final DiskResourceView view) {
-            this.view = view;
-        }
-
-        @Override
-        public void onDiskResourcesDeleted(Collection<DiskResource> resources, Folder parentFolder) {
-            view.refreshFolder(parentFolder);
-        }
-
-    }
-
-    private final DiskResourceView view;
+    final DiskResourceView view;
     private final DiskResourceView.Proxy proxy;
     private final TreeLoader<Folder> treeLoader;
     private final HashMap<EventHandler, HandlerRegistration> registeredHandlers = new HashMap<EventHandler, HandlerRegistration>();
@@ -182,7 +106,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private final DiskResourceAutoBeanFactory drFactory;
     private final Builder builder;
     private final DataSearchAutoBeanFactory dataSearchFactory;
-    private List<String> searchHistory;
+    private final List<String> searchHistory = Lists.newArrayList();
     private String currentSearchTerm;
 
     @Inject
@@ -199,8 +123,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
         builder = new MyBuilder(this);
 
-        initHandlers();
-        initDragAndDrop();
         treeLoader = new TreeLoader<Folder>(this.proxy) {
             @Override
             public boolean hasChildren(Folder parent) {
@@ -208,16 +130,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             }
         };
 
-        // Add selection handlers which will control the visibility of the toolbar buttons
-        addFileSelectChangedHandler(new ToolbarButtonVisibilitySelectionHandler<DiskResource>(
-                view.getToolbar(), view));
-        addFolderSelectionHandler(new ToolbarButtonVisibilitySelectionHandler<Folder>(view.getToolbar(), view));
-
-        treeLoader.addLoadHandler(new ChildTreeStoreBinding<Folder>(this.view.getTreeStore()));
         this.view.setTreeLoader(treeLoader);
         this.view.setPresenter(this);
         this.proxy.setPresenter(this);
-        searchHistory = new ArrayList<String>();
+
+        initHandlers();
+        initDragAndDrop();
         loadSearchHistory();
         loadUserTrashPath();
     }
@@ -272,65 +190,32 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     }
 
     private void initHandlers() {
-        EventBus eventBus = EventBus.getInstance();
         
-        // FIXME JDS Add DiskResourceRefreshEventHandler
-        eventBus.addHandler(FileUploadedEvent.TYPE, new FileUploadedEventHandlerImpl(view));
+        // Add selection handlers which will control the visibility of the toolbar buttons
+        addFileSelectChangedHandler(new ToolbarButtonVisibilitySelectionHandler<DiskResource>(
+                view.getToolbar(), view));
+        addFolderSelectionHandler(new ToolbarButtonVisibilitySelectionHandler<Folder>(view.getToolbar(), view));
 
-        DiskResourcesDeletedEventHandlerImpl diskResourcesDeletedHandler = new DiskResourcesDeletedEventHandlerImpl(
-                view);
-        eventBus.addHandler(DiskResourcesDeletedEvent.TYPE, diskResourcesDeletedHandler);
-        eventBus.addHandler(FolderCreatedEvent.TYPE, new FolderCreatedEventHandler() {
+        treeLoader.addLoadHandler(new DiskResourceViewLoadHandler(this.view.getTreeStore(), this));
+        
+        EventBus eventBus = EventBus.getInstance();
+        DiskResourcesEventHandler diskResourcesEventHandler = new DiskResourcesEventHandler(this);
+        eventBus.addHandler(FileUploadedEvent.TYPE, diskResourcesEventHandler);
+        eventBus.addHandler(DiskResourcesDeletedEvent.TYPE, diskResourcesEventHandler);
+        eventBus.addHandler(FolderCreatedEvent.TYPE, diskResourcesEventHandler);
+        eventBus.addHandler(DiskResourceRenamedEvent.TYPE, diskResourcesEventHandler);
+        eventBus.addHandler(DiskResourceSelectedEvent.TYPE, diskResourcesEventHandler);
+        eventBus.addHandler(DiskResourcesMovedEvent.TYPE, diskResourcesEventHandler);
 
-            @Override
-            public void onFolderCreated(Folder parentFolder, Folder newFolder) {
-                view.addFolder(parentFolder, newFolder);
-            }
-        });
-        eventBus.addHandler(DiskResourceRenamedEvent.TYPE, new DiskResourceRenamedEventHandler() {
-
-            @Override
-            public void onRename(DiskResource originalDr, DiskResource newDr) {
-                view.updateDiskResource(originalDr, newDr);
-
-            }
-        });
-        eventBus.addHandler(DiskResourceSelectedEvent.TYPE, new DiskResourceSelectedEventHandlerImpl());
-        eventBus.addHandler(DiskResourcesMovedEvent.TYPE, new DiskResourceMovedEventHandlerImpl());
-
-        eventBus.addHandler(DataSearchNameSelectedEvent.TYPE, new DataSearchNameSelectedEventHandler() {
-
-            @Override
-            public void onNameSelected(DataSearchNameSelectedEvent event) {
-                handleSearchEvent(event.getResource());
-            }
-
-        });
-
-        eventBus.addHandler(DataSearchPathSelectedEvent.TYPE, new DataSearchPathSelectedEventHandler() {
-
-            @Override
-            public void onPathSelected(DataSearchPathSelectedEvent event) {
-                handleSearchEventByPath(event.getResource().getPath());
-            }
-
-        });
-        eventBus.addHandler(DataSearchHistorySelectedEvent.TYPE,
-                new DataSearchHistorySelectedEventHandler() {
-
-                    @Override
-                    public void onSelection(DataSearchHistorySelectedEvent event) {
-                        String searchHistoryTerm = event.getSearchHistoryTerm();
-                        view.getToolbar().setSearchTerm(searchHistoryTerm);
-                        doSearch(searchHistoryTerm);
-
-                    }
-
-                });
+        DataSearchHandler dataSearchHandler = new DataSearchHandler(this);
+        eventBus.addHandler(DataSearchNameSelectedEvent.TYPE, dataSearchHandler);
+        eventBus.addHandler(DataSearchPathSelectedEvent.TYPE, dataSearchHandler);
+        eventBus.addHandler(DataSearchHistorySelectedEvent.TYPE, dataSearchHandler);
 
     }
 
-    private void handleSearchEvent(DiskResource resource) {
+    @Override
+    public void handleSearchEvent(DiskResource resource) {
         if (resource instanceof Folder) {
             Folder f = (Folder)resource;
             view.setSelectedFolder(f);
@@ -338,11 +223,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         } else {
             EventBus.getInstance().fireEvent(new ShowFilePreviewEvent((File)resource, this));
         }
-        addToSearchHistory(getCurrentSearchTerm());
-    }
-
-    private void handleSearchEventByPath(String path) {
-        setSelectedFolderById(path);
         addToSearchHistory(getCurrentSearchTerm());
     }
 
@@ -354,12 +234,46 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     @Override
     public void go(HasOneWidget container) {
         container.setWidget(view);
-        // JDS May need to call doRefresh here.
+        // JDS Re-select currently selected folder in order to load center panel.
         if (getSelectedFolder() != null) {
             Folder tmp = getSelectedFolder();
             view.deSelectNavigationFolder();
             view.setSelectedFolder(tmp);
         }
+    }
+
+    @Override
+    public void go(HasOneWidget container, HasId folderToSelect, final List<HasId> diskResourcesToSelect) {
+
+        if ((folderToSelect == null) || Strings.isNullOrEmpty(folderToSelect.getId())) {
+            go(container);
+            return;
+        }
+        // Create and add the SelectFolderByIdLoadHandler to the treeLoader.
+        SelectFolderByIdLoadHandler selFolderByIdHandler = new SelectFolderByIdLoadHandler(folderToSelect, this, treeLoader);
+        HandlerRegistration folderHandlerReg = treeLoader.addLoadHandler(selFolderByIdHandler);
+        addEventHandlerRegistration(selFolderByIdHandler, folderHandlerReg);
+
+        SelectDiskResourceByIdStoreAddHandler diskResourceStoreAddHandler = new SelectDiskResourceByIdStoreAddHandler(diskResourcesToSelect, this);
+        HandlerRegistration diskResHandlerReg = view.getListStore().addStoreAddHandler(diskResourceStoreAddHandler);
+        addEventHandlerRegistration(diskResourceStoreAddHandler, diskResHandlerReg);
+
+        go(container);
+    }
+
+    @Override
+    public void setSelectedFolderById(final String folderId) {
+        if (Strings.isNullOrEmpty(folderId)) {
+            return;
+        }
+        CommonModelAutoBeanFactory factory = GWT.create(CommonModelAutoBeanFactory.class);
+        HasId folderAb = AutoBeanCodex.decode(factory, HasId.class, "{\"id\": \"" + folderId + "\"}").as();
+        // Create and add the SelectFolderByIdLoadHandler to the treeLoader.
+        SelectFolderByIdLoadHandler handler = new SelectFolderByIdLoadHandler(folderAb, this, treeLoader);
+        HandlerRegistration reg = treeLoader.addLoadHandler(handler);
+        addEventHandlerRegistration(handler, reg);
+
+        doRefresh();
     }
 
     @Override
@@ -407,16 +321,17 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         final String path = resource.getId();
         arr.set(0, new JSONString(path));
         obj.put("paths", arr);
-        diskResourceService.getStat(obj.toString(), new DetailsCallbackImpl(path));
+        diskResourceService.getStat(obj.toString(), new GetDiskResourceDetailsCallback(this, path, drFactory));
 
     }
 
-    @Override
-    public void onFolderLoad(Folder loadedFolder, Set<DiskResource> folderChildren) {
-        if ((getSelectedFolder() != null) && getSelectedFolder().equals(loadedFolder)) {
-            view.setDiskResources(folderChildren);
-        }
-    }
+//    @Override
+//    public void onFolderLoad(Folder loadedFolder, Set<DiskResource> folderChildren) {
+//        // FIXME JDS This method needs to go away. Instead, this action should be performed via a loadHandler.
+//        if ((getSelectedFolder() != null) && getSelectedFolder().equals(loadedFolder)) {
+//            view.setDiskResources(folderChildren);
+//        }
+//    }
 
     @Override
     public void doBulkUpload() {
@@ -527,26 +442,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         view.addFolderSelectionHandler(selectionHandler);
     }
 
-    @Override
-    public void setSelectedFolderById(final String folderId) {
-        if (Strings.isNullOrEmpty(folderId)) {
-            return;
-        }
-        // Create and add the SelectFolderByIdLoadHandler to the treeLoader.
-        SelectFolderByIdLoadHandler handler = new SelectFolderByIdLoadHandler(folderId, this, view);
-        HandlerRegistration reg = treeLoader.addLoadHandler(handler);
-        addEventHandlerRegistration(handler, reg);
-
-        ArrayList<HandlerRegistration> regList = Lists.newArrayList();
-        regList.add(reg);
-        doRefresh();
-    }
-
-    @Override
-    public void setSelectedDiskResourcesById(Set<String> diskResourceIdList) {
-        // TODO Auto-generated method stub
-
-    }
+//    @Override
+//    public void setSelectedDiskResourcesById(Set<String> diskResourceIdList) {
+//
+//    }
 
     @Override
     public void unregisterHandler(EventHandler handler) {
@@ -843,7 +742,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             @Override
             public void onFailure(Throwable caught) {
                 ErrorHandler.post(caught);
-
             }
 
             @Override
@@ -860,7 +758,15 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void unMaskView() {
-        view.unmask();
-    }
+        boolean hasLoadHandlers = false;
+        for (Entry<EventHandler, HandlerRegistration> entry : registeredHandlers.entrySet()) {
+            if (entry.getKey() instanceof LoadHandler<?, ?>) {
+                hasLoadHandlers = true;
+            }
 
+        }
+        if (!hasLoadHandlers) {
+            view.unmask();
+        }
+    }
 }

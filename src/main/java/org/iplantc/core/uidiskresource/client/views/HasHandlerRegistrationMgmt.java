@@ -1,4 +1,4 @@
-package org.iplantc.core.uidiskresource.client.presenters;
+package org.iplantc.core.uidiskresource.client.views;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;

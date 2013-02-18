@@ -9,10 +9,7 @@ public interface Folder extends DiskResource {
     @PropertyName("hasSubDirs")
     boolean hasSubDirs();
 
-    @PropertyName("folders")
     List<Folder> getFolders();
 
-    @PropertyName("files")
     List<File> getFiles();
-
 }

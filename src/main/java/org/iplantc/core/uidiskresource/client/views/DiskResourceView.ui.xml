@@ -116,7 +116,9 @@
         <gxt:ContentPanel headingText="{DISPLAY.details}">
 	        <container:VerticalLayoutContainer>
 	            <container:child layoutData="{detailsLayoutDataTop}">
-	               <container:SimpleContainer ui:field="detailsPanel" /> 
+	               <container:VerticalLayoutContainer ui:field="detailsPanel" 
+	                                                  adjustForScroll="true"
+	                                                  scrollMode="AUTOY"/> 
 	            </container:child>
 	            <container:child layoutData="{detailsLayoutDataBottom}">
 		            <gxt:ContentPanel ui:field="historyPanel" 

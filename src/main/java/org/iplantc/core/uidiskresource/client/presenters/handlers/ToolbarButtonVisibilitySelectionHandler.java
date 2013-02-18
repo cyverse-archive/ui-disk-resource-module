@@ -1,4 +1,4 @@
-package org.iplantc.core.uidiskresource.client.presenters;
+package org.iplantc.core.uidiskresource.client.presenters.handlers;
 
 import java.util.List;
 
@@ -14,12 +14,12 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
-final class ToolbarButtonVisibilitySelectionHandler<R extends DiskResource> implements
+public final class ToolbarButtonVisibilitySelectionHandler<R extends DiskResource> implements
         SelectionChangedHandler<R>, SelectionHandler<R> {
     private final DiskResourceViewToolbar toolbar;
     private final IsDiskResourceRoot rootFinder;
 
-    ToolbarButtonVisibilitySelectionHandler(final DiskResourceViewToolbar toolbar, final IsDiskResourceRoot rootFinder) {
+    public ToolbarButtonVisibilitySelectionHandler(final DiskResourceViewToolbar toolbar, final IsDiskResourceRoot rootFinder) {
         this.toolbar = toolbar;
         this.rootFinder = rootFinder;
     }

@@ -8,12 +8,14 @@ import java.util.Set;
 
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.images.Resources;
+import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceInfo;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
+import org.iplantc.core.uidiskresource.client.models.DiskResourceProperties;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.models.Permissions;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
@@ -49,6 +51,8 @@ import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.dnd.core.client.DND.Operation;
@@ -57,7 +61,6 @@ import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
-import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
@@ -111,7 +114,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     GridView<DiskResource> gridView;
 
     @UiField
-    SimpleContainer detailsPanel;
+    VerticalLayoutContainer detailsPanel;
 
     @UiField
     ContentPanel historyPanel;
@@ -183,7 +186,11 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     @UiFactory
     ListStore<DiskResource> createListStore() {
-        return new ListStore<DiskResource>(new DiskResourceModelKeyProvider());
+        DiskResourceModelKeyProvider keyProvider = new DiskResourceModelKeyProvider();
+        ListStore<DiskResource> listStore2 = new ListStore<DiskResource>(keyProvider);
+        DiskResourceProperties props = GWT.create(DiskResourceProperties.class);
+        listStore2.addSortInfo(new StoreSortInfo<DiskResource>(props.name(), SortDir.ASC));
+        return listStore2;
     }
 
     @UiFactory
@@ -261,11 +268,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @Override
     public Set<DiskResource> getSelectedDiskResources() {
         return Sets.newHashSet(grid.getSelectionModel().getSelectedItems());
-    }
-
-    @Override
-    public void setRootFolders(Set<Folder> rootFolders) {
-        treeStore.add(Lists.newArrayList(rootFolders));
     }
 
     @Override
@@ -348,6 +350,18 @@ public class DiskResourceViewImpl implements DiskResourceView {
     }
 
     @Override
+    public void setSelectedDiskResources(List<HasId> diskResourcesToSelect) {
+        List<DiskResource> resourcesToSelect = Lists.newArrayList();
+        for (HasId hi : diskResourcesToSelect) {
+            DiskResource findModelWithKey = listStore.findModelWithKey(hi.getId());
+            if (findModelWithKey != null) {
+                resourcesToSelect.add(findModelWithKey);
+            }
+        }
+        grid.getSelectionModel().select(resourcesToSelect, false);
+    }
+
+    @Override
     public void addFolder(Folder parent, Folder newChild) {
         treeStore.add(parent, newChild);
         listStore.add(newChild);
@@ -371,17 +385,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @Override
     public void deSelectNavigationFolder() {
         tree.getSelectionModel().deselectAll();
-    }
-
-    @Override
-    public Set<Folder> getRootFolders() {
-        return Sets.newHashSet(treeStore.getRootItems());
-    }
-
-    @Override
-    public void refreshAll() {
-        treeStore.clear();
-        treeLoader.load(null);
     }
 
     @Override
@@ -515,22 +518,19 @@ public class DiskResourceViewImpl implements DiskResourceView {
     public void updateDetails(String path, DiskResourceInfo info) {
         detailsPanel.clear();
         Set<DiskResource> selection = getSelectedDiskResources();
-        VerticalLayoutContainer c = new VerticalLayoutContainer();
-        detailsPanel.setWidget(c);
-
         // gaurd race condition
         if (selection != null && selection.size() == 1) {
             Iterator<DiskResource> it = selection.iterator();
             if (it.next().getId().equals(path)) {
-                c.add(getDateLabel(I18N.DISPLAY.lastModified(), new Date(info.getModified())));
-                c.add(getDateLabel(I18N.DISPLAY.createdDate(), new Date(info.getCreated())));
-                c.add(getPermissionsLabel(I18N.DISPLAY.permissions(), info.getPermissions()));
-                c.add(getSharingLabel(I18N.DISPLAY.share(), info.getShareCount()));
+                detailsPanel.add(getDateLabel(I18N.DISPLAY.lastModified(), new Date(info.getModified())));
+                detailsPanel.add(getDateLabel(I18N.DISPLAY.createdDate(), new Date(info.getCreated())));
+                detailsPanel.add(getPermissionsLabel(I18N.DISPLAY.permissions(), info.getPermissions()));
+                detailsPanel.add(getSharingLabel(I18N.DISPLAY.share(), info.getShareCount()));
                 if (info.getType().equalsIgnoreCase("file")) {
-                    c.add(getNumberLabel(I18N.DISPLAY.size(), info.getSize()));
+                    detailsPanel.add(getNumberLabel(I18N.DISPLAY.size(), info.getSize()));
 
                 } else {
-                    c.add(getDirFileCount(I18N.DISPLAY.files() + " / " + I18N.DISPLAY.folders(),
+                    detailsPanel.add(getDirFileCount(I18N.DISPLAY.files() + " / " + I18N.DISPLAY.folders(),
                             info.getFileCount(), info.getDirCount()));
                 }
             }
@@ -547,7 +547,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
         fl.setHTML(getDetailAsHtml("&nbsp;&nbsp;" + I18N.DISPLAY.noDetails(), true));
         HorizontalPanel hp = new HorizontalPanel();
         hp.add(fl);
-        detailsPanel.setWidget(hp);
+        detailsPanel.add(hp);
     }
 
     private String getDetailAsHtml(String detail, boolean bolded) {
@@ -765,6 +765,11 @@ public class DiskResourceViewImpl implements DiskResourceView {
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean isCenterHidden() {
+        return centerData.isHidden();
     }
 
 }

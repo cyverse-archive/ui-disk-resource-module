@@ -1,18 +1,15 @@
 package org.iplantc.core.uidiskresource.client.presenters.proxy;
 
 import java.util.List;
-import java.util.Set;
 
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.Services;
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.models.RootFolders;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
-import com.google.common.collect.Sets;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.autobean.shared.AutoBean;
@@ -68,14 +65,6 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
                             AutoBeanCodex.decodeInto(split,
                                     AutoBeanUtils.<Folder, Folder> getAutoBean(parentFolder));
 
-                            Set<DiskResource> parentFolderChildren = Sets.newHashSet();
-                            if (parentFolder.getFolders() != null) {
-                                parentFolderChildren.addAll(parentFolder.getFolders());
-                            }
-                            if (parentFolder.getFiles() != null) {
-                                parentFolderChildren.addAll(parentFolder.getFiles());
-                            }
-                            presenter.onFolderLoad(parentFolder, parentFolderChildren);
                             if (callback != null) {
                                 callback.onSuccess(parentFolder.getFolders());
                             }
@@ -97,12 +86,6 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
     @Override
     public void setPresenter(DiskResourceView.Presenter presenter) {
         this.presenter = presenter;
-    }
-
-    @Override
-    public void load(final Folder folder) {
-        AsyncCallback<List<Folder>> nullCallback = null;
-        load(folder, nullCallback);
     }
 
 }
