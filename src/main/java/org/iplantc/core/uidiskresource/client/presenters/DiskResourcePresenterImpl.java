@@ -12,7 +12,6 @@ import java.util.Set;
 import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
-import org.iplantc.core.uicommons.client.models.CommonModelAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
@@ -63,7 +62,6 @@ import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewTool
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventHandler;
@@ -250,7 +248,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             return;
         }
         // Create and add the SelectFolderByIdLoadHandler to the treeLoader.
-        SelectFolderByIdLoadHandler selFolderByIdHandler = new SelectFolderByIdLoadHandler(folderToSelect, this, treeLoader);
+        SelectFolderByIdLoadHandler selFolderByIdHandler = new SelectFolderByIdLoadHandler(folderToSelect, this);
         HandlerRegistration folderHandlerReg = treeLoader.addLoadHandler(selFolderByIdHandler);
         addEventHandlerRegistration(selFolderByIdHandler, folderHandlerReg);
 
@@ -262,18 +260,14 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     }
 
     @Override
-    public void setSelectedFolderById(final String folderId) {
-        if (Strings.isNullOrEmpty(folderId)) {
+    public void setSelectedFolderById(final HasId folderToSelect) {
+        if ((folderToSelect == null) || Strings.isNullOrEmpty(folderToSelect.getId())) {
             return;
         }
-        CommonModelAutoBeanFactory factory = GWT.create(CommonModelAutoBeanFactory.class);
-        HasId folderAb = AutoBeanCodex.decode(factory, HasId.class, "{\"id\": \"" + folderId + "\"}").as();
         // Create and add the SelectFolderByIdLoadHandler to the treeLoader.
-        SelectFolderByIdLoadHandler handler = new SelectFolderByIdLoadHandler(folderAb, this, treeLoader);
+        SelectFolderByIdLoadHandler handler = new SelectFolderByIdLoadHandler(folderToSelect, this);
         HandlerRegistration reg = treeLoader.addLoadHandler(handler);
         addEventHandlerRegistration(handler, reg);
-
-        doRefresh();
     }
 
     @Override

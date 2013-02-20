@@ -83,7 +83,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
          * 
          * @param folderId
          */
-        void setSelectedFolderById(String folderId);
+        void setSelectedFolderById(HasId folderToSelect);
 
         /**
          * Sets the selected disk resource with the given ids.

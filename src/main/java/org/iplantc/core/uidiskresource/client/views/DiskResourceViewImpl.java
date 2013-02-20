@@ -26,6 +26,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -342,10 +344,18 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @Override
     public void setSelectedFolder(Folder folder) {
 
-        if (treeStore.findModelWithKey(folder.getId()) != null) {
+        final Folder findModelWithKey = treeStore.findModelWithKey(folder.getId());
+        if (findModelWithKey != null) {
             showDataListingWidget();
-            tree.getSelectionModel().setSelection(
-                    Lists.newArrayList(treeStore.findModelWithKey(folder.getId())));
+            tree.getSelectionModel().setSelection(Lists.newArrayList(findModelWithKey));
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+                @Override
+                public void execute() {
+                    tree.scrollIntoView(findModelWithKey);
+
+                }
+            });
         }
     }
 

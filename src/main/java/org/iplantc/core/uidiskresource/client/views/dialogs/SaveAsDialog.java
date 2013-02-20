@@ -1,5 +1,7 @@
 package org.iplantc.core.uidiskresource.client.views.dialogs;
 
+import org.iplantc.core.uicommons.client.models.CommonModelAutoBeanFactory;
+import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.I18N;
@@ -8,6 +10,7 @@ import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
 import com.google.common.base.Strings;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -15,6 +18,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
@@ -63,8 +67,10 @@ public class SaveAsDialog extends IPlantDialog {
         UserSettings instance = UserSettings.getInstance();
         String id = instance.getDefaultFileSelectorPath();
         boolean remember = instance.isRememberLastPath();
-        if (remember && id != null && !id.isEmpty()) {
-            presenter.setSelectedFolderById(id);
+        if (remember && !Strings.isNullOrEmpty(id)) {
+            CommonModelAutoBeanFactory factory = GWT.create(CommonModelAutoBeanFactory.class);
+            HasId folderAb = AutoBeanCodex.decode(factory, HasId.class, "{\"id\": \"" + id + "\"}").as();
+            presenter.setSelectedFolderById(folderAb);
         }
 
     }

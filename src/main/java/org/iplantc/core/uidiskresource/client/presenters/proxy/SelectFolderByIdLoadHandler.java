@@ -8,7 +8,6 @@ import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uidiskresource.client.Services;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
-import org.iplantc.core.uidiskresource.client.views.DiskResourceView.Presenter;
 import org.iplantc.core.uidiskresource.client.views.HasHandlerRegistrationMgmt;
 
 import com.google.common.base.Joiner;
@@ -18,7 +17,6 @@ import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.data.shared.loader.LoadEvent;
 import com.sencha.gxt.data.shared.loader.LoadHandler;
-import com.sencha.gxt.data.shared.loader.TreeLoader;
 
 /**
  * A <code>LoadHandler</code> which is used to lazily load, expand, and select a desired folder.
@@ -33,23 +31,19 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
     private final LinkedList<String> path;
     private boolean folderExists = false;
     private boolean folderVerifyCalled = false;
-    private final HasHandlerRegistrationMgmt regMgr;
-    private final DiskResourceView view;
 
     private final HasId folderToSelect;
 
-    private final TreeLoader<Folder> treeLoader;
+    private final DiskResourceView view;
+    private final DiskResourceView.Presenter presenter;
+    private final HasHandlerRegistrationMgmt regMgr;
 
-    private final Presenter presenter;
-
-    public SelectFolderByIdLoadHandler(final HasId folderToSelect, final DiskResourceView.Presenter presenter,
-            TreeLoader<Folder> treeLoader) {
+    public SelectFolderByIdLoadHandler(final HasId folderToSelect, final DiskResourceView.Presenter presenter) {
         presenter.maskView();
         this.folderToSelect = folderToSelect;
         this.presenter = presenter;
         this.regMgr = presenter;
         this.view = presenter.getView();
-        this.treeLoader = treeLoader;
         // Split the string on "/"
         path = Lists.newLinkedList(Splitter.on("/").trimResults().omitEmptyStrings().split(folderToSelect.getId()));
     }
@@ -61,8 +55,8 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
             verifyFolderExists();
             return;
         } else if (folderVerifyCalled && !folderExists) {
-            GWT.log("Requested folder could not be found on the server!!");
-            presenter.unMaskView();
+            GWT.log("Requested folder could not be found on the server!!" + folderToSelect.getId());
+            unmaskView();
             return;
         }
 
@@ -71,8 +65,7 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
             view.showDataListingWidget();
             view.setSelectedFolder(event.getLoadConfig());
             view.expandFolder(event.getLoadConfig());
-            regMgr.unregisterHandler(this);
-            presenter.unMaskView();
+            unmaskView();
             return;
         } else if (folderExists && !pathsToLoad.isEmpty()) {
             path.add(pathsToLoad.pop());
@@ -108,20 +101,22 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
                 if (folder != null) {
                     // Once a valid folder is found in the view, remotely load the
                     // folder, which will add the next folder in the path to the view's treeStore.
-                    treeLoader.load(folder);
+                    view.expandFolder(folder);
 
+                    // Exit condition
                     if (pathsToLoad.isEmpty()) {
                         // If this is the first iteration, no paths have been pushed onto the stack, and
                         // our desired folder already exists.
                         view.setSelectedFolder(folder);
+                        unmaskView();
+                        return;
                     }
 
                 }
                 // If no folders could be found in view
                 if (path.isEmpty()) {
                     GWT.log("NO ROOT FOLDERS FOUND");
-                    regMgr.unregisterHandler(SelectFolderByIdLoadHandler.this);
-                    presenter.unMaskView();
+                    unmaskView();
                 }
             }
 
@@ -130,9 +125,13 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
                 // If the folder does not exist, inform user..... or something
                 folderExists = false;
                 GWT.log("Time to unregister");
-                regMgr.unregisterHandler(SelectFolderByIdLoadHandler.this);
-                presenter.unMaskView();
+                unmaskView();
             }
         });
+    }
+
+    private void unmaskView() {
+        regMgr.unregisterHandler(this);
+        presenter.unMaskView();
     }
 }
