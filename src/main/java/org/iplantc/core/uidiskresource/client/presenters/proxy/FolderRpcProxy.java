@@ -50,7 +50,7 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
                     if (callback != null) {
                         callback.onFailure(caught);
                     }
-                    presenter.unMaskView();
+                    presenter.unMaskView(true);
                 }
 
             });

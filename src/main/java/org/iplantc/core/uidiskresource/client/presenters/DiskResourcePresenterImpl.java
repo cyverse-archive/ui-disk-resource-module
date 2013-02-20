@@ -763,4 +763,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             view.unmask();
         }
     }
+
+    @Override
+    public void unMaskView(boolean clearRegisteredHandlers) {
+        if (clearRegisteredHandlers) {
+            registeredHandlers.clear();
+        }
+        unMaskView();
+    }
 }

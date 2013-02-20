@@ -62,9 +62,7 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
 
         // Exit condition
         if (folderExists && pathsToLoad.isEmpty()) {
-            view.showDataListingWidget();
             view.setSelectedFolder(event.getLoadConfig());
-            view.expandFolder(event.getLoadConfig());
             unmaskView();
             return;
         } else if (folderExists && !pathsToLoad.isEmpty()) {
@@ -102,15 +100,6 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
                     // Once a valid folder is found in the view, remotely load the
                     // folder, which will add the next folder in the path to the view's treeStore.
                     view.expandFolder(folder);
-
-                    // Exit condition
-                    if (pathsToLoad.isEmpty()) {
-                        // If this is the first iteration, no paths have been pushed onto the stack, and
-                        // our desired folder already exists.
-                        view.setSelectedFolder(folder);
-                        unmaskView();
-                        return;
-                    }
 
                 }
                 // If no folders could be found in view
