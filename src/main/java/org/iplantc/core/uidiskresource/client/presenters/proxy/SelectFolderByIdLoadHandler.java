@@ -97,9 +97,16 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
                 }
 
                 if (folder != null) {
-                    // Once a valid folder is found in the view, remotely load the
-                    // folder, which will add the next folder in the path to the view's treeStore.
-                    view.expandFolder(folder);
+                    if (view.isLoaded(folder)) {
+                        if (!presenter.getSelectedFolder().equals(folder)) {
+                            view.setSelectedFolder(folder);
+                        }
+                        unmaskView();
+                    } else {
+                        // Once a valid folder is found in the view, remotely load the
+                        // folder, which will add the next folder in the path to the view's treeStore.
+                        view.expandFolder(folder);
+                    }
 
                 }
                 // If no folders could be found in view

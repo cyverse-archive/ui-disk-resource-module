@@ -247,16 +247,17 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             go(container);
             return;
         }
-        // Create and add the SelectFolderByIdLoadHandler to the treeLoader.
-        SelectFolderByIdLoadHandler selFolderByIdHandler = new SelectFolderByIdLoadHandler(folderToSelect, this);
-        HandlerRegistration folderHandlerReg = treeLoader.addLoadHandler(selFolderByIdHandler);
-        addEventHandlerRegistration(selFolderByIdHandler, folderHandlerReg);
+        setSelectedFolderById(folderToSelect);
+        setSelectedDiskResourcesById(diskResourcesToSelect);
 
+        go(container);
+    }
+
+    @Override
+    public void setSelectedDiskResourcesById(final List<HasId> diskResourcesToSelect) {
         SelectDiskResourceByIdStoreAddHandler diskResourceStoreAddHandler = new SelectDiskResourceByIdStoreAddHandler(diskResourcesToSelect, this);
         HandlerRegistration diskResHandlerReg = view.getListStore().addStoreAddHandler(diskResourceStoreAddHandler);
         addEventHandlerRegistration(diskResourceStoreAddHandler, diskResHandlerReg);
-
-        go(container);
     }
 
     @Override

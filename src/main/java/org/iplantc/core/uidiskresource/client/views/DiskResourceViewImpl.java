@@ -152,7 +152,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
             @Override
             public void onSelection(SelectionEvent<Folder> event) {
-                if (event.getSelectedItem() != null) {
+                if (DiskResourceViewImpl.this.widget.isAttached() && (event.getSelectedItem() != null)) {
                     onFolderSelected(event.getSelectedItem());
                 }
             }

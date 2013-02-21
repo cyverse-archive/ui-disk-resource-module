@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.iplantc.core.jsonutil.JsonUtil;
+import org.iplantc.core.uicommons.client.models.CommonModelAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.File;
@@ -15,7 +16,10 @@ import org.iplantc.core.uidiskresource.client.models.Folder;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONArray;
+import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
@@ -24,6 +28,8 @@ import com.google.web.bindery.autobean.shared.impl.StringQuoter;
  *
  */
 public class DiskResourceUtil {
+
+    private static CommonModelAutoBeanFactory cFactory = GWT.create(CommonModelAutoBeanFactory.class);
     /**
      * Parse the parent folder from a path.
      * 
@@ -152,6 +158,11 @@ public class DiskResourceUtil {
 
     public static Splittable createSplittableFromStringList(List<String> strings) {
         return StringQuoter.split(JsonUtil.buildArrayFromStrings(strings).toString());
+    }
+
+    public static HasId getFolderIdFromFile(File file) {
+        AutoBean<HasId> hAb = AutoBeanCodex.decode(cFactory, HasId.class, "{\"id\": \"" + parseParent(file.getId()) + "\"}");
+        return hAb.as();
     }
 
 }
