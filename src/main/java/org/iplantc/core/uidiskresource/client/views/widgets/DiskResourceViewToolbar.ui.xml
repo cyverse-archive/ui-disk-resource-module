@@ -14,18 +14,18 @@
    <toolbar:ToolBar>
          <!-- Upload Menu -->
       <toolbar:child>
-         <button:TextButton ui:field="uploads" 
+         <button:TextButton debugId="idfileUploadBtn" ui:field="uploads" 
                             text="{display.upload}"
                             icon="{res.uploadButtonIcon}">
             <button:menu>
                <menu:Menu>
-                  <menu:MenuItem ui:field="bulkUploadButton" 
+                  <menu:MenuItem debugId="idBlkUplodBtn" ui:field="bulkUploadButton" 
                                  text="{display.bulkUploadFromDesktop}">
                   </menu:MenuItem>
-                  <menu:MenuItem ui:field="simpleUploadButton" 
+                  <menu:MenuItem debugId="idSimpleUpldBtn" ui:field="simpleUploadButton" 
                                  text="{display.simpleUploadFromDesktop}">
                   </menu:MenuItem>
-                  <menu:MenuItem ui:field="importButton" 
+                  <menu:MenuItem debugId="idUrlImportBtn" ui:field="importButton" 
                                  text="{display.importLabel}">
                   </menu:MenuItem>
                </menu:Menu>
@@ -35,7 +35,7 @@
 
       <!-- New Folder button -->
       <toolbar:child>
-         <button:TextButton ui:field="newFolderButton"
+         <button:TextButton debugId="idNewFolderBtn" ui:field="newFolderButton"
                             text="{display.newFolder}"
                             icon="{res.newFolderButtonIcon}">
          </button:TextButton>
@@ -43,7 +43,7 @@
 
       <!-- Refresh button -->
       <toolbar:child>
-         <button:TextButton ui:field="refreshButton" 
+         <button:TextButton debugId="idRefresnBtn" ui:field="refreshButton" 
                             text="{display.refresh}"
                             icon="{res.refreshButtonIcon}">
          </button:TextButton>
@@ -51,15 +51,15 @@
       
       <!-- Download menu -->
       <toolbar:child>
-         <button:TextButton ui:field="downloads" 
+         <button:TextButton debugId="idDownloadBtn" ui:field="downloads" 
                             text="{display.download}"
                             icon="{res.downloadButtonIcon}">
             <button:menu>
                <menu:Menu>
-                  <menu:MenuItem ui:field="simpleDownloadButton" 
+                  <menu:MenuItem debugId="idSimpleDownloadBtn" ui:field="simpleDownloadButton" 
                                  text="{display.simpleDownload}">
                   </menu:MenuItem>
-                  <menu:MenuItem ui:field="bulkDownloadButton" 
+                  <menu:MenuItem debugId="idBulkDownloadBtn" ui:field="bulkDownloadButton" 
                                  text="{display.bulkDownload}">
                   </menu:MenuItem>
                </menu:Menu>
@@ -69,7 +69,7 @@
       
       <!-- Rename button -->
       <toolbar:child>
-         <button:TextButton ui:field="renameButton" 
+         <button:TextButton debugId="idRenameBtn" ui:field="renameButton" 
                             text="{display.rename}"
                             icon="{res.renameButtonIcon}">
          </button:TextButton>
@@ -77,7 +77,7 @@
       
       <!-- Delete button -->
       <toolbar:child>
-         <button:TextButton ui:field="deleteButton" 
+         <button:TextButton debugId="idDeleteBtn" ui:field="deleteButton" 
                             text="{display.delete}"
                             icon="{res.deleteButtonIcon}">
          </button:TextButton>
@@ -85,22 +85,22 @@
       
       <!-- Share button -->
       <toolbar:child>
-         <button:TextButton ui:field="shareButton" 
+         <button:TextButton debugId="idShareBtn" ui:field="shareButton" 
                             text="{display.share}" 
                             icon="{res.shareButtonIcon}">
          </button:TextButton>
       </toolbar:child>
       
        <toolbar:child>
-         <button:TextButton ui:field="trash" 
+         <button:TextButton debugiId="idTrashBtn" ui:field="trash" 
                             icon="{res.deleteButtonIcon}"
                             text="Trash">
                              <button:menu>
                <menu:Menu>
-                  <menu:MenuItem ui:field="emptyTrash" 
+                  <menu:MenuItem debugId="idEmptyTrashBtn" ui:field="emptyTrash" 
                                  text="{display.emptyTrash}">
                   </menu:MenuItem>
-                  <menu:MenuItem ui:field="restore" 
+                  <menu:MenuItem debugId="idRestoreBtn" ui:field="restore" 
                                  text="{display.restore}">
                   </menu:MenuItem>
                </menu:Menu>
@@ -110,7 +110,7 @@
       
       <!-- Data Search box -->
       <toolbar:child>
-      	<form:TextField ui:field="searchField" emptyText="search by name"> </form:TextField>
+      	<form:TextField debugId="idSearchTxt" ui:field="searchField" emptyText="search by name"> </form:TextField>
       </toolbar:child> 
 
       
