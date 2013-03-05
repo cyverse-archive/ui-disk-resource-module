@@ -92,7 +92,7 @@
       </toolbar:child>
       
        <toolbar:child>
-         <button:TextButton debugiId="idTrashBtn" ui:field="trash" 
+         <button:TextButton debugId="idTrashBtn" ui:field="trash" 
                             icon="{res.deleteButtonIcon}"
                             text="Trash">
                              <button:menu>
