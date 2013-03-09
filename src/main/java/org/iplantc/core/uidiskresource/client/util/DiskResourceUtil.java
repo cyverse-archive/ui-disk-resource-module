@@ -148,8 +148,8 @@ public class DiskResourceUtil {
         return ids;
     }
 
-    public static <R extends DiskResource> Splittable createStringIdListSplittable(Iterable<R> diskResources) {
-        JSONArray jArr = JsonUtil.buildArrayFromStrings(asStringIdList(diskResources));
+    public static <R extends HasId> Splittable createStringIdListSplittable(Iterable<R> hasIdList) {
+        JSONArray jArr = JsonUtil.buildArrayFromStrings(asStringIdList(hasIdList));
 
         return StringQuoter.split(jArr.toString());
     }
