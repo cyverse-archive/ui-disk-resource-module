@@ -35,11 +35,11 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
  * @author jstroot
  * 
  */
-public class FileSelectDialog extends IPlantDialog implements TakesValue<List<String>> {
+public class FileSelectDialog extends IPlantDialog implements TakesValue<List<File>> {
 
     private final DiskResourceView.Presenter presenter;
     private final TextField selectedFileField = new TextField();
-    private List<String> selectedFileIds;
+    private List<File> selectedFileIds;
 
     public static FileSelectDialog singleSelect() {
         return new FileSelectDialog(true);
@@ -76,13 +76,13 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<St
     }
 
     @Override
-    public void setValue(List<String> value) {
+    public void setValue(List<File> value) {
         this.selectedFileIds = value;
     
     }
 
     @Override
-    public List<String> getValue() {
+    public List<File> getValue() {
         return selectedFileIds;
     }
 
@@ -114,9 +114,9 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<St
     private final class FileSelectionChangedHandler implements SelectionChangedHandler<DiskResource> {
         private final HasValue<String> textbox;
         private final HasEnabled okButton;
-        private final TakesValue<List<String>> dlg;
+        private final TakesValue<List<File>> dlg;
 
-        private FileSelectionChangedHandler(final TakesValue<List<String>> dlg, final HasValue<String> textBox, final HasEnabled okButton) {
+        private FileSelectionChangedHandler(final TakesValue<List<File>> dlg, final HasValue<String> textBox, final HasEnabled okButton) {
             this.textbox = textBox;
             this.okButton = okButton;
             this.dlg = dlg;
@@ -130,8 +130,8 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<St
                 return;
             }
             ArrayList<File> newArrayList = Lists.newArrayList(DiskResourceUtil.extractFiles(event.getSelection()));
+            dlg.setValue(newArrayList);
             List<String> idList = DiskResourceUtil.asStringIdList(newArrayList);
-            dlg.setValue(idList);
             textbox.setValue(DiskResourceUtil.asCommaSeperatedNameList(idList));
             // Enable the okButton
             okButton.setEnabled(true);

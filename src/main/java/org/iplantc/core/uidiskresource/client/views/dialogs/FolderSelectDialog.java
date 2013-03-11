@@ -1,14 +1,11 @@
 package org.iplantc.core.uidiskresource.client.views.dialogs;
 
-import java.util.List;
-
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.gin.DiskResourceInjector;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.TakesValue;
@@ -26,12 +23,12 @@ import com.sencha.gxt.widget.core.client.form.TextField;
  * @author jstroot
  * 
  */
-public class FolderSelectDialog extends IPlantDialog implements TakesValue<List<String>> {
+public class FolderSelectDialog extends IPlantDialog implements TakesValue<Folder> {
 
     private final DiskResourceView.Presenter presenter;
     private final TextField selectedFolderField = new TextField();
 
-    private List<String> selectedFolderId;
+    private Folder selectedFolder;
 
     public FolderSelectDialog() {
         // Disable Ok button by default.
@@ -57,9 +54,9 @@ public class FolderSelectDialog extends IPlantDialog implements TakesValue<List<
     private final class FolderSelectionChangedHandler implements SelectionHandler<Folder> {
         private final HasValue<String> textBox;
         private final HasEnabled okButton;
-        private final TakesValue<List<String>> dlg;
+        private final TakesValue<Folder> dlg;
 
-        private FolderSelectionChangedHandler(final TakesValue<List<String>> dlg, final HasValue<String> textBox, final HasEnabled okButton) {
+        private FolderSelectionChangedHandler(final TakesValue<Folder> dlg, final HasValue<String> textBox, final HasEnabled okButton) {
             this.textBox = textBox;
             this.okButton = okButton;
             this.dlg = dlg;
@@ -73,7 +70,7 @@ public class FolderSelectDialog extends IPlantDialog implements TakesValue<List<
                 return;
             }
             Folder diskResource = event.getSelectedItem();
-            dlg.setValue(Lists.newArrayList(diskResource.getId()));
+            dlg.setValue(diskResource);
             textBox.setValue(diskResource.getName());
             // Enable the okButton
             okButton.setEnabled(true);
@@ -81,13 +78,13 @@ public class FolderSelectDialog extends IPlantDialog implements TakesValue<List<
     }
 
     @Override
-    public List<String> getValue() {
-        return selectedFolderId;
+    public Folder getValue() {
+        return selectedFolder;
     }
 
     @Override
-    public void setValue(List<String> value) {
-        this.selectedFolderId = value;
+    public void setValue(Folder value) {
+        this.selectedFolder = value;
     }
 
 }
