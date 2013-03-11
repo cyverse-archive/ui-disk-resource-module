@@ -45,8 +45,8 @@ public class DataSharingPresenter implements Presenter {
     private List<DiskResource> selectedResources;
   
 
-	private FastMap<Sharing> sharingList;
-    private FastMap<List<Sharing>> dataSharingMap;
+	private FastMap<List<JSONObject>> sharingList;
+    private FastMap<List<DataSharing>> dataSharingMap;
     private final DiskResourceServiceFacade facade;
     private final PermissionsLayoutContainer permissionsPanel;
 
@@ -110,33 +110,6 @@ public class DataSharingPresenter implements Presenter {
         facade.getPermissions(buildPermissionsRequestBody(), new LoadPermissionsCallback());
     }
 
-    private void parsePermissions(String path, JSONArray user_arr) {
-        DiskResourceAutoBeanFactory factory = GWT.create(DiskResourceAutoBeanFactory.class);
-        for (int i = 0; i < user_arr.size(); i++) {
-            JSONObject obj = user_arr.get(i).isObject();
-            JSONObject perm = JsonUtil.getObject(obj, "permissions");
-            Collaborator collaborator = CollaboratorsUtil.findCollaboratorByUserName(JsonUtil.getString(
-                    obj, "user"));
-
-            String userName = collaborator.getUserName();
-            Sharing s = sharingList.get(userName);
-            AutoBean<Permissions> autoBean = AutoBeanCodex.decode(factory, Permissions.class,
-                    perm.toString());
-            Sharing dataSharing = new DataSharing(collaborator, autoBean.as(), path);
-            if (s == null) {
-                s = new Sharing(collaborator);
-                sharingList.put(userName, s);
-            }
-            List<Sharing> list = dataSharingMap.get(userName);
-            if (list == null) {
-                list = new ArrayList<Sharing>();
-                dataSharingMap.put(userName, list);
-            }
-            list.add(dataSharing);
-
-        }
-
-    }
 
     private JSONObject buildPermissionsRequestBody() {
         JSONObject obj = new JSONObject();
@@ -148,6 +121,23 @@ public class DataSharingPresenter implements Presenter {
         return obj;
     }
 
+    private void loadPermissions(String path, JSONArray user_arr) {
+        for (int i = 0; i < user_arr.size(); i++) {
+            JSONObject userPermission = JsonUtil.getObjectAt(user_arr, i);
+            JSONObject perm = JsonUtil.getObject(userPermission, "permissions"); //$NON-NLS-1$
+            String userName = JsonUtil.getString(userPermission, "user"); //$NON-NLS-1$
+
+            List<JSONObject> shareList = sharingList.get(userName);
+            if (shareList == null) {
+                shareList = new ArrayList<JSONObject>();
+                sharingList.put(userName, shareList);
+            }
+            perm.put("path", new JSONString(path)); //$NON-NLS-1$
+            shareList.add(perm);
+        }
+
+    }
+
     private final class LoadPermissionsCallback implements AsyncCallback<String> {
         @Override
         public void onFailure(Throwable caught) {
@@ -157,25 +147,54 @@ public class DataSharingPresenter implements Presenter {
 
         @Override
         public void onSuccess(String result) {
-            JSONObject obj = JsonUtil.getObject(result);
-            JSONArray permissionsArray = JsonUtil.getArray(obj, "paths");
-            sharingList = new FastMap<Sharing>();
-            dataSharingMap = new FastMap<List<Sharing>>();
+            JSONArray permissionsArray = JsonUtil.getArray(JsonUtil.getObject(result), "paths"); //$NON-NLS-1$
             if (permissionsArray != null) {
+                sharingList = new FastMap<List<JSONObject>>();
                 for (int i = 0; i < permissionsArray.size(); i++) {
                     JSONObject user_perm_obj = permissionsArray.get(i).isObject();
-                    String path = JsonUtil.getString(user_perm_obj, "path");
-                    JSONArray user_arr = JsonUtil.getArray(user_perm_obj, "user-permissions");
-                    parsePermissions(path, user_arr);
+                    String path = JsonUtil.getString(user_perm_obj, "path"); //$NON-NLS-1$
+                    JSONArray user_arr = JsonUtil.getArray(user_perm_obj, "user-permissions"); //$NON-NLS-1$
+                    loadPermissions(path, user_arr);
                 }
+
+                final List<String> usernames = new ArrayList<String>();
+                usernames.addAll(sharingList.keySet());
+                // CollaboratorsUtil.getUserInfo(usernames, new AsyncCallback<FastMap<Collaborator>>() {
+                //
+                // @Override
+                // public void onFailure(Throwable caught) {
+                // // TODO Auto-generated method stub
+                // ErrorHandler.post(caught);
+                // }
+                //
+                // @Override
+                // public void onSuccess(FastMap<Collaborator> results) {
+                // dataSharingMap = new FastMap<List<DataSharing>>();
+                // for (String userName : usernames) {
+                // Collaborator user = results.get(userName);
+                // if (user == null) {
+                // user = new Collaborator(null, userName, userName, null, null);
+                // }
+                //
+                // List<DataSharing> dataShares = new ArrayList<DataSharing>();
+                //
+                // dataSharingMap.put(userName, dataShares);
+                //
+                // for (JSONObject share : sharingList.get(userName)) {
+                //                                String path = JsonUtil.getString(share, "path"); //$NON-NLS-1$
+                // DataSharing dataSharing = new DataSharing(user, new Permissions(share),
+                // path);
+                // dataShares.add(dataSharing);
+                // }
+                // }
+                //
+                // sharePanel.loadSharingData(dataSharingMap);
+                // sharePanel.unmask();
+                // }
+                // });
             }
-            ArrayList<Sharing> list = new ArrayList<Sharing>(sharingList.values());
-       //     permissionsPanel.loadSharingData(list, dataSharingMap);
-            permissionsPanel.unmask();
-
-        }
     }
-
+    }
 
     @Override
     public void processRequest() {
@@ -339,10 +358,6 @@ public class DataSharingPresenter implements Presenter {
         return null;
     }
 
-    @Override
-    public void addDataSharing(FastMap<DataSharing> smap) {
-        //permissionsPanel.addDataSharing(smap);
-    }
 
     @Override
     public Permissions getDefaultPermissions() {

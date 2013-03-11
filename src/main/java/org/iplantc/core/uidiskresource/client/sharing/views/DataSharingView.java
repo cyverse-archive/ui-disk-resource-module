@@ -30,8 +30,6 @@ public interface DataSharingView extends IsWidget {
 
         TYPE getSharingResourceType(String path);
 
-        void addDataSharing(FastMap<DataSharing> smap);
-
         Permissions getDefaultPermissions();
 
         void processRequest();

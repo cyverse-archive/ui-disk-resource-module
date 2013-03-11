@@ -54,14 +54,11 @@ public class DataSharingViewImpl implements DataSharingView {
     interface MyUiBinder extends UiBinder<Widget, DataSharingViewImpl> {
     }
 
-    public DataSharingViewImpl(ColumnModel<Collaborator> collaboratorsColumnModel,
-            CheckBoxSelectionModel<Collaborator> collabSm, ColumnModel<DiskResource> diskReColumnModel,
-            CheckBoxSelectionModel<DiskResource> drSm, ListStore<Collaborator> collabStore,
+    public DataSharingViewImpl(ColumnModel<DiskResource> diskReColumnModel,
             ListStore<DiskResource> drStore) {
         this.diskResourcesColumnModel = diskReColumnModel;
         this.diskResourcesListStore = drStore;
         widget = uiBinder.createAndBindUi(this);
-        diskResourcesGrid.setSelectionModel(drSm);
     }
 
  
