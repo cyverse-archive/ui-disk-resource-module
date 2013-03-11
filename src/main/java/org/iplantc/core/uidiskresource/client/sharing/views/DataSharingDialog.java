@@ -43,11 +43,8 @@ public class DataSharingDialog extends Dialog {
         setModal(true);
         setResizable(false);
         setHeadingText(org.iplantc.core.uidiskresource.client.I18N.DISPLAY.manageSharing());
-        ListStore<Collaborator> collabStore = new ListStore<Collaborator>(new CollaboratorKeyProvider());
         ListStore<DiskResource> drStore = new ListStore<DiskResource>(new DiskResourceModelKeyProvider());
-        DataSharingView view = new DataSharingViewImpl(buildCollaboratorsColumnModel(),
-                collabCheckBoxModel, buildDiskResourceColumnModel(), drCheckBoxModel, collabStore,
-                drStore);
+        DataSharingView view = new DataSharingViewImpl(buildDiskResourceColumnModel(), drStore);
         final Presenter p = new DataSharingPresenter(getSelectedResourcesAsList(resources), view);
         p.go(this);
         getButtonById(PredefinedButton.OK.toString()).setText("Done");

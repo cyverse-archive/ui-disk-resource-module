@@ -34,7 +34,7 @@ public class ShareBreakDownDialog extends Dialog {
         //toolbar.add(buildGroupByUserButton(store));
         //toolbar.add(buildGroupByDataButton(store));
 
-        //add(buildGrid(store, buildColumnModel()));
+        add(buildGrid());
     }
 	
 	private void init() {
