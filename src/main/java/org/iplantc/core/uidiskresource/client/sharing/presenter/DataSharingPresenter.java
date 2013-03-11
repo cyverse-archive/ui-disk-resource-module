@@ -42,8 +42,10 @@ import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
 public class DataSharingPresenter implements Presenter {
 
     DataSharingView view;
-    List<DiskResource> selectedResources;
-    private FastMap<Sharing> sharingList;
+    private List<DiskResource> selectedResources;
+  
+
+	private FastMap<Sharing> sharingList;
     private FastMap<List<Sharing>> dataSharingMap;
     private final DiskResourceServiceFacade facade;
     private final PermissionsLayoutContainer permissionsPanel;
@@ -53,17 +55,30 @@ public class DataSharingPresenter implements Presenter {
         this.view = view;
         this.selectedResources = selectedResources;
         view.setPresenter(this);
-        permissionsPanel = new PermissionsLayoutContainer(this);
+        permissionsPanel = new PermissionsLayoutContainer(this, getSelectedResourcesAsMap(selectedResources));
         view.addShareWidget(permissionsPanel.asWidget());
         loadCollaborators();
         loadDiskResources();
     }
     
     
+    private FastMap<DiskResource> getSelectedResourcesAsMap(List<DiskResource> selectedResources) {
+    	FastMap<DiskResource> resourcesMap = new FastMap<DiskResource>();
+    	for (DiskResource sr : selectedResources) {
+    		resourcesMap.put(sr.getId(), sr);
+    	}
+    	return resourcesMap;
+    }
+    
     @Override
     public void go(HasOneWidget container) {
         container.setWidget(view.asWidget());
     }
+    
+    @Override
+    public List<DiskResource> getSelectedResources() {
+  		return selectedResources;
+  	}
 
     @Override
     public void loadCollaborators() {
@@ -155,7 +170,7 @@ public class DataSharingPresenter implements Presenter {
                 }
             }
             ArrayList<Sharing> list = new ArrayList<Sharing>(sharingList.values());
-            permissionsPanel.loadSharingData(list, dataSharingMap);
+       //     permissionsPanel.loadSharingData(list, dataSharingMap);
             permissionsPanel.unmask();
 
         }
@@ -234,13 +249,13 @@ public class DataSharingPresenter implements Presenter {
 
     private JSONObject buildSharingJson() {
         JSONObject sharingObj = new JSONObject();
-        FastMap<List<Sharing>> sharingMap = permissionsPanel.getSharingMap();
+        FastMap<List<DataSharing>> sharingMap = permissionsPanel.getSharingMap();
 
         if (sharingMap != null && sharingMap.size() > 0) {
             JSONArray sharingArr = new JSONArray();
             int index = 0;
             for (String userName : sharingMap.keySet()) {
-                List<Sharing> shareList = sharingMap.get(userName);
+                List<DataSharing> shareList = sharingMap.get(userName);
                 JSONObject userObj = new JSONObject();
                 userObj.put("user", new JSONString(userName));
                 userObj.put("paths", buildPathArrWithPermissions(shareList));
@@ -254,11 +269,11 @@ public class DataSharingPresenter implements Presenter {
         }
     }
 
-    private JSONArray buildPathArrWithPermissions(List<Sharing> list) {
+    private JSONArray buildPathArrWithPermissions(List<DataSharing> shareList) {
         JSONArray pathArr = new JSONArray();
         int index = 0;
         JSONObject obj;
-        for (Sharing s : list) {
+        for (Sharing s : shareList) {
             DataSharing ds = (DataSharing)s;
             obj = new JSONObject();
             obj.put("path", new JSONString(ds.getPath()));
@@ -269,10 +284,10 @@ public class DataSharingPresenter implements Presenter {
         return pathArr;
     }
 
-    private JSONArray buildPathArr(List<Sharing> list) {
+    private JSONArray buildPathArr(List<DataSharing> shareList) {
         JSONArray pathArr = new JSONArray();
         int index = 0;
-        for (Sharing s : list) {
+        for (Sharing s : shareList) {
             DataSharing ds = (DataSharing)s;
             pathArr.set(index++, new JSONString(ds.getPath()));
         }
@@ -289,13 +304,13 @@ public class DataSharingPresenter implements Presenter {
 
     private JSONObject buildUnSharingJson() {
         JSONObject unsharingObj = new JSONObject();
-        FastMap<List<Sharing>> unSharingMap = permissionsPanel.getUnshareList();
+        FastMap<List<DataSharing>> unSharingMap = permissionsPanel.getUnshareList();
 
         if (unSharingMap != null && unSharingMap.size() > 0) {
             JSONArray unsharingArr = new JSONArray();
             int index = 0;
             for (String userName : unSharingMap.keySet()) {
-                List<Sharing> shareList = unSharingMap.get(userName);
+                List<DataSharing> shareList = unSharingMap.get(userName);
                 JSONObject userObj = new JSONObject();
                 userObj.put("user", new JSONString(userName));
                 userObj.put("paths", buildPathArr(shareList));
@@ -326,7 +341,7 @@ public class DataSharingPresenter implements Presenter {
 
     @Override
     public void addDataSharing(FastMap<DataSharing> smap) {
-        permissionsPanel.addDataSharing(smap);
+        //permissionsPanel.addDataSharing(smap);
     }
 
     @Override

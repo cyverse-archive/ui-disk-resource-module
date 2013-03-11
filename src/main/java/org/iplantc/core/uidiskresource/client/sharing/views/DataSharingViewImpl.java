@@ -29,36 +29,21 @@ import com.sencha.gxt.widget.core.client.grid.Grid;
 
 public class DataSharingViewImpl implements DataSharingView {
 
-    @UiField
-    BorderLayoutContainer con;
-
-    @UiField
-    FramedPanel collaboratorListPnl;
-
-    @UiField
+     @UiField
     FramedPanel diskResourceListPnl;
 
-    @UiField(provided = true)
-    ColumnModel<Collaborator> collaboratorsColumnModel;
-
-    @UiField(provided = true)
-    ListStore<Collaborator> collaboratorsListStore;
-
+ 
     @UiField(provided = true)
     ColumnModel<DiskResource> diskResourcesColumnModel;
 
     @UiField(provided = true)
     ListStore<DiskResource> diskResourcesListStore;
 
-    @UiField
-    Grid<Collaborator> collaboratorsGrid;
-
+ 
     @UiField
     Grid<DiskResource> diskResourcesGrid;
 
-    @UiField
-    FramedPanel permissionsPnl;
-
+ 
     Presenter presenter;
 
     final Widget widget;
@@ -73,70 +58,25 @@ public class DataSharingViewImpl implements DataSharingView {
             CheckBoxSelectionModel<Collaborator> collabSm, ColumnModel<DiskResource> diskReColumnModel,
             CheckBoxSelectionModel<DiskResource> drSm, ListStore<Collaborator> collabStore,
             ListStore<DiskResource> drStore) {
-        this.collaboratorsColumnModel = collaboratorsColumnModel;
-        this.collaboratorsListStore = collabStore;
         this.diskResourcesColumnModel = diskReColumnModel;
         this.diskResourcesListStore = drStore;
         widget = uiBinder.createAndBindUi(this);
-        collaboratorsGrid.setSelectionModel(collabSm);
         diskResourcesGrid.setSelectionModel(drSm);
-        initDragAndDrop();
     }
 
-    private void initDragAndDrop() {
-        new GridDragSource<Collaborator>(collaboratorsGrid) {
-            @Override
-            protected void onDragStart(DndDragStartEvent event) {
-                List<Collaborator> list = collaboratorsGrid.getSelectionModel().getSelectedItems();
-                if (list == null || list.size() == 0) {
-                    event.setCancelled(true);
-                } else {
-                    event.setData(list);
-                    event.setCancelled(false);
-                }
-            }
-        };
-
-        new GridDragSource<DiskResource>(diskResourcesGrid) {
-            @Override
-            protected void onDragStart(DndDragStartEvent event) {
-                List<DiskResource> list = diskResourcesGrid.getSelectionModel().getSelectedItems();
-                if (list == null || list.size() == 0) {
-                    event.setCancelled(true);
-                } else {
-                    event.setData(list);
-                    event.setCancelled(false);
-                }
-            }
-
-        };
-        new DiskResourceDropTarget(diskResourcesGrid);
-
-    }
-
+ 
     @Override
     public Widget asWidget() {
         return widget;
     }
 
-    @Override
-    public void addShareWidget(Widget widget) {
-        permissionsPnl.add(widget);
-    }
-
+  
     @Override
     public void setPresenter(Presenter dataSharingPresenter) {
         this.presenter = dataSharingPresenter;
     }
 
-    @Override
-    public void setCollaborators(List<Collaborator> models) {
-        if (models != null && models.size() > 0) {
-            collaboratorsListStore.clear();
-            collaboratorsListStore.addAll(models);
-        }
-
-    }
+   
 
     @Override
     public void setSelectedDiskResources(List<DiskResource> models) {
@@ -147,69 +87,19 @@ public class DataSharingViewImpl implements DataSharingView {
 
     }
 
-    private final class DiskResourceDropTarget extends GridDropTarget<DiskResource> {
-        private DiskResourceDropTarget(Grid<DiskResource> grid) {
-            super(grid);
-            setOperation(Operation.COPY);
-        }
 
-        @Override
-        public void onDragMove(DndDragMoveEvent e) {
-            super.onDragMove(e);
-            Element data = e.getDragMoveEvent().getNativeEvent().getEventTarget().cast();
-            if (data == null) {
-                e.getStatusProxy().setStatus(false);
-                e.setCancelled(false);
-            }
-
-            int row = diskResourcesGrid.getView().findRowIndex(data);
-            if (row < 0) {
-                e.getStatusProxy().setStatus(false);
-                e.setCancelled(false);
-            }
-        }
-
-        @Override
-        public void onDragEnter(DndDragEnterEvent e) {
-            Element data = e.getDragEnterEvent().getNativeEvent().getEventTarget().cast();
-            if (data == null) {
-                e.getStatusProxy().setStatus(false);
-                e.setCancelled(false);
-            }
-
-            int row = diskResourcesGrid.getView().findRowIndex(data);
-            if (row < 0) {
-                e.getStatusProxy().setStatus(false);
-                e.setCancelled(false);
-            }
-        }
-
-        @Override
-        public void onDragDrop(DndDropEvent e) {
-            Element data = (Element)e.getDragEndEvent().getNativeEvent().getEventTarget().cast();
-            if (data == null) {
-                e.getStatusProxy().setStatus(false);
-                return;
-            }
-
-            int row = diskResourcesGrid.getView().findRowIndex(data);
-            if (row < 0) {
-                e.getStatusProxy().setStatus(false);
-                return;
-            }
-            DiskResource dr = diskResourcesGrid.getStore().get(row);
-            @SuppressWarnings("unchecked")
-            List<Collaborator> selectedCollabs = (List<Collaborator>)e.getData();
-            FastMap<DataSharing> smap = new FastMap<DataSharing>();
-            for (Collaborator c : selectedCollabs) {
-                DataSharing ds = new DataSharing(c, presenter.getDefaultPermissions(), dr.getId());
-                smap.put(c.getUserName(), ds);
-            }
-
-            presenter.addDataSharing(smap);
-        }
+	@Override
+	public void addShareWidget(Widget widget) {
+		// TODO Auto-generated method stub
+		
+	}
 
 
-    }
+	@Override
+	public void setCollaborators(List<Collaborator> models) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

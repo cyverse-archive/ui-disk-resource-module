@@ -35,6 +35,8 @@ public interface DataSharingView extends IsWidget {
         Permissions getDefaultPermissions();
 
         void processRequest();
+
+		List<DiskResource> getSelectedResources();
     }
 
     void addShareWidget(Widget widget);

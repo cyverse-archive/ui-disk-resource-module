@@ -27,7 +27,7 @@ public class DataSharing extends Sharing {
     public static final String READ = "read";
     public static final String WRITE = "write";
     public static final String OWN = "own";
-
+    
     private boolean readable;
     private boolean writable;
     private boolean owner;

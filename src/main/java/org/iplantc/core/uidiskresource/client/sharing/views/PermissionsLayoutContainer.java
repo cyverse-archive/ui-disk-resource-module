@@ -10,21 +10,30 @@ import org.iplantc.core.uicommons.client.models.collaborators.Collaborator;
 import org.iplantc.core.uicommons.client.models.sharing.Sharing;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
+import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.models.Permissions;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing.TYPE;
+import org.iplantc.core.uidiskresource.client.sharing.models.DataSharingKeyProvider;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingView.Presenter;
 import org.iplantc.core.uidiskresource.client.views.cells.Resources;
+
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.json.client.JSONBoolean;
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.shared.FastMap;
 import com.sencha.gxt.data.shared.IconProvider;
+import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.StringLabelProvider;
 import com.sencha.gxt.data.shared.TreeStore;
@@ -40,6 +49,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
+import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
@@ -54,70 +64,41 @@ import com.sencha.gxt.widget.core.client.treegrid.TreeGridSelectionModel;
  */
 public class PermissionsLayoutContainer extends VerticalLayoutContainer implements IsWidget {
     
-    private TreeGrid<Sharing> grid;
-    private TreeStore<Sharing> treeStore;
-    private ToolBar toolbar;
-    private FastMap<List<Sharing>> originalList;
+    private Grid<DataSharing> grid;
+ 	private ToolBar toolbar;
+    private FastMap<List<DataSharing>> originalList;
+    private final FastMap<DiskResource> resources;
     private final Presenter presenter;
-    private final FastMap<List<Sharing>> unshareList;
-
+ 
     private static final String ID_PERM_GROUP = "idPermGroup";
-    private static final String ID_BTN_REMOVE = "idBtnRemove";
     private SimpleComboBox<String> permCombo;
-    private TextButton removeBtn;
+ 	private FastMap<List<DataSharing>> sharingMap;
 
-    public PermissionsLayoutContainer(Presenter dataSharingPresenter) {
+    public PermissionsLayoutContainer(Presenter dataSharingPresenter, FastMap<DiskResource> resources) {
         this.presenter = dataSharingPresenter;
-        unshareList = new FastMap<List<Sharing>>();
+        this.resources = resources;
         init();
     }
 
     private void init() {
         initToolbar();
         add(toolbar);
-        ColumnModel<Sharing> cm = buildColumnModel();
-        treeStore = new TreeStore<Sharing>(new KeyProvider());
+        ColumnModel<DataSharing> cm = buildColumnModel();
         initGrid(cm);
         add(grid);
     }
 
-    private void initGrid(ColumnModel<Sharing> cm) {
-        grid = new TreeGrid<Sharing>(treeStore, cm, cm.getColumn(0));
-        grid.setIconProvider(new ShareIconProvider());
+
+	private void initGrid(ColumnModel<DataSharing> cm) {
+        grid = new Grid<DataSharing>(new ListStore<DataSharing>(new DataSharingKeyProvider()), cm);
         grid.setHeight(350);
-        TreeGridSelectionModel<Sharing> sm = (TreeGridSelectionModel<Sharing>)grid.getSelectionModel();
-        sm.addSelectionChangedHandler(new SelectionChangedHandler<Sharing>() {
-
-            @Override
-            public void onSelectionChanged(SelectionChangedEvent<Sharing> event) {
-                permCombo.clear();
-                if (grid.getSelectionModel().getSelectedItems().size() > 0) {
-                    permCombo.enable();
-                    removeBtn.enable();
-                } else {
-                    permCombo.disable();
-                    permCombo.disable();
-                }
-            }
-        });
-        
-        TreeGridDropTarget<Sharing> sgdt = new ShareTreeGridDropTargetImpl(grid);
-
-        sgdt.setOperation(Operation.COPY);
-        sgdt.setAllowDropOnLeaf(false);
-        sgdt.setAutoExpand(true);
+     
     }
 
     private void initToolbar() {
         toolbar = new ToolBar();
         toolbar.setHeight(30);
-        TextButton removeBtn = buildUnshareButton();
-        toolbar.add(removeBtn);
-        toolbar.add(new FillToolItem());
         SimpleComboBox<String> permissionsCombo = buildPermissionsCombo();
-        permissionsCombo.setEmptyText("Permissions");
-        permissionsCombo.disable();
-        toolbar.add(permissionsCombo);
     }
 
     private SimpleComboBox<String> buildPermissionsCombo() {
@@ -135,158 +116,75 @@ public class PermissionsLayoutContainer extends VerticalLayoutContainer implemen
             
             @Override
             public void onSelection(SelectionEvent<String> event) {
-                List<Sharing> items = grid.getSelectionModel().getSelectedItems();
-                if (items != null) {
-                    for (Sharing s : items) {
-                        String value = permCombo.getCurrentValue();
-                        if (value != null) {
-                            if (s instanceof DataSharing) {
-                                updatePermissions(value, (DataSharing)s);
-                            } else {
-                                TreeStore<Sharing> treeStore = grid.getTreeStore();
-                                Sharing sharing = treeStore.findModel(s);
-                                if (sharing != null) {
-                                    List<Sharing> models = treeStore.getChildren(sharing);
-                                    if (models != null) {
-                                        for (Sharing md : models) {
-                                            updatePermissions(value, (DataSharing)md);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                
+                List<DataSharing> items = grid.getSelectionModel().getSelectedItems();
             }
-                
         });
         return permCombo;
     }
 
-    private TextButton buildUnshareButton() {
-        removeBtn = new TextButton(I18N.DISPLAY.unshare());
-        removeBtn.setId(ID_BTN_REMOVE);
-        removeBtn.setIcon(org.iplantc.core.uicommons.client.images.Resources.ICONS.delete());
-        removeBtn.addSelectHandler(new SelectHandler() {
 
-            @Override
-            public void onSelect(SelectEvent event) {
-                List<Sharing> models = grid.getSelectionModel().getSelectedItems();
-                removeModels(models);
-            }
-        });
-        removeBtn.disable();
-        return removeBtn;
-    }
+    private void removeModels(DataSharing model) {
+    	ListStore<DataSharing> store = grid.getStore();
 
-    private void removeModels(List<Sharing> models) {
-        // prepared unshared list here
-        TreeStore<Sharing> store = grid.getTreeStore();
-        for (Sharing model : models) {
-            String userName = model.getUserName();
-            List<Sharing> list = unshareList.get(userName);
-            if (list == null) {
-                list = new ArrayList<Sharing>();
-            }
-            if (model instanceof DataSharing) {
-                if (isExistedOriginally(model)) {
-                    list.add(model);
-                }
-                Sharing parent = store.getParent(model);
-                store.remove(model);
-                // prevent parent turning into a leaf
-                if (parent != null) {
-                    grid.setLeaf(parent, false);
-                }
-            } else {
-                Sharing sharing = store.findModel(model);
-                if (sharing != null) {
-                    List<Sharing> removeList = store.getChildren(sharing);
-                    for (Sharing remItem : removeList) {
-                        if (isExistedOriginally(remItem)) {
-                            list.add(remItem);
-                        }
-                    }
-                    store.removeChildren(sharing);
-                    store.remove(sharing);
-                }
-            }
-            if (!list.isEmpty()) {
-                unshareList.put(userName, list);
-            }
-        }
-    }
-
-    private final class ShareIconProvider implements IconProvider<Sharing> {
-        @Override
-        public ImageResource getIcon(Sharing model) {
-            Resources res = GWT.create(Resources.class);
-            if (model instanceof DataSharing) {
-                DataSharing ds = (DataSharing)model;
-                TYPE type = presenter.getSharingResourceType(ds.getPath());
-                if (type == null) {
-                    return org.iplantc.core.uicommons.client.images.Resources.ICONS.share();
-                }
-                if (type.equals(TYPE.FOLDER)) {
-                    return res.folder();
-                } else {
-                    return res.file();
-                }
-
-            } else {
-                return org.iplantc.core.uicommons.client.images.Resources.ICONS.share();
-            }
+        DataSharing sharing = store.findModel(model);
+        if (sharing != null) {
+            // Remove the shares from the sharingMap as well as the grid.
+            sharingMap.put(sharing.getUserName(), null);
+            store.remove(sharing);
         }
     }
 
 
-    class KeyProvider implements ModelKeyProvider<Sharing> {
-        @Override
-        public String getKey(Sharing item) {
-            return item.getKey();
-        }
-    }
+
+
     
     
-    public void loadSharingData(List<Sharing> roots, FastMap<List<Sharing>> sharingMap) {
-        originalList = new FastMap<List<Sharing>>();
-        TreeStore<Sharing> treeStore = grid.getTreeStore();
-        treeStore.clear();
-        treeStore.add(roots);
-        for (Sharing s : roots) {
-            String userName = s.getUserName();
-            List<Sharing> list = sharingMap.get(userName);
-            List<Sharing> newList = new ArrayList<Sharing>();
-            if (list != null) {
-                for (Sharing item : list) {
-                    treeStore.add(s, item);
-                    newList.add(item.copy());
+    public void loadSharingData(FastMap<List<DataSharing>> sharingMap) {
+    	this.sharingMap = sharingMap;
+        originalList = new FastMap<List<DataSharing>>();
+
+        ListStore<DataSharing> store = grid.getStore();
+        store.clear();
+    //    explainPanel.hide();
+
+        for (String userName : sharingMap.keySet()) {
+            List<DataSharing> dataShares = sharingMap.get(userName);
+
+            if (dataShares != null && !dataShares.isEmpty()) {
+                List<DataSharing> newList = new ArrayList<DataSharing>();
+                for (DataSharing share : dataShares) {
+                    DataSharing copyShare = share.copy();
+                    newList.add(copyShare);
                 }
                 originalList.put(userName, newList);
+
+                // Add a dummy display share to the grid.
+                DataSharing displayShare = dataShares.get(0).copy();
+//                if (hasVaryingPermissions(dataShares)) {
+//                    // Set the display permission to "varies" if this user's share list has varying
+//                    // permissions.
+//                    displayShare.setDisplayPermission(I18N.DISPLAY.varies());
+//                    explainPanel.show();
+//                }
+
+                store.add(displayShare);
             }
         }
-
-        grid.expandAll();
     }
 
 
-    private ColumnModel<Sharing> buildColumnModel() {
-        List<ColumnConfig<Sharing, ?>> configs = new ArrayList<ColumnConfig<Sharing, ?>>();
-        ColumnConfig<Sharing, String> name = new ColumnConfig<Sharing, String>(
-                new ValueProvider<Sharing, String>() {
+    private ColumnModel<DataSharing> buildColumnModel() {
+        List<ColumnConfig<DataSharing, ?>> configs = new ArrayList<ColumnConfig<DataSharing, ?>>();
+        ColumnConfig<DataSharing, String> name = new ColumnConfig<DataSharing, String>(
+                new ValueProvider<DataSharing, String>() {
 
                     @Override
-                    public String getValue(Sharing object) {
-                        if (object instanceof DataSharing) {
-                            return ((DataSharing)(object)).getName();
-                        } else {
+                    public String getValue(DataSharing object) {
                             return object.getName();
-                        }
                     }
 
                     @Override
-                    public void setValue(Sharing object, String value) {
+                    public void setValue(DataSharing object, String value) {
                         // do nothing intentionally
 
                     }
@@ -299,22 +197,17 @@ public class PermissionsLayoutContainer extends VerticalLayoutContainer implemen
 
         name.setHeader("Name");
         name.setWidth(220);
-        ColumnConfig<Sharing, String> permission = new ColumnConfig<Sharing, String>(
-                new ValueProvider<Sharing, String>() {
+        ColumnConfig<DataSharing, String> permission = new ColumnConfig<DataSharing, String>(
+                new ValueProvider<DataSharing, String>() {
 
                     @Override
-                    public String getValue(Sharing object) {
-                        if (object instanceof DataSharing) {
+                    public String getValue(DataSharing object) {
                             return ((DataSharing)(object)).getDisplayPermission();
-                        } else {
-                            return null;
-                        }
                     }
 
                     @Override
-                    public void setValue(Sharing object, String value) {
-                        DataSharing ds = (DataSharing)object;
-                        ds.setDisplayPermission(value);
+                    public void setValue(DataSharing object, String value) {
+                        object.setDisplayPermission(value);
                     }
 
                     @Override
@@ -327,187 +220,191 @@ public class PermissionsLayoutContainer extends VerticalLayoutContainer implemen
         permission.setWidth(80);
         configs.add(name);
         configs.add(permission);
-        return new ColumnModel<Sharing>(configs);
+        return new ColumnModel<DataSharing>(configs);
     }
 
     /**
-     * 
-     * 
-     * @return the sharing list
-     */
-    public FastMap<List<Sharing>> getSharingMap() {
-        FastMap<List<Sharing>> sharingList = new FastMap<List<Sharing>>();
-        for (Sharing s : grid.getTreeStore().getAll()) {
-            if (!(s instanceof DataSharing)) {
-                List<Sharing> childrens = grid.getTreeStore().getChildren(s);
-                List<Sharing> updatedSharingList = getUpdatedSharingList(s.getUserName(), childrens);
+    *
+    *
+    * @return the sharing list
+    */
+        public FastMap<List<DataSharing>> getSharingMap() {
+            FastMap<List<DataSharing>> sharingList = new FastMap<List<DataSharing>>();
+            for (DataSharing share : grid.getStore().getAll()) {
+                String userName = share.getUserName();
+                List<DataSharing> dataShares = sharingMap.get(userName);
+                List<DataSharing> updatedSharingList = getUpdatedSharingList(userName, dataShares);
                 if (updatedSharingList != null && updatedSharingList.size() > 0) {
-                    sharingList.put(s.getUserName(), updatedSharingList);
+                    sharingList.put(userName, updatedSharingList);
                 }
             }
-        }
-        return sharingList;
-    }
 
-    /**
-     * check the list with original to see if things have changed. ignore unchanged records
-     * 
-     * @param userName
-     * @param list
-     * @return
-     */
-    private List<Sharing> getUpdatedSharingList(String userName, List<Sharing> list) {
-        List<Sharing> updateList = new ArrayList<Sharing>();
-        if (list != null && userName != null) {
-            List<Sharing> fromOriginal = originalList.get(userName);
-            if (fromOriginal == null || fromOriginal.isEmpty()) {
-                updateList = list;
-            } else {
-                for (Sharing s : list) {
-                    if (!fromOriginal.contains(s)) {
-                        updateList.add(s);
+            return sharingList;
+        }
+
+        /**
+    * check the list with original to see if things have changed. ignore unchanged records
+    *
+    * @param userName
+    * @param list
+    * @return
+    */
+        private List<DataSharing> getUpdatedSharingList(String userName, List<DataSharing> list) {
+            List<DataSharing> updateList = new ArrayList<DataSharing>();
+            if (list != null && userName != null) {
+                List<DataSharing> fromOriginal = originalList.get(userName);
+
+                if (fromOriginal == null || fromOriginal.isEmpty()) {
+                    updateList = list;
+                } else {
+                    for (DataSharing s : list) {
+                        if (!fromOriginal.contains(s)) {
+                            updateList.add(s);
+                        }
                     }
                 }
-
             }
 
+            return updateList;
         }
-
-        return updateList;
-    }
-
     /**
      * check if a sharing recored originally existed. Needed to remove false submission of unshare list
      * 
      * @return
      */
-    private boolean isExistedOriginally(Sharing s) {
-        String userName = s.getUserName();
-        List<Sharing> fromOriginal = originalList.get(userName);
-        if (fromOriginal != null && fromOriginal.contains(s)) {
-            return true;
-        } else {
-            return false;
-        }
+//    private boolean isExistedOriginally(Sharing s) {
+//        String userName = s.getUserName();
+//        List<Sharing> fromOriginal = originalList.get(userName);
+//        if (fromOriginal != null && fromOriginal.contains(s)) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//
+//    }
+//
+//    private void addSharing(Sharing obj) {
+//        TreeStore<Sharing> treeStore = grid.getTreeStore();
+//        if (treeStore.findModel(obj) == null) {
+//            treeStore.add(obj);
+//            grid.setLeaf(obj, false);
+//        }
+//        grid.getSelectionModel().select(false, obj);
+//    }
 
-    }
+//    public void addDataSharing(FastMap<DataSharing> sharingMap) {
+//        ListStore<Sharing> treeStore = grid.getTreeStore();
+//        if (sharingMap != null) {
+//            for (DataSharing s : sharingMap.values()) {
+//                Sharing find = new Sharing(s.getCollaborator());
+//                Sharing exists = treeStore.findModel(find);
+//                if (exists == null) {
+//                    treeStore.add(find);
+//                    exists = find;
+//                }
+//                List<Sharing> childerens = treeStore.getChildren(exists);
+//                if (childerens != null) {
+//                    for (Sharing temp : childerens) {
+//                        DataSharing tempDs = (DataSharing)temp;
+//                        if (tempDs.equals(s)) {
+//                            return;
+//                        }
+//                    }
+//                }
+//                treeStore.add(exists, s);
+//            }
+//            grid.expandAll();
+//        }
+//
+//    }
 
-    private void addSharing(Sharing obj) {
-        TreeStore<Sharing> treeStore = grid.getTreeStore();
-        if (treeStore.findModel(obj) == null) {
-            treeStore.add(obj);
-            grid.setLeaf(obj, false);
-        }
-        grid.getSelectionModel().select(false, obj);
-    }
+   
+//    private void updatePermissions(String perm, DataSharing model) {
+//        if (perm.equals(DataSharing.READ)) {
+//            model.setReadable(true);
+//            model.setWritable(false);
+//            model.setOwner(false);
+//        } else if (perm.equals(DataSharing.WRITE)) {
+//            model.setWritable(true);
+//            model.setReadable(true);
+//            model.setOwner(false);
+//        } else {
+//            model.setOwner(true);
+//            model.setReadable(true);
+//            model.setWritable(true);
+//        }
+//        model.setDisplayPermission(perm);
+//        grid.getStore().update(model);
+//    }
+        
+        private void updatePermissions(String perm, String username) {
+            List<DataSharing> models = sharingMap.get(username);
+            if (models != null) {
+                boolean own = perm.equals("own");
+                boolean write = own || perm.equals("write");
+                boolean read = true;
 
-    public void addDataSharing(FastMap<DataSharing> sharingMap) {
-        TreeStore<Sharing> treeStore = grid.getTreeStore();
-        if (sharingMap != null) {
-            for (DataSharing s : sharingMap.values()) {
-                Sharing find = new Sharing(s.getCollaborator());
-                Sharing exists = treeStore.findModel(find);
-                if (exists == null) {
-                    treeStore.add(find);
-                    exists = find;
+                for (DataSharing share : models) {
+                    if (own) {
+                        share.setOwner(true);
+                    } else if (write) {
+                        share.setWritable(true);
+                    } else {
+                        share.setReadable(true);
+                    }
                 }
-                List<Sharing> childerens = treeStore.getChildren(exists);
-                if (childerens != null) {
-                    for (Sharing temp : childerens) {
-                        DataSharing tempDs = (DataSharing)temp;
-                        if (tempDs.equals(s)) {
-                            return;
+
+                if (resources.size() != models.size()) {
+                    Collaborator user = models.get(0).getCollaborator();
+                    DiskResourceAutoBeanFactory factory = GWT.create(DiskResourceAutoBeanFactory.class);
+                    AutoBean<Permissions> autoBean = AutoBeanCodex.decode(factory, Permissions.class,buildSharingPermissions(read, write, own));
+                    Permissions perms = autoBean.as();
+                    for (String path : resources.keySet()) {
+                        boolean shared = false;
+                        for (DataSharing existingShare : models) {
+                            if (path.equals(existingShare.getPath())) {
+                                shared = true;
+                                break;
+                            }
+                        }
+
+                        if (!shared) {
+                            models.add(new DataSharing(user, perms, path));
                         }
                     }
                 }
-                treeStore.add(exists, s);
-            }
-            grid.expandAll();
-        }
 
-    }
-
-    private final class ShareTreeGridDropTargetImpl extends TreeGridDropTarget<Sharing> {
-        private ShareTreeGridDropTargetImpl(TreeGrid<Sharing> tree) {
-            super(tree);
-        }
-
-        @Override
-        public void onDragMove(DndDragMoveEvent e) {
-            super.onDragMove(e);
-            Element tn = e.getDragMoveEvent().getNativeEvent().getEventTarget().cast();
-            if (tn == null) {
-                e.getStatusProxy().setStatus(false);
-                e.setCancelled(true);
-                return;
+               // checkExplainPanelVisibility();
             }
         }
 
-        @Override
-        public void onDragEnter(DndDragEnterEvent e) {
-            super.onDragEnter(e);
-            Element tn = e.getDragEnterEvent().getNativeEvent().getEventTarget().cast();
-            if (tn == null) {
-                e.getStatusProxy().setStatus(false);
-                e.setCancelled(true);
-                return;
-            }
-
-        }
-
-        @Override
-        public void onDragDrop(DndDropEvent e) {
-            Element tn = e.getDragEndEvent().getNativeEvent().getEventTarget().cast();
-            if (tn == null) {
-                e.getStatusProxy().setStatus(false);
-                return;
-            }
-            List<?> items = (List<?>)e.getData();
-            if (items != null) {
-                if (items.get(0) instanceof Collaborator) {
-                    for (Object coll : items) {
-                        addSharing(new Sharing((Collaborator)coll));
-                    }
-                    return;
-                }
-            }
-
-            TreeNode<Sharing> node = grid.findNode(tn);
-            if(node != null) {
-                Sharing s = node.getModel();
-                if (s != null) {
-                    for (Object dr : items) {
-                        DataSharing ds = new DataSharing(s.getCollaborator(),
-                                presenter.getDefaultPermissions(), ((DiskResource)dr).getId());
-                        grid.getTreeStore().add(s, ds);
-                    }
-                }
-            }
-        }
-    }
-
-    private void updatePermissions(String perm, DataSharing model) {
-        if (perm.equals(DataSharing.READ)) {
-            model.setReadable(true);
-            model.setWritable(false);
-            model.setOwner(false);
-        } else if (perm.equals(DataSharing.WRITE)) {
-            model.setWritable(true);
-            model.setReadable(true);
-            model.setOwner(false);
-        } else {
-            model.setOwner(true);
-            model.setReadable(true);
-            model.setWritable(true);
-        }
-        model.setDisplayPermission(perm);
-        grid.getTreeStore().update(model);
-    }
-
+        private String buildSharingPermissions(boolean read, boolean write, boolean own) {
+            JSONObject permission = new JSONObject();
+            permission.put("read", JSONBoolean.getInstance(read));
+            permission.put("write", JSONBoolean.getInstance(write));
+            permission.put("own", JSONBoolean.getInstance(own));
+            return permission.toString();
+         }
+        
     /**
      * @return the unshareList
      */
-    public FastMap<List<Sharing>> getUnshareList() {
+    public FastMap<List<DataSharing>> getUnshareList() {
+    	// Prepare unshared list here
+        FastMap<List<DataSharing>> unshareList = new FastMap<List<DataSharing>>();
+
+        for (String userName : originalList.keySet()) {
+            if (sharingMap.get(userName) == null) {
+                // The username entry from the original list was removed from the sharingMap, which means
+                // it was unshared.
+                List<DataSharing> removeList = originalList.get(userName);
+
+                if (removeList != null && !removeList.isEmpty()) {
+                    unshareList.put(userName, removeList);
+                }
+            }
+        }
+
         return unshareList;
     }
 
