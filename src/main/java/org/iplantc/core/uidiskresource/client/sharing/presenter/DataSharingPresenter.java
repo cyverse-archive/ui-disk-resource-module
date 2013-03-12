@@ -21,7 +21,7 @@ import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing.TYPE;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingView;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingView.Presenter;
-import org.iplantc.core.uidiskresource.client.sharing.views.PermissionsLayoutContainer;
+import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingPermissionsPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONArray;
@@ -48,17 +48,18 @@ public class DataSharingPresenter implements Presenter {
 	private FastMap<List<JSONObject>> sharingList;
     private FastMap<List<DataSharing>> dataSharingMap;
     private final DiskResourceServiceFacade facade;
-    private final PermissionsLayoutContainer permissionsPanel;
+    private final DataSharingPermissionsPanel permissionsPanel;
+    private static DiskResourceAutoBeanFactory factory = GWT.create(DiskResourceAutoBeanFactory.class);
 
     public DataSharingPresenter(List<DiskResource> selectedResources, DataSharingView view) {
         facade = GWT.create(DiskResourceServiceFacade.class);
         this.view = view;
         this.selectedResources = selectedResources;
         view.setPresenter(this);
-        permissionsPanel = new PermissionsLayoutContainer(this, getSelectedResourcesAsMap(selectedResources));
+        permissionsPanel = new DataSharingPermissionsPanel(this, getSelectedResourcesAsMap(selectedResources));
         view.addShareWidget(permissionsPanel.asWidget());
-        loadCollaborators();
         loadDiskResources();
+        loadPermissions();
     }
     
     
@@ -87,7 +88,6 @@ public class DataSharingPresenter implements Presenter {
         @Override
         public void onSuccess(Void result) {
                 view.setCollaborators(CollaboratorsUtil.getCurrentCollaborators());
-                loadPermissions();
         }
         
         @Override
@@ -159,39 +159,40 @@ public class DataSharingPresenter implements Presenter {
 
                 final List<String> usernames = new ArrayList<String>();
                 usernames.addAll(sharingList.keySet());
-                // CollaboratorsUtil.getUserInfo(usernames, new AsyncCallback<FastMap<Collaborator>>() {
-                //
-                // @Override
-                // public void onFailure(Throwable caught) {
-                // // TODO Auto-generated method stub
-                // ErrorHandler.post(caught);
-                // }
-                //
-                // @Override
-                // public void onSuccess(FastMap<Collaborator> results) {
-                // dataSharingMap = new FastMap<List<DataSharing>>();
-                // for (String userName : usernames) {
-                // Collaborator user = results.get(userName);
-                // if (user == null) {
-                // user = new Collaborator(null, userName, userName, null, null);
-                // }
-                //
-                // List<DataSharing> dataShares = new ArrayList<DataSharing>();
-                //
-                // dataSharingMap.put(userName, dataShares);
-                //
-                // for (JSONObject share : sharingList.get(userName)) {
-                //                                String path = JsonUtil.getString(share, "path"); //$NON-NLS-1$
-                // DataSharing dataSharing = new DataSharing(user, new Permissions(share),
-                // path);
-                // dataShares.add(dataSharing);
-                // }
-                // }
-                //
-                // sharePanel.loadSharingData(dataSharingMap);
-                // sharePanel.unmask();
-                // }
-                // });
+                CollaboratorsUtil.getUserInfo(usernames, new AsyncCallback<FastMap<Collaborator>>() {
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        // TODO Auto-generated method stub
+                        ErrorHandler.post(caught);
+                    }
+
+                    @Override
+                    public void onSuccess(FastMap<Collaborator> results) {
+                        dataSharingMap = new FastMap<List<DataSharing>>();
+                        for (String userName : usernames) {
+                            Collaborator user = results.get(userName);
+                            if (user == null) {
+                                user = CollaboratorsUtil.getDummyCollaborator(userName);
+                            }
+
+                            List<DataSharing> dataShares = new ArrayList<DataSharing>();
+
+                            dataSharingMap.put(userName, dataShares);
+
+                            for (JSONObject share : sharingList.get(userName)) {
+                                String path = JsonUtil.getString(share, "path"); //$NON-NLS-1$
+                                DataSharing dataSharing = new DataSharing(user,
+                                        buildPermissionFromJson(share),
+                                        path);
+                                dataShares.add(dataSharing);
+                            }
+                        }
+
+                        permissionsPanel.loadSharingData(dataSharingMap);
+                        permissionsPanel.unmask();
+                    }
+                });
             }
     }
     }
@@ -296,7 +297,7 @@ public class DataSharingPresenter implements Presenter {
             DataSharing ds = (DataSharing)s;
             obj = new JSONObject();
             obj.put("path", new JSONString(ds.getPath()));
-            obj.put("permissions", buildSharingPermissions(ds));
+            obj.put("permissions", buildSharingPermissionsAsJson(ds));
             pathArr.set(index++, obj);
         }
 
@@ -313,12 +314,17 @@ public class DataSharingPresenter implements Presenter {
         return pathArr;
     }
 
-    private JSONObject buildSharingPermissions(DataSharing sh) {
+    private JSONObject buildSharingPermissionsAsJson(DataSharing sh) {
         JSONObject permission = new JSONObject();
         permission.put("read", JSONBoolean.getInstance(sh.isReadable()));
         permission.put("write", JSONBoolean.getInstance(sh.isWritable()));
         permission.put("own", JSONBoolean.getInstance(sh.isOwner()));
         return permission;
+    }
+
+    private Permissions buildPermissionFromJson(JSONObject perm) {
+        AutoBean<Permissions> bean = AutoBeanCodex.decode(factory, Permissions.class, perm.toString());
+        return bean.as();
     }
 
     private JSONObject buildUnSharingJson() {
@@ -365,7 +371,6 @@ public class DataSharingPresenter implements Presenter {
         obj.put(DataSharing.READ, JSONBoolean.getInstance(true));
         obj.put(DataSharing.WRITE, JSONBoolean.getInstance(false));
         obj.put(DataSharing.OWN, JSONBoolean.getInstance(false));
-        DiskResourceAutoBeanFactory factory = GWT.create(DiskResourceAutoBeanFactory.class);
         AutoBean<Permissions> bean = AutoBeanCodex.decode(factory, Permissions.class, obj.toString());
         return bean.as();
     }

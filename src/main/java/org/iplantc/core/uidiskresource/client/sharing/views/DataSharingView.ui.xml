@@ -19,10 +19,10 @@
 	</ui:with>
 
 
-	<container:VerticalLayoutContainer>
+	<container:VerticalLayoutContainer ui:field="container">
 		<container:child>
 					<gxt:FramedPanel ui:field="diskResourceListPnl"
-						collapsible="false" headerVisible="true" headingText="2.{strings.selectFilesFolders}">
+						collapsible="false" headerVisible="true" headingText="{strings.selectFilesFolders}" height="250px">
 						<grid:Grid ui:field="diskResourcesGrid" cm="{diskResourcesColumnModel}" store="{diskResourcesListStore}"
 									view="{diskResourcesGridView}" loadMask="true" columnReordering="true"
 									borders="false">

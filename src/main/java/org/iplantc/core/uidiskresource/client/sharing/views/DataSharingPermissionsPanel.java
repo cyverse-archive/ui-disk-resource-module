@@ -7,62 +7,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.core.uicommons.client.models.collaborators.Collaborator;
-import org.iplantc.core.uicommons.client.models.sharing.Sharing;
-import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.models.Permissions;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing;
-import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing.TYPE;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharingKeyProvider;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingView.Presenter;
-import org.iplantc.core.uidiskresource.client.views.cells.Resources;
-
 
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.json.client.JSONBoolean;
 import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.shared.FastMap;
-import com.sencha.gxt.data.shared.IconProvider;
 import com.sencha.gxt.data.shared.ListStore;
-import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.StringLabelProvider;
-import com.sencha.gxt.data.shared.TreeStore;
-import com.sencha.gxt.dnd.core.client.DND.Operation;
-import com.sencha.gxt.dnd.core.client.DndDragEnterEvent;
-import com.sencha.gxt.dnd.core.client.DndDragMoveEvent;
-import com.sencha.gxt.dnd.core.client.DndDropEvent;
-import com.sencha.gxt.dnd.core.client.TreeGridDropTarget;
-import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
-import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
-import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
-import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
-import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
-import com.sencha.gxt.widget.core.client.treegrid.TreeGrid;
-import com.sencha.gxt.widget.core.client.treegrid.TreeGridSelectionModel;
 
 /**
  * @author sriram
  *
  */
-public class PermissionsLayoutContainer extends VerticalLayoutContainer implements IsWidget {
+public class DataSharingPermissionsPanel extends FramedPanel implements IsWidget {
     
     private Grid<DataSharing> grid;
  	private ToolBar toolbar;
@@ -74,25 +51,26 @@ public class PermissionsLayoutContainer extends VerticalLayoutContainer implemen
     private SimpleComboBox<String> permCombo;
  	private FastMap<List<DataSharing>> sharingMap;
 
-    public PermissionsLayoutContainer(Presenter dataSharingPresenter, FastMap<DiskResource> resources) {
+    public DataSharingPermissionsPanel(Presenter dataSharingPresenter, FastMap<DiskResource> resources) {
         this.presenter = dataSharingPresenter;
         this.resources = resources;
         init();
     }
 
     private void init() {
+        VerticalLayoutContainer container = new VerticalLayoutContainer();
+        setHeight("250px");
         initToolbar();
-        add(toolbar);
+        container.add(toolbar);
         ColumnModel<DataSharing> cm = buildColumnModel();
         initGrid(cm);
-        add(grid);
+        container.add(grid);
+        setWidget(container);
     }
 
 
 	private void initGrid(ColumnModel<DataSharing> cm) {
         grid = new Grid<DataSharing>(new ListStore<DataSharing>(new DataSharingKeyProvider()), cm);
-        grid.setHeight(350);
-     
     }
 
     private void initToolbar() {
@@ -180,7 +158,7 @@ public class PermissionsLayoutContainer extends VerticalLayoutContainer implemen
 
                     @Override
                     public String getValue(DataSharing object) {
-                            return object.getName();
+                        return object.getName();
                     }
 
                     @Override

@@ -60,7 +60,7 @@ public class DataSharing extends Sharing {
         this.path = path;
     }
 
-    public String getName() {
+    public String getResourceName() {
         return DiskResourceUtil.parseNameFromPath(path);
     }
 
