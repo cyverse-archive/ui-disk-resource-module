@@ -9,16 +9,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.iplantc.core.uicommons.client.I18N;
-import org.iplantc.core.uicommons.client.models.collaborators.Collaborator;
-import org.iplantc.core.uicommons.client.models.collaborators.CollaboratorKeyProvider;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.sharing.presenter.DataSharingPresenter;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingView.Presenter;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
 
-import com.google.gwt.cell.client.AbstractCell;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.widget.core.client.Dialog;

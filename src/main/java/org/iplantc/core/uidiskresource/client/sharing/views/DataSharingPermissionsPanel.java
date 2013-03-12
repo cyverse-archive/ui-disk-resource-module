@@ -6,7 +6,9 @@ package org.iplantc.core.uidiskresource.client.sharing.views;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.core.uicommons.client.images.Resources;
 import org.iplantc.core.uicommons.client.models.collaborators.Collaborator;
+import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.models.Permissions;
@@ -15,73 +17,137 @@ import org.iplantc.core.uidiskresource.client.sharing.models.DataSharingKeyProvi
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingView.Presenter;
 
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.json.client.JSONBoolean;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.safecss.shared.SafeStyles;
+import com.google.gwt.safecss.shared.SafeStylesUtils;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.sencha.gxt.cell.core.client.TextButtonCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.shared.FastMap;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.StringLabelProvider;
-import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.event.CompleteEditEvent;
+import com.sencha.gxt.widget.core.client.event.CompleteEditEvent.CompleteEditHandler;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
+import com.sencha.gxt.widget.core.client.grid.CellSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
+import com.sencha.gxt.widget.core.client.grid.editing.GridEditing;
+import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
+import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
+import com.sencha.gxt.widget.core.client.toolbar.LabelToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 /**
  * @author sriram
- *
+ * 
  */
-public class DataSharingPermissionsPanel extends FramedPanel implements IsWidget {
-    
-    private Grid<DataSharing> grid;
- 	private ToolBar toolbar;
+public class DataSharingPermissionsPanel implements IsWidget {
+
+    @UiField
+    Grid<DataSharing> grid;
+
+    @UiField
+    ToolBar toolbar;
+
+    @UiField(provided = true)
+    ListStore<DataSharing> listStore;
+
+    @UiField(provided = true)
+    ColumnModel<DataSharing> cm;
+
+    @UiField
+    VerticalLayoutContainer container;
+
     private FastMap<List<DataSharing>> originalList;
     private final FastMap<DiskResource> resources;
     private final Presenter presenter;
- 
-    private static final String ID_PERM_GROUP = "idPermGroup";
-    private SimpleComboBox<String> permCombo;
- 	private FastMap<List<DataSharing>> sharingMap;
+    private GridEditing<DataSharing> gridEditing;
 
+    private static final String ID_PERM_GROUP = "idPermGroup";
+    private SimpleComboBox<Object> permCombo;
+    private FastMap<List<DataSharing>> sharingMap;
+    private HorizontalPanel explainPanel;
+
+    final Widget widget;
+    private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
+
+    @UiTemplate("DataSharingPermissionsView.ui.xml")
+    interface MyUiBinder extends UiBinder<Widget, DataSharingPermissionsPanel> {
+    }
+    
     public DataSharingPermissionsPanel(Presenter dataSharingPresenter, FastMap<DiskResource> resources) {
         this.presenter = dataSharingPresenter;
         this.resources = resources;
         init();
+        widget = uiBinder.createAndBindUi(this);
+        initToolbar();
+        initGrid();
+    }
+
+    @Override
+    public Widget asWidget() {
+        return widget;
     }
 
     private void init() {
-        VerticalLayoutContainer container = new VerticalLayoutContainer();
-        setHeight("250px");
-        initToolbar();
-        container.add(toolbar);
-        ColumnModel<DataSharing> cm = buildColumnModel();
-        initGrid(cm);
-        container.add(grid);
-        setWidget(container);
+        listStore = new ListStore<DataSharing>(new DataSharingKeyProvider());
+        cm = buildColumnModel();
+        buildPermissionsCombo();
     }
 
+    private void initGrid() {
+        grid.setSelectionModel(new CellSelectionModel<DataSharing>());
+        gridEditing = new GridInlineEditing<DataSharing>(grid);
+        gridEditing.addEditor(cm.getColumn(1), permCombo);
+        gridEditing.addCompleteEditHandler(new CompleteEditHandler<DataSharing>() {
 
-	private void initGrid(ColumnModel<DataSharing> cm) {
-        grid = new Grid<DataSharing>(new ListStore<DataSharing>(new DataSharingKeyProvider()), cm);
+            @Override
+            public void onCompleteEdit(CompleteEditEvent<DataSharing> event) {
+                Object value = permCombo.getCurrentValue();
+                updatePermissions(value.toString(), grid.getSelectionModel().getSelectedItem()
+                        .getUserName());
+            }
+        });
+        grid.getView().setAutoExpandColumn(cm.getColumn(0));
+
     }
 
     private void initToolbar() {
-        toolbar = new ToolBar();
-        toolbar.setHeight(30);
-        SimpleComboBox<String> permissionsCombo = buildPermissionsCombo();
+        addExplainPanel();
+        toolbar.add(new FillToolItem());
+        toolbar.add(buildChooseCollabButton());
     }
 
-    private SimpleComboBox<String> buildPermissionsCombo() {
-        permCombo = new SimpleComboBox<String>(
-                new StringLabelProvider<String>());
+    private TextButton buildChooseCollabButton() {
+        TextButton button = new TextButton("Choose from collaborators");
+        button.addSelectHandler(new SelectHandler() {
+            
+            @Override
+            public void onSelect(SelectEvent event) {
+                // TODO Auto-generated method stub
+                
+            }
+        });
+        return button;
+    }
+
+    private SimpleComboBox<Object> buildPermissionsCombo() {
+        permCombo = new SimpleComboBox<Object>(new StringLabelProvider<Object>());
         permCombo.setId(ID_PERM_GROUP);
         permCombo.setForceSelection(true);
         permCombo.add(DataSharing.READ);
@@ -90,19 +156,32 @@ public class DataSharingPermissionsPanel extends FramedPanel implements IsWidget
         permCombo.setEditable(false);
 
         permCombo.setTriggerAction(TriggerAction.ALL);
-        permCombo.addSelectionHandler(new SelectionHandler<String>() {
-            
-            @Override
-            public void onSelection(SelectionEvent<String> event) {
-                List<DataSharing> items = grid.getSelectionModel().getSelectedItems();
-            }
-        });
         return permCombo;
     }
 
+    private void addExplainPanel() {
+        explainPanel = new HorizontalPanel();
+        explainPanel.add(new LabelToolItem(I18N.DISPLAY.variablePermissionsNotice() + ":"));
+        TextButton explainBtn = new TextButton(I18N.DISPLAY.explain(), new SelectHandler() {
+            
+            @Override
+            public void onSelect(SelectEvent event) {
+                ArrayList<DataSharing> shares = new ArrayList<DataSharing>();
+                for (String user : sharingMap.keySet()) {
+                    shares.addAll(sharingMap.get(user));
+                }
+
+                ShareBreakDownDialog explainDlg = new ShareBreakDownDialog(shares);
+                explainDlg.setHeadingText(I18N.DISPLAY.whoHasAccess());
+                explainDlg.show();
+            }
+        });
+        explainPanel.add(explainBtn);
+        toolbar.add(explainPanel);
+    }
 
     private void removeModels(DataSharing model) {
-    	ListStore<DataSharing> store = grid.getStore();
+        ListStore<DataSharing> store = grid.getStore();
 
         DataSharing sharing = store.findModel(model);
         if (sharing != null) {
@@ -112,18 +191,13 @@ public class DataSharingPermissionsPanel extends FramedPanel implements IsWidget
         }
     }
 
-
-
-
-    
-    
     public void loadSharingData(FastMap<List<DataSharing>> sharingMap) {
-    	this.sharingMap = sharingMap;
+        this.sharingMap = sharingMap;
         originalList = new FastMap<List<DataSharing>>();
 
         ListStore<DataSharing> store = grid.getStore();
         store.clear();
-    //    explainPanel.hide();
+        explainPanel.setVisible(false);
 
         for (String userName : sharingMap.keySet()) {
             List<DataSharing> dataShares = sharingMap.get(userName);
@@ -138,18 +212,17 @@ public class DataSharingPermissionsPanel extends FramedPanel implements IsWidget
 
                 // Add a dummy display share to the grid.
                 DataSharing displayShare = dataShares.get(0).copy();
-//                if (hasVaryingPermissions(dataShares)) {
-//                    // Set the display permission to "varies" if this user's share list has varying
-//                    // permissions.
-//                    displayShare.setDisplayPermission(I18N.DISPLAY.varies());
-//                    explainPanel.show();
-//                }
+                if (hasVaryingPermissions(dataShares)) {
+                    // Set the display permission to "varies" if this user's share list has varying
+                    // permissions.
+                    displayShare.setDisplayPermission(I18N.DISPLAY.varies());
+                    explainPanel.setVisible(true);
+                }
 
                 store.add(displayShare);
             }
         }
     }
-
 
     private ColumnModel<DataSharing> buildColumnModel() {
         List<ColumnConfig<DataSharing, ?>> configs = new ArrayList<ColumnConfig<DataSharing, ?>>();
@@ -180,7 +253,7 @@ public class DataSharingPermissionsPanel extends FramedPanel implements IsWidget
 
                     @Override
                     public String getValue(DataSharing object) {
-                            return ((DataSharing)(object)).getDisplayPermission();
+                        return ((DataSharing)(object)).getDisplayPermission();
                     }
 
                     @Override
@@ -196,179 +269,194 @@ public class DataSharingPermissionsPanel extends FramedPanel implements IsWidget
 
         permission.setHeader("Permissions");
         permission.setWidth(80);
+        ColumnConfig<DataSharing, String> remove = new ColumnConfig<DataSharing, String>(
+                new ValueProvider<DataSharing, String>() {
+
+                    @Override
+                    public String getValue(DataSharing object) {
+                        return "";
+                    }
+
+                    @Override
+                    public void setValue(DataSharing object, String value) {
+                        // do nothing
+
+                    }
+
+                    @Override
+                    public String getPath() {
+                        return "";
+                    }
+                });
+
+        SafeStyles textStyles = SafeStylesUtils.fromTrustedString("padding: 1px 3px;");
+        remove.setColumnTextStyle(textStyles);
+        TextButtonCell button = buildRemoveButtonCell();
+        remove.setCell(button);
         configs.add(name);
         configs.add(permission);
+        configs.add(remove);
         return new ColumnModel<DataSharing>(configs);
     }
 
-    /**
-    *
-    *
-    * @return the sharing list
-    */
-        public FastMap<List<DataSharing>> getSharingMap() {
-            FastMap<List<DataSharing>> sharingList = new FastMap<List<DataSharing>>();
-            for (DataSharing share : grid.getStore().getAll()) {
-                String userName = share.getUserName();
-                List<DataSharing> dataShares = sharingMap.get(userName);
-                List<DataSharing> updatedSharingList = getUpdatedSharingList(userName, dataShares);
-                if (updatedSharingList != null && updatedSharingList.size() > 0) {
-                    sharingList.put(userName, updatedSharingList);
-                }
+    private TextButtonCell buildRemoveButtonCell() {
+        TextButtonCell button = new TextButtonCell();
+        button.addSelectHandler(new SelectHandler() {
+
+            @Override
+            public void onSelect(SelectEvent event) {
+                removeModels(grid.getSelectionModel().getSelectedItem());
             }
+     
+        });
+        button.setIcon(Resources.ICONS.delete());
+        return button;
+    }
 
-            return sharingList;
-        }
-
-        /**
-    * check the list with original to see if things have changed. ignore unchanged records
-    *
-    * @param userName
-    * @param list
-    * @return
-    */
-        private List<DataSharing> getUpdatedSharingList(String userName, List<DataSharing> list) {
-            List<DataSharing> updateList = new ArrayList<DataSharing>();
-            if (list != null && userName != null) {
-                List<DataSharing> fromOriginal = originalList.get(userName);
-
-                if (fromOriginal == null || fromOriginal.isEmpty()) {
-                    updateList = list;
-                } else {
-                    for (DataSharing s : list) {
-                        if (!fromOriginal.contains(s)) {
-                            updateList.add(s);
-                        }
-                    }
-                }
-            }
-
-            return updateList;
-        }
     /**
-     * check if a sharing recored originally existed. Needed to remove false submission of unshare list
      * 
+     * 
+     * @return the sharing list
+     */
+    public FastMap<List<DataSharing>> getSharingMap() {
+        FastMap<List<DataSharing>> sharingList = new FastMap<List<DataSharing>>();
+        for (DataSharing share : grid.getStore().getAll()) {
+            String userName = share.getUserName();
+            List<DataSharing> dataShares = sharingMap.get(userName);
+            List<DataSharing> updatedSharingList = getUpdatedSharingList(userName, dataShares);
+            if (updatedSharingList != null && updatedSharingList.size() > 0) {
+                sharingList.put(userName, updatedSharingList);
+            }
+        }
+
+        return sharingList;
+    }
+
+    /**
+     * check the list with original to see if things have changed. ignore unchanged records
+     * 
+     * @param userName
+     * @param list
      * @return
      */
-//    private boolean isExistedOriginally(Sharing s) {
-//        String userName = s.getUserName();
-//        List<Sharing> fromOriginal = originalList.get(userName);
-//        if (fromOriginal != null && fromOriginal.contains(s)) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//
-//    }
-//
-//    private void addSharing(Sharing obj) {
-//        TreeStore<Sharing> treeStore = grid.getTreeStore();
-//        if (treeStore.findModel(obj) == null) {
-//            treeStore.add(obj);
-//            grid.setLeaf(obj, false);
-//        }
-//        grid.getSelectionModel().select(false, obj);
-//    }
+    private List<DataSharing> getUpdatedSharingList(String userName, List<DataSharing> list) {
+        List<DataSharing> updateList = new ArrayList<DataSharing>();
+        if (list != null && userName != null) {
+            List<DataSharing> fromOriginal = originalList.get(userName);
 
-//    public void addDataSharing(FastMap<DataSharing> sharingMap) {
-//        ListStore<Sharing> treeStore = grid.getTreeStore();
-//        if (sharingMap != null) {
-//            for (DataSharing s : sharingMap.values()) {
-//                Sharing find = new Sharing(s.getCollaborator());
-//                Sharing exists = treeStore.findModel(find);
-//                if (exists == null) {
-//                    treeStore.add(find);
-//                    exists = find;
-//                }
-//                List<Sharing> childerens = treeStore.getChildren(exists);
-//                if (childerens != null) {
-//                    for (Sharing temp : childerens) {
-//                        DataSharing tempDs = (DataSharing)temp;
-//                        if (tempDs.equals(s)) {
-//                            return;
-//                        }
-//                    }
-//                }
-//                treeStore.add(exists, s);
-//            }
-//            grid.expandAll();
-//        }
-//
-//    }
-
-   
-//    private void updatePermissions(String perm, DataSharing model) {
-//        if (perm.equals(DataSharing.READ)) {
-//            model.setReadable(true);
-//            model.setWritable(false);
-//            model.setOwner(false);
-//        } else if (perm.equals(DataSharing.WRITE)) {
-//            model.setWritable(true);
-//            model.setReadable(true);
-//            model.setOwner(false);
-//        } else {
-//            model.setOwner(true);
-//            model.setReadable(true);
-//            model.setWritable(true);
-//        }
-//        model.setDisplayPermission(perm);
-//        grid.getStore().update(model);
-//    }
-        
-        private void updatePermissions(String perm, String username) {
-            List<DataSharing> models = sharingMap.get(username);
-            if (models != null) {
-                boolean own = perm.equals("own");
-                boolean write = own || perm.equals("write");
-                boolean read = true;
-
-                for (DataSharing share : models) {
-                    if (own) {
-                        share.setOwner(true);
-                    } else if (write) {
-                        share.setWritable(true);
-                    } else {
-                        share.setReadable(true);
+            if (fromOriginal == null || fromOriginal.isEmpty()) {
+                updateList = list;
+            } else {
+                for (DataSharing s : list) {
+                    if (!fromOriginal.contains(s)) {
+                        updateList.add(s);
                     }
                 }
-
-                if (resources.size() != models.size()) {
-                    Collaborator user = models.get(0).getCollaborator();
-                    DiskResourceAutoBeanFactory factory = GWT.create(DiskResourceAutoBeanFactory.class);
-                    AutoBean<Permissions> autoBean = AutoBeanCodex.decode(factory, Permissions.class,buildSharingPermissions(read, write, own));
-                    Permissions perms = autoBean.as();
-                    for (String path : resources.keySet()) {
-                        boolean shared = false;
-                        for (DataSharing existingShare : models) {
-                            if (path.equals(existingShare.getPath())) {
-                                shared = true;
-                                break;
-                            }
-                        }
-
-                        if (!shared) {
-                            models.add(new DataSharing(user, perms, path));
-                        }
-                    }
-                }
-
-               // checkExplainPanelVisibility();
             }
         }
 
-        private String buildSharingPermissions(boolean read, boolean write, boolean own) {
-            JSONObject permission = new JSONObject();
-            permission.put("read", JSONBoolean.getInstance(read));
-            permission.put("write", JSONBoolean.getInstance(write));
-            permission.put("own", JSONBoolean.getInstance(own));
-            return permission.toString();
-         }
-        
+        return updateList;
+    }
+
+    private void updatePermissions(String perm, String username) {
+        List<DataSharing> models = sharingMap.get(username);
+        if (models != null) {
+            boolean own = perm.equals(DataSharing.OWN);
+            boolean write = own || perm.equals(DataSharing.WRITE);
+            boolean read = true;
+
+            for (DataSharing share : models) {
+                if (own) {
+                    share.setOwner(true);
+                } else if (write) {
+                    share.setWritable(true);
+                } else {
+                    share.setReadable(true);
+                }
+            }
+
+            if (resources.size() != models.size()) {
+                Collaborator user = models.get(0).getCollaborator();
+                DiskResourceAutoBeanFactory factory = GWT.create(DiskResourceAutoBeanFactory.class);
+                AutoBean<Permissions> autoBean = AutoBeanCodex.decode(factory, Permissions.class,
+                        buildSharingPermissions(read, write, own));
+                for (String path : resources.keySet()) {
+                    boolean shared = false;
+                    for (DataSharing existingShare : models) {
+                        if (path.equals(existingShare.getPath())) {
+                            shared = true;
+                            break;
+                        }
+                    }
+
+                    if (!shared) {
+                        models.add(new DataSharing(user, autoBean.as(), path));
+                    }
+                }
+            }
+
+            checkExplainPanelVisibility();
+        }
+    }
+
+
+
+    /**
+     * Checks if the explainPanel should be hidden after permissions have been updated or removed.
+     */
+    private void checkExplainPanelVisibility() {
+        if (explainPanel.isVisible()) {
+            boolean permsVary = false;
+
+            for (DataSharing dataShare : grid.getStore().getAll()) {
+                permsVary = hasVaryingPermissions(sharingMap.get(dataShare.getUserName()));
+
+                if (permsVary) {
+                    // Stop checking after the first user is found with variable permissions.
+                    break;
+                }
+            }
+
+            if (!permsVary) {
+                explainPanel.setVisible(false);
+            }
+        }
+    }
+
+    /**
+     * @param dataShares
+     * @return true if the given dataShares list has a different size than the resources list, or if not
+     *         every permission in the given dataShares list is the same; false otherwise.
+     */
+    private boolean hasVaryingPermissions(List<DataSharing> dataShares) {
+        if (dataShares == null || dataShares.size() != resources.size()) {
+            return true;
+        } else {
+            String displayPermission = dataShares.get(0).getDisplayPermission();
+
+            for (DataSharing share : dataShares) {
+                if (!displayPermission.equals(share.getDisplayPermission())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private String buildSharingPermissions(boolean read, boolean write, boolean own) {
+        JSONObject permission = new JSONObject();
+        permission.put("read", JSONBoolean.getInstance(read));
+        permission.put("write", JSONBoolean.getInstance(write));
+        permission.put("own", JSONBoolean.getInstance(own));
+        return permission.toString();
+    }
+
     /**
      * @return the unshareList
      */
     public FastMap<List<DataSharing>> getUnshareList() {
-    	// Prepare unshared list here
+        // Prepare unshared list here
         FastMap<List<DataSharing>> unshareList = new FastMap<List<DataSharing>>();
 
         for (String userName : originalList.keySet()) {
@@ -385,5 +473,14 @@ public class DataSharingPermissionsPanel extends FramedPanel implements IsWidget
 
         return unshareList;
     }
+
+    public void mask(String loadingMask) {
+        container.mask(I18N.DISPLAY.loadingMask());
+    }
+
+    public void unmask() {
+        container.unmask();
+    }
+
 
 }

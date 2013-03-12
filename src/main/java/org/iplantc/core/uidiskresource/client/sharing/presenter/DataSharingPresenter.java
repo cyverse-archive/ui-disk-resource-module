@@ -81,23 +81,6 @@ public class DataSharingPresenter implements Presenter {
   		return selectedResources;
   	}
 
-    @Override
-    public void loadCollaborators() {
-       CollaboratorsUtil.getCollaborators(new AsyncCallback<Void>() {
-        
-        @Override
-        public void onSuccess(Void result) {
-                view.setCollaborators(CollaboratorsUtil.getCurrentCollaborators());
-        }
-        
-        @Override
-        public void onFailure(Throwable caught) {
-            // TODO Auto-generated method stub
-            
-        }
-        });
-
-    }
 
     @Override
     public void loadDiskResources() {
@@ -139,6 +122,46 @@ public class DataSharingPresenter implements Presenter {
     }
 
     private final class LoadPermissionsCallback implements AsyncCallback<String> {
+        private final class GetUserInfoCallback implements AsyncCallback<FastMap<Collaborator>> {
+            private final List<String> usernames;
+
+            private GetUserInfoCallback(List<String> usernames) {
+                this.usernames = usernames;
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                // TODO Auto-generated method stub
+                ErrorHandler.post(caught);
+            }
+
+            @Override
+            public void onSuccess(FastMap<Collaborator> results) {
+                dataSharingMap = new FastMap<List<DataSharing>>();
+                for (String userName : usernames) {
+                    Collaborator user = results.get(userName);
+                    if (user == null) {
+                        user = CollaboratorsUtil.getDummyCollaborator(userName);
+                    }
+
+                    List<DataSharing> dataShares = new ArrayList<DataSharing>();
+
+                    dataSharingMap.put(userName, dataShares);
+
+                    for (JSONObject share : sharingList.get(userName)) {
+                        String path = JsonUtil.getString(share, "path"); //$NON-NLS-1$
+                        DataSharing dataSharing = new DataSharing(user,
+                                buildPermissionFromJson(share),
+                                path);
+                        dataShares.add(dataSharing);
+                    }
+                }
+
+                permissionsPanel.loadSharingData(dataSharingMap);
+                permissionsPanel.unmask();
+            }
+        }
+
         @Override
         public void onFailure(Throwable caught) {
             permissionsPanel.unmask();
@@ -159,40 +182,7 @@ public class DataSharingPresenter implements Presenter {
 
                 final List<String> usernames = new ArrayList<String>();
                 usernames.addAll(sharingList.keySet());
-                CollaboratorsUtil.getUserInfo(usernames, new AsyncCallback<FastMap<Collaborator>>() {
-
-                    @Override
-                    public void onFailure(Throwable caught) {
-                        // TODO Auto-generated method stub
-                        ErrorHandler.post(caught);
-                    }
-
-                    @Override
-                    public void onSuccess(FastMap<Collaborator> results) {
-                        dataSharingMap = new FastMap<List<DataSharing>>();
-                        for (String userName : usernames) {
-                            Collaborator user = results.get(userName);
-                            if (user == null) {
-                                user = CollaboratorsUtil.getDummyCollaborator(userName);
-                            }
-
-                            List<DataSharing> dataShares = new ArrayList<DataSharing>();
-
-                            dataSharingMap.put(userName, dataShares);
-
-                            for (JSONObject share : sharingList.get(userName)) {
-                                String path = JsonUtil.getString(share, "path"); //$NON-NLS-1$
-                                DataSharing dataSharing = new DataSharing(user,
-                                        buildPermissionFromJson(share),
-                                        path);
-                                dataShares.add(dataSharing);
-                            }
-                        }
-
-                        permissionsPanel.loadSharingData(dataSharingMap);
-                        permissionsPanel.unmask();
-                    }
-                });
+                CollaboratorsUtil.getUserInfo(usernames, new GetUserInfoCallback(usernames));
             }
     }
     }

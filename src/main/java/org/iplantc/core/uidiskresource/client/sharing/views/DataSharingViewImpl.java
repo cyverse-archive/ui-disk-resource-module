@@ -83,11 +83,4 @@ public class DataSharingViewImpl implements DataSharingView {
 	}
 
 
-	@Override
-	public void setCollaborators(List<Collaborator> models) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
 }
