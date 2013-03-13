@@ -9,7 +9,7 @@ import java.util.List;
 import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.I18N;
-import org.iplantc.core.uicommons.client.models.collaborators.Collaborator;
+import org.iplantc.core.uicommons.client.collaborators.models.Collaborator;
 import org.iplantc.core.uicommons.client.models.sharing.Sharing;
 import org.iplantc.core.uicommons.client.util.CollaboratorsUtil;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;

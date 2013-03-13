@@ -2,7 +2,6 @@ package org.iplantc.core.uidiskresource.client.sharing.views;
 
 import java.util.List;
 
-import org.iplantc.core.uicommons.client.models.collaborators.Collaborator;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 
 import com.google.gwt.core.client.GWT;

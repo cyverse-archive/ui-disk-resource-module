@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.core.uicommons.client.images.Resources;
-import org.iplantc.core.uicommons.client.models.collaborators.Collaborator;
+import org.iplantc.core.uicommons.client.collaborators.models.Collaborator;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;

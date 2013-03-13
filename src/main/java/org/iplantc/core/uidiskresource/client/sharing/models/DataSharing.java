@@ -5,7 +5,7 @@
  */
 package org.iplantc.core.uidiskresource.client.sharing.models;
 
-import org.iplantc.core.uicommons.client.models.collaborators.Collaborator;
+import org.iplantc.core.uicommons.client.collaborators.models.Collaborator;
 import org.iplantc.core.uicommons.client.models.sharing.Sharing;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.models.Permissions;
