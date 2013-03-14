@@ -235,4 +235,6 @@ public interface DiskResourceDisplayStrings extends CommonUIDisplayStrings {
      */
     String groupByData();
 
+    String selfShareWarning();
+    
 }

@@ -6,8 +6,11 @@ package org.iplantc.core.uidiskresource.client.sharing.views;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iplantc.core.uicommons.client.images.Resources;
 import org.iplantc.core.uicommons.client.collaborators.models.Collaborator;
+import org.iplantc.core.uicommons.client.collaborators.presenter.ManageCollaboratorsPresenter.MODE;
+import org.iplantc.core.uicommons.client.collaborators.views.ManageCollaboratorsDailog;
+import org.iplantc.core.uicommons.client.images.Resources;
+import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
@@ -35,6 +38,7 @@ import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.shared.FastMap;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.StringLabelProvider;
+import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.CompleteEditEvent;
@@ -139,7 +143,21 @@ public class DataSharingPermissionsPanel implements IsWidget {
             
             @Override
             public void onSelect(SelectEvent event) {
-                // TODO Auto-generated method stub
+                final ManageCollaboratorsDailog dialog = new ManageCollaboratorsDailog(MODE.SELECT);
+                dialog.setModal(true);
+                dialog.show();
+                dialog.getOkButton().addSelectHandler(new SelectHandler() {
+                    
+                    @Override
+                    public void onSelect(SelectEvent event) {
+                        List<Collaborator> selected = dialog.getSelectedCollaborators();
+                        if (selected != null && selected.size() > 0) {
+                        for (Collaborator c : selected) {
+                            addCollaborator(c);
+                        }
+                    }
+                    }
+                });
                 
             }
         });
@@ -178,6 +196,34 @@ public class DataSharingPermissionsPanel implements IsWidget {
         });
         explainPanel.add(explainBtn);
         toolbar.add(explainPanel);
+    }
+
+    private void addCollaborator(Collaborator user) {
+        String userName = user.getUserName();
+        if (userName != null && userName.equalsIgnoreCase(UserInfo.getInstance().getUsername())) {
+            AlertMessageBox amb = new AlertMessageBox(I18N.DISPLAY.warning(),
+                    I18N.DISPLAY.selfShareWarning());
+            amb.show();
+            return;
+        }
+
+        // Only add users not already displayed in the grid.
+        if (sharingMap.get(userName) == null) {
+            List<DataSharing> shareList = new ArrayList<DataSharing>();
+            DataSharing displayShare = null;
+
+            for (String path : resources.keySet()) {
+                DataSharing share = new DataSharing(user, presenter.getDefaultPermissions(), path);
+                shareList.add(share);
+
+                if (displayShare == null) {
+                    displayShare = share.copy();
+                    grid.getStore().add(displayShare);
+                }
+            }
+
+            sharingMap.put(userName, shareList);
+        }
     }
 
     private void removeModels(DataSharing model) {
