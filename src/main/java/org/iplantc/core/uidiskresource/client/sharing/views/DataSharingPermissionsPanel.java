@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.iplantc.core.uicommons.client.collaborators.models.Collaborator;
 import org.iplantc.core.uicommons.client.collaborators.presenter.ManageCollaboratorsPresenter.MODE;
+import org.iplantc.core.uicommons.client.collaborators.util.UserSearchField;
 import org.iplantc.core.uicommons.client.collaborators.views.ManageCollaboratorsDailog;
 import org.iplantc.core.uicommons.client.images.Resources;
 import org.iplantc.core.uicommons.client.models.UserInfo;
@@ -134,6 +135,7 @@ public class DataSharingPermissionsPanel implements IsWidget {
     private void initToolbar() {
         addExplainPanel();
         toolbar.add(new FillToolItem());
+        toolbar.add(new UserSearchField().asWidget());
         toolbar.add(buildChooseCollabButton());
     }
 
