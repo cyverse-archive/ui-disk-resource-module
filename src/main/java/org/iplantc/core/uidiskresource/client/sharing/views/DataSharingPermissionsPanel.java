@@ -6,10 +6,13 @@ package org.iplantc.core.uidiskresource.client.sharing.views;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.core.uicommons.client.collaborators.events.UserSearchResultSelected;
+import org.iplantc.core.uicommons.client.collaborators.events.UserSearchResultSelected.USER_SEARCH_EVENT_TAG;
 import org.iplantc.core.uicommons.client.collaborators.models.Collaborator;
 import org.iplantc.core.uicommons.client.collaborators.presenter.ManageCollaboratorsPresenter.MODE;
 import org.iplantc.core.uicommons.client.collaborators.util.UserSearchField;
 import org.iplantc.core.uicommons.client.collaborators.views.ManageCollaboratorsDailog;
+import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.images.Resources;
 import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uidiskresource.client.I18N;
@@ -94,7 +97,7 @@ public class DataSharingPermissionsPanel implements IsWidget {
     @UiTemplate("DataSharingPermissionsView.ui.xml")
     interface MyUiBinder extends UiBinder<Widget, DataSharingPermissionsPanel> {
     }
-    
+
     public DataSharingPermissionsPanel(Presenter dataSharingPresenter, FastMap<DiskResource> resources) {
         this.presenter = dataSharingPresenter;
         this.resources = resources;
@@ -113,6 +116,19 @@ public class DataSharingPermissionsPanel implements IsWidget {
         listStore = new ListStore<DataSharing>(new DataSharingKeyProvider());
         cm = buildColumnModel();
         buildPermissionsCombo();
+        EventBus.getInstance().addHandler(UserSearchResultSelected.TYPE,
+                new UserSearchResultSelected.UserSearchResultSelectedEventHandler() {
+
+                    @Override
+                    public void onUserSearchResultSelected(
+                            UserSearchResultSelected userSearchResultSelected) {
+                        if (userSearchResultSelected.getTag().equals(
+                                UserSearchResultSelected.USER_SEARCH_EVENT_TAG.SHARING.toString())) {
+                            addCollaborator(userSearchResultSelected.getCollaborator());
+                        }
+
+                    }
+                });
     }
 
     private void initGrid() {
@@ -135,34 +151,37 @@ public class DataSharingPermissionsPanel implements IsWidget {
     private void initToolbar() {
         addExplainPanel();
         toolbar.add(new FillToolItem());
-        toolbar.add(new UserSearchField().asWidget());
+        toolbar.add(new UserSearchField(USER_SEARCH_EVENT_TAG.SHARING).asWidget());
         toolbar.add(buildChooseCollabButton());
     }
 
     private TextButton buildChooseCollabButton() {
-        TextButton button = new TextButton("Choose from collaborators");
+        TextButton button = new TextButton();
         button.addSelectHandler(new SelectHandler() {
-            
+
             @Override
             public void onSelect(SelectEvent event) {
                 final ManageCollaboratorsDailog dialog = new ManageCollaboratorsDailog(MODE.SELECT);
                 dialog.setModal(true);
                 dialog.show();
                 dialog.getOkButton().addSelectHandler(new SelectHandler() {
-                    
+
                     @Override
                     public void onSelect(SelectEvent event) {
                         List<Collaborator> selected = dialog.getSelectedCollaborators();
                         if (selected != null && selected.size() > 0) {
-                        for (Collaborator c : selected) {
-                            addCollaborator(c);
+                            for (Collaborator c : selected) {
+                                addCollaborator(c);
+                            }
                         }
                     }
-                    }
                 });
-                
+
             }
+
         });
+        button.setToolTip(I18N.DISPLAY.chooseFromCollab());
+        button.setIcon(Resources.ICONS.share());
         return button;
     }
 
@@ -183,7 +202,7 @@ public class DataSharingPermissionsPanel implements IsWidget {
         explainPanel = new HorizontalPanel();
         explainPanel.add(new LabelToolItem(I18N.DISPLAY.variablePermissionsNotice() + ":"));
         TextButton explainBtn = new TextButton(I18N.DISPLAY.explain(), new SelectHandler() {
-            
+
             @Override
             public void onSelect(SelectEvent event) {
                 ArrayList<DataSharing> shares = new ArrayList<DataSharing>();
@@ -355,7 +374,7 @@ public class DataSharingPermissionsPanel implements IsWidget {
             public void onSelect(SelectEvent event) {
                 removeModels(grid.getSelectionModel().getSelectedItem());
             }
-     
+
         });
         button.setIcon(Resources.ICONS.delete());
         return button;
@@ -447,8 +466,6 @@ public class DataSharingPermissionsPanel implements IsWidget {
         }
     }
 
-
-
     /**
      * Checks if the explainPanel should be hidden after permissions have been updated or removed.
      */
@@ -529,6 +546,5 @@ public class DataSharingPermissionsPanel implements IsWidget {
     public void unmask() {
         container.unmask();
     }
-
 
 }

@@ -237,4 +237,5 @@ public interface DiskResourceDisplayStrings extends CommonUIDisplayStrings {
 
     String selfShareWarning();
     
+    String chooseFromCollab();
 }

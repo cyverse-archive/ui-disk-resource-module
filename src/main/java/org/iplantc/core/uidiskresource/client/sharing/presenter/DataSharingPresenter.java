@@ -12,6 +12,7 @@ import org.iplantc.core.uicommons.client.I18N;
 import org.iplantc.core.uicommons.client.collaborators.models.Collaborator;
 import org.iplantc.core.uicommons.client.collaborators.util.CollaboratorsUtil;
 import org.iplantc.core.uicommons.client.models.sharing.Sharing;
+import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IplantInfoBox;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.models.Folder;
@@ -19,9 +20,9 @@ import org.iplantc.core.uidiskresource.client.models.Permissions;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing.TYPE;
+import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingPermissionsPanel;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingView;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingView.Presenter;
-import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingPermissionsPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONArray;
@@ -33,7 +34,6 @@ import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.core.shared.FastMap;
-import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
 
 /**
  * @author sriram
@@ -200,11 +200,11 @@ public class DataSharingPresenter implements Presenter {
         }
 
         if (requestBody != null || unshareRequestBody != null) {
-            AlertMessageBox amb = new AlertMessageBox(
+            IplantInfoBox infoBox = new IplantInfoBox(
                     org.iplantc.core.uidiskresource.client.I18N.DISPLAY.share() + "/ "
                             + org.iplantc.core.uidiskresource.client.I18N.DISPLAY.unshare(),
                     org.iplantc.core.uidiskresource.client.I18N.DISPLAY.sharingCompleteMsg());
-            amb.show();
+            infoBox.show();
         }
 
     }
