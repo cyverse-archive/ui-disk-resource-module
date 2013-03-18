@@ -67,8 +67,8 @@ public class DataSharing extends Sharing {
     public void setReadable(boolean read) {
         readable = read;
         if (read) {
-            setWritable(false);
-            setOwner(false);
+            writable = false;
+            owner = false;
             setDisplayPermission(READ);
         }
     }
@@ -76,17 +76,17 @@ public class DataSharing extends Sharing {
     public void setWritable(boolean write) {
         writable = write;
         if (write) {
-            setReadable(true);
+            readable = true;
             setDisplayPermission(WRITE);
         }
-        setOwner(false);
+       owner = false;
     }
 
     public void setOwner(boolean own) {
         owner = own;
         if (own) {
-            setReadable(true);
-            setWritable(true);
+            readable = true;
+            writable = true;
             setDisplayPermission(OWN);
         }
     }
