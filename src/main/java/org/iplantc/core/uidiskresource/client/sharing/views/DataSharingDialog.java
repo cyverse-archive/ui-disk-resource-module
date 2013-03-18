@@ -53,40 +53,6 @@ public class DataSharingDialog extends Dialog {
         });
     }
 
-    // private ColumnModel<Collaborator> buildCollaboratorsColumnModel() {
-    // List<ColumnConfig<Collaborator, ?>> configs = new ArrayList<ColumnConfig<Collaborator, ?>>();
-    // IdentityValueProvider<Collaborator> valueProvider = new IdentityValueProvider<Collaborator>();
-    //
-    // collabCheckBoxModel = new CheckBoxSelectionModel<Collaborator>(valueProvider);
-    //
-    // configs.add(collabCheckBoxModel.getColumn());
-    //
-    // ColumnConfig<Collaborator, Collaborator> name = new ColumnConfig<Collaborator, Collaborator>(
-    // valueProvider, 150);
-    // name.setHeader(I18N.DISPLAY.name());
-    // name.setCell(new AbstractCell<Collaborator>() {
-    //
-    // @Override
-    // public void render(com.google.gwt.cell.client.Cell.Context context, Collaborator value,
-    // SafeHtmlBuilder sb) {
-    // StringBuilder builder = new StringBuilder();
-    // if (value.getFirstName() != null && !value.getFirstName().isEmpty()) {
-    // builder.append(value.getFirstName());
-    // if (value.getLastName() != null && !value.getLastName().isEmpty()) {
-    // builder.append(" " + value.getLastName());
-    // }
-    // sb.appendEscaped(builder.toString());
-    // } else {
-    // sb.appendEscaped(value.getUserName());
-    // }
-    //
-    // }
-    // });
-    // configs.add(name);
-    //
-    // return new ColumnModel<Collaborator>(configs);
-    // }
-
     private ColumnModel<DiskResource> buildDiskResourceColumnModel() {
         List<ColumnConfig<DiskResource, ?>> list = new ArrayList<ColumnConfig<DiskResource, ?>>();
 

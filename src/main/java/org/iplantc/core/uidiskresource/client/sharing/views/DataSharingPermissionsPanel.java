@@ -21,6 +21,7 @@ import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory
 import org.iplantc.core.uidiskresource.client.models.Permissions;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharingKeyProvider;
+import org.iplantc.core.uidiskresource.client.sharing.models.DataSharingProperties;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingView.Presenter;
 
 import com.google.gwt.core.shared.GWT;
@@ -58,6 +59,7 @@ import com.sencha.gxt.widget.core.client.grid.editing.GridEditing;
 import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
 import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.LabelToolItem;
+import com.sencha.gxt.widget.core.client.toolbar.SeparatorToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 /**
@@ -152,6 +154,7 @@ public class DataSharingPermissionsPanel implements IsWidget {
         addExplainPanel();
         toolbar.add(new FillToolItem());
         toolbar.add(new UserSearchField(USER_SEARCH_EVENT_TAG.SHARING).asWidget());
+        toolbar.add(new SeparatorToolItem());
         toolbar.add(buildChooseCollabButton());
     }
 
@@ -293,49 +296,19 @@ public class DataSharingPermissionsPanel implements IsWidget {
 
     private ColumnModel<DataSharing> buildColumnModel() {
         List<ColumnConfig<DataSharing, ?>> configs = new ArrayList<ColumnConfig<DataSharing, ?>>();
+        DataSharingProperties props = GWT.create(DataSharingProperties.class);
         ColumnConfig<DataSharing, String> name = new ColumnConfig<DataSharing, String>(
-                new ValueProvider<DataSharing, String>() {
+               props.name());
 
-                    @Override
-                    public String getValue(DataSharing object) {
-                        return object.getName();
-                    }
-
-                    @Override
-                    public void setValue(DataSharing object, String value) {
-                        // do nothing intentionally
-
-                    }
-
-                    @Override
-                    public String getPath() {
-                        return "name";
-                    }
-                });
-
-        name.setHeader("Name");
+        name.setHeader(I18N.DISPLAY.name());
         name.setWidth(220);
         ColumnConfig<DataSharing, String> permission = new ColumnConfig<DataSharing, String>(
-                new ValueProvider<DataSharing, String>() {
+                props.displayPermission());
 
-                    @Override
-                    public String getValue(DataSharing object) {
-                        return ((DataSharing)(object)).getDisplayPermission();
-                    }
-
-                    @Override
-                    public void setValue(DataSharing object, String value) {
-                        object.setDisplayPermission(value);
-                    }
-
-                    @Override
-                    public String getPath() {
-                        return "displayPermission";
-                    }
-                });
-
-        permission.setHeader("Permissions");
+        permission.setHeader(I18N.DISPLAY.permissions());
         permission.setWidth(80);
+        SafeStyles permTextStyles = SafeStylesUtils.fromTrustedString("color:#0098AA;cursor:pointer;");
+        permission.setColumnTextStyle(permTextStyles);
         ColumnConfig<DataSharing, String> remove = new ColumnConfig<DataSharing, String>(
                 new ValueProvider<DataSharing, String>() {
 
@@ -356,8 +329,9 @@ public class DataSharingPermissionsPanel implements IsWidget {
                     }
                 });
 
-        SafeStyles textStyles = SafeStylesUtils.fromTrustedString("padding: 1px 3px;");
+        SafeStyles textStyles = SafeStylesUtils.fromTrustedString("padding: 1px 3px;cursor:pointer;");
         remove.setColumnTextStyle(textStyles);
+        remove.setToolTip(I18N.DISPLAY.unshare());
         TextButtonCell button = buildRemoveButtonCell();
         remove.setCell(button);
         configs.add(name);

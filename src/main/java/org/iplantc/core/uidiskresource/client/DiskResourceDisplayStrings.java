@@ -2,6 +2,8 @@ package org.iplantc.core.uidiskresource.client;
 
 import org.iplantc.core.uicommons.client.CommonUIDisplayStrings;
 
+import com.google.gwt.safehtml.shared.SafeHtml;
+
 public interface DiskResourceDisplayStrings extends CommonUIDisplayStrings {
     String data();
 
@@ -93,7 +95,7 @@ public interface DiskResourceDisplayStrings extends CommonUIDisplayStrings {
      * 
      * @return
      */
-    String unshare();
+    SafeHtml unshare();
 
     /**
      * 

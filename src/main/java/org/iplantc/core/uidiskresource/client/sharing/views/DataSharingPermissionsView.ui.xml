@@ -20,10 +20,7 @@
 
 
 	<container:VerticalLayoutContainer ui:field="container">
-	    <container:child>
-	        <toolbar:ToolBar ui:field="toolbar" height="30">
-	        </toolbar:ToolBar>
-	    </container:child>
+	    
 		<container:child>
 					<gxt:FramedPanel ui:field="permPanel"
 						collapsible="false" headerVisible="true" headingText="{strings.whoHasAccess}" height="200px">
@@ -33,6 +30,10 @@
 								</grid:Grid>
 					</gxt:FramedPanel>
 		</container:child>
+		<container:child>
+	        <toolbar:ToolBar ui:field="toolbar" height="30">
+	        </toolbar:ToolBar>
+	    </container:child>
 		
 	</container:VerticalLayoutContainer>
 </ui:UiBinder> 

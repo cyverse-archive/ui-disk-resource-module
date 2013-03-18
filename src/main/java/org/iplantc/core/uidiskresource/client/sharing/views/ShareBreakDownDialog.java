@@ -9,6 +9,7 @@ import java.util.List;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharingKeyProvider;
+import org.iplantc.core.uidiskresource.client.sharing.models.DataSharingProperties;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.cells.Resources;
 
@@ -107,25 +108,9 @@ public class ShareBreakDownDialog extends Dialog {
 	
 	private ColumnModel<DataSharing> buildColumnModel() {
 		List<ColumnConfig<DataSharing, ?>> configs = new ArrayList<ColumnConfig<DataSharing, ?>>();
-        ColumnConfig<DataSharing, String> name = new ColumnConfig<DataSharing, String>(
-                new ValueProvider<DataSharing, String>() {
-
-                    @Override
-                    public String getValue(DataSharing object) {
-                            return object.getName();
-                    }
-
-                    @Override
-                    public void setValue(DataSharing object, String value) {
-                        // do nothing intentionally
-
-                    }
-
-                    @Override
-                    public String getPath() {
-                        return "name";
-                    }
-                });
+		  DataSharingProperties props = GWT.create(DataSharingProperties.class);
+		ColumnConfig<DataSharing, String> name = new ColumnConfig<DataSharing, String>(
+               props.name());
 
         name.setHeader(I18N.DISPLAY.name());
         name.setWidth(120);
@@ -153,23 +138,7 @@ public class ShareBreakDownDialog extends Dialog {
         diskRsc.setHeader(org.iplantc.core.uidiskresource.client.I18N.DISPLAY.name());
         diskRsc.setWidth(120);
         ColumnConfig<DataSharing, String> permission = new ColumnConfig<DataSharing, String>(
-                new ValueProvider<DataSharing, String>() {
-
-                    @Override
-                    public String getValue(DataSharing object) {
-                            return ((DataSharing)(object)).getDisplayPermission();
-                    }
-
-                    @Override
-                    public void setValue(DataSharing object, String value) {
-                        object.setDisplayPermission(value);
-                    }
-
-                    @Override
-                    public String getPath() {
-                        return "displayPermission";
-                    }
-                });
+                props.displayPermission());
 
         permission.setHeader(org.iplantc.core.uidiskresource.client.I18N.DISPLAY.permissions());
         permission.setWidth(80);
