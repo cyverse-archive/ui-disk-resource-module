@@ -22,8 +22,6 @@ import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -62,21 +60,6 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
 
 
     private static final String USER_UNIT_TAG = "ipc_user_unit_tag";
-
-    /**
-     * FIXME JDS The images in this bundle are dupes of images used in ui-applications.
-     * Need to abstract these images to a level where both modules can re-use these images.
-     * 
-     * @author jstroot
-     * 
-     */
-    interface Resources extends ClientBundle {
-        @Source("images/new.gif")
-        ImageResource add();
-
-        @Source("images/delete.gif")
-        ImageResource delete();
-    }
 
     @UiTemplate("DiskResourceMetadataEditorPanel.ui.xml")
     interface DiskResourceMetadataEditorPanelUiBinder extends

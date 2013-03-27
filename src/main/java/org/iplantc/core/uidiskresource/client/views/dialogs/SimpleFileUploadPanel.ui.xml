@@ -9,7 +9,7 @@
     xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client">
 
     <ui:with
-        type="org.iplantc.core.uicommons.client.images.Icons"
+        type="org.iplantc.core.resources.client.IplantResources"
         field="icns" />
     <ui:with
         type="org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings"

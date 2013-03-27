@@ -13,7 +13,7 @@ import org.iplantc.core.uicommons.client.collaborators.presenter.ManageCollabora
 import org.iplantc.core.uicommons.client.collaborators.util.UserSearchField;
 import org.iplantc.core.uicommons.client.collaborators.views.ManageCollaboratorsDailog;
 import org.iplantc.core.uicommons.client.events.EventBus;
-import org.iplantc.core.uicommons.client.images.Resources;
+import org.iplantc.core.resources.client.IplantResources;
 import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
@@ -184,7 +184,7 @@ public class DataSharingPermissionsPanel implements IsWidget {
 
         });
         button.setToolTip(I18N.DISPLAY.chooseFromCollab());
-        button.setIcon(Resources.ICONS.share());
+        button.setIcon(IplantResources.RESOURCES.share());
         return button;
     }
 
@@ -350,7 +350,7 @@ public class DataSharingPermissionsPanel implements IsWidget {
             }
 
         });
-        button.setIcon(Resources.ICONS.delete());
+        button.setIcon(IplantResources.RESOURCES.delete());
         return button;
     }
 

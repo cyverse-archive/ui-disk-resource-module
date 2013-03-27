@@ -4,6 +4,8 @@ import static com.google.gwt.dom.client.BrowserEvents.CLICK;
 import static com.google.gwt.dom.client.BrowserEvents.MOUSEOUT;
 import static com.google.gwt.dom.client.BrowserEvents.MOUSEOVER;
 
+import org.iplantc.core.resources.client.DiskResourceNameCellStyle;
+import org.iplantc.core.resources.client.IplantResources;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
@@ -18,9 +20,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.TextDecoration;
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.CssResource;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -39,20 +38,12 @@ import com.sencha.gxt.widget.core.client.tips.Tip;
  */
 public class DiskResourceNameCell extends AbstractCell<DiskResource> {
 
-    public static enum CALLER_TAG {
+    private static final DiskResourceNameCellStyle CSS = IplantResources.RESOURCES.diskResourceNameCss();
+
+	public static enum CALLER_TAG {
         DATA, SEARCH, SHARING;
     }
 
-    interface DiskResourceNameCellStyle extends CssResource {
-
-        String drFile();
-
-        String drFolder();
-
-        String nameStyle();
-
-        String nameStyleNoPointer();
-    }
 
     /**
      * The HTML templates used to render the cell.
@@ -63,18 +54,8 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         SafeHtml cell(String imgClassName, String diskResourceClassName, SafeHtml diskResourceName);
     }
 
-    interface Resources extends ClientBundle {
-        @Source("DiskResourceNameCell.css")
-        DiskResourceNameCellStyle css();
 
-        @Source("file.gif")
-        ImageResource file();
-
-        @Source("folder.gif")
-        ImageResource folder();
-    }
-
-    final Resources res = GWT.create(Resources.class);
+ 
     final Templates templates = GWT.create(Templates.class);
     private boolean hyperlinkEnabled = true;
 
@@ -83,7 +64,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
     public DiskResourceNameCell(CALLER_TAG tag) {
         super(CLICK, MOUSEOVER, MOUSEOUT);
         this.tag = tag;
-        res.css().ensureInjected();
+       CSS.ensureInjected();
     }
 
     @Override
@@ -92,14 +73,14 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
             return;
         }
 
-        String nameStyle = hyperlinkEnabled ? res.css().nameStyle() : res.css()
+        String nameStyle = hyperlinkEnabled ? CSS.nameStyle() : CSS
                 .nameStyleNoPointer();
         if (value instanceof File) {
-            sb.append(templates.cell(res.css().drFile(), nameStyle,
+            sb.append(templates.cell(CSS.drFile(), nameStyle,
                     SafeHtmlUtils.fromString(value.getName())));
 
         } else if (value instanceof Folder) {
-            sb.append(templates.cell(res.css().drFolder(), nameStyle,
+            sb.append(templates.cell(CSS.drFolder(), nameStyle,
                     SafeHtmlUtils.fromString(value.getName())));
         }
     }

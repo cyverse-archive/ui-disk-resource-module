@@ -11,7 +11,7 @@ import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharingKeyProvider;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharingProperties;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
-import org.iplantc.core.uidiskresource.client.views.cells.Resources;
+import org.iplantc.core.resources.client.IplantResources;
 
 import com.google.gwt.core.client.GWT;
 import com.sencha.gxt.core.client.ValueProvider;
@@ -35,7 +35,6 @@ import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 public class ShareBreakDownDialog extends Dialog {
 	
     private Grid<DataSharing> grid;
-    final Resources res = GWT.create(Resources.class);
     public ShareBreakDownDialog(List<DataSharing> shares) {
         init();
 
@@ -87,7 +86,7 @@ public class ShareBreakDownDialog extends Dialog {
                 
             }
         });
-        button.setIcon(org.iplantc.core.uicommons.client.images.Resources.ICONS.share());
+        button.setIcon(IplantResources.RESOURCES.share());
         return button;
     }
 	
@@ -102,7 +101,7 @@ public class ShareBreakDownDialog extends Dialog {
 
             }
         });
-        button.setIcon(res.folder());
+        button.setIcon(IplantResources.RESOURCES.folder());
         return button;
     }
 	

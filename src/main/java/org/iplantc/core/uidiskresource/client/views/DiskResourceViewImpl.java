@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.iplantc.core.uicommons.client.events.EventBus;
-import org.iplantc.core.uicommons.client.images.Resources;
+import org.iplantc.core.resources.client.IplantResources;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
 import org.iplantc.core.uidiskresource.client.I18N;
@@ -724,7 +724,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
                 final HorizontalPanel hp = buildRow();
                 hp.sinkEvents(Event.ONMOUSEOVER);
                 hp.sinkEvents(Event.ONMOUSEOUT);
-                final Image closeImg = new Image(Resources.ICONS.close());
+                final Image closeImg = new Image(IplantResources.RESOURCES.close());
                 addDomHandlers(hp, closeImg);
                 closeImg.addClickHandler(new ClickHandler() {
                     

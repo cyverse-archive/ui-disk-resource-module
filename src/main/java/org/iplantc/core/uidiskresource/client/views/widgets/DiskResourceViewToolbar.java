@@ -5,8 +5,6 @@ import java.util.Set;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DiskResourceViewToolbar extends IsWidget {
@@ -54,35 +52,7 @@ public interface DiskResourceViewToolbar extends IsWidget {
 
     }
 
-    interface Resources extends ClientBundle {
-        @Source("icons/drive_disk.png")
-        ImageResource uploadButtonIcon();
-
-        @Source("icons/folder_add.gif")
-        ImageResource newFolderButtonIcon();
-
-        @Source("icons/refreshicon.png")
-        ImageResource refreshButtonIcon();
-
-        @Source("icons/file_download.gif")
-        ImageResource downloadButtonIcon();
-
-        @Source("icons/folder_rename.gif")
-        ImageResource renameButtonIcon();
-
-        @Source("icons/file_delete.gif")
-        ImageResource deleteButtonIcon();
-
-        @Source("icons/group_key.png")
-        ImageResource shareButtonIcon();
-
-        @Source("icons/comments.png")
-        ImageResource metadataButtonIcon();
-
-        @Source("icons/comments.png")
-        ImageResource dataQuotaButtonIcon();
-
-    }
+   
 
     void setPresenter(Presenter presenter);
     
