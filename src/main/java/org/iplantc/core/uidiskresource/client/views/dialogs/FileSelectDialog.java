@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
-import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.gin.DiskResourceInjector;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.File;
@@ -28,12 +28,12 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 /**
  * An <code>IPlantDialog</code> which wraps the standard <code>DiskResourceView</code> for file
  * selection.
- * 
+ *
  * Users of this class are responsible adding hide handlers to get the selected file.
  * FIXME JDS Needs to support MultiSelect, TakesValue<List<String>>
- * 
+ *
  * @author jstroot
- * 
+ *
  */
 public class FileSelectDialog extends IPlantDialog implements TakesValue<List<File>> {
 
@@ -78,7 +78,7 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<Fi
     @Override
     public void setValue(List<File> value) {
         this.selectedFileIds = value;
-    
+
     }
 
     @Override

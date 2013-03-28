@@ -3,9 +3,9 @@ package org.iplantc.core.uidiskresource.client.views.metadata;
 import java.util.List;
 import java.util.Set;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
-import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadata;
@@ -107,7 +107,7 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
         okButton = getButtonById(PredefinedButton.OK.name());
 
         addOkButtonSelectHandler(new SelectHandler() {
-            
+
             @Override
             public void onSelect(SelectEvent event) {
                 presenter.setDiskResourceMetaData(resource, getMetadataToAdd(),
@@ -122,7 +122,7 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
         presenter.getDiskResourceMetadata(resource, new RetrieveMetadataCallback(listStore,
                 autoBeanFactory));
     }
-    
+
     private void initGridEditing(final Grid<DiskResourceMetadata> grid,
             final ListStore<DiskResourceMetadata> listStore, final TextButton okButton) {
         gridInlineEditing = new GridInlineEditing<DiskResourceMetadata>(
@@ -164,11 +164,11 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
     void onDeleteMetadataSelected(SelectEvent event){
         if(!resource.getPermissions().isWritable()){
             AlertMessageBox mb = new AlertMessageBox(I18N.ERROR.permissionErrorTitle(),
-                    I18N.ERROR.permissionErrorMessage());
+            		I18N.ERROR.permissionErrorMessage());
             mb.show();
             return;
         }
-        
+
         for (DiskResourceMetadata md : grid.getSelectionModel().getSelectedItems()) {
             toBeDeleted.add(md);
             listStore.remove(md);
@@ -208,7 +208,7 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
                 props.attribute(), 150, "Attribute");
         ColumnConfig<DiskResourceMetadata, String> valueColumn = new ColumnConfig<DiskResourceMetadata, String>(
                 props.value(), 150, "Value");
-    
+
         attributeCell = new AttributeCell(listStore);
         attributeColumn.setCell(attributeCell);
         columns.add(attributeColumn);
@@ -230,17 +230,17 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
         private final ListStore<DiskResourceMetadata> listStore;
         private final DiskResourceMetadataProperties props = GWT
                 .create(DiskResourceMetadataProperties.class);
-    
+
         public AttributeCell(final ListStore<DiskResourceMetadata> listStore) {
             this.listStore = listStore;
         }
-    
+
         @Override
         public void render(Context context, String value, SafeHtmlBuilder sb) {
             if (value == null) {
                 return;
             }
-    
+
             Multiset<String> dupeSet = HashMultiset.create();
 
             for (DiskResourceMetadata drmd : listStore.getAll()) {
@@ -319,16 +319,16 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
 
     private final class AttributeValidationHandler implements ValidHandler, InvalidHandler {
         private final TextButton okButton;
-    
+
         public AttributeValidationHandler(TextButton okButton) {
             this.okButton = okButton;
         }
-    
+
         @Override
         public void onValid(ValidEvent event) {
             okButton.setEnabled(true);
         }
-    
+
         @Override
         public void onInvalid(InvalidEvent event) {
             okButton.setEnabled(false);

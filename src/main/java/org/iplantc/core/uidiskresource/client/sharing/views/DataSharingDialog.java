@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.iplantc.core.uidiskresource.client.sharing.views;
 
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.iplantc.core.uicommons.client.I18N;
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.sharing.presenter.DataSharingPresenter;
@@ -38,14 +38,14 @@ public class DataSharingDialog extends Dialog {
         setHideOnButtonClick(true);
         setModal(true);
         setResizable(false);
-        setHeadingText(org.iplantc.core.uidiskresource.client.I18N.DISPLAY.manageSharing());
+        setHeadingText(I18N.DISPLAY.manageSharing());
         ListStore<DiskResource> drStore = new ListStore<DiskResource>(new DiskResourceModelKeyProvider());
         DataSharingView view = new DataSharingViewImpl(buildDiskResourceColumnModel(), drStore);
         final Presenter p = new DataSharingPresenter(getSelectedResourcesAsList(resources), view);
         p.go(this);
         getButtonById(PredefinedButton.OK.toString()).setText("Done");
         getButtonById(PredefinedButton.OK.toString()).addSelectHandler(new SelectHandler() {
-            
+
             @Override
             public void onSelect(SelectEvent event) {
                 p.processRequest();
@@ -70,11 +70,11 @@ public class DataSharingDialog extends Dialog {
 
     private List<DiskResource> getSelectedResourcesAsList(Set<DiskResource> models) {
         List<DiskResource> dr = new ArrayList<DiskResource>();
-        
+
         for (DiskResource item : models) {
             dr.add(item);
         }
-        
+
         return dr;
 
     }

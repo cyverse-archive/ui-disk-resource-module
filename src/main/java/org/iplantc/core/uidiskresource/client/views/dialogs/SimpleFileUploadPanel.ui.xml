@@ -12,7 +12,7 @@
         type="org.iplantc.core.resources.client.IplantResources"
         field="icns" />
     <ui:with
-        type="org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings"
+        type="org.iplantc.core.resources.client.messages.IplantDisplayStrings"
         field="display" />
 
     <ui:with
@@ -174,5 +174,5 @@
             </con:HorizontalLayoutContainer>
         </gxtForm:FormPanel>
     </con:VerticalLayoutContainer>
-</ui:UiBinder> 
+</ui:UiBinder>
 

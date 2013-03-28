@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.iplantc.core.uidiskresource.client.sharing.presenter;
 
@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.core.jsonutil.JsonUtil;
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
-import org.iplantc.core.uicommons.client.I18N;
 import org.iplantc.core.uicommons.client.collaborators.models.Collaborator;
 import org.iplantc.core.uicommons.client.collaborators.util.CollaboratorsUtil;
 import org.iplantc.core.uicommons.client.models.sharing.Sharing;
@@ -43,7 +43,7 @@ public class DataSharingPresenter implements Presenter {
 
     DataSharingView view;
     private List<DiskResource> selectedResources;
-  
+
 
 	private FastMap<List<JSONObject>> sharingList;
     private FastMap<List<DataSharing>> dataSharingMap;
@@ -61,8 +61,8 @@ public class DataSharingPresenter implements Presenter {
         loadDiskResources();
         loadPermissions();
     }
-    
-    
+
+
     private FastMap<DiskResource> getSelectedResourcesAsMap(List<DiskResource> selectedResources) {
     	FastMap<DiskResource> resourcesMap = new FastMap<DiskResource>();
     	for (DiskResource sr : selectedResources) {
@@ -70,12 +70,12 @@ public class DataSharingPresenter implements Presenter {
     	}
     	return resourcesMap;
     }
-    
+
     @Override
     public void go(HasOneWidget container) {
         container.setWidget(view.asWidget());
     }
-    
+
     @Override
     public List<DiskResource> getSelectedResources() {
   		return selectedResources;
@@ -201,9 +201,9 @@ public class DataSharingPresenter implements Presenter {
 
         if (requestBody != null || unshareRequestBody != null) {
             IplantInfoBox infoBox = new IplantInfoBox(
-                    org.iplantc.core.uidiskresource.client.I18N.DISPLAY.share() + "/ "
-                            + org.iplantc.core.uidiskresource.client.I18N.DISPLAY.unshare(),
-                    org.iplantc.core.uidiskresource.client.I18N.DISPLAY.sharingCompleteMsg());
+                    I18N.DISPLAY.share() + "/ "
+                            + I18N.DISPLAY.unshare(),
+                            I18N.DISPLAY.sharingCompleteMsg());
             infoBox.show();
         }
 

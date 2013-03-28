@@ -2,8 +2,8 @@ package org.iplantc.core.uidiskresource.client.presenters.proxy;
 
 import java.util.List;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
-import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.Services;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.models.Folder;

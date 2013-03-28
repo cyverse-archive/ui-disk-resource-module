@@ -1,11 +1,12 @@
+
 package org.iplantc.core.uidiskresource.client.services.callbacks;
 
 import java.util.Collection;
 import java.util.Set;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.views.IsMaskable;
-import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceErrorAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.services.errors.ErrorDuplicateDiskResource;
 
@@ -45,7 +46,7 @@ public abstract class DuplicateDiskResourceCallback extends DiskResourceServiceC
         // clients implementing this class then just needs to override only on method
         markDuplicates(Sets.intersection(dupes, diskResourceIds));
     }
-    
+
     @Override
     public void onFailure(Throwable caught) {
         unmaskCaller();

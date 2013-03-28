@@ -10,12 +10,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.iplantc.core.jsonutil.JsonUtil;
+import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.UserInfo;
-import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
-import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DataSearchPathSelectedEvent;
@@ -88,9 +88,9 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 
 /**
- * 
+ *
  * @author jstroot
- * 
+ *
  */
 public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         DiskResourceViewToolbarImpl.Presenter, HasHandlerRegistrationMgmt {
@@ -100,7 +100,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private final TreeLoader<Folder> treeLoader;
     private final HashMap<EventHandler, HandlerRegistration> registeredHandlers = new HashMap<EventHandler, HandlerRegistration>();
     private DiskResourceServiceFacade diskResourceService;
-    private final DiskResourceDisplayStrings DISPLAY;
+    private final IplantDisplayStrings DISPLAY;
     private final DiskResourceAutoBeanFactory drFactory;
     private final Builder builder;
     private final DataSearchAutoBeanFactory dataSearchFactory;
@@ -110,7 +110,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
             final DiskResourceServiceFacade diskResourceService,
-            final DiskResourceDisplayStrings display, final DiskResourceAutoBeanFactory factory,
+            final IplantDisplayStrings display, final DiskResourceAutoBeanFactory factory,
             final DataSearchAutoBeanFactory dataSearchFactory) {
         this.view = view;
         this.proxy = proxy;
@@ -188,14 +188,14 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     }
 
     private void initHandlers() {
-        
+
         // Add selection handlers which will control the visibility of the toolbar buttons
         addFileSelectChangedHandler(new ToolbarButtonVisibilitySelectionHandler<DiskResource>(
                 view.getToolbar(), view));
         addFolderSelectionHandler(new ToolbarButtonVisibilitySelectionHandler<Folder>(view.getToolbar(), view));
 
         treeLoader.addLoadHandler(new DiskResourceViewLoadHandler(this.view.getTreeStore(), this));
-        
+
         EventBus eventBus = EventBus.getInstance();
         DiskResourcesEventHandler diskResourcesEventHandler = new DiskResourcesEventHandler(this);
         eventBus.addHandler(FileUploadedEvent.TYPE, diskResourcesEventHandler);
@@ -748,7 +748,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void maskView() {
-        view.mask(I18N.DISPLAY.loadingMask());
+        view.mask(DISPLAY.loadingMask());
     }
 
     @Override

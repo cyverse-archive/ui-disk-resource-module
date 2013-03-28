@@ -5,27 +5,27 @@
              xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button"
              xmlns:menu="urn:import:com.sencha.gxt.widget.core.client.menu"
              xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form">
-             
+
    <ui:with field="res"
             type="org.iplantc.core.resources.client.IplantResources"/>
    <ui:with field="display"
-            type="org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings"/>
-            
+            type="org.iplantc.core.resources.client.messages.IplantDisplayStrings"/>
+
    <toolbar:ToolBar>
          <!-- Upload Menu -->
       <toolbar:child>
-         <button:TextButton debugId="idfileUploadBtn" ui:field="uploads" 
+         <button:TextButton debugId="idfileUploadBtn" ui:field="uploads"
                             text="{display.upload}"
                             icon="{res.importData}">
             <button:menu>
                <menu:Menu>
-                  <menu:MenuItem debugId="idBlkUplodBtn" ui:field="bulkUploadButton" 
+                  <menu:MenuItem debugId="idBlkUplodBtn" ui:field="bulkUploadButton"
                                  text="{display.bulkUploadFromDesktop}">
                   </menu:MenuItem>
-                  <menu:MenuItem debugId="idSimpleUpldBtn" ui:field="simpleUploadButton" 
+                  <menu:MenuItem debugId="idSimpleUpldBtn" ui:field="simpleUploadButton"
                                  text="{display.simpleUploadFromDesktop}">
                   </menu:MenuItem>
-                  <menu:MenuItem debugId="idUrlImportBtn" ui:field="importButton" 
+                  <menu:MenuItem debugId="idUrlImportBtn" ui:field="importButton"
                                  text="{display.importLabel}">
                   </menu:MenuItem>
                </menu:Menu>
@@ -39,80 +39,80 @@
                             text="{display.newFolder}"
                             icon="{res.folderAdd}">
          </button:TextButton>
-      </toolbar:child>   
+      </toolbar:child>
 
       <!-- Refresh button -->
       <toolbar:child>
-         <button:TextButton debugId="idRefresnBtn" ui:field="refreshButton" 
+         <button:TextButton debugId="idRefresnBtn" ui:field="refreshButton"
                             text="{display.refresh}"
                             icon="{res.refresh}">
          </button:TextButton>
-      </toolbar:child>   
-      
+      </toolbar:child>
+
       <!-- Download menu -->
       <toolbar:child>
-         <button:TextButton debugId="idDownloadBtn" ui:field="downloads" 
+         <button:TextButton debugId="idDownloadBtn" ui:field="downloads"
                             text="{display.download}"
                             icon="{res.download}">
             <button:menu>
                <menu:Menu>
-                  <menu:MenuItem debugId="idSimpleDownloadBtn" ui:field="simpleDownloadButton" 
+                  <menu:MenuItem debugId="idSimpleDownloadBtn" ui:field="simpleDownloadButton"
                                  text="{display.simpleDownload}">
                   </menu:MenuItem>
-                  <menu:MenuItem debugId="idBulkDownloadBtn" ui:field="bulkDownloadButton" 
+                  <menu:MenuItem debugId="idBulkDownloadBtn" ui:field="bulkDownloadButton"
                                  text="{display.bulkDownload}">
                   </menu:MenuItem>
                </menu:Menu>
             </button:menu>
          </button:TextButton>
       </toolbar:child>
-      
+
       <!-- Rename button -->
       <toolbar:child>
-         <button:TextButton debugId="idRenameBtn" ui:field="renameButton" 
+         <button:TextButton debugId="idRenameBtn" ui:field="renameButton"
                             text="{display.rename}"
                             icon="{res.fileRename}">
          </button:TextButton>
       </toolbar:child>
-      
+
       <!-- Delete button -->
       <toolbar:child>
-         <button:TextButton debugId="idDeleteBtn" ui:field="deleteButton" 
+         <button:TextButton debugId="idDeleteBtn" ui:field="deleteButton"
                             text="{display.delete}"
                             icon="{res.fileDelete}">
          </button:TextButton>
       </toolbar:child>
-      
+
       <!-- Share button -->
       <toolbar:child>
-         <button:TextButton debugId="idShareBtn" ui:field="shareButton" 
-                            text="{display.share}" 
+         <button:TextButton debugId="idShareBtn" ui:field="shareButton"
+                            text="{display.share}"
                             icon="{res.share}">
          </button:TextButton>
       </toolbar:child>
-      
+
        <toolbar:child>
-         <button:TextButton debugId="idTrashBtn" ui:field="trash" 
+         <button:TextButton debugId="idTrashBtn" ui:field="trash"
                             icon="{res.deleteIcon}"
                             text="Trash">
             <button:menu>
                <menu:Menu>
-                  <menu:MenuItem debugId="idEmptyTrashBtn" ui:field="emptyTrash" 
+                  <menu:MenuItem debugId="idEmptyTrashBtn" ui:field="emptyTrash"
                                  text="{display.emptyTrash}">
                   </menu:MenuItem>
-                  <menu:MenuItem debugId="idRestoreBtn" ui:field="restore" 
+                  <menu:MenuItem debugId="idRestoreBtn" ui:field="restore"
                                  text="{display.restore}">
                   </menu:MenuItem>
                </menu:Menu>
             </button:menu>
          </button:TextButton>
-      </toolbar:child>     
-      
+      </toolbar:child>
+
       <!-- Data Search box -->
       <toolbar:child>
       	<form:TextField debugId="idSearchTxt" ui:field="searchField" emptyText="search by name"> </form:TextField>
-      </toolbar:child> 
+      </toolbar:child>
 
-      
-   </toolbar:ToolBar>        
-</ui:UiBinder> 
+
+   </toolbar:ToolBar>
+</ui:UiBinder>

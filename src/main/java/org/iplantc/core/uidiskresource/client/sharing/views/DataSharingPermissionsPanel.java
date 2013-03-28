@@ -1,11 +1,13 @@
 /**
- * 
+ *
  */
 package org.iplantc.core.uidiskresource.client.sharing.views;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.core.resources.client.IplantResources;
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.collaborators.events.UserSearchResultSelected;
 import org.iplantc.core.uicommons.client.collaborators.events.UserSearchResultSelected.USER_SEARCH_EVENT_TAG;
 import org.iplantc.core.uicommons.client.collaborators.models.Collaborator;
@@ -13,9 +15,7 @@ import org.iplantc.core.uicommons.client.collaborators.presenter.ManageCollabora
 import org.iplantc.core.uicommons.client.collaborators.util.UserSearchField;
 import org.iplantc.core.uicommons.client.collaborators.views.ManageCollaboratorsDailog;
 import org.iplantc.core.uicommons.client.events.EventBus;
-import org.iplantc.core.resources.client.IplantResources;
 import org.iplantc.core.uicommons.client.models.UserInfo;
-import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.models.Permissions;
@@ -64,7 +64,7 @@ import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 /**
  * @author sriram
- * 
+ *
  */
 public class DataSharingPermissionsPanel implements IsWidget {
 
@@ -226,7 +226,7 @@ public class DataSharingPermissionsPanel implements IsWidget {
         String userName = user.getUserName();
         if (userName != null && userName.equalsIgnoreCase(UserInfo.getInstance().getUsername())) {
             AlertMessageBox amb = new AlertMessageBox(I18N.DISPLAY.warning(),
-                    I18N.DISPLAY.selfShareWarning());
+            		I18N.DISPLAY.selfShareWarning());
             amb.show();
             return;
         }
@@ -355,8 +355,8 @@ public class DataSharingPermissionsPanel implements IsWidget {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @return the sharing list
      */
     public FastMap<List<DataSharing>> getSharingMap() {
@@ -375,7 +375,7 @@ public class DataSharingPermissionsPanel implements IsWidget {
 
     /**
      * check the list with original to see if things have changed. ignore unchanged records
-     * 
+     *
      * @param userName
      * @param list
      * @return

@@ -8,8 +8,8 @@
 	xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form">
 
 
-	<ui:with type="org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings" field="strings" />
-	
+	<ui:with type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" field="strings" />
+
 	<ui:with field="diskResourcesListStore" type="com.sencha.gxt.data.shared.ListStore" />
 	<ui:with field="diskResourcesColumnModel"
 		type="com.sencha.gxt.widget.core.client.grid.ColumnModel" />
@@ -29,6 +29,6 @@
 								</grid:Grid>
 					</gxt:FramedPanel>
 		</container:child>
-		
+
 	</container:VerticalLayoutContainer>
-</ui:UiBinder> 
+</ui:UiBinder>

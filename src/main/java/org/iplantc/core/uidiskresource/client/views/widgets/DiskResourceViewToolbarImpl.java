@@ -1,6 +1,6 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
-import org.iplantc.core.uidiskresource.client.I18N;
+import org.iplantc.core.uicommons.client.I18N;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.File;
 import org.iplantc.core.uidiskresource.client.models.Folder;
@@ -41,7 +41,7 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
 
     @UiField
     TextButton uploads;
-    
+
     @UiField
     MenuItem bulkUploadButton;
 
@@ -59,7 +59,7 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
 
     @UiField
     TextButton downloads;
-    
+
     @UiField
     MenuItem simpleDownloadButton;
 
@@ -179,8 +179,8 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
 
     @UiHandler("emptyTrash")
     void onEmptyTrashClicked(SelectionEvent<Item> event) {
-        final ConfirmMessageBox cmb = new ConfirmMessageBox(I18N.DISPLAY.emptyTrash(),
-                I18N.DISPLAY.emptyTrashWarning());
+        final ConfirmMessageBox cmb = new ConfirmMessageBox(org.iplantc.core.resources.client.messages.I18N.DISPLAY.emptyTrash(),
+                org.iplantc.core.resources.client.messages.I18N.DISPLAY.emptyTrashWarning());
         cmb.addHideHandler(new HideHandler() {
             public void onHide(HideEvent event) {
                 if (cmb.getHideButton() == cmb.getButtonById(PredefinedButton.YES.name())) {

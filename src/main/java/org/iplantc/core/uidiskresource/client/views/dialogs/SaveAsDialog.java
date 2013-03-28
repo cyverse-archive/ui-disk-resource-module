@@ -1,10 +1,10 @@
 package org.iplantc.core.uidiskresource.client.views.dialogs;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.models.CommonModelAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
-import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.gin.DiskResourceInjector;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
@@ -86,7 +86,7 @@ public class SaveAsDialog extends IPlantDialog {
 
         @Override
         public void onValueChange(ValueChangeEvent<String> event) {
-            okButton.setEnabled(!Strings.isNullOrEmpty(event.getValue()) 
+            okButton.setEnabled(!Strings.isNullOrEmpty(event.getValue())
                     && !Strings.isNullOrEmpty(selectedFolderField.getValue()));
         }
     }

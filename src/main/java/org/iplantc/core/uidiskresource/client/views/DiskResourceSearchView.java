@@ -1,12 +1,12 @@
 /**
- * 
+ *
  */
 package org.iplantc.core.uidiskresource.client.views;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iplantc.core.uidiskresource.client.I18N;
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;

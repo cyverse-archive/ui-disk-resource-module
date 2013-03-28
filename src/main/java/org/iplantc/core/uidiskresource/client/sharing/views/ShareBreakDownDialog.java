@@ -1,17 +1,17 @@
 /**
- * 
+ *
  */
 package org.iplantc.core.uidiskresource.client.sharing.views;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iplantc.core.uidiskresource.client.I18N;
+import org.iplantc.core.resources.client.IplantResources;
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharingKeyProvider;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharingProperties;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
-import org.iplantc.core.resources.client.IplantResources;
 
 import com.google.gwt.core.client.GWT;
 import com.sencha.gxt.core.client.ValueProvider;
@@ -33,7 +33,7 @@ import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
  *
  */
 public class ShareBreakDownDialog extends Dialog {
-	
+
     private Grid<DataSharing> grid;
     public ShareBreakDownDialog(List<DataSharing> shares) {
         init();
@@ -49,7 +49,7 @@ public class ShareBreakDownDialog extends Dialog {
         setWidget(container);
         loadGrid(shares);
     }
-	
+
 	private void init() {
         setPixelSize(400, 375);
         setHideOnButtonClick(true);
@@ -57,7 +57,7 @@ public class ShareBreakDownDialog extends Dialog {
         setHeadingText(I18N.DISPLAY.whoHasAccess());
         buildGrid();
     }
-	
+
 	private Grid<DataSharing> buildGrid() {
 		ListStore<DataSharing> store = new ListStore<DataSharing>(new DataSharingKeyProvider());
 		ColumnModel<DataSharing> cm = buildColumnModel();
@@ -69,7 +69,7 @@ public class ShareBreakDownDialog extends Dialog {
 		grid.setView(view);
 		return grid;
 	}
-	
+
     private void loadGrid(List<DataSharing> shares) {
         grid.getStore().clear();
         grid.getStore().addAll(shares);
@@ -78,18 +78,18 @@ public class ShareBreakDownDialog extends Dialog {
     private TextButton buildGroupByUserButton() {
         TextButton button = new TextButton(I18N.DISPLAY.groupByUser());
         button.addSelectHandler(new SelectHandler() {
-            
+
             @Override
             public void onSelect(SelectEvent event) {
                 GroupingView<DataSharing> view = (GroupingView<DataSharing>)grid.getView();
                 view.groupBy(grid.getColumnModel().getColumn(0));
-                
+
             }
         });
         button.setIcon(IplantResources.RESOURCES.share());
         return button;
     }
-	
+
 	private TextButton buildGroupByDataButton() {
         TextButton button = new TextButton(I18N.DISPLAY.groupByData());
         button.addSelectHandler(new SelectHandler() {
@@ -104,7 +104,7 @@ public class ShareBreakDownDialog extends Dialog {
         button.setIcon(IplantResources.RESOURCES.folder());
         return button;
     }
-	
+
 	private ColumnModel<DataSharing> buildColumnModel() {
 		List<ColumnConfig<DataSharing, ?>> configs = new ArrayList<ColumnConfig<DataSharing, ?>>();
 		  DataSharingProperties props = GWT.create(DataSharingProperties.class);
@@ -113,7 +113,7 @@ public class ShareBreakDownDialog extends Dialog {
 
         name.setHeader(I18N.DISPLAY.name());
         name.setWidth(120);
-        
+
         ColumnConfig<DataSharing, String> diskRsc = new ColumnConfig<DataSharing, String>(
                 new ValueProvider<DataSharing, String>() {
 
@@ -134,12 +134,12 @@ public class ShareBreakDownDialog extends Dialog {
                     }
                 });
 
-        diskRsc.setHeader(org.iplantc.core.uidiskresource.client.I18N.DISPLAY.name());
+        diskRsc.setHeader(I18N.DISPLAY.name());
         diskRsc.setWidth(120);
         ColumnConfig<DataSharing, String> permission = new ColumnConfig<DataSharing, String>(
                 props.displayPermission());
 
-        permission.setHeader(org.iplantc.core.uidiskresource.client.I18N.DISPLAY.permissions());
+        permission.setHeader(I18N.DISPLAY.permissions());
         permission.setWidth(80);
         configs.add(name);
         configs.add(diskRsc);
@@ -147,7 +147,7 @@ public class ShareBreakDownDialog extends Dialog {
         return new ColumnModel<DataSharing>(configs);
 
 	}
-	
-	
+
+
 
 }

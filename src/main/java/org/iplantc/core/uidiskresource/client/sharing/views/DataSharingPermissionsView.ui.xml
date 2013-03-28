@@ -8,8 +8,8 @@
 	xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form">
 
 
-	<ui:with type="org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings" field="strings" />
-	
+	<ui:with type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" field="strings" />
+
 	<ui:with field="listStore" type="com.sencha.gxt.data.shared.ListStore" />
 	<ui:with field="cm"
 		type="com.sencha.gxt.widget.core.client.grid.ColumnModel" />
@@ -20,7 +20,7 @@
 
 
 	<container:VerticalLayoutContainer ui:field="container">
-	    
+
 		<container:child>
 					<gxt:FramedPanel ui:field="permPanel"
 						collapsible="false" headerVisible="true" headingText="{strings.whoHasAccess}" height="200px">
@@ -34,6 +34,6 @@
 	        <toolbar:ToolBar ui:field="toolbar" height="30">
 	        </toolbar:ToolBar>
 	    </container:child>
-		
+
 	</container:VerticalLayoutContainer>
-</ui:UiBinder> 
+</ui:UiBinder>

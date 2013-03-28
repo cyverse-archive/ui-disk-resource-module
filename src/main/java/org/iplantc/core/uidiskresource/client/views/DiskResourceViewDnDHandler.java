@@ -3,7 +3,7 @@ package org.iplantc.core.uidiskresource.client.views;
 import java.util.Collection;
 import java.util.Set;
 
-import org.iplantc.core.uidiskresource.client.I18N;
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
@@ -39,7 +39,7 @@ class DiskResourceViewDnDHandler implements DndDragStartHandler, DndDropHandler,
             newSet = Sets.newHashSet(presenter.getSelectedFolder());
         }
 
-        if ((newSet != null) 
+        if ((newSet != null)
                 && !newSet.isEmpty()) {
             event.setData(newSet);
             event.getStatusProxy().update(I18N.DISPLAY.dataDragDropStatusText(newSet.size()));
@@ -118,7 +118,7 @@ class DiskResourceViewDnDHandler implements DndDragStartHandler, DndDropHandler,
             event.setCancelled(true);
         } else if (!(targetFolder instanceof Folder)) {
             event.getStatusProxy().setStatus(false);
-        } else if (!targetFolder.getPermissions().isWritable() 
+        } else if (!targetFolder.getPermissions().isWritable()
                 || !DiskResourceUtil.isMovable(dropData)) {
             // Check for permissions
             event.getStatusProxy().setStatus(false);
@@ -148,8 +148,8 @@ class DiskResourceViewDnDHandler implements DndDragStartHandler, DndDropHandler,
 
     @SuppressWarnings("unchecked")
     private Set<DiskResource> getDropData(Object data) {
-        if (!((data instanceof Collection<?>) 
-                && !((Collection<?>)data).isEmpty() 
+        if (!((data instanceof Collection<?>)
+                && !((Collection<?>)data).isEmpty()
                 && ((Collection<?>)data).iterator().next() instanceof DiskResource)) {
             return null;
         }

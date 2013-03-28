@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.iplantc.core.uidiskresource.client.I18N;
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceProperties;
 import org.iplantc.core.uidiskresource.client.models.File;
@@ -62,9 +62,9 @@ public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
      * This is a value provider class which returns the size of any <code>DiskResource</code>.
      * If the <code>DiskResource</code> is a <code>Folder</code>, this provider will return null. If it
      * is a <code>File</code>, then it returns the value of the {@link File#getSize()} method.
-     * 
+     *
      * @author jstroot
-     * 
+     *
      */
     private static final class DiskResourceSizeValueProvider implements
             ValueProvider<DiskResource, String> {
@@ -77,11 +77,11 @@ public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
                 return null;
             }
         }
-    
+
         @Override
         public void setValue(DiskResource object, String value) {
         }
-    
+
         @Override
         public String getPath() {
             return "";

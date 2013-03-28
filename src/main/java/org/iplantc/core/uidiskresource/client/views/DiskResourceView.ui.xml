@@ -6,13 +6,13 @@
              xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client"
              xmlns:grid="urn:import:com.sencha.gxt.widget.core.client.grid"
              xmlns:toolbar="urn:import:org.iplantc.core.uidiskresource.client.views.widgets">
-   <ui:with type="org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings" field="DISPLAY" />
+   <ui:with type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" field="DISPLAY" />
 
 
     <!-- Nav Panel -->
    <ui:with field="treeStore"
             type="com.sencha.gxt.data.shared.TreeStore" />
-         
+
     <!-- Main Panel -->
    <ui:with field="listStore"
             type="com.sencha.gxt.data.shared.ListStore" />
@@ -20,10 +20,10 @@
             type="com.sencha.gxt.widget.core.client.grid.ColumnModel" />
    <ui:with field="gridView"
             type="com.sencha.gxt.widget.core.client.grid.GridView">
-      <ui:attributes forceFit="true" 
+      <ui:attributes forceFit="true"
                      autoFill="true"/>
    </ui:with>
-   
+
    <!-- Border Layout Data -->
    <ui:with field="westMargins"
             type="com.sencha.gxt.core.client.util.Margins">
@@ -53,7 +53,7 @@
    </ui:with>
    <ui:with field="centerData"
             type="com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData">
-      <ui:attributes margins="{centerMargins}" 
+      <ui:attributes margins="{centerMargins}"
                      size="1"
                      hidden="false"/>
    </ui:with>
@@ -68,7 +68,7 @@
       <ui:attributes size="30"
                      hidden="true"/>
    </ui:with>
-   
+
     <ui:with
         type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData"
         field="detailsLayoutDataTop">
@@ -83,14 +83,14 @@
             width="1"
             height="0.55"/>
     </ui:with>
-   
+
    <container:BorderLayoutContainer ui:field="con"
                                     borders="true">
       <!-- Tool Bar -->
       <container:north layoutData="{northData}">
          <toolbar:DiskResourceViewToolbar ui:field="toolbar"/>
       </container:north>
-      
+
       <!-- Navigation Panel -->
       <container:west layoutData="{westData}">
          <gxt:ContentPanel ui:field="westPanel"
@@ -98,7 +98,7 @@
             <tree:Tree ui:field="tree"/>
          </gxt:ContentPanel>
       </container:west>
-       
+
       <!-- Main Panel -->
       <container:center layoutData="{centerData}">
          <gxt:ContentPanel ui:field="centerPanel"
@@ -110,25 +110,25 @@
                              view="{gridView}" />
          </gxt:ContentPanel>
       </container:center>
-      
+
       <!-- Details Panel -->
       <container:east layoutData="{eastData}">
         <gxt:ContentPanel headingText="{DISPLAY.details}">
 	        <container:VerticalLayoutContainer>
 	            <container:child layoutData="{detailsLayoutDataTop}">
-	               <container:VerticalLayoutContainer ui:field="detailsPanel" 
+	               <container:VerticalLayoutContainer ui:field="detailsPanel"
 	                                                  adjustForScroll="true"
-	                                                  scrollMode="AUTOY"/> 
+	                                                  scrollMode="AUTOY"/>
 	            </container:child>
 	            <container:child layoutData="{detailsLayoutDataBottom}">
-		            <gxt:ContentPanel ui:field="historyPanel" 
-		                              headingText="{DISPLAY.searchHistory}" 
-		                              bodyBorder="false"/> 
+		            <gxt:ContentPanel ui:field="historyPanel"
+		                              headingText="{DISPLAY.searchHistory}"
+		                              bodyBorder="false"/>
 	            </container:child>
 	        </container:VerticalLayoutContainer>
         </gxt:ContentPanel>
       </container:east>
-      
+
       <container:south layoutData="{southData}"/>
    </container:BorderLayoutContainer>
-</ui:UiBinder> 
+</ui:UiBinder>

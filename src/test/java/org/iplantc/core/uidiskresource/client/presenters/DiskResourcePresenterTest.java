@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.iplantc.core.uidiskresource.client.presenters;
 
@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
 import org.iplantc.core.uicommons.client.models.UserInfo;
-import org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadata;
@@ -52,7 +52,7 @@ public class DiskResourcePresenterTest {
     private DiskResourceView view;
     private DiskResourceView.Proxy proxy;
     private DiskResourceServiceFacade diskResourceService;
-    private DiskResourceDisplayStrings display;
+    private IplantDisplayStrings display;
     private DiskResourceAutoBeanFactory drFactory;
     private DataSearchAutoBeanFactory dataSearchFactory;
 
@@ -76,11 +76,11 @@ public class DiskResourcePresenterTest {
      * @throws java.lang.Exception
      */
     @Before
-    public void setUp() throws Exception { 
+    public void setUp() throws Exception {
         view = context.mock(DiskResourceView.class);
         proxy = context.mock(DiskResourceView.Proxy.class);
         diskResourceService = context.mock(DiskResourceServiceFacade.class);
-        display = context.mock(DiskResourceDisplayStrings.class);
+        display = context.mock(IplantDisplayStrings.class);
         drFactory = context.mock(DiskResourceAutoBeanFactory.class);
         dataSearchFactory = context.mock(DataSearchAutoBeanFactory.class);
     }
@@ -141,7 +141,7 @@ public class DiskResourcePresenterTest {
                 will(returnValue(Lists.newArrayList()));
             }
         });
-        
+
         presenter.onFolderSelected(folder);
 
         context.assertIsSatisfied();
@@ -274,7 +274,7 @@ public class DiskResourcePresenterTest {
             {
                 oneOf(toolbar).setUploadsEnabled(with(false));
                 oneOf(toolbar).setDownloadsEnabled(with(true));
-                
+
                 oneOf(toolbar).setBulkUploadEnabled(with(false));
                 oneOf(toolbar).setSimpleUploadEnabled(with(false));
                 oneOf(toolbar).setImportButtonEnabled(with(false));
@@ -315,7 +315,7 @@ public class DiskResourcePresenterTest {
             {
                 oneOf(toolbar).setUploadsEnabled(with(true));
                 oneOf(toolbar).setDownloadsEnabled(with(true));
-                
+
                 oneOf(toolbar).setBulkUploadEnabled(with(true));
                 oneOf(toolbar).setSimpleUploadEnabled(with(true));
                 oneOf(toolbar).setImportButtonEnabled(with(true));
@@ -363,7 +363,7 @@ public class DiskResourcePresenterTest {
             {
                 oneOf(toolbar).setUploadsEnabled(with(false));
                 oneOf(toolbar).setDownloadsEnabled(with(true));
-                
+
                 oneOf(toolbar).setBulkUploadEnabled(with(false));
                 oneOf(toolbar).setSimpleUploadEnabled(with(false));
                 oneOf(toolbar).setImportButtonEnabled(with(false));
@@ -606,7 +606,7 @@ public class DiskResourcePresenterTest {
         checkConstruction();
         DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
                 diskResourceService, display, drFactory, dataSearchFactory);
-        
+
         final Set<DiskResourceMetadata> metadataToDelete = Sets.newHashSet();
         final Set<DiskResourceMetadata> metadataToAdd = Sets.newHashSet();
         final DiskResource resource = context.mock(DiskResource.class);

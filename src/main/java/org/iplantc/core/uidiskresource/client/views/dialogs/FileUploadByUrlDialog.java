@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.validators.UrlValidator;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IsHideable;
-import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DuplicateDiskResourceCallback;
@@ -40,19 +40,19 @@ import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.ValueBaseField;
 
 public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<Entry<Field<String>, Status>> {
-    
+
     private static FileUploadByUrlPanelUiBinder UIBINDER = GWT.create(FileUploadByUrlPanelUiBinder.class);
 
     @UiTemplate("FileUploadByUrlPanel.ui.xml")
     interface FileUploadByUrlPanelUiBinder extends UiBinder<Widget, FileUploadByUrlDialog> {}
-    
+
     private static final String FIELD_HEIGHT = "50";
     private static final String FIELD_WIDTH = "475";
     private final Folder uploadDest;
     private final DiskResourceServiceFacade drService;
     private final Set<Entry<Field<String>, Status>> pendingList = Sets.newHashSet();
     private final Map<Field<String>, Status> fieldToStatusMap = Maps.newHashMap();
-    
+
     @UiField
     HTML htmlDestText;
     @UiField
@@ -69,7 +69,7 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
         getOkButton().setText(I18N.DISPLAY.upload());
         getOkButton().setEnabled(false);
         setHeadingText(I18N.DISPLAY.upload());
-        
+
         add(UIBINDER.createAndBindUi(this));
 
         // Load up our field to status map
@@ -109,12 +109,12 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
     void onFieldValid(ValidEvent event) {
         getOkButton().setEnabled(FormPanelHelper.isValid(this, true) && isValidForm());
     }
-    
+
     @UiHandler({"url0", "url1", "url2", "url3", "url4"})
     void onFieldInvalid(InvalidEvent event){
         getOkButton().setEnabled(false);
     }
-    
+
     private boolean isValidForm(){
         for(Entry<Field<String>, Status> entry : fieldToStatusMap.entrySet()){
             ValueBaseField<String> valueBaseField = (ValueBaseField<String>)entry.getKey();
@@ -124,7 +124,7 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
         }
         return false;
     }
-    
+
     @Override
     protected void onOkButtonClicked() {
 //        formStatus.setBusy(I18N.DISPLAY.uploadingToFolder(uploadDest.getId()));
@@ -197,7 +197,7 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
             for(Entry<String, Field<String>> entry : destResourceMap.entrySet()){
                 Field<String> urlField = entry.getValue();
                 Status formStatus = fieldToStatusMap.get(urlField);
-                
+
                 if(duplicates.contains(entry.getKey())){
                     urlField.markInvalid(I18N.ERROR.fileExist());
                     formStatus.clearStatus("");
@@ -208,7 +208,7 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
                 }
             }
         }
-        
+
         private Entry<Field<String>, Status> getEntry(Status status){
             for(Entry<Field<String>, Status> e : fieldToStatusMap.entrySet()){
                 if(e.getValue() == status){
@@ -245,7 +245,7 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
                 // "Blink" the window on the last pending element.
                 dlg.getElement().<FxElement>cast().blink();
             }
-            
+
             pending.getKey().markInvalid("Url Failed to upload");
             dlg.removePending(pending);
         }

@@ -1,7 +1,7 @@
 package org.iplantc.core.uidiskresource.client.views.dialogs;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
-import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.gin.DiskResourceInjector;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
@@ -17,11 +17,11 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 /**
  * An <code>IPlantDialog</code> which wraps the standard <code>DiskResourceView</code> for folder
  * selection.
- * 
+ *
  * Users of this class are responsible adding hide handlers to get the selected folder.
- * 
+ *
  * @author jstroot
- * 
+ *
  */
 public class FolderSelectDialog extends IPlantDialog implements TakesValue<Folder> {
 
@@ -33,7 +33,7 @@ public class FolderSelectDialog extends IPlantDialog implements TakesValue<Folde
     public FolderSelectDialog() {
         // Disable Ok button by default.
         getOkButton().setEnabled(false);
-        
+
         setResizable(true);
         setSize("640", "480");
         setHeadingText(I18N.DISPLAY.selectAFolder());

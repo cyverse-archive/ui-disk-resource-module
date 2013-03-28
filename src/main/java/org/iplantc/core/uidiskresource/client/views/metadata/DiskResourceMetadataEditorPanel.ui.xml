@@ -5,11 +5,11 @@
              xmlns:toolbar="urn:import:com.sencha.gxt.widget.core.client.toolbar"
              xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button"
              xmlns:grid="urn:import:com.sencha.gxt.widget.core.client.grid">
-             
+
    <ui:with field="res"
-            type="org.iplantc.core.resources.client.IplantResources"/>          
+            type="org.iplantc.core.resources.client.IplantResources"/>
    <ui:with field="display"
-            type="org.iplantc.core.uidiskresource.client.DiskResourceDisplayStrings"/>
+            type="org.iplantc.core.resources.client.messages.IplantDisplayStrings"/>
 
    <ui:with field="listStore"
             type="com.sencha.gxt.data.shared.ListStore" />
@@ -17,7 +17,7 @@
             type="com.sencha.gxt.widget.core.client.grid.ColumnModel" />
    <ui:with field="gridView"
             type="com.sencha.gxt.widget.core.client.grid.GridView">
-      <ui:attributes forceFit="true" 
+      <ui:attributes forceFit="true"
                      autoFill="true"/>
    </ui:with>
    <ui:with field="northData"
@@ -25,7 +25,7 @@
       <ui:attributes size="30"
                      maxSize="30"/>
    </ui:with>
-   
+
    <container:BorderLayoutContainer ui:field="con"
                                        borders="true">
       <container:north layoutData="{northData}">
@@ -49,6 +49,6 @@
                     cm="{cm}"
                     store="{listStore}"
                     view="{gridView}" />
-      </container:center>                                       
+      </container:center>
    </container:BorderLayoutContainer>
-</ui:UiBinder> 
+</ui:UiBinder>

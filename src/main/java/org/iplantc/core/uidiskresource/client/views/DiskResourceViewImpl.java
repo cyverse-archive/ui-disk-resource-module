@@ -6,11 +6,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.resources.client.IplantResources;
+import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
-import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceInfo;
@@ -76,7 +76,7 @@ import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 
 public class DiskResourceViewImpl implements DiskResourceView {
- 
+
     @UiTemplate("DiskResourceView.ui.xml")
     interface DiskResourceViewUiBinder extends UiBinder<Widget, DiskResourceViewImpl> {
     }
@@ -171,7 +171,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
             }
 
         });
-        
+
         // by default no details to show...
         resetDetailsPanel();
     }
@@ -228,14 +228,14 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     private void initDragAndDrop() {
         DiskResourceViewDnDHandler dndHandler = new DiskResourceViewDnDHandler(presenter);
-        
+
         DropTarget gridDropTarget = new DropTarget(grid);
         gridDropTarget.setAllowSelfAsSource(true);
         gridDropTarget.setOperation(Operation.COPY);
         gridDropTarget.addDragEnterHandler(dndHandler);
         gridDropTarget.addDragMoveHandler(dndHandler);
         gridDropTarget.addDropHandler(dndHandler);
-        
+
         DragSource gridDragSource = new DragSource(grid);
         gridDragSource.addDragStartHandler(dndHandler);
 
@@ -245,10 +245,10 @@ public class DiskResourceViewImpl implements DiskResourceView {
         treeDropTarget.addDragEnterHandler(dndHandler);
         treeDropTarget.addDragMoveHandler(dndHandler);
         treeDropTarget.addDropHandler(dndHandler);
-        
+
         DragSource treeDragSource = new DragSource(tree);
         treeDragSource.addDragStartHandler(dndHandler);
-        
+
     }
 
     @Override
@@ -335,7 +335,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     public void addDiskResourceSelectChangedHandler(SelectionChangedHandler<DiskResource> selectionChangedHandler) {
         grid.getSelectionModel().addSelectionChangedHandler(selectionChangedHandler);
     }
-    
+
     @Override
     public void addFolderSelectionHandler(SelectionHandler<Folder> selectionHandler) {
         tree.getSelectionModel().addSelectionHandler(selectionHandler);
@@ -462,12 +462,12 @@ public class DiskResourceViewImpl implements DiskResourceView {
     public boolean isViewTree(IsWidget widget){
         return widget.asWidget() == tree;
     }
-    
+
     @Override
     public boolean isViewGrid(IsWidget widget){
         return widget.asWidget() == grid;
     }
-    
+
     @Override
     public TreeNode<Folder> findTreeNode(Element el){
         return tree.findNode(el);
@@ -570,7 +570,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     /**
      * Parses a timestamp string into a formatted date string and adds it to this panel.
-     * 
+     *
      * @param label
      * @param value
      */
@@ -585,7 +585,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
             value = formatter.format(date);
         }
 
-       
+
         FieldLabel fl = new FieldLabel();
         fl.setHTML(getDetailAsHtml(label, true));
         panel.add(fl);
@@ -632,7 +632,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     /**
      * Add permissions detail
-     * 
+     *
      */
     private HorizontalPanel getPermissionsLabel(String label, Permissions p) {
         HorizontalPanel panel = buildRow();
@@ -666,9 +666,9 @@ public class DiskResourceViewImpl implements DiskResourceView {
     }
 
     /**
-     * 
+     *
      * Add sharing info
-     * 
+     *
      */
 
     private HorizontalPanel getSharingLabel(String label, int shareCount) {
@@ -681,12 +681,12 @@ public class DiskResourceViewImpl implements DiskResourceView {
         }
 
         link.addClickHandler(new ClickHandler() {
-            
+
             @Override
             public void onClick(ClickEvent event) {
                 DataSharingDialog dsd = new DataSharingDialog(getSelectedDiskResources());
                 dsd.show();
-                
+
             }
         });
 
@@ -697,7 +697,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
         return panel;
 
     }
-    
+
     private IPlantAnchor buildSearchHistoryLink(final String searchTerm) {
         IPlantAnchor anchor = new IPlantAnchor(searchTerm, 120, new ClickHandler() {
             @Override
@@ -705,7 +705,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
                         DataSearchHistorySelectedEvent dsh = new DataSearchHistorySelectedEvent(
                                 searchTerm);
                         EventBus.getInstance().fireEvent(dsh);
-                
+
             }
                 });
 
@@ -727,7 +727,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
                 final Image closeImg = new Image(IplantResources.RESOURCES.close());
                 addDomHandlers(hp, closeImg);
                 closeImg.addClickHandler(new ClickHandler() {
-                    
+
                     @Override
                     public void onClick(ClickEvent event) {
                         vlc.remove(hp);
@@ -753,13 +753,13 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
             }
         }, MouseOverEvent.getType());
-        
+
         hp.addDomHandler(new MouseOutHandler() {
-            
+
             @Override
             public void onMouseOut(MouseOutEvent event) {
                 closeImg.setVisible(false);
-                
+
             }
         }, MouseOutEvent.getType());
     }

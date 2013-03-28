@@ -2,10 +2,10 @@ package org.iplantc.core.uidiskresource.client.services.callbacks;
 
 import java.util.Set;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.views.IsMaskable;
-import org.iplantc.core.uidiskresource.client.I18N;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesMovedEvent;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.Folder;
@@ -26,14 +26,14 @@ public class DiskResourceMoveCallback extends DiskResourceServiceCallback{
         this.destFolder = destFolder;
         this.resourcesToMove = resourcesToMove;
     }
-    
+
     @Override
     public void onSuccess(String result){
         unmaskCaller();
-        /* 
+        /*
          * JDS Result should have a "sources" key
          * and a "dest" key.
-         * 
+         *
          * TODO JDS Verify returned keys to the objects we have already.
          */
         EventBus.getInstance().fireEvent(new DiskResourcesMovedEvent(destFolder, resourcesToMove));
@@ -44,10 +44,10 @@ public class DiskResourceMoveCallback extends DiskResourceServiceCallback{
         unmaskCaller();
         DiskResourceErrorAutoBeanFactory factory = GWT.create(DiskResourceErrorAutoBeanFactory.class);
         AutoBean<ErrorDiskResourceMove> errorBean = AutoBeanCodex.decode(factory, ErrorDiskResourceMove.class, caught.getMessage());
-        
+
         ErrorHandler.post(errorBean.as(), caught);
     }
-    
+
     @Override
     protected String getErrorMessageDefault() {
         return I18N.ERROR.moveFailed();
