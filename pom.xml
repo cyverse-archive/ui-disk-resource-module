@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.iplantc.core</groupId>
-	<artifactId>diskresource</artifactId>
+	<artifactId>ui-diskresource</artifactId>
 	<packaging>jar</packaging>
 	<version>gxt3Sandbox-SNAPSHOT</version>
 	<name>The iPlant Collaborative disk resource models</name>
@@ -76,7 +76,7 @@
         
 	</dependencies>
 	<build>
-		<finalName>diskresource</finalName>
+		<finalName>ui-diskresource</finalName>
 		<outputDirectory>${basedir}/war/WEB-INF/classes</outputDirectory>
 		<plugins>
 			<plugin>
