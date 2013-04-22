@@ -47,7 +47,7 @@ public class DiskResourceDeleteCallback extends DiskResourceServiceCallback {
 
     @Override
     protected String getErrorMessageDefault() {
-        return I18N.ERROR.deleteFileFailed();
+        return I18N.ERROR.deleteFailed();
     }
 
 }

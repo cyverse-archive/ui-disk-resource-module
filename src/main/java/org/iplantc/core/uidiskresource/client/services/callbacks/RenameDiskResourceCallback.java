@@ -61,7 +61,7 @@ public class RenameDiskResourceCallback extends DiskResourceServiceCallback {
 
     @Override
     protected String getErrorMessageDefault() {
-        return I18N.ERROR.renameFolderFailed();
+        return I18N.ERROR.renameFailed();
     }
 
 }
