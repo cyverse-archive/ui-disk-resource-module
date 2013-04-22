@@ -79,10 +79,6 @@ import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 import com.sencha.gxt.data.shared.loader.LoadHandler;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
-import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
-import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
-import com.sencha.gxt.widget.core.client.event.HideEvent;
-import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
@@ -380,18 +376,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void requestDelete() {
-        // TODO JDS Need to give feedback to user if there are selections in both the nav and the main.
-        final ConfirmMessageBox mb = new ConfirmMessageBox(DISPLAY.deleteFilesTitle(),
-                DISPLAY.deleteFilesMsg());
-        mb.addHideHandler(new HideHandler() {
-            @Override
-            public void onHide(HideEvent event) {
-                if (mb.getHideButton() == mb.getButtonById(PredefinedButton.YES.name())) {
-                    doDelete();
-                }
-            }
-        });
-        mb.show();
+        doDelete();
     }
 
     @Override
