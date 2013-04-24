@@ -88,6 +88,17 @@
          <button:TextButton debugId="idShareBtn" ui:field="shareButton"
                             text="{display.share}"
                             icon="{res.share}">
+                                             
+            <button:menu>
+               <menu:Menu>
+                  <menu:MenuItem debugId="idLinkShare" ui:field="dataLink"
+                                 text="Send a link">
+                  </menu:MenuItem>
+                  <menu:MenuItem debugId="idUserShare" ui:field="share"
+                                 text="Via Discovery Environment">
+                  </menu:MenuItem>
+               </menu:Menu>
+            </button:menu>
          </button:TextButton>
       </toolbar:child>
 

@@ -1,6 +1,7 @@
 package org.iplantc.core.uidiskresource.client.services;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.iplantc.core.uicommons.client.models.HasId;
@@ -253,4 +254,29 @@ public interface DiskResourceServiceFacade {
      * @param callback
      */
     public void restoreDiskResource(JSONObject body, AsyncCallback<String> callback);
+
+    /**
+     * Creates a set of public data links for the given disk resources.
+     * 
+     * @param ticketIdToResourceIdMap the id of the disk resource for which the ticket will be created.
+     * @param isPublicTicket
+     * @param callback
+     */
+    public void createDataLinks(Map<String, String> ticketIdToResourceIdMap,
+            AsyncCallback<String> callback);
+
+    /**
+     * Requests a listing of all the tickets for the given disk resources.
+     * 
+     * @param diskResourceIds the disk resources whose tickets will be listed.
+     * @param callback
+     */
+    public void listDataLinks(List<String> diskResourceIds, AsyncCallback<String> callback);
+    /**
+     * Requests that the given Kif Share tickets will be deleted.
+     * 
+     * @param dataLinkIds the tickets which will be deleted.
+     * @param callback
+     */
+    public void deleteDataLinks(List<String> dataLinkIds, AsyncCallback<String> callback);
 }

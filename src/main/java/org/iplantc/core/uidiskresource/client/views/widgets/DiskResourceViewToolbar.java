@@ -50,6 +50,8 @@ public interface DiskResourceViewToolbar extends IsWidget {
 
         void restore();
 
+        void doDataLinks();
+
     }
 
    

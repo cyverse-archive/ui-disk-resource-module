@@ -1,6 +1,5 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
-import org.iplantc.core.uicommons.client.I18N;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.File;
 import org.iplantc.core.uidiskresource.client.models.Folder;
@@ -84,6 +83,12 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     @UiField
     MenuItem restore;
 
+    @UiField
+    MenuItem share;
+
+    @UiField
+    MenuItem dataLink;
+
     public DiskResourceViewToolbarImpl() {
         widget = BINDER.createAndBindUi(this);
 
@@ -146,6 +151,11 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
         presenter.doBulkDownload();
     }
 
+    @UiHandler("share")
+    void onShareClicked(SelectionEvent<Item> event) {
+        presenter.doShare();
+    }
+
     @UiHandler("renameButton")
     void onRenameClicked(SelectEvent event) {
         if (!presenter.getSelectedDiskResources().isEmpty()
@@ -171,11 +181,11 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
         presenter.requestDelete();
     }
 
-    @UiHandler("shareButton")
-    void onShareClicked(SelectEvent event) {
-        presenter.doShare();
-    }
 
+    @UiHandler("dataLink")
+    void onDataLinkClicked(SelectionEvent<Item> event) {
+        presenter.doDataLinks();
+    }
 
     @UiHandler("emptyTrash")
     void onEmptyTrashClicked(SelectionEvent<Item> event) {

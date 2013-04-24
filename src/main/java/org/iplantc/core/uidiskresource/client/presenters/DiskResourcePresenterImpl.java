@@ -16,6 +16,8 @@ import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.UserInfo;
+import org.iplantc.core.uidiskresource.client.dataLink.presenter.DataLinkPresenter;
+import org.iplantc.core.uidiskresource.client.dataLink.view.DataLinkPanel;
 import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DataSearchPathSelectedEvent;
@@ -79,6 +81,7 @@ import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 import com.sencha.gxt.data.shared.loader.LoadHandler;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
+import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
@@ -107,7 +110,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
             final DiskResourceServiceFacade diskResourceService,
             final IplantDisplayStrings display, final DiskResourceAutoBeanFactory factory,
-            final DataSearchAutoBeanFactory dataSearchFactory) {
+ final DataSearchAutoBeanFactory dataSearchFactory) {
         this.view = view;
         this.proxy = proxy;
         this.diskResourceService = diskResourceService;
@@ -757,4 +760,20 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         }
         unMaskView();
     }
+
+    @Override
+    public void doDataLinks() {
+        Dialog dlg = new Dialog();
+        dlg.setHeadingText(I18N.DISPLAY.manageDataLinks());
+        dlg.setResizable(false);
+        dlg.setModal(true);
+        dlg.setHideOnButtonClick(true);
+        dlg.setWidth(550);
+        dlg.getButtonById(Dialog.PredefinedButton.OK.toString()).setText("Done");
+        DataLinkPanel.Presenter<DiskResource> dlPresenter = new DataLinkPresenter<DiskResource>(
+               new ArrayList<DiskResource>(getSelectedDiskResources()));
+        dlPresenter.go(dlg);
+        dlg.show();
+    }
+
 }
