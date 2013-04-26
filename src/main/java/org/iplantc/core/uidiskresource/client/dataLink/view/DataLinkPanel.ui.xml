@@ -16,7 +16,7 @@
         }
     </ui:style>
    <ui:with type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" field="display"/>
-   <ui:with type="org.iplantc.core.uidiskresource.client.dataLink.view.DataLinkResources" field="res"/>
+   <ui:with type="org.iplantc.core.resources.client.IplantResources" field="res"/>
       <ui:with field="img"
             type="org.iplantc.core.resources.client.IplantResources"/>
    <ui:with type="com.sencha.gxt.data.shared.TreeStore" field="store" />
@@ -44,10 +44,10 @@
                                enabled="false"/>
             <button:TextButton ui:field="expandAll"
                                text="{display.expandAll}"
-                               icon="{res.expand}"/>
+                               icon="{res.treeExpand}"/>
             <button:TextButton ui:field="collapseAll"
                                text="{display.collapseAll}"
-                               icon="{res.collapse}"/>
+                               icon="{res.treeCollapse}"/>
             <button:TextButton ui:field="copyDataLinkButton"
                                text="{display.copy}"
                                icon="{res.paste}"
@@ -63,7 +63,7 @@
     <container:child>
         <g:HTMLPanel styleName="{style.dataLinkWarning}">
             <img src="{img.exclamation.getSafeUri}"
-                class="{res.css.dataLinkImfoImg}">
+                class="{res.getDataLinkCss.dataLinkImfoImg}">
                 &nbsp;
                 <ui:text from="{display.dataLinkWarning}" />
             </img>
