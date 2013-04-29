@@ -40,7 +40,8 @@ import org.iplantc.core.uidiskresource.client.models.File;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.DataSearchHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.DiskResourcesEventHandler;
-import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilitySelectionHandler;
+import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityGridHandler;
+import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityNavigationHandler;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.DiskResourceViewLoadHandler;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectDiskResourceByIdStoreAddHandler;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectFolderByIdLoadHandler;
@@ -59,6 +60,7 @@ import org.iplantc.core.uidiskresource.client.views.DiskResourceSearchView;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.HasHandlerRegistrationMgmt;
 import org.iplantc.core.uidiskresource.client.views.metadata.DiskResourceMetadataDialog;
+import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
 
 import com.google.common.base.Strings;
@@ -156,7 +158,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
                     JSONArray arr = JsonUtil.getArray(obj, "data-search");
                     if (arr != null) {
                         for (int i = 0; i < arr.size(); i++) {
-                            searchHistory.add((JsonUtil.trim(arr.get(i).isString().toString())));
+                            searchHistory.add(arr.get(i).isString().stringValue());
                         }
                     }
                 }
@@ -187,11 +189,11 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     }
 
     private void initHandlers() {
-
         // Add selection handlers which will control the visibility of the toolbar buttons
-        addFileSelectChangedHandler(new ToolbarButtonVisibilitySelectionHandler<DiskResource>(
-                view.getToolbar(), view));
-        addFolderSelectionHandler(new ToolbarButtonVisibilitySelectionHandler<Folder>(view.getToolbar(), view));
+        DiskResourceViewToolbar toolbar = view.getToolbar();
+        initToolbar(toolbar);
+        addFileSelectChangedHandler(new ToolbarButtonVisibilityGridHandler(toolbar));
+        addFolderSelectionHandler(new ToolbarButtonVisibilityNavigationHandler(toolbar));
 
         treeLoader.addLoadHandler(new DiskResourceViewLoadHandler(this.view.getTreeStore(), this));
 
@@ -208,7 +210,19 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         eventBus.addHandler(DataSearchNameSelectedEvent.TYPE, dataSearchHandler);
         eventBus.addHandler(DataSearchPathSelectedEvent.TYPE, dataSearchHandler);
         eventBus.addHandler(DataSearchHistorySelectedEvent.TYPE, dataSearchHandler);
+    }
 
+    private void initToolbar(DiskResourceViewToolbar toolbar) {
+        // Disable all buttons, except for Uploads.
+        toolbar.setNewFolderButtonEnabled(false);
+        toolbar.setRefreshButtonEnabled(false);
+        toolbar.setDownloadsEnabled(false);
+        toolbar.setBulkDownloadButtonEnabled(false);
+        toolbar.setSimpleDowloadButtonEnabled(false);
+        toolbar.setRenameButtonEnabled(false);
+        toolbar.setShareButtonEnabled(false);
+        toolbar.setDeleteButtonEnabled(false);
+        toolbar.setRestoreMenuItemEnabled(false);
     }
 
     @Override
@@ -329,17 +343,31 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doBulkUpload() {
-        EventBus.getInstance().fireEvent(new RequestBulkUploadEvent(this, getSelectedFolder()));
+        EventBus.getInstance().fireEvent(new RequestBulkUploadEvent(this, getSelectedUploadFolder()));
     }
 
     @Override
     public void doSimpleUpload() {
-        EventBus.getInstance().fireEvent(new RequestSimpleUploadEvent(this, getSelectedFolder()));
+        EventBus.getInstance().fireEvent(new RequestSimpleUploadEvent(this, getSelectedUploadFolder()));
     }
 
     @Override
     public void doImport() {
-        EventBus.getInstance().fireEvent(new RequestImportFromUrlEvent(this, getSelectedFolder()));
+        EventBus.getInstance().fireEvent(new RequestImportFromUrlEvent(this, getSelectedUploadFolder()));
+    }
+
+    private Folder getSelectedUploadFolder() {
+        Folder selectedFolder = getSelectedFolder();
+
+        if (selectedFolder == null) {
+            for (Folder root : view.getTreeStore().getRootItems()) {
+                if (root.getName().equals(UserInfo.getInstance().getUsername())) {
+                    return root;
+                }
+            }
+        }
+
+        return selectedFolder;
     }
 
     @Override

@@ -9,6 +9,7 @@ import java.util.List;
 import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.uicommons.client.models.CommonModelAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.File;
 import org.iplantc.core.uidiskresource.client.models.Folder;
@@ -107,7 +108,11 @@ public class DiskResourceUtil {
     }
 
     public static boolean canUploadTo(DiskResource resource) {
-        return isOwner(resource) && (resource instanceof Folder);
+        return isOwner(resource) && (resource instanceof Folder) && !inTrash(resource);
+    }
+
+    public static boolean inTrash(DiskResource resource) {
+        return resource != null && resource.getId().startsWith(UserInfo.getInstance().getTrashPath());
     }
 
     public static <R extends DiskResource> boolean containsFolder(Iterable<R> selection) {

@@ -15,7 +15,8 @@ import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.File;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.models.Permissions;
-import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilitySelectionHandler;
+import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityGridHandler;
+import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityNavigationHandler;
 import org.iplantc.core.uidiskresource.client.search.models.DataSearchAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
@@ -95,20 +96,31 @@ public class DiskResourcePresenterTest {
     private void checkConstruction() {
         context.checking(new Expectations() {
             {
+                DiskResourceViewToolbar toolbar = context.mock(DiskResourceViewToolbar.class);
+
                 oneOf(view).getTreeStore();
-                exactly(2).of(view).getToolbar();
-                will(returnValue(context.mock(DiskResourceViewToolbar.class)));
-                oneOf(view)
-                        .addDiskResourceSelectChangedHandler(
-                                with(aNonNull(ToolbarButtonVisibilitySelectionHandler.class)));
+                oneOf(view).getToolbar();
+                will(returnValue(toolbar));
+                oneOf(view).addDiskResourceSelectChangedHandler(
+                        with(aNonNull(ToolbarButtonVisibilityGridHandler.class)));
                 oneOf(view).addFolderSelectionHandler(
-                        with(aNonNull(ToolbarButtonVisibilitySelectionHandler.class)));
+                        with(aNonNull(ToolbarButtonVisibilityNavigationHandler.class)));
 
                 oneOf(view).setTreeLoader(with(aNonNull(TreeLoader.class)));
                 oneOf(view).setPresenter(with(aNonNull(DiskResourceView.Presenter.class)));
                 oneOf(proxy).setPresenter(with(aNonNull(DiskResourceView.Presenter.class)));
                 oneOf(diskResourceService).getDataSearchHistory(with(aNonNull(AsyncCallback.class)));
                 oneOf(diskResourceService).getUserTrashPath(with(aNonNull(String.class)), with(aNonNull(AsyncCallback.class)));
+
+                oneOf(toolbar).setNewFolderButtonEnabled(with(false));
+                oneOf(toolbar).setRefreshButtonEnabled(with(false));
+                oneOf(toolbar).setDownloadsEnabled(with(false));
+                oneOf(toolbar).setBulkDownloadButtonEnabled(with(false));
+                oneOf(toolbar).setSimpleDowloadButtonEnabled(with(false));
+                oneOf(toolbar).setRenameButtonEnabled(with(false));
+                oneOf(toolbar).setShareButtonEnabled(with(false));
+                oneOf(toolbar).setDeleteButtonEnabled(with(false));
+                oneOf(toolbar).setRestoreMenuItemEnabled(with(false));
             }
         });
     }
@@ -221,8 +233,9 @@ public class DiskResourcePresenterTest {
         final DiskResourceViewToolbar toolbar = context.mock(DiskResourceViewToolbar.class, "tb");
         final Folder folder = context.mock(Folder.class);
         final Permissions permissions = context.mock(Permissions.class);
-        ToolbarButtonVisibilitySelectionHandler<Folder> selChangedHandler = new ToolbarButtonVisibilitySelectionHandler<Folder>(
-                toolbar, view);
+        ToolbarButtonVisibilityNavigationHandler navHandler = new ToolbarButtonVisibilityNavigationHandler(
+                toolbar);
+        ToolbarButtonVisibilityGridHandler gridHandler = new ToolbarButtonVisibilityGridHandler(toolbar);
         // Test the case where one folder is selected, and user IS the owner
         context.checking(new Expectations() {
             {
@@ -241,9 +254,6 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setShareButtonEnabled(with(true));
                 oneOf(toolbar).setRestoreMenuItemEnabled(with(false));
 
-                oneOf(view).isRoot(with(folder));
-                will(returnValue(false));
-
                 allowing(permissions).isOwner();
                 will(returnValue(true));
                 allowing(folder).getPermissions();
@@ -254,7 +264,11 @@ public class DiskResourcePresenterTest {
 
             }
         });
-        selChangedHandler.onSelection(new SelectionEvent<Folder>(folder) {});
+
+        navHandler.onSelection(new SelectionEvent<Folder>(folder) {
+        });
+        gridHandler.onSelection(new SelectionEvent<DiskResource>(folder) {
+        });
 
         context.assertIsSatisfied();
 
@@ -266,8 +280,9 @@ public class DiskResourcePresenterTest {
         final DiskResourceViewToolbar toolbar = context.mock(DiskResourceViewToolbar.class);
         final Folder folder = context.mock(Folder.class);
         final Permissions permissions = context.mock(Permissions.class);
-        ToolbarButtonVisibilitySelectionHandler<Folder> selChangedHandler = new ToolbarButtonVisibilitySelectionHandler<Folder>(
-                toolbar, view);
+        ToolbarButtonVisibilityNavigationHandler navHandler = new ToolbarButtonVisibilityNavigationHandler(
+                toolbar);
+        ToolbarButtonVisibilityGridHandler gridHandler = new ToolbarButtonVisibilityGridHandler(toolbar);
 
         // Test the case where one folder is selected, and user IS NOT the owner
         context.checking(new Expectations() {
@@ -297,7 +312,10 @@ public class DiskResourcePresenterTest {
             }
         });
 
-        selChangedHandler.onSelection(new SelectionEvent<Folder>(folder) {});
+        navHandler.onSelection(new SelectionEvent<Folder>(folder) {
+        });
+        gridHandler.onSelection(new SelectionEvent<DiskResource>(folder) {
+        });
 
         context.assertIsSatisfied();
     }
@@ -308,8 +326,9 @@ public class DiskResourcePresenterTest {
         final DiskResourceViewToolbar toolbar = context.mock(DiskResourceViewToolbar.class);
         final Folder folder = context.mock(Folder.class);
         final Permissions permissions = context.mock(Permissions.class);
-        ToolbarButtonVisibilitySelectionHandler<DiskResource> selChangedHandler = new ToolbarButtonVisibilitySelectionHandler<DiskResource>(
-                toolbar, view);
+        ToolbarButtonVisibilityNavigationHandler navHandler = new ToolbarButtonVisibilityNavigationHandler(
+                toolbar);
+        ToolbarButtonVisibilityGridHandler gridHandler = new ToolbarButtonVisibilityGridHandler(toolbar);
         // Test the case where one folder is selected, and user IS the owner
         context.checking(new Expectations() {
             {
@@ -328,9 +347,6 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setShareButtonEnabled(with(true));
                 oneOf(toolbar).setRestoreMenuItemEnabled(with(false));
 
-                oneOf(view).isRoot(with(folder));
-                will(returnValue(false));
-
                 allowing(permissions).isOwner();
                 will(returnValue(true));
                 allowing(folder).getPermissions();
@@ -341,9 +357,13 @@ public class DiskResourcePresenterTest {
             }
         });
 
+        List<Folder> folderList = Lists.newArrayList();
+        folderList.add(folder);
         List<DiskResource> list = Lists.newArrayList();
         list.add(folder);
-        selChangedHandler.onSelectionChanged(new SelectionChangedEvent<DiskResource>(list));
+        navHandler.onSelectionChanged(new SelectionChangedEvent<Folder>(folderList) {
+        });
+        gridHandler.onSelectionChanged(new SelectionChangedEvent<DiskResource>(list));
 
         context.assertIsSatisfied();
 
@@ -355,8 +375,9 @@ public class DiskResourcePresenterTest {
         final DiskResourceViewToolbar toolbar = context.mock(DiskResourceViewToolbar.class);
         final Folder folder = context.mock(Folder.class);
         final Permissions permissions = context.mock(Permissions.class);
-        ToolbarButtonVisibilitySelectionHandler<DiskResource> selChangedHandler = new ToolbarButtonVisibilitySelectionHandler<DiskResource>(
-                toolbar, view);
+        ToolbarButtonVisibilityNavigationHandler navHandler = new ToolbarButtonVisibilityNavigationHandler(
+                toolbar);
+        ToolbarButtonVisibilityGridHandler gridHandler = new ToolbarButtonVisibilityGridHandler(toolbar);
 
         // Test the case where one folder is selected, and user IS NOT the owner
         context.checking(new Expectations() {
@@ -386,9 +407,13 @@ public class DiskResourcePresenterTest {
             }
         });
 
+        List<Folder> folderList = Lists.newArrayList();
+        folderList.add(folder);
         List<DiskResource> list = Lists.newArrayList();
         list.add(folder);
-        selChangedHandler.onSelectionChanged(new SelectionChangedEvent<DiskResource>(list));
+        navHandler.onSelectionChanged(new SelectionChangedEvent<Folder>(folderList) {
+        });
+        gridHandler.onSelectionChanged(new SelectionChangedEvent<DiskResource>(list));
 
         context.assertIsSatisfied();
     }

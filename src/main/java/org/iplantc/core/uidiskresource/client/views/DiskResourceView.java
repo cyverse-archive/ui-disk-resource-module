@@ -55,12 +55,6 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
         Builder builder();
 
-        @Override
-        Folder getSelectedFolder();
-
-        @Override
-        Set<DiskResource> getSelectedDiskResources();
-
         /**
          * Method called by the view when a folder is selected.
          * Whenever this method is called with a non-null and non-empty list, the presenter will have the
