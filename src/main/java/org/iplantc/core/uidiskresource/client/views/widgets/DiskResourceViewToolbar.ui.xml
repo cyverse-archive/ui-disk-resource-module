@@ -10,6 +10,11 @@
             type="org.iplantc.core.resources.client.IplantResources"/>
    <ui:with field="display"
             type="org.iplantc.core.resources.client.messages.IplantDisplayStrings"/>
+    <ui:with
+        field="flexBoxData"
+        type="com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData">
+        <ui:attributes flex="3" />
+    </ui:with>
 
    <toolbar:ToolBar>
          <!-- Upload Menu -->
@@ -119,10 +124,13 @@
          </button:TextButton>
       </toolbar:child>
 
-      <!-- Data Search box -->
-      <toolbar:child>
-      	<form:TextField debugId="idSearchTxt" ui:field="searchField" emptyText="search by name"> </form:TextField>
-      </toolbar:child>
+        <!-- Data Search box -->
+        <toolbar:child layoutData="{flexBoxData}">
+            <form:TextField
+                debugId="idSearchTxt"
+                ui:field="searchField"
+                emptyText="search by name" />
+        </toolbar:child>
 
 
    </toolbar:ToolBar>
