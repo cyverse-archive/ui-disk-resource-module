@@ -66,10 +66,13 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     MenuItem bulkDownloadButton;
 
     @UiField
-    TextButton renameButton;
+    MenuItem renameButton;
 
     @UiField
-    TextButton deleteButton;
+    MenuItem deleteButton;
+    
+    @UiField
+    MenuItem metadataButton;
 
     @UiField
     TextButton shareButton;
@@ -157,7 +160,7 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     }
 
     @UiHandler("renameButton")
-    void onRenameClicked(SelectEvent event) {
+    void onRenameClicked(SelectionEvent<Item> event) {
         if (!presenter.getSelectedDiskResources().isEmpty()
                 && (presenter.getSelectedDiskResources().size() == 1)) {
             DiskResource dr = presenter.getSelectedDiskResources().iterator().next();
@@ -177,8 +180,13 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     }
 
     @UiHandler("deleteButton")
-    void onDeleteClicked(SelectEvent event) {
+    void onDeleteClicked(SelectionEvent<Item> event) {
         presenter.requestDelete();
+    }
+
+    @UiHandler("metadataButton")
+    void onMetadataClicked(SelectionEvent<Item> event) {
+        presenter.doMetadata();
     }
 
 
