@@ -223,6 +223,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         toolbar.setShareButtonEnabled(false);
         toolbar.setDeleteButtonEnabled(false);
         toolbar.setRestoreMenuItemEnabled(false);
+        toolbar.setEditEnabled(false);
     }
 
     @Override

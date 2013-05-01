@@ -88,4 +88,8 @@ public interface DiskResourceViewToolbar extends IsWidget {
 
     void setRestoreMenuItemEnabled(boolean b);
 
+    void setMetaDatMenuItemEnabled(boolean canEditMetadata);
+
+    void setEditEnabled(boolean canEdit);
+
 }

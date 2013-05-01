@@ -121,6 +121,7 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setShareButtonEnabled(with(false));
                 oneOf(toolbar).setDeleteButtonEnabled(with(false));
                 oneOf(toolbar).setRestoreMenuItemEnabled(with(false));
+                oneOf(toolbar).setEditEnabled(with(false));
             }
         });
     }
@@ -241,6 +242,7 @@ public class DiskResourcePresenterTest {
             {
                 oneOf(toolbar).setUploadsEnabled(with(true));
                 oneOf(toolbar).setDownloadsEnabled(with(true));
+                oneOf(toolbar).setEditEnabled(with(true));
 
                 oneOf(toolbar).setBulkUploadEnabled(with(true));
                 oneOf(toolbar).setSimpleUploadEnabled(with(true));
@@ -253,7 +255,7 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setDeleteButtonEnabled(with(true));
                 oneOf(toolbar).setShareButtonEnabled(with(true));
                 oneOf(toolbar).setRestoreMenuItemEnabled(with(false));
-
+                oneOf(toolbar).setMetaDatMenuItemEnabled(with(true));
                 allowing(permissions).isOwner();
                 will(returnValue(true));
                 allowing(folder).getPermissions();
@@ -289,7 +291,7 @@ public class DiskResourcePresenterTest {
             {
                 oneOf(toolbar).setUploadsEnabled(with(false));
                 oneOf(toolbar).setDownloadsEnabled(with(true));
-
+                oneOf(toolbar).setEditEnabled(with(false));
                 oneOf(toolbar).setBulkUploadEnabled(with(false));
                 oneOf(toolbar).setSimpleUploadEnabled(with(false));
                 oneOf(toolbar).setImportButtonEnabled(with(false));
@@ -301,6 +303,7 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setDeleteButtonEnabled(with(false));
                 oneOf(toolbar).setShareButtonEnabled(with(false));
                 oneOf(toolbar).setRestoreMenuItemEnabled(with(false));
+                oneOf(toolbar).setMetaDatMenuItemEnabled(with(false));
 
                 allowing(permissions).isOwner();
                 will(returnValue(false));
@@ -334,6 +337,7 @@ public class DiskResourcePresenterTest {
             {
                 oneOf(toolbar).setUploadsEnabled(with(true));
                 oneOf(toolbar).setDownloadsEnabled(with(true));
+                oneOf(toolbar).setEditEnabled(with(true));
 
                 oneOf(toolbar).setBulkUploadEnabled(with(true));
                 oneOf(toolbar).setSimpleUploadEnabled(with(true));
@@ -346,6 +350,7 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setDeleteButtonEnabled(with(true));
                 oneOf(toolbar).setShareButtonEnabled(with(true));
                 oneOf(toolbar).setRestoreMenuItemEnabled(with(false));
+                oneOf(toolbar).setMetaDatMenuItemEnabled(with(true));
 
                 allowing(permissions).isOwner();
                 will(returnValue(true));
@@ -384,6 +389,7 @@ public class DiskResourcePresenterTest {
             {
                 oneOf(toolbar).setUploadsEnabled(with(false));
                 oneOf(toolbar).setDownloadsEnabled(with(true));
+                oneOf(toolbar).setEditEnabled(with(false));
 
                 oneOf(toolbar).setBulkUploadEnabled(with(false));
                 oneOf(toolbar).setSimpleUploadEnabled(with(false));
@@ -396,6 +402,7 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setDeleteButtonEnabled(with(false));
                 oneOf(toolbar).setShareButtonEnabled(with(false));
                 oneOf(toolbar).setRestoreMenuItemEnabled(with(false));
+                oneOf(toolbar).setMetaDatMenuItemEnabled(with(false));
 
                 allowing(permissions).isOwner();
                 will(returnValue(false));

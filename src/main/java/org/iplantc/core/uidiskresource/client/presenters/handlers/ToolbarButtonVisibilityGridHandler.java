@@ -25,21 +25,25 @@ public class ToolbarButtonVisibilityGridHandler extends
         boolean selectionEmpty = selection.isEmpty();
         boolean oneSelected = selection.size() == 1;
         boolean selectionInTrash = selectionInTrash(selection);
-        @SuppressWarnings("unchecked")
         boolean owner = !selectionEmpty && DiskResourceUtil.isOwner(selection);
 
         boolean canDownload = !selectionEmpty;
         boolean canSimpleDownload = canDownload && !DiskResourceUtil.containsFolder(selection);
         boolean canRename = oneSelected && owner && !selectionInTrash;
         boolean canShare = (oneSelected ? owner : !selectionEmpty) && !selectionInTrash;
+        boolean canEditMetadata = oneSelected && owner && !selectionInTrash;
+        boolean canDelete = owner;
+        boolean canEdit = canRename || canDelete || canEditMetadata;
 
         toolbar.setDownloadsEnabled(canDownload);
         toolbar.setBulkDownloadButtonEnabled(canDownload);
         toolbar.setSimpleDowloadButtonEnabled(canSimpleDownload);
         toolbar.setRenameButtonEnabled(canRename);
-        toolbar.setDeleteButtonEnabled(owner);
+        toolbar.setDeleteButtonEnabled(canDelete);
         toolbar.setShareButtonEnabled(canShare);
         toolbar.setRestoreMenuItemEnabled(selectionInTrash);
+        toolbar.setMetaDatMenuItemEnabled(canEditMetadata);
+        toolbar.setEditEnabled(canEdit);
     }
 
     /**

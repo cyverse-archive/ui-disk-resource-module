@@ -92,6 +92,9 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     @UiField
     MenuItem dataLink;
 
+    @UiField
+    TextButton edit;
+
     public DiskResourceViewToolbarImpl() {
         widget = BINDER.createAndBindUi(this);
 
@@ -293,5 +296,15 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     @Override
     public void setRestoreMenuItemEnabled(boolean enabled) {
         restore.setEnabled(enabled);
+    }
+
+    @Override
+    public void setMetaDatMenuItemEnabled(boolean canEditMetadata) {
+        metadataButton.setEnabled(canEditMetadata);
+    }
+
+    @Override
+    public void setEditEnabled(boolean canEdit) {
+        edit.setEnabled(canEdit);
     }
 }
