@@ -101,7 +101,7 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
             final DiskResourceView.Presenter presenter) {
         this.resource = resource;
         setSize("500", "300");
-        add(uiBinder.createAndBindUi(this));
+        setWidget(uiBinder.createAndBindUi(this));
         setHeadingText(I18N.DISPLAY.metadata() + ":" + resource.getId());
 
         okButton = getButtonById(PredefinedButton.OK.name());

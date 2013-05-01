@@ -70,7 +70,7 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
 
     @UiField
     MenuItem deleteButton;
-    
+
     @UiField
     MenuItem metadataButton;
 
@@ -188,6 +188,7 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     void onMetadataClicked(SelectionEvent<Item> event) {
         presenter.doMetadata();
     }
+
 
 
     @UiHandler("dataLink")
