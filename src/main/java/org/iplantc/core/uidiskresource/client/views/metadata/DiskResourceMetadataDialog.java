@@ -36,8 +36,11 @@ import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
+import com.sencha.gxt.data.shared.Store.Change;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.event.CompleteEditEvent;
+import com.sencha.gxt.widget.core.client.event.CompleteEditEvent.CompleteEditHandler;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -57,7 +60,6 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
 public class DiskResourceMetadataDialog extends IPlantDialog {
-
 
     private static final String USER_UNIT_TAG = "ipc_user_unit_tag";
 
@@ -110,8 +112,8 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
 
             @Override
             public void onSelect(SelectEvent event) {
-                presenter.setDiskResourceMetaData(resource, getMetadataToAdd(),
-                        getMetadataToDelete(), new DiskResourceMetadataUpdateCallback());
+                presenter.setDiskResourceMetaData(resource, getMetadataToAdd(), getMetadataToDelete(),
+                        new DiskResourceMetadataUpdateCallback());
             }
         });
         initGridEditing(grid, listStore, okButton);
@@ -125,8 +127,7 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
 
     private void initGridEditing(final Grid<DiskResourceMetadata> grid,
             final ListStore<DiskResourceMetadata> listStore, final TextButton okButton) {
-        gridInlineEditing = new GridInlineEditing<DiskResourceMetadata>(
-                grid);
+        gridInlineEditing = new GridInlineEditing<DiskResourceMetadata>(grid);
         ColumnConfig<DiskResourceMetadata, String> column1 = grid.getColumnModel().getColumn(0);
         ColumnConfig<DiskResourceMetadata, String> column2 = grid.getColumnModel().getColumn(1);
 
@@ -146,6 +147,13 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
 
         gridInlineEditing.addEditor(column1, field1);
         gridInlineEditing.addEditor(column2, field2);
+        gridInlineEditing.addCompleteEditHandler(new CompleteEditHandler<DiskResourceMetadata>() {
+
+            @Override
+            public void onCompleteEdit(CompleteEditEvent<DiskResourceMetadata> event) {
+                listStore.commitChanges();
+            }
+        });
 
     }
 
@@ -161,10 +169,10 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
     }
 
     @UiHandler("deleteMetadataButton")
-    void onDeleteMetadataSelected(SelectEvent event){
-        if(!resource.getPermissions().isWritable()){
+    void onDeleteMetadataSelected(SelectEvent event) {
+        if (!resource.getPermissions().isWritable()) {
             AlertMessageBox mb = new AlertMessageBox(I18N.ERROR.permissionErrorTitle(),
-            		I18N.ERROR.permissionErrorMessage());
+                    I18N.ERROR.permissionErrorMessage());
             mb.show();
             return;
         }
@@ -247,7 +255,10 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
                 Store<DiskResourceMetadata>.Record record = listStore.getRecord(drmd);
 
                 if (record.isDirty()) {
-                    dupeSet.add(record.getChange(props.attribute()).getValue());
+                    Change<DiskResourceMetadata, String> change = record.getChange(props.attribute());
+                    if (change != null) {
+                        dupeSet.add(change.getValue());
+                    }
                 } else {
                     String attribute = drmd.getAttribute();
                     dupeSet.add(attribute);
@@ -353,7 +364,10 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
                 Store<DiskResourceMetadata>.Record record = listStore.getRecord(md);
 
                 if (record.isDirty()) {
-                    dupeSet.add(record.getChange(props.attribute()).getValue());
+                    Change<DiskResourceMetadata, String> change = record.getChange(props.attribute());
+                    if (change != null) {
+                        dupeSet.add(change.getValue());
+                    }
                 } else {
                     String attribute = md.getAttribute();
                     dupeSet.add(attribute);
