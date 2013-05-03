@@ -254,6 +254,8 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setRenameButtonEnabled(with(true));
                 oneOf(toolbar).setDeleteButtonEnabled(with(true));
                 oneOf(toolbar).setShareButtonEnabled(with(true));
+                oneOf(toolbar).setShareMenuItemEnabled(with(true));
+                oneOf(toolbar).setDataLinkMenuItemEnabled(with(false));
                 oneOf(toolbar).setRestoreMenuItemEnabled(with(false));
                 oneOf(toolbar).setMetaDatMenuItemEnabled(with(true));
                 allowing(permissions).isOwner();
@@ -302,6 +304,8 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setRenameButtonEnabled(with(false));
                 oneOf(toolbar).setDeleteButtonEnabled(with(false));
                 oneOf(toolbar).setShareButtonEnabled(with(false));
+                oneOf(toolbar).setShareMenuItemEnabled(with(false));
+                oneOf(toolbar).setDataLinkMenuItemEnabled(with(false));
                 oneOf(toolbar).setRestoreMenuItemEnabled(with(false));
                 oneOf(toolbar).setMetaDatMenuItemEnabled(with(false));
 
@@ -349,6 +353,8 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setRenameButtonEnabled(with(true));
                 oneOf(toolbar).setDeleteButtonEnabled(with(true));
                 oneOf(toolbar).setShareButtonEnabled(with(true));
+                oneOf(toolbar).setShareMenuItemEnabled(with(true));
+                oneOf(toolbar).setDataLinkMenuItemEnabled(with(false));
                 oneOf(toolbar).setRestoreMenuItemEnabled(with(false));
                 oneOf(toolbar).setMetaDatMenuItemEnabled(with(true));
 
@@ -401,6 +407,8 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setRenameButtonEnabled(with(false));
                 oneOf(toolbar).setDeleteButtonEnabled(with(false));
                 oneOf(toolbar).setShareButtonEnabled(with(false));
+                oneOf(toolbar).setShareMenuItemEnabled(with(false));
+                oneOf(toolbar).setDataLinkMenuItemEnabled(with(false));
                 oneOf(toolbar).setRestoreMenuItemEnabled(with(false));
                 oneOf(toolbar).setMetaDatMenuItemEnabled(with(false));
 
