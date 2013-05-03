@@ -84,6 +84,7 @@ import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 import com.sencha.gxt.data.shared.loader.LoadHandler;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.widget.core.client.Dialog;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
@@ -107,6 +108,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private final DataSearchAutoBeanFactory dataSearchFactory;
     private final List<String> searchHistory = Lists.newArrayList();
     private String currentSearchTerm;
+    private ToolButton tool_help;
 
     @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
@@ -802,6 +804,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         DataLinkPanel.Presenter<DiskResource> dlPresenter = new DataLinkPresenter<DiskResource>(
                new ArrayList<DiskResource>(getSelectedDiskResources()));
         dlPresenter.go(dlg);
+        tool_help = new ToolButton(ToolButton.QUESTION);
+        dlg.getHeader().addTool(tool_help);
         dlg.show();
     }
 

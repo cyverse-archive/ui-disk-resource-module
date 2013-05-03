@@ -18,6 +18,7 @@ import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.widget.core.client.Dialog;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
@@ -32,6 +33,7 @@ public class DataSharingDialog extends Dialog {
 
     // private CheckBoxSelectionModel<Collaborator> collabCheckBoxModel;
     private CheckBoxSelectionModel<DiskResource> drCheckBoxModel;
+    private ToolButton tool_help;
 
     public DataSharingDialog(Set<DiskResource> resources) {
         setPixelSize(600, 500);
@@ -51,6 +53,8 @@ public class DataSharingDialog extends Dialog {
                 p.processRequest();
             }
         });
+        tool_help = new ToolButton(ToolButton.QUESTION);
+        getHeader().addTool(tool_help);
     }
 
     private ColumnModel<DiskResource> buildDiskResourceColumnModel() {
