@@ -97,10 +97,10 @@
 				<button:menu>
 					<menu:Menu>
 						<menu:MenuItem debugId="idLinkShare" ui:field="dataLink"
-							text="Send a link">
+							text="{display.viaPublicLink}">
 						</menu:MenuItem>
 						<menu:MenuItem debugId="idUserShare" ui:field="share"
-							text="Via Discovery Environment">
+							text="{display.viaDiscoveryEnvironment}">
 						</menu:MenuItem>
 					</menu:Menu>
 				</button:menu>

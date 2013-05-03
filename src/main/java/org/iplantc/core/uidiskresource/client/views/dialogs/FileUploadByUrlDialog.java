@@ -28,6 +28,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.util.Format;
 import com.sencha.gxt.core.shared.FastMap;
 import com.sencha.gxt.fx.client.FxElement;
 import com.sencha.gxt.widget.core.client.Status;
@@ -38,6 +39,8 @@ import com.sencha.gxt.widget.core.client.form.Field;
 import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.ValueBaseField;
+import com.sencha.gxt.widget.core.client.tips.ToolTip;
+import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
 public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<Entry<Field<String>, Status>> {
 
@@ -78,9 +81,16 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
         fieldToStatusMap.put(url2, formStatus2);
         fieldToStatusMap.put(url3, formStatus3);
         fieldToStatusMap.put(url4, formStatus4);
-        htmlDestText.setHTML(I18N.DISPLAY.uploadingToFolder(uploadDest.getId()));
+        initDestPathLabel();
 
         addCancelButtonSelectHandler(new HideSelectHandler(this));
+    }
+
+    private void initDestPathLabel() {
+        String destPath = uploadDest.getId();
+
+        htmlDestText.setHTML(Format.ellipse(I18N.DISPLAY.uploadingToFolder(destPath), 80));
+        new ToolTip(htmlDestText, new ToolTipConfig(destPath));
     }
 
     @UiFactory

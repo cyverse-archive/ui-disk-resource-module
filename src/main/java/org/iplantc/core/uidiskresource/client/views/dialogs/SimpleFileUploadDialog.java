@@ -25,6 +25,7 @@ import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.Splittable;
@@ -45,6 +46,8 @@ import com.sencha.gxt.widget.core.client.form.FormPanel.Encoding;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Method;
 import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.tips.ToolTip;
+import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
 public class SimpleFileUploadDialog extends IPlantDialog {
 
@@ -58,6 +61,9 @@ public class SimpleFileUploadDialog extends IPlantDialog {
 
     @UiTemplate("SimpleFileUploadPanel.ui.xml")
     interface SimpleFileUploadPanelUiBinder extends UiBinder<Widget, SimpleFileUploadDialog> {}
+
+    @UiField
+    HTML htmlDestText;
 
     @UiField
     FormPanel form0, form1, form2, form3, form4;
@@ -102,6 +108,15 @@ public class SimpleFileUploadDialog extends IPlantDialog {
         fufList = Lists.newArrayList(fuf0, fuf1, fuf2, fuf3, fuf4);
         tbList = Lists.newArrayList(btn0, btn1, btn2, btn3, btn4);
         statList = Lists.newArrayList(status0, status1, status2, status3, status4);
+
+        initDestPathLabel();
+    }
+
+    private void initDestPathLabel() {
+        String destPath = uploadDest.getId();
+
+        htmlDestText.setHTML(Format.ellipse(I18N.DISPLAY.uploadingToFolder(destPath), 80));
+        new ToolTip(htmlDestText, new ToolTipConfig(destPath));
     }
 
     @UiFactory

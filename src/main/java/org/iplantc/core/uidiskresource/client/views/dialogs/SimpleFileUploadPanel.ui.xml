@@ -54,6 +54,7 @@
     </ui:with>
 
     <con:VerticalLayoutContainer>
+        <g:HTML ui:field="htmlDestText" />
         <!-- One -->
         <gxtForm:FormPanel
             ui:field="form0"

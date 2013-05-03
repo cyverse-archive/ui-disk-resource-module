@@ -70,15 +70,38 @@ public class DiskResourceUtil {
     }
 
     public static boolean isOwner(Iterable<DiskResource> resources) {
+        if (resources == null) {
+            return false;
+        }
+
         // Use predicate to determine if user is owner of all disk resources
-        boolean isDeletable = true;
         for (DiskResource dr : resources) {
             if (!dr.getPermissions().isOwner()) {
-                isDeletable = false;
-                break;
+                return false;
             }
         }
-        return isDeletable;
+
+        return true;
+    }
+
+    /**
+     * Determines if the user is an owner of one item in the given resources.
+     * 
+     * @param resources
+     * @return
+     */
+    public static boolean hasOwner(Iterable<DiskResource> resources) {
+        if (resources == null) {
+            return false;
+        }
+
+        for (DiskResource dr : resources) {
+            if (dr.getPermissions().isOwner()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
