@@ -82,6 +82,10 @@ public interface DiskResourceViewToolbar extends IsWidget {
 
     void setShareButtonEnabled(boolean enabled);
 
+    void setShareMenuItemEnabled(boolean enabled);
+
+    void setDataLinkMenuItemEnabled(boolean enabled);
+
     void setSearchTerm(String searchTerm);
 
     void clearSearchTerm();
@@ -91,5 +95,4 @@ public interface DiskResourceViewToolbar extends IsWidget {
     void setMetaDatMenuItemEnabled(boolean canEditMetadata);
 
     void setEditEnabled(boolean canEdit);
-
 }

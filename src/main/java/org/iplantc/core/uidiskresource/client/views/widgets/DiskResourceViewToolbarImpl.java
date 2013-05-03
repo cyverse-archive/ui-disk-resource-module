@@ -204,6 +204,7 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
         final ConfirmMessageBox cmb = new ConfirmMessageBox(org.iplantc.core.resources.client.messages.I18N.DISPLAY.emptyTrash(),
                 org.iplantc.core.resources.client.messages.I18N.DISPLAY.emptyTrashWarning());
         cmb.addHideHandler(new HideHandler() {
+            @Override
             public void onHide(HideEvent event) {
                 if (cmb.getHideButton() == cmb.getButtonById(PredefinedButton.YES.name())) {
                     presenter.emptyTrash();
@@ -280,7 +281,15 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
         shareButton.setEnabled(enabled);
     }
 
+    @Override
+    public void setShareMenuItemEnabled(boolean enabled) {
+        share.setEnabled(enabled);
+    }
 
+    @Override
+    public void setDataLinkMenuItemEnabled(boolean enabled) {
+        dataLink.setEnabled(enabled);
+    }
 
     @Override
     public void setSearchTerm(String searchTerm) {
