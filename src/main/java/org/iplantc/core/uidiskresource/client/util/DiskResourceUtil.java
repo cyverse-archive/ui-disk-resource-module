@@ -147,6 +147,15 @@ public class DiskResourceUtil {
         return false;
     }
 
+    public static <R extends DiskResource> boolean containsFile(Iterable<R> selection) {
+        for (DiskResource resource : selection) {
+            if (resource instanceof File) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static <R extends DiskResource> Iterable<File> extractFiles(Iterable<R> diskresources) {
         List<File> files = Lists.newArrayList();
         for (DiskResource dr : diskresources) {
