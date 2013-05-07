@@ -167,7 +167,7 @@ public class DataSharingPermissionsPanel implements IsWidget {
                 final ManageCollaboratorsDailog dialog = new ManageCollaboratorsDailog(MODE.SELECT);
                 dialog.setModal(true);
                 dialog.show();
-                dialog.getOkButton().addSelectHandler(new SelectHandler() {
+                dialog.addOkButtonSelectHandler(new SelectHandler() {
 
                     @Override
                     public void onSelect(SelectEvent event) {
