@@ -16,6 +16,8 @@ import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.UserInfo;
+import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
+import org.iplantc.core.uicommons.client.widgets.ContextualHelpPopup;
 import org.iplantc.core.uidiskresource.client.dataLink.presenter.DataLinkPresenter;
 import org.iplantc.core.uidiskresource.client.dataLink.view.DataLinkPanel;
 import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
@@ -74,6 +76,7 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
@@ -83,8 +86,9 @@ import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 import com.sencha.gxt.data.shared.loader.LoadHandler;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
-import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
@@ -108,7 +112,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private final DataSearchAutoBeanFactory dataSearchFactory;
     private final List<String> searchHistory = Lists.newArrayList();
     private String currentSearchTerm;
-    private ToolButton tool_help;
 
     @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
@@ -794,18 +797,25 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doDataLinks() {
-        Dialog dlg = new Dialog();
+        IPlantDialog dlg = new IPlantDialog(true);
         dlg.setHeadingText(I18N.DISPLAY.manageDataLinks());
-        dlg.setResizable(false);
-        dlg.setModal(true);
         dlg.setHideOnButtonClick(true);
         dlg.setWidth(550);
-        dlg.getButtonById(Dialog.PredefinedButton.OK.toString()).setText("Done");
+        dlg.setOkButtonText(I18N.DISPLAY.done());
         DataLinkPanel.Presenter<DiskResource> dlPresenter = new DataLinkPresenter<DiskResource>(
                new ArrayList<DiskResource>(getSelectedDiskResources()));
         dlPresenter.go(dlg);
-        tool_help = new ToolButton(ToolButton.QUESTION);
-        dlg.getHeader().addTool(tool_help);
+        final ToolButton btn = dlg.gelHelpToolButton();
+        btn.addSelectHandler(new SelectHandler() {
+            
+            @Override
+            public void onSelect(SelectEvent event) {
+                ContextualHelpPopup popup = new ContextualHelpPopup();
+                popup.add(new HTML(I18N.HELP.manageDataLinksHelp()));
+                popup.showAt(btn.getAbsoluteLeft(), btn.getAbsoluteTop() + 15);
+                
+            }
+        });
         dlg.show();
     }
 

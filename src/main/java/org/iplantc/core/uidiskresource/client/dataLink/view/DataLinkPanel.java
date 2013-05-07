@@ -3,6 +3,7 @@ package org.iplantc.core.uidiskresource.client.dataLink.view;
 import java.util.List;
 
 import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.dataLink.models.DataLink;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 
@@ -24,7 +25,6 @@ import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.TreeStore;
-import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -137,7 +137,7 @@ public class DataLinkPanel<M extends DiskResource> implements IsWidget {
     @UiHandler("copyDataLinkButton")
     void onCopyDataLinkButtonSelected(SelectEvent event) {
         // Open dialog window with text selected.
-        Dialog dlg = new Dialog();
+        IPlantDialog dlg = new IPlantDialog();
         dlg.setHeadingText(I18N.DISPLAY.copy());
         dlg.setHideOnButtonClick(true);
         dlg.setResizable(false);
@@ -148,7 +148,6 @@ public class DataLinkPanel<M extends DiskResource> implements IsWidget {
         textBox.setValue(presenter.getSelectedDataLinkText());
         VerticalLayoutContainer container = new VerticalLayoutContainer();
         dlg.setWidget(container);
-        dlg.setModal(true);
         container.add(textBox);
         container.add(new Label(I18N.DISPLAY.copyPasteInstructions()));
         dlg.setFocusWidget(textBox);
