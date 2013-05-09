@@ -1,6 +1,7 @@
 package org.iplantc.core.uidiskresource.client.views.dialogs;
 
 import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.gin.DiskResourceInjector;
 import org.iplantc.core.uidiskresource.client.models.Folder;
@@ -31,6 +32,10 @@ public class FolderSelectDialog extends IPlantDialog implements TakesValue<Folde
     private Folder selectedFolder;
 
     public FolderSelectDialog() {
+        this(null);
+    }
+
+    public FolderSelectDialog(HasId folderToSelect) {
         // Disable Ok button by default.
         getOkButton().setEnabled(false);
 
@@ -46,9 +51,8 @@ public class FolderSelectDialog extends IPlantDialog implements TakesValue<Folde
         presenter.addFolderSelectionHandler(new FolderSelectionChangedHandler(this, selectedFolderField, getOkButton()));
 
         // Tell the presenter to add the view with the north, east, and center widgets hidden.
-        // presenter.go(this, false, true, true, true);
         presenter.builder().hideNorth().hideCenter().hideEast().singleSelect().go(this);
-
+        presenter.setSelectedFolderById(folderToSelect);
     }
 
     private final class FolderSelectionChangedHandler implements SelectionHandler<Folder> {
@@ -64,12 +68,13 @@ public class FolderSelectDialog extends IPlantDialog implements TakesValue<Folde
 
         @Override
         public void onSelection(SelectionEvent<Folder> event) {
-            if (event.getSelectedItem() == null) {
+            Folder diskResource = event.getSelectedItem();
+            if (diskResource == null) {
                 // Disable the okButton
                 okButton.setEnabled(false);
                 return;
             }
-            Folder diskResource = event.getSelectedItem();
+
             dlg.setValue(diskResource);
             textBox.setValue(diskResource.getName());
             // Enable the okButton
