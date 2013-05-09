@@ -19,6 +19,7 @@ import org.iplantc.core.uidiskresource.client.models.DiskResourceProperties;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.models.Permissions;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
+import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
@@ -142,6 +143,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
         this.treeStore = treeStore;
         widget = BINDER.createAndBindUi(this);
 
+        detailsPanel.setScrollMode(ScrollMode.AUTO);
         grid.setSelectionModel(((DiskResourceColumnModel)cm).getSelectionModel());
         // Set Leaf icon to a folder
         TreeStyle treeStyle = tree.getStyle();
@@ -537,7 +539,8 @@ public class DiskResourceViewImpl implements DiskResourceView {
                 detailsPanel.add(getPermissionsLabel(I18N.DISPLAY.permissions(), info.getPermissions()));
                 detailsPanel.add(getSharingLabel(I18N.DISPLAY.share(), info.getShareCount()));
                 if (info.getType().equalsIgnoreCase("file")) {
-                    detailsPanel.add(getNumberLabel(I18N.DISPLAY.size(), info.getSize()));
+                    detailsPanel.add(getStringLabel(I18N.DISPLAY.size(),
+                            DiskResourceUtil.formatFileSize(info.getSize() + "")));
 
                 } else {
                     detailsPanel.add(getDirFileCount(I18N.DISPLAY.files() + " / " + I18N.DISPLAY.folders(),
@@ -575,7 +578,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
      * @param value
      */
     private HorizontalPanel getDateLabel(String label, Date date) {
-        HorizontalPanel panel = buildRow();
         String value = "";
 
         if (date != null) {
@@ -585,21 +587,11 @@ public class DiskResourceViewImpl implements DiskResourceView {
             value = formatter.format(date);
         }
 
-
-        FieldLabel fl = new FieldLabel();
-        fl.setHTML(getDetailAsHtml(label, true));
-        panel.add(fl);
-
-        FieldLabel fv = new FieldLabel();
-        fv.setLabelSeparator("");
-        fv.setHTML(getDetailAsHtml(value, false));
-        panel.add(fv);
-
-        return panel;
+        return getStringLabel(label, value);
 
     }
 
-    private HorizontalPanel getNumberLabel(String label, long value) {
+    private HorizontalPanel getStringLabel(String label, String value) {
         HorizontalPanel panel = buildRow();
         FieldLabel fl = new FieldLabel();
         fl.setHTML(getDetailAsHtml(label, true));
@@ -614,28 +606,14 @@ public class DiskResourceViewImpl implements DiskResourceView {
     }
 
     private HorizontalPanel getDirFileCount(String label, int file_count, int dir_count) {
-        HorizontalPanel panel = buildRow();
-        FieldLabel fl = new FieldLabel();
-        fl.setHTML(getDetailAsHtml(label, true));
-        panel.add(fl);
-
-        FieldLabel fv = new FieldLabel();
-        fv.setLabelSeparator("");
-        fv.setHTML(getDetailAsHtml(file_count + " / " + dir_count, false));
-        panel.add(fv);
-
-        return panel;
+        return getStringLabel(label, file_count + " / " + dir_count);
     }
-
-
-
 
     /**
      * Add permissions detail
      *
      */
     private HorizontalPanel getPermissionsLabel(String label, Permissions p) {
-        HorizontalPanel panel = buildRow();
         String value;
         if (p.isOwner()) {
             value = I18N.DISPLAY.owner();
@@ -646,16 +624,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
             value = I18N.DISPLAY.readWrite();
         }
 
-        FieldLabel fl = new FieldLabel();
-        fl.setHTML(getDetailAsHtml(label, true));
-        panel.add(fl);
-
-        FieldLabel fv = new FieldLabel();
-        fv.setLabelSeparator("");
-        fv.setHTML(getDetailAsHtml(value, false));
-        panel.add(fv);
-
-        return panel;
+        return getStringLabel(label, value);
     }
 
     private HorizontalPanel buildRow() {

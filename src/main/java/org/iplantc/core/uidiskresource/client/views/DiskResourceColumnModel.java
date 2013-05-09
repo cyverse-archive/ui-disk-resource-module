@@ -8,6 +8,7 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceProperties;
 import org.iplantc.core.uidiskresource.client.models.File;
+import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
 
 import com.google.gwt.cell.client.DateCell;
@@ -71,8 +72,7 @@ public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
         @Override
         public String getValue(DiskResource object) {
             if (object instanceof File) {
-                // FIXME JDS This value provider is returning the un-converted file size in bytes.
-                return ((File)object).getSize();
+                return DiskResourceUtil.formatFileSize(((File)object).getSize());
             } else {
                 return null;
             }

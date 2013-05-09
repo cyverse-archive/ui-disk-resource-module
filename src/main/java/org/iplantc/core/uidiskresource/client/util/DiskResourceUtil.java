@@ -25,7 +25,7 @@ import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
 /**
  * @author sriram
- *
+ * 
  */
 public class DiskResourceUtil {
 
@@ -36,7 +36,8 @@ public class DiskResourceUtil {
      * @return the parent folder.
      */
     public static String parseParent(String path) {
-        LinkedList<String> split = Lists.newLinkedList(Splitter.on("/").trimResults().omitEmptyStrings().split(path));
+        LinkedList<String> split = Lists.newLinkedList(Splitter.on("/").trimResults().omitEmptyStrings()
+                .split(path));
         split.removeLast();
         return "/".concat(Joiner.on("/").join(split));
     }
@@ -48,11 +49,12 @@ public class DiskResourceUtil {
      * @return the display name.
      */
     public static String parseNameFromPath(String path) {
-        LinkedList<String> split = Lists.newLinkedList(Splitter.on("/").trimResults().omitEmptyStrings().split(path));
+        LinkedList<String> split = Lists.newLinkedList(Splitter.on("/").trimResults().omitEmptyStrings()
+                .split(path));
 
         return split.removeLast();
     }
-    
+
     public static List<String> parseNamesFromIdList(Iterable<String> idList) {
         List<String> nameList = Lists.newArrayList();
         for (String s : idList) {
@@ -105,7 +107,9 @@ public class DiskResourceUtil {
     }
 
     /**
-     * Determines if the given <code>DiskResource</code> is a direct child of the given parent <code>Folder</code>.
+     * Determines if the given <code>DiskResource</code> is a direct child of the given parent
+     * <code>Folder</code>.
+     * 
      * @param parent
      * @param resource
      * @return
@@ -115,9 +119,9 @@ public class DiskResourceUtil {
     }
 
     /**
-     * Determines if the given folder is a descendant of the given ancestor folder.
-     * This is done by verifying that the given folder's path starts with the ancestor's path.
-     *  
+     * Determines if the given folder is a descendant of the given ancestor folder. This is done by
+     * verifying that the given folder's path starts with the ancestor's path.
+     * 
      * @param ancestor the ancestor folder.
      * @param folder the folder whose ancestry is verified.
      * @return true if the folder is a descendant of the given ancestor, false otherwise.
@@ -139,8 +143,8 @@ public class DiskResourceUtil {
     }
 
     public static <R extends DiskResource> boolean containsFolder(Iterable<R> selection) {
-        for(DiskResource resource : selection){
-            if(resource instanceof Folder){
+        for (DiskResource resource : selection) {
+            if (resource instanceof Folder) {
                 return true;
             }
         }
@@ -196,8 +200,26 @@ public class DiskResourceUtil {
     }
 
     public static HasId getFolderIdFromFile(CommonModelAutoBeanFactory cFactory, File file) {
-        AutoBean<HasId> hAb = AutoBeanCodex.decode(cFactory, HasId.class, "{\"id\": \"" + parseParent(file.getId()) + "\"}");
+        AutoBean<HasId> hAb = AutoBeanCodex.decode(cFactory, HasId.class, "{\"id\": \""
+                + parseParent(file.getId()) + "\"}");
         return hAb.as();
+    }
+
+    public static String formatFileSize(String strSize) {
+        if (strSize != null && !strSize.isEmpty()) {
+            Long size = Long.parseLong(strSize);
+            if (size < 1024) {
+                return size + " bytes";
+            } else if (size < 1048576) {
+                return (Math.round(((size * 10) / 1024)) / 10) + " KB";
+            } else if (size < 1073741824) {
+                return (Math.round(((size * 10) / 1048576)) / 10) + " MB";
+            } else {
+                return (Math.round(((size * 10) / 1073741824)) / 10) + " GB";
+            }
+        } else {
+            return null;
+        }
     }
 
 }
