@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.uicommons.client.models.CommonModelUtils;
+import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.gin.DiskResourceInjector;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
@@ -41,15 +43,15 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<Fi
     private final TextField selectedFileField = new TextField();
     private List<File> selectedFileIds;
 
-    public static FileSelectDialog singleSelect() {
-        return new FileSelectDialog(true);
+    public static FileSelectDialog singleSelect(List<HasId> diskResourcesToSelect) {
+        return new FileSelectDialog(diskResourcesToSelect, true);
     }
 
     public FileSelectDialog() {
-        this(false);
+        this(null, false);
     }
 
-    protected FileSelectDialog(boolean singleSelect) {
+    protected FileSelectDialog(List<HasId> diskResourcesToSelect, boolean singleSelect) {
         // Disable Ok button by default.
         getOkButton().setEnabled(false);
 
@@ -72,13 +74,18 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<Fi
             b.singleSelect();
         }
 
-        b.go(this);
+        HasId folderToSelect = null;
+        if (diskResourcesToSelect != null && !diskResourcesToSelect.isEmpty()) {
+            String parentId = DiskResourceUtil.parseParent(diskResourcesToSelect.get(0).getId());
+            folderToSelect = CommonModelUtils.createHasIdFromString(parentId);
+        }
+
+        presenter.go(this, folderToSelect, diskResourcesToSelect);
     }
 
     @Override
     public void setValue(List<File> value) {
         this.selectedFileIds = value;
-
     }
 
     @Override
