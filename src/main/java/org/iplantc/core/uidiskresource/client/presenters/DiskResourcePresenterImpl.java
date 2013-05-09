@@ -252,8 +252,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void go(HasOneWidget container) {
         container.setWidget(view);
         // JDS Re-select currently selected folder in order to load center panel.
-        if (getSelectedFolder() != null) {
-            Folder tmp = getSelectedFolder();
+        Folder tmp = getSelectedFolder();
+        if (tmp != null) {
             view.deSelectNavigationFolder();
             view.setSelectedFolder(tmp);
         }
@@ -264,12 +264,11 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
         if ((folderToSelect == null) || Strings.isNullOrEmpty(folderToSelect.getId())) {
             go(container);
-            return;
+        } else {
+            container.setWidget(view);
+            setSelectedFolderById(folderToSelect);
+            setSelectedDiskResourcesById(diskResourcesToSelect);
         }
-        setSelectedFolderById(folderToSelect);
-        setSelectedDiskResourcesById(diskResourcesToSelect);
-
-        go(container);
     }
 
     @Override
@@ -284,10 +283,16 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         if ((folderToSelect == null) || Strings.isNullOrEmpty(folderToSelect.getId())) {
             return;
         }
-        // Create and add the SelectFolderByIdLoadHandler to the treeLoader.
-        SelectFolderByIdLoadHandler handler = new SelectFolderByIdLoadHandler(folderToSelect, this);
-        HandlerRegistration reg = treeLoader.addLoadHandler(handler);
-        addEventHandlerRegistration(handler, reg);
+
+        Folder folder = view.getFolderById(folderToSelect.getId());
+        if (folder != null) {
+            view.setSelectedFolder(folder);
+        } else {
+            // Create and add the SelectFolderByIdLoadHandler to the treeLoader.
+            SelectFolderByIdLoadHandler handler = new SelectFolderByIdLoadHandler(folderToSelect, this);
+            HandlerRegistration reg = treeLoader.addLoadHandler(handler);
+            addEventHandlerRegistration(handler, reg);
+        }
     }
 
     @Override

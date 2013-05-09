@@ -347,13 +347,12 @@ public class DiskResourceViewImpl implements DiskResourceView {
         final Folder findModelWithKey = treeStore.findModelWithKey(folder.getId());
         if (findModelWithKey != null) {
             showDataListingWidget();
-            tree.getSelectionModel().setSelection(Lists.newArrayList(findModelWithKey));
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 
                 @Override
                 public void execute() {
+                    tree.getSelectionModel().setSelection(Lists.newArrayList(findModelWithKey));
                     tree.scrollIntoView(findModelWithKey);
-
                 }
             });
         }
