@@ -252,11 +252,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void go(HasOneWidget container) {
         container.setWidget(view);
         // JDS Re-select currently selected folder in order to load center panel.
-        Folder tmp = getSelectedFolder();
-        if (tmp != null) {
-            view.deSelectNavigationFolder();
-            view.setSelectedFolder(tmp);
-        }
+        setSelectedFolderById(getSelectedFolder());
     }
 
     @Override
@@ -286,6 +282,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
         Folder folder = view.getFolderById(folderToSelect.getId());
         if (folder != null) {
+            // De-select currently selected folder, in case it is folderToSelect, to load center panel.
+            view.deSelectNavigationFolder();
             view.setSelectedFolder(folder);
         } else {
             // Create and add the SelectFolderByIdLoadHandler to the treeLoader.
