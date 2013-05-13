@@ -30,7 +30,7 @@
 							text="{display.simpleUploadFromDesktop}">
 						</menu:MenuItem>
 						<menu:MenuItem debugId="idUrlImportBtn" ui:field="importButton"
-							text="{display.importLabel}">
+							text="{display.urlImport}">
 						</menu:MenuItem>
 					</menu:Menu>
 				</button:menu>
