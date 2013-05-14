@@ -7,6 +7,8 @@ import org.iplantc.core.uicommons.client.views.IsMaskable;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.models.File;
+import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceErrorAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.services.errors.ErrorDiskResourceRename;
 
@@ -36,7 +38,15 @@ public class RenameDiskResourceCallback extends DiskResourceServiceCallback {
         Splittable split = StringQuoter.split(result);
 
         Splittable encode = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(dr));
-        AutoBean<DiskResource> newDr = AutoBeanCodex.decode(factory, DiskResource.class, encode);   // AutoBeanUtils.getAutoBean(dr);
+        AutoBean<? extends DiskResource> newDr = null;
+        if( dr instanceof Folder) {
+             newDr = AutoBeanCodex.decode(factory, Folder.class, encode); 
+        } else {
+            newDr = AutoBeanCodex.decode(factory, File.class, encode); 
+        }
+        
+        
+        // AutoBeanUtils.getAutoBean(dr);
         String newId = split.get("dest").asString();
         newDr.as().setId(newId);
         newDr.as().setName(newId.substring(newId.lastIndexOf("/") + 1));

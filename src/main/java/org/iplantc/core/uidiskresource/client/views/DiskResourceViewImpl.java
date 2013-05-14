@@ -16,6 +16,7 @@ import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceInfo;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceProperties;
+import org.iplantc.core.uidiskresource.client.models.File;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.models.Permissions;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
@@ -453,9 +454,14 @@ public class DiskResourceViewImpl implements DiskResourceView {
         }
 
         DiskResource listStoreModel = listStore.findModelWithKey(originalDr.getId());
+        
         if (listStoreModel != null) {
             listStore.remove(listStoreModel);
-            listStore.add(newDr);
+            if(listStoreModel instanceof File) {
+                listStore.add((File)newDr);
+            } else {
+                listStore.add((Folder)newDr);
+            }
         }
     }
 
