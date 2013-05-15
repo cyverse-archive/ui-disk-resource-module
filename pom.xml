@@ -4,7 +4,7 @@
 	<groupId>org.iplantc.core</groupId>
 	<artifactId>ui-diskresource</artifactId>
 	<packaging>jar</packaging>
-	<version>gxt3Sandbox-SNAPSHOT</version>
+	<version>dev-SNAPSHOT</version>
 	<name>The iPlant Collaborative disk resource models</name>
 	<url>http://project.iplantcollaborative.org</url>
 	<!-- convenience to define GWT version in one place -->
@@ -71,7 +71,7 @@
         <dependency>
             <groupId>org.iplantc.core</groupId>
             <artifactId>ui-commons</artifactId>
-            <version>gxt3Sandbox-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         
 	</dependencies>
