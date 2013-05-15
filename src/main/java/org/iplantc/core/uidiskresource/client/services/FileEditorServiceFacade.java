@@ -1,5 +1,6 @@
 package org.iplantc.core.uidiskresource.client.services;
 
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface FileEditorServiceFacade {
@@ -27,6 +28,12 @@ public interface FileEditorServiceFacade {
      * @param callback executes when RPC call is complete.
      */
     void getData(String url, AsyncCallback<String> callback);
+    
+   /** Call service to retrieve data chunks for a requested file
+    * 
+    * @param callback executes when RPC call is complete.
+    */
+    void  getDataChunk(String url, JSONObject body, AsyncCallback<String> callback);
 
     /**
      * Get Tree URLs for the given tree's file ID.
