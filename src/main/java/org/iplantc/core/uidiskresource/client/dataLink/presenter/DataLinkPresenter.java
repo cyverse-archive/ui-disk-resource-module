@@ -11,6 +11,7 @@ import org.iplantc.core.uidiskresource.client.dataLink.models.DataLink;
 import org.iplantc.core.uidiskresource.client.dataLink.models.DataLinkFactory;
 import org.iplantc.core.uidiskresource.client.dataLink.models.DataLinkList;
 import org.iplantc.core.uidiskresource.client.dataLink.view.DataLinkPanel;
+import org.iplantc.core.uidiskresource.client.gin.DiskResourceInjector;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
@@ -38,7 +39,7 @@ public class DataLinkPresenter<M extends DiskResource> implements DataLinkPanel.
 
     private final DataLinkPanel<M> view;
     private final UUIDServiceAsync uuidService = GWT.create(UUIDService.class);
-    private final DiskResourceServiceFacade drService = GWT.create(DiskResourceServiceFacade.class);
+    private final DiskResourceServiceFacade drService = DiskResourceInjector.INSTANCE.getDiskResourceServiceFacade();
     private final DataLinkFactory dlFactory = GWT.create(DataLinkFactory.class);
 
     public DataLinkPresenter(List<M> resources) {

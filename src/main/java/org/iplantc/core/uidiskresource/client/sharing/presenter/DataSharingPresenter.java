@@ -13,6 +13,7 @@ import org.iplantc.core.uicommons.client.collaborators.models.Collaborator;
 import org.iplantc.core.uicommons.client.collaborators.util.CollaboratorsUtil;
 import org.iplantc.core.uicommons.client.models.sharing.Sharing;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IplantInfoBox;
+import org.iplantc.core.uidiskresource.client.gin.DiskResourceInjector;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.models.Folder;
@@ -42,7 +43,7 @@ import com.sencha.gxt.core.shared.FastMap;
 public class DataSharingPresenter implements Presenter {
 
     DataSharingView view;
-    private List<DiskResource> selectedResources;
+    private final List<DiskResource> selectedResources;
 
 
 	private FastMap<List<JSONObject>> sharingList;
@@ -52,7 +53,7 @@ public class DataSharingPresenter implements Presenter {
     private static DiskResourceAutoBeanFactory factory = GWT.create(DiskResourceAutoBeanFactory.class);
 
     public DataSharingPresenter(List<DiskResource> selectedResources, DataSharingView view) {
-        facade = GWT.create(DiskResourceServiceFacade.class);
+        facade = DiskResourceInjector.INSTANCE.getDiskResourceServiceFacade();
         this.view = view;
         this.selectedResources = selectedResources;
         view.setPresenter(this);

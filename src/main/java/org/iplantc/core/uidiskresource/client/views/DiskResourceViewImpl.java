@@ -139,9 +139,9 @@ public class DiskResourceViewImpl implements DiskResourceView {
     private TreeLoader<Folder> treeLoader;
 
     @Inject
-    public DiskResourceViewImpl(final Tree<Folder, String> tree, final TreeStore<Folder> treeStore) {
+    public DiskResourceViewImpl(final Tree<Folder, String> tree) {
         this.tree = tree;
-        this.treeStore = treeStore;
+        this.treeStore = tree.getStore();
         widget = BINDER.createAndBindUi(this);
 
         detailsPanel.setScrollMode(ScrollMode.AUTO);
@@ -212,7 +212,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
             @Override
             public String getPath() {
-                return "name";
+                return "name"; //$NON-NLS-1$
             }
         };
     }
@@ -458,9 +458,9 @@ public class DiskResourceViewImpl implements DiskResourceView {
         if (listStoreModel != null) {
             listStore.remove(listStoreModel);
             if(listStoreModel instanceof File) {
-                listStore.add((File)newDr);
+                listStore.add(newDr);
             } else {
-                listStore.add((Folder)newDr);
+                listStore.add(newDr);
             }
         }
     }
@@ -524,7 +524,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @Override
     public void showSearchResultWidget(IsWidget w) {
         if (!w.asWidget().isAttached()) {
-        w.asWidget().setHeight(centerPanel.getOffsetHeight(true) + "px");
+            w.asWidget().setHeight(centerPanel.getOffsetHeight(true) + "px"); //$NON-NLS-1$
         centerPanel.clear();
         centerPanel.add(w.asWidget(), centerData);
         }
@@ -545,10 +545,10 @@ public class DiskResourceViewImpl implements DiskResourceView {
                 detailsPanel.add(getSharingLabel(I18N.DISPLAY.share(), info.getShareCount()));
                 if (info.getType().equalsIgnoreCase("file")) {
                     detailsPanel.add(getStringLabel(I18N.DISPLAY.size(),
-                            DiskResourceUtil.formatFileSize(info.getSize() + "")));
+                            DiskResourceUtil.formatFileSize(info.getSize() + ""))); //$NON-NLS-1$
 
                 } else {
-                    detailsPanel.add(getDirFileCount(I18N.DISPLAY.files() + " / " + I18N.DISPLAY.folders(),
+                    detailsPanel.add(getDirFileCount(I18N.DISPLAY.files() + " / " + I18N.DISPLAY.folders(), //$NON-NLS-1$
                             info.getFileCount(), info.getDirCount()));
                 }
             }
@@ -561,8 +561,8 @@ public class DiskResourceViewImpl implements DiskResourceView {
         detailsPanel.clear();
         FieldLabel fl = new FieldLabel();
         fl.setLabelWidth(detailsPanel.getOffsetWidth(true) - 10);
-        fl.setLabelSeparator("");
-        fl.setHTML(getDetailAsHtml("&nbsp;&nbsp;" + I18N.DISPLAY.noDetails(), true));
+        fl.setLabelSeparator(""); //$NON-NLS-1$
+        fl.setHTML(getDetailAsHtml("&nbsp;&nbsp;" + I18N.DISPLAY.noDetails(), true)); //$NON-NLS-1$
         HorizontalPanel hp = new HorizontalPanel();
         hp.add(fl);
         detailsPanel.add(hp);
@@ -570,9 +570,9 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     private String getDetailAsHtml(String detail, boolean bolded) {
         if (bolded) {
-            return "<span style='font-size:10px'><b>" + detail + "</b> </span>";
+            return "<span style='font-size:10px'><b>" + detail + "</b> </span>"; //$NON-NLS-1$ //$NON-NLS-2$
         } else {
-            return "<span style='font-size:10px'>" + detail + "</span>";
+            return "<span style='font-size:10px'>" + detail + "</span>"; //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -583,7 +583,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
      * @param value
      */
     private HorizontalPanel getDateLabel(String label, Date date) {
-        String value = "";
+        String value = ""; //$NON-NLS-1$
 
         if (date != null) {
             DateTimeFormat formatter = DateTimeFormat
@@ -603,15 +603,15 @@ public class DiskResourceViewImpl implements DiskResourceView {
         panel.add(fl);
 
         FieldLabel fv = new FieldLabel();
-        fv.setLabelSeparator("");
-        fv.setHTML(getDetailAsHtml(value + "", false));
+        fv.setLabelSeparator(""); //$NON-NLS-1$
+        fv.setHTML(getDetailAsHtml(value + "", false)); //$NON-NLS-1$
         panel.add(fv);
 
         return panel;
     }
 
     private HorizontalPanel getDirFileCount(String label, int file_count, int dir_count) {
-        return getStringLabel(label, file_count + " / " + dir_count);
+        return getStringLabel(label, file_count + " / " + dir_count); //$NON-NLS-1$
     }
 
     /**
@@ -634,7 +634,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     private HorizontalPanel buildRow() {
         HorizontalPanel panel = new HorizontalPanel();
-        panel.setHeight("25px");
+        panel.setHeight("25px"); //$NON-NLS-1$
         panel.setSpacing(3);
         return panel;
     }
@@ -651,7 +651,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
         if (shareCount == 0) {
             link = new Anchor(I18N.DISPLAY.nosharing());
         } else {
-            link = new Anchor("" + shareCount);
+            link = new Anchor("" + shareCount); //$NON-NLS-1$
         }
 
         link.addClickHandler(new ClickHandler() {

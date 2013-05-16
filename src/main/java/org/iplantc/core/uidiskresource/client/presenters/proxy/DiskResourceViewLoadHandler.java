@@ -47,10 +47,6 @@ public final class DiskResourceViewLoadHandler extends ChildTreeStoreBinding<Fol
             if (parent.getFolders() != null) {
                 parentFolderChildren.addAll(parent.getFolders());
             }
-            if (parent.getFiles() != null) {
-                parentFolderChildren.addAll(parent.getFiles());
-            }
-            presenter.getView().setDiskResources(parentFolderChildren);
         }
     }
 }

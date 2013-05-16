@@ -160,7 +160,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             public void onSuccess(String result) {
                 JSONObject obj = JsonUtil.getObject(result);
                 if (obj != null) {
-                    JSONArray arr = JsonUtil.getArray(obj, "data-search");
+                    JSONArray arr = JsonUtil.getArray(obj, "data-search"); //$NON-NLS-1$
                     if (arr != null) {
                         for (int i = 0; i < arr.size(); i++) {
                             searchHistory.add(arr.get(i).isString().stringValue());
@@ -287,7 +287,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             view.setSelectedFolder(folder);
         } else {
             // Create and add the SelectFolderByIdLoadHandler to the treeLoader.
-            SelectFolderByIdLoadHandler handler = new SelectFolderByIdLoadHandler(folderToSelect, this);
+            SelectFolderByIdLoadHandler handler = new SelectFolderByIdLoadHandler(folderToSelect, this, diskResourceService);
             HandlerRegistration reg = treeLoader.addLoadHandler(handler);
             addEventHandlerRegistration(handler, reg);
         }
@@ -644,7 +644,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             }
 
             private Folder buildDummyFolder(DataSearch ds) {
-                AutoBean<Folder> folder = AutoBeanCodex.decode(drFactory, Folder.class, "{}");
+                AutoBean<Folder> folder = AutoBeanCodex.decode(drFactory, Folder.class, "{}"); //$NON-NLS-1$
                 Folder fo = folder.as();
                 fo.setId(ds.getId());
                 fo.setName(ds.getName());
@@ -653,7 +653,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             }
 
             private File buildDummyFile(DataSearch ds) {
-                AutoBean<File> file = AutoBeanCodex.decode(drFactory, File.class, "{}");
+                AutoBean<File> file = AutoBeanCodex.decode(drFactory, File.class, "{}"); //$NON-NLS-1$
                 File f = file.as();
                 f.setId(ds.getId());
                 f.setName(ds.getName());

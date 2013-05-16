@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Stack;
 
 import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uidiskresource.client.Services;
 import org.iplantc.core.uidiskresource.client.models.Folder;
+import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.HasHandlerRegistrationMgmt;
 
@@ -37,15 +37,17 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
     private final DiskResourceView view;
     private final DiskResourceView.Presenter presenter;
     private final HasHandlerRegistrationMgmt regMgr;
+    private final DiskResourceServiceFacade drService;
 
-    public SelectFolderByIdLoadHandler(final HasId folderToSelect, final DiskResourceView.Presenter presenter) {
+    public SelectFolderByIdLoadHandler(final HasId folderToSelect, final DiskResourceView.Presenter presenter, final DiskResourceServiceFacade drService) {
         presenter.maskView();
         this.folderToSelect = folderToSelect;
         this.presenter = presenter;
         this.regMgr = presenter;
         this.view = presenter.getView();
+        this.drService = drService;
         // Split the string on "/"
-        path = Lists.newLinkedList(Splitter.on("/").trimResults().omitEmptyStrings().split(folderToSelect.getId()));
+        path = Lists.newLinkedList(Splitter.on("/").trimResults().omitEmptyStrings().split(folderToSelect.getId())); //$NON-NLS-1$
     }
 
     @Override
@@ -83,7 +85,7 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
      */
     private void verifyFolderExists() {
         folderVerifyCalled = true;
-        Services.DISK_RESOURCE_SERVICE.getFolderContents(folderToSelect.getId(), false, new AsyncCallback<String>() {
+        drService.getFolderContents(folderToSelect.getId(), false, new AsyncCallback<String>() {
 
             @Override
             public void onSuccess(String result) {
@@ -93,7 +95,7 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
                 // Find the paths which are not yet loaded, and push them onto the 'pathsToLoad' stack
                 while ((folder == null) && !path.isEmpty()) {
                     pathsToLoad.push(path.removeLast());
-                    folder = view.getFolderById("/".concat(Joiner.on("/").join(path)));
+                    folder = view.getFolderById("/".concat(Joiner.on("/").join(path))); //$NON-NLS-1$ //$NON-NLS-2$
                 }
 
                 if (folder != null) {

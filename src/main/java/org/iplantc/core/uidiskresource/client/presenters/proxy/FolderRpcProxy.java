@@ -4,14 +4,14 @@ import java.util.List;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
-import org.iplantc.core.uidiskresource.client.Services;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.models.RootFolders;
+import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.inject.Inject;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
@@ -21,15 +21,22 @@ import com.sencha.gxt.data.client.loader.RpcProxy;
 
 public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements DiskResourceView.Proxy {
 
-    private final DiskResourceAutoBeanFactory factory = GWT.create(DiskResourceAutoBeanFactory.class);
+    private final DiskResourceAutoBeanFactory factory;
     private DiskResourceView.Presenter presenter;
+    private final DiskResourceServiceFacade drService;
+
+    @Inject
+    public FolderRpcProxy(DiskResourceServiceFacade drService, DiskResourceAutoBeanFactory factory) {
+        this.drService = drService;
+        this.factory = factory;
+    }
 
     @Override
     public void load(final Folder parentFolder, final AsyncCallback<List<Folder>> callback) {
 
         presenter.maskView();
         if (parentFolder == null) {
-            Services.DISK_RESOURCE_SERVICE.getHomeFolder(new AsyncCallback<String>() {
+            drService.getHomeFolder(new AsyncCallback<String>() {
 
                 @Override
                 public void onSuccess(String result) {
@@ -55,7 +62,7 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
 
             });
         } else {
-            Services.DISK_RESOURCE_SERVICE.getFolderContents(parentFolder.getId(), true,
+            drService.getFolderContents(parentFolder.getId(), true,
                     new AsyncCallback<String>() {
 
                         @Override
