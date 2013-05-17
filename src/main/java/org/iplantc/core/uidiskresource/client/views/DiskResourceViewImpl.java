@@ -419,7 +419,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
         treeStore.removeChildren(folder);
         treeLoader.load(folder);
-        presenter.onFolderSelected(folder);
     }
 
     @Override

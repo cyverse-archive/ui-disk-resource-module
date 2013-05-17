@@ -120,7 +120,7 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
 
             @Override
             public void onFailure(Throwable caught) {
-                // If the folder does not exist, inform user..... or something
+                // TODO If the folder does not exist, inform user..... or something
                 folderExists = false;
                 GWT.log("Time to unregister");
                 unmaskView();
