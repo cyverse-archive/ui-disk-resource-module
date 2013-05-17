@@ -44,7 +44,6 @@ import org.iplantc.core.uidiskresource.client.presenters.handlers.DataSearchHand
 import org.iplantc.core.uidiskresource.client.presenters.handlers.DiskResourcesEventHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityGridHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityNavigationHandler;
-import org.iplantc.core.uidiskresource.client.presenters.proxy.DiskResourceViewLoadHandler;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectDiskResourceByIdStoreAddHandler;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectFolderByIdLoadHandler;
 import org.iplantc.core.uidiskresource.client.search.models.DataSearch;
@@ -82,8 +81,10 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
+import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
 import com.sencha.gxt.data.shared.loader.LoadHandler;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
@@ -200,7 +201,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         addFileSelectChangedHandler(new ToolbarButtonVisibilityGridHandler(toolbar));
         addFolderSelectionHandler(new ToolbarButtonVisibilityNavigationHandler(toolbar));
 
-        treeLoader.addLoadHandler(new DiskResourceViewLoadHandler(this.view.getTreeStore(), this));
+        treeLoader.addLoadHandler(new ChildTreeStoreBinding<Folder>(view.getTreeStore()));
 
         EventBus eventBus = EventBus.getInstance();
         DiskResourcesEventHandler diskResourcesEventHandler = new DiskResourcesEventHandler(this);
@@ -304,21 +305,37 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     }
 
     @Override
-    public void onFolderSelected(Folder folder) {
+    public void onFolderSelected(final Folder folder) {
         view.showDataListingWidget();
         view.deSelectDiskResources();
-        if (view.isLoaded(folder)) {
-            Set<DiskResource> children = Sets.newHashSet();
-            if (folder.getFolders() != null) {
-                children.addAll(folder.getFolders());
+        maskView();
+        diskResourceService.getFolderContents(folder.getId(), new AsyncCallback<String>() {
+
+            @Override
+            public void onSuccess(String result) {
+                // TODO Perhaps updating the folder here should be pushed into the service facade's logic
+                // once it's refactored to cache results.
+                // Turn json result into a Splittable and wrap the loaded folder
+                Splittable split = StringQuoter.split(result);
+                AutoBeanCodex.decodeInto(split, AutoBeanUtils.<Folder, Folder> getAutoBean(folder));
+
+                Set<DiskResource> children = Sets.newHashSet();
+                if (folder.getFolders() != null) {
+                    children.addAll(folder.getFolders());
+                }
+                if (folder.getFiles() != null) {
+                    children.addAll(folder.getFiles());
+                }
+                view.setDiskResources(children);
+                unMaskView();
             }
-            if (folder.getFiles() != null) {
-                children.addAll(folder.getFiles());
+
+            @Override
+            public void onFailure(Throwable caught) {
+                ErrorHandler.post(I18N.ERROR.retrieveFolderInfoFailed(), caught);
+                unMaskView();
             }
-            view.setDiskResources(children);
-        } else {
-            treeLoader.load(folder);
-        }
+        });
     }
 
     @Override

@@ -62,6 +62,7 @@ import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.dnd.core.client.DND.Operation;
 import com.sencha.gxt.dnd.core.client.DragSource;
 import com.sencha.gxt.dnd.core.client.DropTarget;
+import com.sencha.gxt.theme.blue.client.status.BlueStatusAppearance.BlueStatusResources;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
@@ -76,6 +77,7 @@ import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeAppearance;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 import com.sencha.gxt.widget.core.client.tree.TreeStyle;
+import com.sencha.gxt.widget.core.client.tree.TreeView;
 
 public class DiskResourceViewImpl implements DiskResourceView {
 
@@ -142,6 +144,16 @@ public class DiskResourceViewImpl implements DiskResourceView {
     public DiskResourceViewImpl(final Tree<Folder, String> tree) {
         this.tree = tree;
         this.treeStore = tree.getStore();
+
+        // KLUDGE GXT 3.0.1 hasn't implemented the tree loading icon, so we'll use the one from Status.
+        tree.setView(new TreeView<Folder>() {
+            private final BlueStatusResources resources = GWT.create(BlueStatusResources.class);
+            @Override
+            public void onLoading(TreeNode<Folder> node) {
+                onIconStyleChange(node, resources.loading());
+            }
+        });
+
         widget = BINDER.createAndBindUi(this);
 
         detailsPanel.setScrollMode(ScrollMode.AUTO);
@@ -405,12 +417,9 @@ public class DiskResourceViewImpl implements DiskResourceView {
             return;
         }
 
-        if (!isLoaded(folder)) {
-            treeLoader.load(folder);
-        } else {
-            treeStore.removeChildren(folder);
-            treeLoader.load(folder);
-        }
+        treeStore.removeChildren(folder);
+        treeLoader.load(folder);
+        presenter.onFolderSelected(folder);
     }
 
     @Override
