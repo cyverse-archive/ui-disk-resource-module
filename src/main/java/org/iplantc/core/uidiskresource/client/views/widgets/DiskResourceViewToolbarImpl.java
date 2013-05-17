@@ -102,11 +102,7 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
 
             @Override
             public void onKeyUp(KeyUpEvent event) {
-                String val = searchField.getCurrentValue();
-                if(val!=null && !val.isEmpty()&& val.length()>2) {
-                    presenter.doSearch(val);
-                }
-
+                presenter.doSearch(searchField.getCurrentValue());
             }
         });
     }

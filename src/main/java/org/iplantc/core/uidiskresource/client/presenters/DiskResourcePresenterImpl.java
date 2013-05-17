@@ -636,6 +636,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doSearch(final String val) {
+        if (Strings.isNullOrEmpty(val) || val.length() < 3) {
+            return;
+        }
+
         diskResourceService.search(val, 50, null, new AsyncCallback<String>() {
 
             private DiskResourceSearchView searchView;
@@ -689,7 +693,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
                 return f;
             }
         });
-
     }
 
     @Override
