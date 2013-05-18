@@ -122,8 +122,9 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @UiField
     VerticalLayoutContainer detailsPanel;
 
-    @UiField
-    ContentPanel historyPanel;
+    // TODO temp. remove search
+    // @UiField
+    // ContentPanel historyPanel;
 
     @UiField
     BorderLayoutData westData;
@@ -698,8 +699,9 @@ public class DiskResourceViewImpl implements DiskResourceView {
     public void renderSearchHistory(List<String> history) {
         final VerticalLayoutContainer vlc = new VerticalLayoutContainer();
         vlc.setScrollMode(ScrollMode.AUTOY);
-        historyPanel.clear();
-        historyPanel.setWidget(vlc);
+        // TODO temp. remove search
+        // historyPanel.clear();
+        // historyPanel.setWidget(vlc);
         if (history != null && history.size() > 0) {
             for (final String term : history) {
                 IPlantAnchor link = buildSearchHistoryLink(term);
@@ -723,7 +725,8 @@ public class DiskResourceViewImpl implements DiskResourceView {
             }
         }
         // KLUDGE:
-        historyPanel.forceLayout();
+        // TODO temp. remove search
+        // historyPanel.forceLayout();
     }
 
     private void addDomHandlers(HorizontalPanel hp, final Image closeImg) {

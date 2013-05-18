@@ -84,6 +84,9 @@ import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
+import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.Store;
+import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
 import com.sencha.gxt.data.shared.loader.LoadHandler;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
@@ -141,7 +144,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
         initHandlers();
         initDragAndDrop();
-        loadSearchHistory();
+        // loadSearchHistory();
         loadUserTrashPath();
     }
 
@@ -636,6 +639,27 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doSearch(final String val) {
+        // TODO temp. remove search
+        ListStore<DiskResource> store = view.getListStore();
+        if (store.isFiltered()) {
+            store.getFilters().clear();
+        }
+
+        if (Strings.isNullOrEmpty(val) || val.length() < 3) {
+            store.setEnableFilters(false);
+        } else {
+            store.addFilter(new StoreFilter<DiskResource>() {
+
+                @Override
+                public boolean select(Store<DiskResource> store, DiskResource parent, DiskResource item) {
+                    return item.getName().contains(val);
+                }
+            });
+            store.setEnableFilters(true);
+        }
+    }
+
+    private void doSearchTempDisabled(final String val) {
         if (Strings.isNullOrEmpty(val) || val.length() < 3) {
             return;
         }

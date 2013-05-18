@@ -72,9 +72,14 @@
     <ui:with
         type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData"
         field="detailsLayoutDataTop">
+<!-- 
         <ui:attributes
             width="1"
             height="0.45"/>
+ -->
+        <ui:attributes
+            width="1"
+            height="1"/>
     </ui:with>
     <ui:with
         type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData"
@@ -120,11 +125,13 @@
 	                                                  adjustForScroll="true"
 	                                                  scrollMode="AUTOY"/>
 	            </container:child>
+<!-- 
 	            <container:child layoutData="{detailsLayoutDataBottom}">
 		            <gxt:ContentPanel ui:field="historyPanel"
 		                              headingText="{DISPLAY.searchHistory}"
 		                              bodyBorder="false"/>
 	            </container:child>
+ -->
 	        </container:VerticalLayoutContainer>
         </gxt:ContentPanel>
       </container:east>
