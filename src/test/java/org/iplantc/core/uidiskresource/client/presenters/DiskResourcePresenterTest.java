@@ -34,7 +34,6 @@ import org.junit.runner.RunWith;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
@@ -109,7 +108,8 @@ public class DiskResourcePresenterTest {
                 oneOf(view).setTreeLoader(with(aNonNull(TreeLoader.class)));
                 oneOf(view).setPresenter(with(aNonNull(DiskResourceView.Presenter.class)));
                 oneOf(proxy).setPresenter(with(aNonNull(DiskResourceView.Presenter.class)));
-                oneOf(diskResourceService).getDataSearchHistory(with(aNonNull(AsyncCallback.class)));
+                // TODO Temp. remove search
+                // oneOf(diskResourceService).getDataSearchHistory(with(aNonNull(AsyncCallback.class)));
                 oneOf(diskResourceService).getUserTrashPath(with(aNonNull(String.class)), with(aNonNull(AsyncCallback.class)));
 
                 oneOf(toolbar).setNewFolderButtonEnabled(with(false));
@@ -135,7 +135,7 @@ public class DiskResourcePresenterTest {
     public void testOnFolderSelected_OneFolder() {
 
         checkConstruction();
-        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
+        final DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
                 diskResourceService, display, drFactory, dataSearchFactory);
 
         final Folder folder = context.mock(Folder.class);
@@ -144,14 +144,12 @@ public class DiskResourcePresenterTest {
         context.checking(new Expectations() {
             {
                 oneOf(view).deSelectDiskResources();
-                oneOf(view).isLoaded(folder);
-                will(returnValue(true));
-                oneOf(view).setDiskResources(with(aNonNull(Set.class)));
                 oneOf(view).showDataListingWidget();
-                exactly(2).of(folder).getFolders();
-                will(returnValue(Lists.newArrayList()));
-                exactly(2).of(folder).getFiles();
-                will(returnValue(Lists.newArrayList()));
+                oneOf(view).mask(with(aNonNull(String.class)));
+                oneOf(display).loadingMask();
+                oneOf(folder).getId();
+                oneOf(diskResourceService).getFolderContents(with(aNonNull(String.class)),
+                        with(aNonNull(AsyncCallback.class)));
             }
         });
 
@@ -164,9 +162,11 @@ public class DiskResourcePresenterTest {
             {
                 oneOf(view).deSelectDiskResources();
                 oneOf(view).showDataListingWidget();
-                oneOf(view).isLoaded(folder);
-                will(returnValue(false));
-                oneOf(proxy).load(with(folder), with(aNonNull(Callback.class)));
+                oneOf(view).mask(with(aNonNull(String.class)));
+                oneOf(display).loadingMask();
+                oneOf(folder).getId();
+                oneOf(diskResourceService).getFolderContents(with(aNonNull(String.class)),
+                        with(aNonNull(AsyncCallback.class)));
             }
         });
 
