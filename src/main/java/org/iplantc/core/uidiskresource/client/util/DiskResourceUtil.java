@@ -5,6 +5,7 @@ package org.iplantc.core.uidiskresource.client.util;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.uicommons.client.models.CommonModelAutoBeanFactory;
@@ -140,6 +141,18 @@ public class DiskResourceUtil {
 
     public static boolean inTrash(DiskResource resource) {
         return resource != null && resource.getId().startsWith(UserInfo.getInstance().getTrashPath());
+    }
+
+    public static boolean containsTrashedResource(Set<DiskResource> selectedResources) {
+        if (selectedResources != null) {
+            for (DiskResource resource : selectedResources) {
+                if (inTrash(resource)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public static <R extends DiskResource> boolean containsFolder(Iterable<R> selection) {

@@ -90,7 +90,12 @@ import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
 import com.sencha.gxt.data.shared.loader.LoadHandler;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
+import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
+import com.sencha.gxt.widget.core.client.box.MessageBox;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.event.HideEvent;
+import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.info.Info;
@@ -454,12 +459,35 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void doDelete() {
         Set<DiskResource> selectedResources = getSelectedDiskResources();
         if (!selectedResources.isEmpty() && DiskResourceUtil.isOwner(selectedResources)) {
-            view.mask(DISPLAY.loadingMask());
-
             HashSet<DiskResource> drSet = Sets.newHashSet(selectedResources);
-            diskResourceService.deleteDiskResources(drSet, new DiskResourceDeleteCallback(drSet,
-                    getSelectedFolder(), view));
+
+            if (DiskResourceUtil.containsTrashedResource(drSet)) {
+                confirmDelete(drSet);
+            } else {
+                delete(drSet);
+            }
         }
+    }
+
+    private void confirmDelete(final Set<DiskResource> drSet) {
+        final MessageBox confirm = new ConfirmMessageBox(DISPLAY.warning(), DISPLAY.emptyTrashWarning());
+
+        confirm.addHideHandler(new HideHandler() {
+            @Override
+            public void onHide(HideEvent event) {
+                if (confirm.getHideButton() == confirm.getButtonById(PredefinedButton.YES.name())) {
+                    delete(drSet);
+                }
+            }
+        });
+
+        confirm.show();
+    }
+
+    private void delete(Set<DiskResource> drSet) {
+        view.mask(DISPLAY.loadingMask());
+        AsyncCallback<String> callback = new DiskResourceDeleteCallback(drSet, getSelectedFolder(), view);
+        diskResourceService.deleteDiskResources(drSet, callback);
     }
 
     @Override
