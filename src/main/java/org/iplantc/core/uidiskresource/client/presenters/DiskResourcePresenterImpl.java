@@ -452,17 +452,13 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doDelete() {
-        if (!getSelectedDiskResources().isEmpty()
-                && DiskResourceUtil.isOwner(getSelectedDiskResources())) {
+        Set<DiskResource> selectedResources = getSelectedDiskResources();
+        if (!selectedResources.isEmpty() && DiskResourceUtil.isOwner(selectedResources)) {
             view.mask(DISPLAY.loadingMask());
 
-            HashSet<DiskResource> drSet = Sets.newHashSet(getSelectedDiskResources());
-            diskResourceService.deleteDiskResources(drSet, new DiskResourceDeleteCallback(drSet, getSelectedFolder(), view));
-
-        } else if ((getSelectedFolder() != null) && DiskResourceUtil.isOwner(getSelectedFolder())) {
-            view.mask(DISPLAY.loadingMask());
-            HashSet<DiskResource> drSet = Sets.newHashSet((DiskResource)getSelectedFolder());
-            diskResourceService.deleteDiskResources(drSet, new DiskResourceDeleteCallback(drSet, getSelectedFolder(), view));
+            HashSet<DiskResource> drSet = Sets.newHashSet(selectedResources);
+            diskResourceService.deleteDiskResources(drSet, new DiskResourceDeleteCallback(drSet,
+                    getSelectedFolder(), view));
         }
     }
 
