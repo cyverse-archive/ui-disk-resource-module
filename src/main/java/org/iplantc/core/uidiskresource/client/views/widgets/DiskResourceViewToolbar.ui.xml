@@ -119,11 +119,11 @@
 				icon="{res.trash}" text="Trash">
 				<button:menu>
 					<menu:Menu>
-						<menu:MenuItem debugId="idEmptyTrashBtn" ui:field="emptyTrash"
-							text="{display.emptyTrash}">
-						</menu:MenuItem>
 						<menu:MenuItem debugId="idRestoreBtn" ui:field="restore"
 							text="{display.restore}">
+						</menu:MenuItem>
+						<menu:MenuItem debugId="idEmptyTrashBtn" ui:field="emptyTrash"
+							text="{display.emptyTrash}">
 						</menu:MenuItem>
 					</menu:Menu>
 				</button:menu>

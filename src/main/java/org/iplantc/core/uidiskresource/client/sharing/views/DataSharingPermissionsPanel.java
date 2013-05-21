@@ -59,7 +59,6 @@ import com.sencha.gxt.widget.core.client.grid.editing.GridEditing;
 import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
 import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.LabelToolItem;
-import com.sencha.gxt.widget.core.client.toolbar.SeparatorToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 /**
@@ -147,19 +146,20 @@ public class DataSharingPermissionsPanel implements IsWidget {
             }
         });
         grid.getView().setAutoExpandColumn(cm.getColumn(0));
+        grid.getView().setEmptyText(I18N.DISPLAY.sharePrompt());
 
     }
 
     private void initToolbar() {
         addExplainPanel();
-        toolbar.add(new FillToolItem());
         toolbar.add(new UserSearchField(USER_SEARCH_EVENT_TAG.SHARING).asWidget());
-        toolbar.add(new SeparatorToolItem());
+        toolbar.add(new FillToolItem());
         toolbar.add(buildChooseCollabButton());
     }
 
     private TextButton buildChooseCollabButton() {
         TextButton button = new TextButton();
+        button.setText(I18N.DISPLAY.chooseFromCollab());
         button.addSelectHandler(new SelectHandler() {
 
             @Override
