@@ -438,7 +438,11 @@ public class DiskResourceViewImpl implements DiskResourceView {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <D extends DiskResource> void removeDiskResources(Collection<D> resources) {
+        // De-select everything first, so the remove calls don't trigger extra SelectionChanged events.
+        grid.getSelectionModel().deselect((List<DiskResource>)Lists.newArrayList(resources));
+
         for (DiskResource dr : resources) {
             listStore.remove(dr);
             if (dr instanceof Folder) {
