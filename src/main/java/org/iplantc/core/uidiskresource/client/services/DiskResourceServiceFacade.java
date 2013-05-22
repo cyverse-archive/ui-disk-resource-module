@@ -9,6 +9,7 @@ import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.File;
 import org.iplantc.core.uidiskresource.client.models.Folder;
+import org.iplantc.core.uidiskresource.client.models.RestoreRequest;
 
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
@@ -248,12 +249,12 @@ public interface DiskResourceServiceFacade {
     public void getUserTrashPath(String userName, AsyncCallback<String> callback);
 
     /**
-     * restore a deleted disk resources
+     * Restore deleted disk resources.
      * 
-     * @param body
+     * @param request
      * @param callback
      */
-    public void restoreDiskResource(JSONObject body, AsyncCallback<String> callback);
+    public void restoreDiskResource(RestoreRequest request, AsyncCallback<String> callback);
 
     /**
      * Creates a set of public data links for the given disk resources.
