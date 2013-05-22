@@ -1,6 +1,5 @@
 package org.iplantc.core.uidiskresource.client.services;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +18,6 @@ import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.de.shared.SharedDataApiServiceFacade;
 import org.iplantc.de.shared.services.ServiceCallWrapper;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.json.client.JSONArray;
@@ -125,7 +123,7 @@ public class DiskResourceServiceFacadeImpl implements DiskResourceServiceFacade 
 
         String address = serviceNamePrefix + ".move"; //$NON-NLS-1$
 
-        List<String> idSrcFiles = toStringIdList(diskResources);
+        List<String> idSrcFiles = DiskResourceUtil.asStringIdList(diskResources);
         JSONObject body = new JSONObject();
         body.put("dest", new JSONString(idDestFolder.getId())); //$NON-NLS-1$
         body.put("sources", JsonUtil.buildArrayFromStrings(idSrcFiles)); //$NON-NLS-1$
@@ -215,20 +213,12 @@ public class DiskResourceServiceFacadeImpl implements DiskResourceServiceFacade 
     public <T extends DiskResource> void deleteDiskResources(Set<T> diskResources,
             AsyncCallback<String> callback) {
         String fullAddress = serviceNamePrefix + ".delete"; //$NON-NLS-1$
-        List<String> drIds = toStringIdList(diskResources);
+        List<String> drIds = DiskResourceUtil.asStringIdList(diskResources);
         String body = "{\"paths\": " + JsonUtil.buildJsonArrayString(drIds) + "}"; //$NON-NLS-1$ //$NON-NLS-2$
         ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST, fullAddress,
                 body);
         callService(callback, wrapper);
 
-    }
-
-    private <D extends DiskResource> List<String> toStringIdList(Collection<D> resources) {
-        List<String> stringIdList = Lists.newArrayList();
-        for (DiskResource dr : resources) {
-            stringIdList.add(dr.getId());
-        }
-        return stringIdList;
     }
 
     @Override
