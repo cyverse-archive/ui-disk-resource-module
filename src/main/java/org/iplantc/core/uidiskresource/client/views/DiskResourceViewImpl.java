@@ -15,7 +15,6 @@ import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEv
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceInfo;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
-import org.iplantc.core.uidiskresource.client.models.DiskResourceProperties;
 import org.iplantc.core.uidiskresource.client.models.File;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.models.Permissions;
@@ -68,6 +67,7 @@ import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.GridView;
@@ -158,7 +158,14 @@ public class DiskResourceViewImpl implements DiskResourceView {
         widget = BINDER.createAndBindUi(this);
 
         detailsPanel.setScrollMode(ScrollMode.AUTO);
-        grid.setSelectionModel(((DiskResourceColumnModel)cm).getSelectionModel());
+
+        DiskResourceColumnModel drColumnModel = (DiskResourceColumnModel)cm;
+        grid.setSelectionModel(drColumnModel.getSelectionModel());
+        ColumnConfig<DiskResource, DiskResource> name = drColumnModel.getNameColumn();
+        grid.getStore().addSortInfo(
+                new StoreSortInfo<DiskResource>(name.getValueProvider(), name.getComparator(),
+                        SortDir.ASC));
+
         // Set Leaf icon to a folder
         TreeStyle treeStyle = tree.getStyle();
         TreeAppearance appearance = tree.getAppearance();
@@ -206,8 +213,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     ListStore<DiskResource> createListStore() {
         DiskResourceModelKeyProvider keyProvider = new DiskResourceModelKeyProvider();
         ListStore<DiskResource> listStore2 = new ListStore<DiskResource>(keyProvider);
-        DiskResourceProperties props = GWT.create(DiskResourceProperties.class);
-        listStore2.addSortInfo(new StoreSortInfo<DiskResource>(props.name(), SortDir.ASC));
+
         return listStore2;
     }
 
