@@ -34,9 +34,9 @@ import com.sencha.gxt.core.client.util.Format;
 
 /**
  * Provides access to remote services for folder operations.
- * 
+ *
  * @author amuir
- * 
+ *
  */
 public class DiskResourceServiceFacadeImpl implements DiskResourceServiceFacade {
     private final String serviceNamePrefix = "org.iplantc.services.de-data-mgmt"; //$NON-NLS-1$
@@ -149,7 +149,7 @@ public class DiskResourceServiceFacadeImpl implements DiskResourceServiceFacade 
 
     /**
      * search data
-     * 
+     *
      * @param term search termt
      * @param callback
      */
@@ -323,7 +323,7 @@ public class DiskResourceServiceFacadeImpl implements DiskResourceServiceFacade 
 
     /**
      * Performs the actual service call.
-     * 
+     *
      * @param callback executed when RPC call completes.
      * @param wrapper the wrapper used to get to the actual service via the service proxy.
      */
@@ -360,7 +360,7 @@ public class DiskResourceServiceFacadeImpl implements DiskResourceServiceFacade 
 
     /**
      * empty user's trash
-     * 
+     *
      * @param user
      * @param callback
      */
@@ -373,7 +373,7 @@ public class DiskResourceServiceFacadeImpl implements DiskResourceServiceFacade 
 
     /**
      * get users trash path
-     * 
+     *
      * @param userName
      * @param callback
      */
@@ -387,7 +387,7 @@ public class DiskResourceServiceFacadeImpl implements DiskResourceServiceFacade 
 
     /**
      * Creates a set of public data links for the given disk resources.
-     * 
+     *
      * @param ticketIdToResourceIdMap the id of the disk resource for which the ticket will be created.
      * @param isPublicTicket
      * @param callback
@@ -421,7 +421,7 @@ public class DiskResourceServiceFacadeImpl implements DiskResourceServiceFacade 
 
     /**
      * Requests a listing of all the tickets for the given disk resources.
-     * 
+     *
      * @param diskResourceIds the disk resources whose tickets will be listed.
      * @param callback
      */
@@ -440,7 +440,7 @@ public class DiskResourceServiceFacadeImpl implements DiskResourceServiceFacade 
 
     /**
      * Requests that the given Kif Share tickets will be deleted.
-     * 
+     *
      * @param dataLinkIds the tickets which will be deleted.
      * @param callback
      */
@@ -455,5 +455,29 @@ public class DiskResourceServiceFacadeImpl implements DiskResourceServiceFacade 
                 body.toString());
         callService(callback, wrapper);
     }
+
+	@Override
+	public void getFileTypes(AsyncCallback<String> callback) {
+		String address = DEProperties.getInstance().getMuleServiceBaseUrl()
+				+ "filetypes/type-list";
+
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(
+				ServiceCallWrapper.Type.GET, address);
+		DEServiceFacade.getInstance().getServiceData(wrapper, callback);
+	}
+
+	@Override
+	public void setFileType(String filePath, String type,
+			AsyncCallback<String> callback) {
+		JSONObject obj = new JSONObject();
+		obj.put("path", new JSONString(filePath));
+
+		String address = DEProperties.getInstance().getMuleServiceBaseUrl()
+				+ "filetypes/type?type=" + type
+				+ DEProperties.getInstance().getDefaultOutputFolderName();
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(
+				ServiceCallWrapper.Type.POST, address, obj.toString());
+		DEServiceFacade.getInstance().getServiceData(wrapper, callback);
+	}
 
 }

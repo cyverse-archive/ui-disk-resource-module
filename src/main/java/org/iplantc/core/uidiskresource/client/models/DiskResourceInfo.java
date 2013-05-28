@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.iplantc.core.uidiskresource.client.models;
 
@@ -13,13 +13,13 @@ public interface DiskResourceInfo {
 
     @PropertyName("dir-count")
     int getDirCount();
-    
+
     @PropertyName("dir-count")
     void setDirCount(int count);
-    
+
     @PropertyName("file-count")
     void setFileCount(int count);
-    
+
     @PropertyName("file-count")
     int getFileCount();
 
@@ -28,7 +28,7 @@ public interface DiskResourceInfo {
 
     @PropertyName("share-count")
     void setShareCount(int count);
-    
+
     @PropertyName("permissions")
     void setPermissions(Permissions p);
 
@@ -46,16 +46,22 @@ public interface DiskResourceInfo {
 
     @PropertyName("created")
     void setCreated(long created);
-    
+
     @PropertyName("modified")
     long getModified();
-    
+
     @PropertyName("modified")
     void setModified(long modified);
-    
+
     @PropertyName("size")
     void setSize(int size);
 
     @PropertyName("size")
     long getSize();
+
+    @PropertyName("file-type")
+    String getFileType();
+
+    @PropertyName("file-type")
+     void setFileType(String type);
 }

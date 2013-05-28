@@ -19,14 +19,14 @@ public interface DiskResourceServiceFacade {
 
     /**
      * Call service to retrieve the root folder info for the current user
-     * 
+     *
      * @param callback executed when RPC call completes.
      */
     void getHomeFolder(AsyncCallback<String> callback);
 
     /**
      * get user's default analyses output folder
-     * 
+     *
      * @param folderName
      * @param callback
      */
@@ -34,7 +34,7 @@ public interface DiskResourceServiceFacade {
 
     /**
      * set user's default analyses output folder
-     * 
+     *
      * @param folderName
      * @param callback
      */
@@ -42,7 +42,7 @@ public interface DiskResourceServiceFacade {
 
     /**
      * Called to retrieve the entire contents of a folder.
-     * 
+     *
      * @param path path to requested folder.
      * @param callback executed when RPC call completes.
      */
@@ -50,7 +50,7 @@ public interface DiskResourceServiceFacade {
 
     /**
      * Called to retrieve the contents of a folder, with or without its file listing.
-     * 
+     *
      * @param path path to requested folder.
      * @param includeFiles whether or not to include the file listing of the given folder
      * @param callback executed when RPC call completes.
@@ -59,7 +59,7 @@ public interface DiskResourceServiceFacade {
 
     /**
      * Call service to create a new folder
-     * 
+     *
      * @param parentFolder parent folder where the new folder will be created
      * @param callback executed when RPC call completes.
      */
@@ -67,7 +67,7 @@ public interface DiskResourceServiceFacade {
 
     /**
      * Check if a list of files or folders exist.
-     * 
+     *
      * @param diskResourceIds paths to desired resources.
      * @param callback callback executed when RPC call completes.
      */
@@ -75,7 +75,7 @@ public interface DiskResourceServiceFacade {
 
     /**
      * Fetch preview data for a file.
-     * 
+     *
      * @param path path to desired file.
      * @param callback callback executed when RPC call completes.
      */
@@ -83,7 +83,7 @@ public interface DiskResourceServiceFacade {
 
     /**
      * Calls the move folder and move file services for the list of given disk resource ids.
-     * 
+     *
      * @param diskResources list of file and folder ids to move.
      * @param destFolder the destination folder where the disk resources will be moved.
      */
@@ -91,7 +91,7 @@ public interface DiskResourceServiceFacade {
 
     /**
      * Call service rename a file or folder.
-     * 
+     *
      * @param src
      * @param destName
      * @param callback service success/failure callback
@@ -101,7 +101,7 @@ public interface DiskResourceServiceFacade {
 
     /**
      * Call service to upload a file from a given URL.
-     * 
+     *
      * @param url
      * @param dest id of the destination folder.
      * @param callback service success/failure callback
@@ -110,28 +110,28 @@ public interface DiskResourceServiceFacade {
 
     /**
      * Call service to retrieve upload configuration values for idrop-lite.
-     * 
+     *
      * @param callback executed when RPC call completes.
      */
     void upload(AsyncCallback<String> callback);
 
     /**
      * Call service to retrieve upload configuration values for idrop-lite.
-     * 
+     *
      * @param callback executed when RPC call completes.
      */
     void download(JSONArray paths, AsyncCallback<String> callback);
 
     /**
      * Opens a window to download the file with the given path.
-     * 
+     *
      * @param path Path of the file to download.
      */
     void simpleDownload(String path);
 
     /**
      * Call service to delete disk resources (i.e. {@link File}s and {@link Folder}s)
-     * 
+     *
      * @param diskResources a set of <code>DiskResource</code>s to be deleted
      * @param callback callback executed when service call completes.
      */
@@ -145,7 +145,7 @@ public interface DiskResourceServiceFacade {
 
     /**
      * Calls service to set disk resource metadata.
-     * 
+     *
      * @param resource the <code>DiskResource</code> whose metadata will be updated
      * @param mdToUpdate a list of <code>DiskResourceMetadata</code> objects which will be updated
      * @param mdToDelete a list of <code>DiskResourceMetadata</code> objects which will be deleted
@@ -156,7 +156,7 @@ public interface DiskResourceServiceFacade {
 
     /**
      * call service to set folder metadata
-     * 
+     *
      * @param folderId id of folder resource
      * @param body metadata in json format
      * @param callback execute when RPC call complete
@@ -165,7 +165,7 @@ public interface DiskResourceServiceFacade {
 
     /**
      * call service to set file metadata
-     * 
+     *
      * @param fileId id of file resource
      * @param body metadata in json format
      * @param callback execute when RPC call complete
@@ -173,10 +173,10 @@ public interface DiskResourceServiceFacade {
     void setFileMetaData(String fileId, String body, AsyncCallback<String> callback);
 
     /**
-     * 
+     *
      * Share a resource with give user with permission
-     * 
-     * 
+     *
+     *
      * @param body - Post body in JSONObject format
      * @param callback callback object
      */
@@ -184,7 +184,7 @@ public interface DiskResourceServiceFacade {
 
     /**
      * UnShare a resource with give user with permission
-     * 
+     *
      * @param body - Post body in JSONObject format
      * @param callback callback object
      */
@@ -192,7 +192,7 @@ public interface DiskResourceServiceFacade {
 
     /**
      * get user permission info on selected disk resources
-     * 
+     *
      * @param body - Post body in JSONObject format
      * @param callback callback object
      */
@@ -200,33 +200,33 @@ public interface DiskResourceServiceFacade {
 
     /**
      * search users irods directory structure
-     * 
+     *
      * @param term search term
      * @param size limit for results to return
      * @param type file or folder
      * @param callback callback object
      */
     void search(String term, int size, String type, AsyncCallback<String> callback);
-    
+
     /**
      * Get info about a selected file or folder
-     * 
+     *
      * @param body request body
      * @param callback callback object
      */
     void getStat(String body, AsyncCallback<String> callback);
-    
+
     /**
      * get data search history
-     * 
+     *
      * @param callback callback object
-     * 
+     *
      */
     void getDataSearchHistory(AsyncCallback<String> callback);
 
     /**
      * save users data search history
-     * 
+     *
      * @param body json object search history
      * @param callback callback object
      */
@@ -234,12 +234,12 @@ public interface DiskResourceServiceFacade {
 
     /**
      * empty user's trash
-     * 
+     *
      * @param user
      * @param callback
      */
     public void emptyTrash(String user, AsyncCallback<String> callback);
-    
+
     /**
     * get users trash path
     *
@@ -258,7 +258,7 @@ public interface DiskResourceServiceFacade {
 
     /**
      * Creates a set of public data links for the given disk resources.
-     * 
+     *
      * @param ticketIdToResourceIdMap the id of the disk resource for which the ticket will be created.
      * @param isPublicTicket
      * @param callback
@@ -268,7 +268,7 @@ public interface DiskResourceServiceFacade {
 
     /**
      * Requests a listing of all the tickets for the given disk resources.
-     * 
+     *
      * @param diskResourceIds the disk resources whose tickets will be listed.
      * @param callback
      */
@@ -276,9 +276,26 @@ public interface DiskResourceServiceFacade {
 
     /**
      * Requests that the given Kif Share tickets will be deleted.
-     * 
+     *
      * @param dataLinkIds the tickets which will be deleted.
      * @param callback
      */
     public void deleteDataLinks(List<String> dataLinkIds, AsyncCallback<String> callback);
+
+    /**
+     * Get a list of files types recognized
+     *
+     * @param callback
+     */
+	void getFileTypes(AsyncCallback<String> callback);
+
+	/**
+	 *set type to a file
+	 *
+	 * @param filePath
+	 * @param type
+	 * @param callback
+	 */
+	void setFileType(String filePath, String type,
+			AsyncCallback<String> callback);
 }
