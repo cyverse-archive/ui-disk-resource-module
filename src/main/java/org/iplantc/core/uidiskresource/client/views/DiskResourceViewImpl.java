@@ -645,8 +645,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 		String value;
 		if (p.isOwner()) {
 			value = I18N.DISPLAY.owner();
-		}
-		if (!p.isWritable()) {
+		} else if (!p.isWritable()) {
 			value = I18N.DISPLAY.readOnly();
 		} else {
 			value = I18N.DISPLAY.readWrite();
