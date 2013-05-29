@@ -14,7 +14,7 @@ import org.iplantc.core.uicommons.client.util.WindowUtil;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.Folder;
-import org.iplantc.core.uidiskresource.client.models.RestoreRequest;
+import org.iplantc.core.uidiskresource.client.models.HasPaths;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.de.shared.SharedDataApiServiceFacade;
 import org.iplantc.de.shared.services.ServiceCallWrapper;
@@ -351,7 +351,7 @@ public class DiskResourceServiceFacadeImpl implements DiskResourceServiceFacade 
      * {@inheritDoc}
      */
     @Override
-    public void restoreDiskResource(RestoreRequest request, AsyncCallback<String> callback) {
+    public void restoreDiskResource(HasPaths request, AsyncCallback<String> callback) {
         String fullAddress = serviceNamePrefix + ".restore"; //$NON-NLS-1$
         ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST, fullAddress,
                 AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(request)).getPayload());

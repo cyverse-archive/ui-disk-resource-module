@@ -9,7 +9,7 @@ import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.File;
 import org.iplantc.core.uidiskresource.client.models.Folder;
-import org.iplantc.core.uidiskresource.client.models.RestoreRequest;
+import org.iplantc.core.uidiskresource.client.models.HasPaths;
 
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
@@ -254,7 +254,7 @@ public interface DiskResourceServiceFacade {
      * @param request
      * @param callback
      */
-    public void restoreDiskResource(RestoreRequest request, AsyncCallback<String> callback);
+    public void restoreDiskResource(HasPaths request, AsyncCallback<String> callback);
 
     /**
      * Creates a set of public data links for the given disk resources.
