@@ -187,14 +187,11 @@ public class DiskResourceServiceFacadeImpl implements DiskResourceServiceFacade 
     }
 
     @Override
-    public void download(JSONArray paths, AsyncCallback<String> callback) {
+    public void download(HasPaths paths, AsyncCallback<String> callback) {
         String address = serviceNamePrefix + ".idrop-download"; //$NON-NLS-1$
 
-        JSONObject body = new JSONObject();
-        body.put("paths", paths); //$NON-NLS-1$
-
         ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST, address,
-                body.toString());
+                AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(paths)).getPayload());
         callService(callback, wrapper);
     }
 

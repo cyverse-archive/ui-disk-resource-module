@@ -11,7 +11,6 @@ import org.iplantc.core.uidiskresource.client.models.File;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.models.HasPaths;
 
-import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -120,7 +119,7 @@ public interface DiskResourceServiceFacade {
      * 
      * @param callback executed when RPC call completes.
      */
-    void download(JSONArray paths, AsyncCallback<String> callback);
+    void download(HasPaths paths, AsyncCallback<String> callback);
 
     /**
      * Opens a window to download the file with the given path.
