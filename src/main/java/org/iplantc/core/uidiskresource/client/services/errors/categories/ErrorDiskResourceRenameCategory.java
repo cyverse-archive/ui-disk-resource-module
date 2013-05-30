@@ -5,9 +5,14 @@ import org.iplantc.core.uidiskresource.client.services.errors.ErrorDiskResourceR
 
 import com.google.web.bindery.autobean.shared.AutoBean;
 
-public class ErrorDiskResourceRenameCategory {
+public class ErrorDiskResourceRenameCategory extends ErrorDiskResourceCategory {
 
     public static String generateErrorMsg(AutoBean<ErrorDiskResourceRename> instance) {
-        return ErrorDiskResourceCategory.getErrorMessage(DiskResourceErrorCode.valueOf(instance.as().getErrorCode()), instance.as().getPath());
+        ErrorDiskResourceRename renameErr = instance.as();
+
+        String path = renameErr.getPath();
+        DiskResourceErrorCode errCode = getDiskResourceErrorCode(renameErr.getErrorCode());
+
+        return getErrorMessage(errCode, path);
     }
 }
