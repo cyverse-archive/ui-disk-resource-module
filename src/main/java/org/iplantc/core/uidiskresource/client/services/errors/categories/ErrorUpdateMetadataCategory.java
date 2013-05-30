@@ -4,9 +4,10 @@ import org.iplantc.core.uidiskresource.client.services.errors.ErrorUpdateMetadat
 
 import com.google.web.bindery.autobean.shared.AutoBean;
 
-public class ErrorUpdateMetadataCategory extends ErrorDiskResourceCategory {
+public class ErrorUpdateMetadataCategory {
 
     public static String generateErrorMsg(AutoBean<ErrorUpdateMetadata> instance) {
-        return getErrorMessage(getDiskResourceErrorCode(instance.as().getErrorCode()), null);
+        return ErrorDiskResourceCategory.getErrorMessage(
+                ErrorDiskResourceCategory.getDiskResourceErrorCode(instance.as().getErrorCode()), null);
     }
 }

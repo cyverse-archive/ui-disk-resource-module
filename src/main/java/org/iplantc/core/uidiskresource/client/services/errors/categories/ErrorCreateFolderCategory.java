@@ -4,9 +4,10 @@ import org.iplantc.core.uidiskresource.client.services.errors.ErrorCreateFolder;
 
 import com.google.web.bindery.autobean.shared.AutoBean;
 
-public class ErrorCreateFolderCategory extends ErrorDiskResourceCategory {
+public class ErrorCreateFolderCategory {
 
     public static String generateErrorMsg(AutoBean<ErrorCreateFolder> instance) {
-        return getErrorMessage(getDiskResourceErrorCode(instance.as().getErrorCode()), null);
+        return ErrorDiskResourceCategory.getErrorMessage(
+                ErrorDiskResourceCategory.getDiskResourceErrorCode(instance.as().getErrorCode()), null);
     }
 }

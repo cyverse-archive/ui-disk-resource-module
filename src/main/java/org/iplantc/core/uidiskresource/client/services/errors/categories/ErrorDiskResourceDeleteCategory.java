@@ -4,9 +4,10 @@ import org.iplantc.core.uidiskresource.client.services.errors.ErrorDiskResourceD
 
 import com.google.web.bindery.autobean.shared.AutoBean;
 
-public class ErrorDiskResourceDeleteCategory extends ErrorDiskResourceCategory {
+public class ErrorDiskResourceDeleteCategory {
 
     public static String generateErrorMsg(AutoBean<ErrorDiskResourceDelete> instance) {
-        return getErrorMessage(getDiskResourceErrorCode(instance.as().getErrorCode()), null);
+        return ErrorDiskResourceCategory.getErrorMessage(
+                ErrorDiskResourceCategory.getDiskResourceErrorCode(instance.as().getErrorCode()), null);
     }
 }

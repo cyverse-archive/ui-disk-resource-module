@@ -4,9 +4,10 @@ import org.iplantc.core.uidiskresource.client.services.errors.ErrorDuplicateDisk
 
 import com.google.web.bindery.autobean.shared.AutoBean;
 
-public class ErrorDuplicateDiskResourceCategory extends ErrorDiskResourceCategory {
+public class ErrorDuplicateDiskResourceCategory {
 
     public static String generateErrorMsg(AutoBean<ErrorDuplicateDiskResource> instance) {
-        return getErrorMessage(getDiskResourceErrorCode(instance.as().getErrorCode()), null);
+        return ErrorDiskResourceCategory.getErrorMessage(
+                ErrorDiskResourceCategory.getDiskResourceErrorCode(instance.as().getErrorCode()), null);
     }
 }
