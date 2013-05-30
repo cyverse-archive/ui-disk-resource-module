@@ -25,7 +25,7 @@ public interface DiskResourceAutoBeanFactory extends AutoBeanFactory {
 
     AutoBean<DiskResourceInfo> info();
 
-    AutoBean<RestoreRequest> restoreRequest();
+    AutoBean<HasPaths> pathsList();
 
     AutoBean<RestoreResponse> restoreResponse();
 

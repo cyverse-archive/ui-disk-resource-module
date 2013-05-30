@@ -40,7 +40,7 @@ import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory
 import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.File;
 import org.iplantc.core.uidiskresource.client.models.Folder;
-import org.iplantc.core.uidiskresource.client.models.RestoreRequest;
+import org.iplantc.core.uidiskresource.client.models.HasPaths;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.DataSearchHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.DiskResourcesEventHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityGridHandler;
@@ -834,7 +834,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             return;
         }
 
-        RestoreRequest request = drFactory.restoreRequest().as();
+        HasPaths request = drFactory.pathsList().as();
         request.setPaths(DiskResourceUtil.asStringIdList(selectedResources));
 
         maskView();
