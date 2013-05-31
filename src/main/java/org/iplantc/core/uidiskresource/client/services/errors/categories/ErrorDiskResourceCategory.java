@@ -6,6 +6,8 @@ import org.iplantc.core.uidiskresource.client.services.errors.ErrorDiskResource;
 
 import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.web.bindery.autobean.shared.AutoBean;
 
 /**
@@ -18,7 +20,7 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 public class ErrorDiskResourceCategory {
     private static DiskResourceServiceErrorStrings errStrings = GWT.create(DiskResourceServiceErrorStrings.class);
 
-    public static String generateErrorMsg(AutoBean<ErrorDiskResource> instance) {
+    public static SafeHtml generateErrorMsg(AutoBean<ErrorDiskResource> instance) {
         return getErrorMessage(getDiskResourceErrorCode(instance.as().getErrorCode()), null);
     }
 
@@ -31,11 +33,19 @@ public class ErrorDiskResourceCategory {
         return drErrorCode;
     }
 
-    protected static String getErrorMessage(DiskResourceErrorCode code, String resourceNames) {
+    protected static SafeHtml getErrorMessage(DiskResourceErrorCode code, String resourceNames) {
         if (code == null) {
             return null;
         }
 
+        if (!Strings.isNullOrEmpty(resourceNames)) {
+            resourceNames = SafeHtmlUtils.fromString(resourceNames).asString();
+        }
+
+        return SafeHtmlUtils.fromTrustedString(getErrorMessageString(code, resourceNames));
+    }
+
+    private static String getErrorMessageString(DiskResourceErrorCode code, String resourceNames) {
         switch (code) {
             case ERR_DOES_NOT_EXIST:
                 return errStrings.diskResourceDoesNotExist(resourceNames);
@@ -77,5 +87,4 @@ public class ErrorDiskResourceCategory {
                 return null;
         }
     }
-
 }
