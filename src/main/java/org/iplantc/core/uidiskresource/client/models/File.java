@@ -7,4 +7,7 @@ public interface File extends DiskResource {
     @PropertyName("file-size")
     String getSize();
 
+    @PropertyName("file-size")
+    void setSize(String size);
+
 }
