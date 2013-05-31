@@ -122,6 +122,7 @@
 						<menu:MenuItem debugId="idRestoreBtn" ui:field="restore"
 							text="{display.restore}">
 						</menu:MenuItem>
+						<menu:SeparatorMenuItem></menu:SeparatorMenuItem>
 						<menu:MenuItem debugId="idEmptyTrashBtn" ui:field="emptyTrash"
 							text="{display.emptyTrash}">
 						</menu:MenuItem>
