@@ -306,7 +306,7 @@ public class DataSharingPermissionsPanel implements IsWidget {
                 props.displayPermission());
 
         permission.setHeader(I18N.DISPLAY.permissions());
-        permission.setWidth(80);
+        permission.setWidth(150);
         SafeStyles permTextStyles = SafeStylesUtils.fromTrustedString("color:#0098AA;cursor:pointer;");
         permission.setColumnTextStyle(permTextStyles);
         ColumnConfig<DataSharing, String> remove = new ColumnConfig<DataSharing, String>(
@@ -329,8 +329,9 @@ public class DataSharingPermissionsPanel implements IsWidget {
                     }
                 });
 
-        SafeStyles textStyles = SafeStylesUtils.fromTrustedString("padding: 1px 3px;cursor:pointer;");
-        remove.setColumnTextStyle(textStyles);
+        SafeStyles textStyles = SafeStylesUtils.fromTrustedString("padding-left: 10px;cursor:pointer;");
+        remove.setColumnStyle(textStyles);
+        remove.setWidth(50);
         remove.setToolTip(I18N.DISPLAY.unshare());
         TextButtonCell button = buildRemoveButtonCell();
         remove.setCell(button);
