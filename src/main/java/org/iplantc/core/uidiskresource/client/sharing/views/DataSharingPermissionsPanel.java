@@ -59,7 +59,6 @@ import com.sencha.gxt.widget.core.client.grid.editing.GridEditing;
 import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
 import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.LabelToolItem;
-import com.sencha.gxt.widget.core.client.toolbar.SeparatorToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 /**
@@ -147,19 +146,20 @@ public class DataSharingPermissionsPanel implements IsWidget {
             }
         });
         grid.getView().setAutoExpandColumn(cm.getColumn(0));
+        grid.getView().setEmptyText(I18N.DISPLAY.sharePrompt());
 
     }
 
     private void initToolbar() {
         addExplainPanel();
-        toolbar.add(new FillToolItem());
         toolbar.add(new UserSearchField(USER_SEARCH_EVENT_TAG.SHARING).asWidget());
-        toolbar.add(new SeparatorToolItem());
+        toolbar.add(new FillToolItem());
         toolbar.add(buildChooseCollabButton());
     }
 
     private TextButton buildChooseCollabButton() {
         TextButton button = new TextButton();
+        button.setText(I18N.DISPLAY.chooseFromCollab());
         button.addSelectHandler(new SelectHandler() {
 
             @Override
@@ -306,7 +306,7 @@ public class DataSharingPermissionsPanel implements IsWidget {
                 props.displayPermission());
 
         permission.setHeader(I18N.DISPLAY.permissions());
-        permission.setWidth(80);
+        permission.setWidth(150);
         SafeStyles permTextStyles = SafeStylesUtils.fromTrustedString("color:#0098AA;cursor:pointer;");
         permission.setColumnTextStyle(permTextStyles);
         ColumnConfig<DataSharing, String> remove = new ColumnConfig<DataSharing, String>(
@@ -329,8 +329,9 @@ public class DataSharingPermissionsPanel implements IsWidget {
                     }
                 });
 
-        SafeStyles textStyles = SafeStylesUtils.fromTrustedString("padding: 1px 3px;cursor:pointer;");
-        remove.setColumnTextStyle(textStyles);
+        SafeStyles textStyles = SafeStylesUtils.fromTrustedString("padding-left: 10px;cursor:pointer;");
+        remove.setColumnStyle(textStyles);
+        remove.setWidth(50);
         remove.setToolTip(I18N.DISPLAY.unshare());
         TextButtonCell button = buildRemoveButtonCell();
         remove.setCell(button);

@@ -452,6 +452,7 @@ public class DiskResourcePresenterTest {
                 will(returnValue(permissions));
                 allowing(permissions).isOwner();
                 will(returnValue(true));
+                oneOf(file).getId();
 
                 oneOf(view).getSelectedFolder();
                 oneOf(diskResourceService).deleteDiskResources(with(Sets.newHashSet(file)),
@@ -488,6 +489,8 @@ public class DiskResourcePresenterTest {
                 will(returnValue(permissions));
                 allowing(permissions).isOwner();
                 will(returnValue(true));
+                oneOf(file).getId();
+                oneOf(folder).getId();
 
                 oneOf(view).getSelectedFolder();
                 oneOf(diskResourceService).deleteDiskResources(with(Sets.newHashSet(file, folder)),
@@ -512,11 +515,12 @@ public class DiskResourcePresenterTest {
                 oneOf(display).loadingMask();
                 oneOf(view).mask(with(aNonNull(String.class)));
                 allowing(view).getSelectedDiskResources();
-                will(returnValue(Sets.newHashSet()));
+                will(returnValue(Sets.newHashSet(folder)));
                 allowing(folder).getPermissions();
                 will(returnValue(permissions));
                 allowing(permissions).isOwner();
                 will(returnValue(true));
+                oneOf(folder).getId();
 
                 allowing(view).getSelectedFolder();
                 will(returnValue(folder));

@@ -57,9 +57,10 @@ public class RenameDiskResourceCallback extends DiskResourceServiceCallback {
     public void onFailure(Throwable caught) {
         unmaskCaller();
         DiskResourceErrorAutoBeanFactory factory = GWT.create(DiskResourceErrorAutoBeanFactory.class);
-        if (JsonUtils.safeToEval(caught.getMessage())) {
+        String errMessage = caught.getMessage();
+        if (JsonUtils.safeToEval(errMessage)) {
             AutoBean<ErrorDiskResourceRename> errorBean = AutoBeanCodex.decode(factory,
-                    ErrorDiskResourceRename.class, caught.getMessage());
+                    ErrorDiskResourceRename.class, errMessage);
 
             ErrorHandler.post(errorBean.as(), caught);
         } else {

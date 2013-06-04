@@ -4,7 +4,10 @@ import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceErrorC
 import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceServiceErrorStrings;
 import org.iplantc.core.uidiskresource.client.services.errors.ErrorDiskResource;
 
+import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.web.bindery.autobean.shared.AutoBean;
 
 /**
@@ -17,13 +20,32 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 public class ErrorDiskResourceCategory {
     private static DiskResourceServiceErrorStrings errStrings = GWT.create(DiskResourceServiceErrorStrings.class);
 
-    public static String generateErrorMsg(AutoBean<ErrorDiskResource> instance) {
-        return getErrorMessage(DiskResourceErrorCode.valueOf(instance.as().getErrorCode()), null);
+    public static SafeHtml generateErrorMsg(AutoBean<ErrorDiskResource> instance) {
+        return getErrorMessage(getDiskResourceErrorCode(instance.as().getErrorCode()), null);
     }
 
-    @SuppressWarnings("incomplete-switch")
-    protected static String getErrorMessage(DiskResourceErrorCode code, String resourceNames) {
+    protected static DiskResourceErrorCode getDiskResourceErrorCode(String code) {
+        DiskResourceErrorCode drErrorCode = null;
+        if (!Strings.isNullOrEmpty(code)) {
+            drErrorCode = DiskResourceErrorCode.valueOf(code);
+        }
 
+        return drErrorCode;
+    }
+
+    protected static SafeHtml getErrorMessage(DiskResourceErrorCode code, String resourceNames) {
+        if (code == null) {
+            return null;
+        }
+
+        if (!Strings.isNullOrEmpty(resourceNames)) {
+            resourceNames = SafeHtmlUtils.fromString(resourceNames).asString();
+        }
+
+        return SafeHtmlUtils.fromTrustedString(getErrorMessageString(code, resourceNames));
+    }
+
+    private static String getErrorMessageString(DiskResourceErrorCode code, String resourceNames) {
         switch (code) {
             case ERR_DOES_NOT_EXIST:
                 return errStrings.diskResourceDoesNotExist(resourceNames);
@@ -61,9 +83,8 @@ public class ErrorDiskResourceCategory {
                 return errStrings.diskResourceIncompleteMove();
             case ERR_INCOMPLETE_RENAME:
                 return errStrings.diskResourceIncompleteRename();
+            default:
+                return null;
         }
-
-        return null;
     }
-
 }

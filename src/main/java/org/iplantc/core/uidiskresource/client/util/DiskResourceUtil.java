@@ -5,6 +5,7 @@ package org.iplantc.core.uidiskresource.client.util;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.uicommons.client.models.CommonModelAutoBeanFactory;
@@ -16,6 +17,7 @@ import org.iplantc.core.uidiskresource.client.models.Folder;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.json.client.JSONArray;
 import com.google.web.bindery.autobean.shared.AutoBean;
@@ -49,6 +51,10 @@ public class DiskResourceUtil {
      * @return the display name.
      */
     public static String parseNameFromPath(String path) {
+        if (Strings.isNullOrEmpty(path)) {
+            return path;
+        }
+
         LinkedList<String> split = Lists.newLinkedList(Splitter.on("/").trimResults().omitEmptyStrings()
                 .split(path));
 
@@ -56,6 +62,10 @@ public class DiskResourceUtil {
     }
 
     public static List<String> parseNamesFromIdList(Iterable<String> idList) {
+        if (idList == null) {
+            return null;
+        }
+
         List<String> nameList = Lists.newArrayList();
         for (String s : idList) {
             nameList.add(parseNameFromPath(s));
@@ -64,7 +74,11 @@ public class DiskResourceUtil {
     }
 
     public static String asCommaSeperatedNameList(Iterable<String> idList) {
-        return Joiner.on(",").join(parseNamesFromIdList(idList));
+        if (idList == null) {
+            return null;
+        }
+
+        return Joiner.on(", ").join(parseNamesFromIdList(idList));
     }
 
     public static boolean isOwner(DiskResource resource) {
@@ -140,6 +154,18 @@ public class DiskResourceUtil {
 
     public static boolean inTrash(DiskResource resource) {
         return resource != null && resource.getId().startsWith(UserInfo.getInstance().getTrashPath());
+    }
+
+    public static boolean containsTrashedResource(Set<DiskResource> selectedResources) {
+        if (selectedResources != null) {
+            for (DiskResource resource : selectedResources) {
+                if (inTrash(resource)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public static <R extends DiskResource> boolean containsFolder(Iterable<R> selection) {

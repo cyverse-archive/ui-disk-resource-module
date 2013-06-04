@@ -40,6 +40,7 @@ import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory
 import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadata;
 import org.iplantc.core.uidiskresource.client.models.File;
 import org.iplantc.core.uidiskresource.client.models.Folder;
+import org.iplantc.core.uidiskresource.client.models.HasPaths;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.DataSearchHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.DiskResourcesEventHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityGridHandler;
@@ -54,6 +55,7 @@ import org.iplantc.core.uidiskresource.client.services.callbacks.CreateFolderCal
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceDeleteCallback;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMoveCallback;
+import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceRestoreCallback;
 import org.iplantc.core.uidiskresource.client.services.callbacks.RenameDiskResourceCallback;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
@@ -90,7 +92,12 @@ import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
 import com.sencha.gxt.data.shared.loader.LoadHandler;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
+import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
+import com.sencha.gxt.widget.core.client.box.MessageBox;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.event.HideEvent;
+import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.info.Info;
@@ -452,18 +459,37 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doDelete() {
-        if (!getSelectedDiskResources().isEmpty()
-                && DiskResourceUtil.isOwner(getSelectedDiskResources())) {
-            view.mask(DISPLAY.loadingMask());
+        Set<DiskResource> selectedResources = getSelectedDiskResources();
+        if (!selectedResources.isEmpty() && DiskResourceUtil.isOwner(selectedResources)) {
+            HashSet<DiskResource> drSet = Sets.newHashSet(selectedResources);
 
-            HashSet<DiskResource> drSet = Sets.newHashSet(getSelectedDiskResources());
-            diskResourceService.deleteDiskResources(drSet, new DiskResourceDeleteCallback(drSet, getSelectedFolder(), view));
-
-        } else if ((getSelectedFolder() != null) && DiskResourceUtil.isOwner(getSelectedFolder())) {
-            view.mask(DISPLAY.loadingMask());
-            HashSet<DiskResource> drSet = Sets.newHashSet((DiskResource)getSelectedFolder());
-            diskResourceService.deleteDiskResources(drSet, new DiskResourceDeleteCallback(drSet, getSelectedFolder(), view));
+            if (DiskResourceUtil.containsTrashedResource(drSet)) {
+                confirmDelete(drSet);
+            } else {
+                delete(drSet);
+            }
         }
+    }
+
+    private void confirmDelete(final Set<DiskResource> drSet) {
+        final MessageBox confirm = new ConfirmMessageBox(DISPLAY.warning(), DISPLAY.emptyTrashWarning());
+
+        confirm.addHideHandler(new HideHandler() {
+            @Override
+            public void onHide(HideEvent event) {
+                if (confirm.getHideButton() == confirm.getButtonById(PredefinedButton.YES.name())) {
+                    delete(drSet);
+                }
+            }
+        });
+
+        confirm.show();
+    }
+
+    private void delete(Set<DiskResource> drSet) {
+        view.mask(DISPLAY.loadingMask());
+        AsyncCallback<String> callback = new DiskResourceDeleteCallback(drSet, getSelectedFolder(), view);
+        diskResourceService.deleteDiskResources(drSet, callback);
     }
 
     @Override
@@ -802,28 +828,18 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void restore() {
-        Iterator<DiskResource> it = getSelectedDiskResources().iterator();
-        JSONObject obj = new JSONObject();
-        JSONArray pathArr = new JSONArray();
-        int i = 0;
-        while (it.hasNext()) {
-            DiskResource r = it.next();
-            pathArr.set(i++, new JSONString(r.getId()));
+        final Set<DiskResource> selectedResources = getSelectedDiskResources();
+
+        if (selectedResources == null || selectedResources.isEmpty()) {
+            return;
         }
-        obj.put("paths", pathArr);
 
-        diskResourceService.restoreDiskResource(obj, new AsyncCallback<String>() {
+        HasPaths request = drFactory.pathsList().as();
+        request.setPaths(DiskResourceUtil.asStringIdList(selectedResources));
 
-            @Override
-            public void onFailure(Throwable caught) {
-                ErrorHandler.post(caught);
-            }
-
-            @Override
-            public void onSuccess(String result) {
-                view.removeDiskResources(getSelectedDiskResources());
-            }
-        });
+        maskView();
+        diskResourceService.restoreDiskResource(request, new DiskResourceRestoreCallback(view,
+                drFactory, selectedResources));
     }
 
     @Override
