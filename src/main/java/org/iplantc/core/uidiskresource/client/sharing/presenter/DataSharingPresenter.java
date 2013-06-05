@@ -11,8 +11,8 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.collaborators.models.Collaborator;
 import org.iplantc.core.uicommons.client.collaborators.util.CollaboratorsUtil;
+import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.sharing.Sharing;
-import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IplantInfoBox;
 import org.iplantc.core.uidiskresource.client.gin.DiskResourceInjector;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
@@ -201,11 +201,7 @@ public class DataSharingPresenter implements Presenter {
         }
 
         if (requestBody != null || unshareRequestBody != null) {
-            IplantInfoBox infoBox = new IplantInfoBox(
-                    I18N.DISPLAY.share() + "/ "
-                            + I18N.DISPLAY.unshare(),
-                            I18N.DISPLAY.sharingCompleteMsg());
-            infoBox.show();
+            IplantAnnouncer.getInstance().schedule(I18N.DISPLAY.sharingCompleteMsg());
         }
 
     }
