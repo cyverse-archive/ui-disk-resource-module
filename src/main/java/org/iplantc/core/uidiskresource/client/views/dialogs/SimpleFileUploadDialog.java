@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
+import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uicommons.client.widgets.IPCFileUploadField;
 import org.iplantc.core.uidiskresource.client.events.FileUploadedEvent;
@@ -33,8 +35,11 @@ import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 import com.sencha.gxt.core.client.util.Format;
 import com.sencha.gxt.core.shared.FastMap;
 import com.sencha.gxt.widget.core.client.Status;
+import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.event.HideEvent;
+import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SubmitCompleteEvent;
@@ -57,10 +62,12 @@ public class SimpleFileUploadDialog extends IPlantDialog {
     public static final String HDN_USER_ID_KEY = "user";
     public static final String FILE_TYPE = "type";
     public static final String URL_FIELD = "url";
-    private static SimpleFileUploadPanelUiBinder BINDER = GWT.create(SimpleFileUploadPanelUiBinder.class);
+    private static SimpleFileUploadPanelUiBinder BINDER = GWT
+            .create(SimpleFileUploadPanelUiBinder.class);
 
     @UiTemplate("SimpleFileUploadPanel.ui.xml")
-    interface SimpleFileUploadPanelUiBinder extends UiBinder<Widget, SimpleFileUploadDialog> {}
+    interface SimpleFileUploadPanelUiBinder extends UiBinder<Widget, SimpleFileUploadDialog> {
+    }
 
     @UiField
     HTML htmlDestText;
@@ -88,7 +95,8 @@ public class SimpleFileUploadDialog extends IPlantDialog {
     private final String userName;
     private final EventBus eventBus;
 
-    public SimpleFileUploadDialog(Folder uploadDest, DiskResourceServiceFacade drService, EventBus eventBus, SafeUri fileUploadServlet, String userName) {
+    public SimpleFileUploadDialog(Folder uploadDest, DiskResourceServiceFacade drService,
+            EventBus eventBus, SafeUri fileUploadServlet, String userName) {
         this.uploadDest = uploadDest;
         this.drService = drService;
         this.eventBus = eventBus;
@@ -138,7 +146,7 @@ public class SimpleFileUploadDialog extends IPlantDialog {
     }
 
     @UiFactory
-    Status createFormStatus(){
+    Status createFormStatus() {
         Status status = new Status();
         status.setWidth(15);
         return status;
@@ -163,7 +171,8 @@ public class SimpleFileUploadDialog extends IPlantDialog {
 
     private boolean isValidForm() {
         for (IPCFileUploadField f : fufList) {
-            if (!Strings.isNullOrEmpty(f.getValue()) && !f.getValue().equalsIgnoreCase(uploadDest.getId())) {
+            if (!Strings.isNullOrEmpty(f.getValue())
+                    && !f.getValue().equalsIgnoreCase(uploadDest.getId())) {
                 return true;
             }
         }
@@ -176,6 +185,29 @@ public class SimpleFileUploadDialog extends IPlantDialog {
         getOkButton().setEnabled(false);
     }
 
+    @Override
+    public void hide() {
+        if (submittedForms.size() > 0) {
+            final ConfirmMessageBox cmb = new ConfirmMessageBox(
+                    I18N.DISPLAY.confirmAction(),
+                    I18N.DISPLAY.idropLiteCloseConfirmMessage());
+
+            cmb.addHideHandler(new HideHandler() {
+
+                @Override
+                public void onHide(HideEvent event) {
+                    if (cmb.getHideButton().getText().equalsIgnoreCase("yes")) {
+                        SimpleFileUploadDialog.super.hide();
+                    }
+                }
+            });
+
+            cmb.show();
+        } else {
+            super.hide();
+        }
+    }
+
     @UiHandler({"form0", "form1", "form2", "form3", "form4"})
     void onSubmitComplete(SubmitCompleteEvent event) {
         if (submittedForms.contains(event.getSource())) {
@@ -186,19 +218,26 @@ public class SimpleFileUploadDialog extends IPlantDialog {
         String results2 = event.getResults();
         String results = Format.stripTags(results2);
         Splittable split = StringQuoter.split(results);
-        if ((split.get("file") != null)) {
+        IPCFileUploadField field = fufList.get(formList.indexOf(event.getSource()));
+        if ((split.get("file") == null)) {
+            field.markInvalid(I18N.ERROR.fileUploadFailed(field.getValue()));
+            IplantAnnouncer.getInstance().schedule(I18N.ERROR.fileUploadFailed(field.getValue()),
+                    new ErrorAnnouncementConfig());
+        } else {
+            IplantAnnouncer.getInstance().schedule(I18N.DISPLAY.fileUploadSuccess(field.getValue()));
+        }
+
+        if (submittedForms.size() == 0) {
             eventBus.fireEvent(new FileUploadedEvent(uploadDest));
             hide();
-        } else {
-            IPCFileUploadField field = fufList.get(formList.indexOf(event.getSource()));
-            field.markInvalid(I18N.ERROR.fileUploadFailed(field.getValue()));
         }
 
     }
 
     @UiHandler({"fuf0", "fuf1", "fuf2", "fuf3", "fuf4"})
     void onFormKeyUp(KeyUpEvent event) {
-        if ((event.getNativeKeyCode() == KeyCodes.KEY_BACKSPACE) || (event.getNativeKeyCode() == KeyCodes.KEY_DELETE)) {
+        if ((event.getNativeKeyCode() == KeyCodes.KEY_BACKSPACE)
+                || (event.getNativeKeyCode() == KeyCodes.KEY_DELETE)) {
             TextField tf = (TextField)event.getSource();
             for (IPCFileUploadField fuf : fufList) {
                 String value = fuf.getValue();
@@ -223,7 +262,7 @@ public class SimpleFileUploadDialog extends IPlantDialog {
             String fileName = field.getValue().replaceAll(".*[\\\\/]", "");
             field.setEnabled(!Strings.isNullOrEmpty(fileName) && !fileName.equalsIgnoreCase("null"));
             if (field.isEnabled()) {
-                destResourceMap.put(fileName, field);
+                destResourceMap.put(uploadDest.getId() + "/" + fileName, field);
             } else {
                 field.setEnabled(false);
             }
@@ -231,7 +270,8 @@ public class SimpleFileUploadDialog extends IPlantDialog {
 
         if (!destResourceMap.isEmpty()) {
             ArrayList<String> ids = Lists.newArrayList(destResourceMap.keySet());
-            drService.diskResourcesExist(ids, new CheckDuplicatesCallback(ids, destResourceMap, statList, fufList, submittedForms, formList));
+            drService.diskResourcesExist(ids, new CheckDuplicatesCallback(ids, destResourceMap,
+                    statList, fufList, submittedForms, formList));
         }
     }
 
@@ -242,8 +282,9 @@ public class SimpleFileUploadDialog extends IPlantDialog {
         private final List<FormPanel> submittedForms;
         private final List<FormPanel> formList;
 
-        public CheckDuplicatesCallback(List<String> ids, FastMap<IPCFileUploadField> destResourceMap, List<Status> statList,
-                List<IPCFileUploadField> fufList, List<FormPanel> submittedForms, List<FormPanel> formList) {
+        public CheckDuplicatesCallback(List<String> ids, FastMap<IPCFileUploadField> destResourceMap,
+                List<Status> statList, List<IPCFileUploadField> fufList, List<FormPanel> submittedForms,
+                List<FormPanel> formList) {
             super(ids, null);
             this.destResourceMap = destResourceMap;
             this.statList = statList;
@@ -267,9 +308,7 @@ public class SimpleFileUploadDialog extends IPlantDialog {
 
                         @Override
                         public void onSubmit(SubmitEvent event) {
-                            // TODO Auto-generated method stub
-                            event.getSource();
-
+                            getOkButton().disable();
                         }
                     });
                     form.submit();

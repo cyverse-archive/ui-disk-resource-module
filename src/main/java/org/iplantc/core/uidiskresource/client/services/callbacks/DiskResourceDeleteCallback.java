@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.views.IsMaskable;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent;
 import org.iplantc.core.uidiskresource.client.models.DiskResource;
@@ -30,7 +31,7 @@ public class DiskResourceDeleteCallback extends DiskResourceServiceCallback {
     @Override
     public void onSuccess(String result) {
         unmaskCaller();
-
+        IplantAnnouncer.getInstance().schedule(I18N.DISPLAY.deleteMsg());
         EventBus.getInstance().fireEvent(new DiskResourcesDeletedEvent(resources, parentFolder));
     }
 
