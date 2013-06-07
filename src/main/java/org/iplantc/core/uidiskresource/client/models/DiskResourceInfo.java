@@ -59,9 +59,9 @@ public interface DiskResourceInfo {
     @PropertyName("size")
     long getSize();
 
-    @PropertyName("file-type")
+    @PropertyName("mime-type")
     String getFileType();
 
-    @PropertyName("file-type")
+    @PropertyName("mime-type")
      void setFileType(String type);
 }
