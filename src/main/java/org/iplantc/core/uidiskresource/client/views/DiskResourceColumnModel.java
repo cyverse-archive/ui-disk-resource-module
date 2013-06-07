@@ -53,7 +53,7 @@ public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
                 props.lastModified(), 120, I18N.DISPLAY.lastModified());
         lastModified.setCell(new DateCell(DateTimeFormat
                 .getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM)));
-        ColumnConfig<DiskResource, Integer> size = new ColumnConfig<DiskResource, Integer>(
+        ColumnConfig<DiskResource, Long> size = new ColumnConfig<DiskResource, Long>(
                 new DiskResourceSizeValueProvider(),
                 50, I18N.DISPLAY.size());
         size.setCell(new DiskResourceSizeCell());
@@ -105,18 +105,18 @@ public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
      * 
      */
     private static final class DiskResourceSizeValueProvider implements
-            ValueProvider<DiskResource, Integer> {
+            ValueProvider<DiskResource, Long> {
         @Override
-        public Integer getValue(DiskResource object) {
+        public Long getValue(DiskResource object) {
             if (object instanceof File) {
-                return new Integer(((File)object).getSize());
+                return new Long(((File)object).getSize());
             } else {
                 return null;
             }
         }
 
         @Override
-        public void setValue(DiskResource object, Integer value) {
+        public void setValue(DiskResource object, Long value) {
         }
 
         @Override
@@ -131,10 +131,10 @@ public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
      * @author psarando
      * 
      */
-    private static final class DiskResourceSizeCell extends AbstractCell<Integer> {
+    private static final class DiskResourceSizeCell extends AbstractCell<Long> {
 
         @Override
-        public void render(Context context, Integer value, SafeHtmlBuilder sb) {
+        public void render(Context context, Long value, SafeHtmlBuilder sb) {
             if (value != null) {
                 sb.appendEscaped(DiskResourceUtil.formatFileSize(value.toString()));
             }
