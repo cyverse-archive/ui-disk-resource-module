@@ -26,28 +26,20 @@ import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 
 public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
 
-    private static CheckBoxSelectionModel<DiskResource> sm;
-    private static ColumnConfig<DiskResource, DiskResource> name;
-
-    public DiskResourceColumnModel() {
-        super(createColumnConfigList());
+    public DiskResourceColumnModel(CheckBoxSelectionModel<DiskResource> sm) {
+        super(createColumnConfigList(sm));
     }
 
-    public static List<ColumnConfig<DiskResource, ?>> createColumnConfigList() {
+    public static List<ColumnConfig<DiskResource, ?>> createColumnConfigList(
+            CheckBoxSelectionModel<DiskResource> sm) {
         List<ColumnConfig<DiskResource, ?>> list = new ArrayList<ColumnConfig<DiskResource, ?>>();
 
         DiskResourceProperties props = GWT.create(DiskResourceProperties.class);
 
-        if (sm == null) {
-            sm = new CheckBoxSelectionModel<DiskResource>(new IdentityValueProvider<DiskResource>());
-        }
-
-        if (name == null) {
-            name = new ColumnConfig<DiskResource, DiskResource>(new IdentityValueProvider<DiskResource>(
-                    "name"), 100, I18N.DISPLAY.name());
-            name.setCell(new DiskResourceNameCell(DiskResourceNameCell.CALLER_TAG.DATA));
-            name.setComparator(new DiskResourceNameComparator());
-        }
+        ColumnConfig<DiskResource, DiskResource> name = new ColumnConfig<DiskResource, DiskResource>(
+                new IdentityValueProvider<DiskResource>("name"), 100, I18N.DISPLAY.name());
+        name.setCell(new DiskResourceNameCell(DiskResourceNameCell.CALLER_TAG.DATA));
+        name.setComparator(new DiskResourceNameComparator());
 
         ColumnConfig<DiskResource, Date> lastModified = new ColumnConfig<DiskResource, Date>(
                 props.lastModified(), 120, I18N.DISPLAY.lastModified());
@@ -66,12 +58,12 @@ public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
         return list;
     }
 
-    public CheckBoxSelectionModel<DiskResource> getSelectionModel() {
-        return sm;
+    public void setCheckboxColumnHidden(boolean hidden) {
+        setHidden(0, hidden);
     }
 
     public ColumnConfig<DiskResource, DiskResource> getNameColumn() {
-        return name;
+        return getColumn(1);
     }
 
     /**
