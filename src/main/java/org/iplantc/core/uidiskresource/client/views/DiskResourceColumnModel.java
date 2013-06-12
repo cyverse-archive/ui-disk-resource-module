@@ -26,34 +26,26 @@ import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 
 public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
 
-    private static CheckBoxSelectionModel<DiskResource> sm;
-    private static ColumnConfig<DiskResource, DiskResource> name;
-
-    public DiskResourceColumnModel() {
-        super(createColumnConfigList());
+    public DiskResourceColumnModel(CheckBoxSelectionModel<DiskResource> sm) {
+        super(createColumnConfigList(sm));
     }
 
-    public static List<ColumnConfig<DiskResource, ?>> createColumnConfigList() {
+    public static List<ColumnConfig<DiskResource, ?>> createColumnConfigList(
+            CheckBoxSelectionModel<DiskResource> sm) {
         List<ColumnConfig<DiskResource, ?>> list = new ArrayList<ColumnConfig<DiskResource, ?>>();
 
         DiskResourceProperties props = GWT.create(DiskResourceProperties.class);
 
-        if (sm == null) {
-            sm = new CheckBoxSelectionModel<DiskResource>(new IdentityValueProvider<DiskResource>());
-        }
-
-        if (name == null) {
-            name = new ColumnConfig<DiskResource, DiskResource>(new IdentityValueProvider<DiskResource>(
-                    "name"), 100, I18N.DISPLAY.name());
-            name.setCell(new DiskResourceNameCell(DiskResourceNameCell.CALLER_TAG.DATA));
-            name.setComparator(new DiskResourceNameComparator());
-        }
+        ColumnConfig<DiskResource, DiskResource> name = new ColumnConfig<DiskResource, DiskResource>(
+                new IdentityValueProvider<DiskResource>("name"), 100, I18N.DISPLAY.name());
+        name.setCell(new DiskResourceNameCell(DiskResourceNameCell.CALLER_TAG.DATA));
+        name.setComparator(new DiskResourceNameComparator());
 
         ColumnConfig<DiskResource, Date> lastModified = new ColumnConfig<DiskResource, Date>(
                 props.lastModified(), 120, I18N.DISPLAY.lastModified());
         lastModified.setCell(new DateCell(DateTimeFormat
                 .getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM)));
-        ColumnConfig<DiskResource, Integer> size = new ColumnConfig<DiskResource, Integer>(
+        ColumnConfig<DiskResource, Long> size = new ColumnConfig<DiskResource, Long>(
                 new DiskResourceSizeValueProvider(),
                 50, I18N.DISPLAY.size());
         size.setCell(new DiskResourceSizeCell());
@@ -66,12 +58,12 @@ public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
         return list;
     }
 
-    public CheckBoxSelectionModel<DiskResource> getSelectionModel() {
-        return sm;
+    public void setCheckboxColumnHidden(boolean hidden) {
+        setHidden(0, hidden);
     }
 
     public ColumnConfig<DiskResource, DiskResource> getNameColumn() {
-        return name;
+        return getColumn(1);
     }
 
     /**
@@ -105,18 +97,18 @@ public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
      * 
      */
     private static final class DiskResourceSizeValueProvider implements
-            ValueProvider<DiskResource, Integer> {
+            ValueProvider<DiskResource, Long> {
         @Override
-        public Integer getValue(DiskResource object) {
+        public Long getValue(DiskResource object) {
             if (object instanceof File) {
-                return new Integer(((File)object).getSize());
+                return new Long(((File)object).getSize());
             } else {
                 return null;
             }
         }
 
         @Override
-        public void setValue(DiskResource object, Integer value) {
+        public void setValue(DiskResource object, Long value) {
         }
 
         @Override
@@ -131,10 +123,10 @@ public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
      * @author psarando
      * 
      */
-    private static final class DiskResourceSizeCell extends AbstractCell<Integer> {
+    private static final class DiskResourceSizeCell extends AbstractCell<Long> {
 
         @Override
-        public void render(Context context, Integer value, SafeHtmlBuilder sb) {
+        public void render(Context context, Long value, SafeHtmlBuilder sb) {
             if (value != null) {
                 sb.appendEscaped(DiskResourceUtil.formatFileSize(value.toString()));
             }

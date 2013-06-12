@@ -50,6 +50,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
@@ -67,6 +68,7 @@ import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
@@ -143,6 +145,8 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
 	private TreeLoader<Folder> treeLoader;
 
+    private final CheckBoxSelectionModel<DiskResource> sm;
+
 	@Inject
 	public DiskResourceViewImpl(final Tree<Folder, String> tree) {
 		this.tree = tree;
@@ -160,14 +164,14 @@ public class DiskResourceViewImpl implements DiskResourceView {
 			}
 		});
 
+        sm = new CheckBoxSelectionModel<DiskResource>(new IdentityValueProvider<DiskResource>());
+
 		widget = BINDER.createAndBindUi(this);
 
 		detailsPanel.setScrollMode(ScrollMode.AUTO);
 
-		DiskResourceColumnModel drColumnModel = (DiskResourceColumnModel) cm;
-		grid.setSelectionModel(drColumnModel.getSelectionModel());
-		ColumnConfig<DiskResource, DiskResource> name = drColumnModel
-				.getNameColumn();
+        grid.setSelectionModel(sm);
+        ColumnConfig<DiskResource, DiskResource> name = getDiskResourceColumnModel().getNameColumn();
 		grid.getStore().addSortInfo(
 				new StoreSortInfo<DiskResource>(name.getValueProvider(), name
 						.getComparator(), SortDir.ASC));
@@ -252,8 +256,12 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
 	@UiFactory
 	ColumnModel<DiskResource> createColumnModel() {
-		return new DiskResourceColumnModel();
+        return new DiskResourceColumnModel(sm);
 	}
+
+    private DiskResourceColumnModel getDiskResourceColumnModel() {
+        return (DiskResourceColumnModel)cm;
+    }
 
 	@Override
 	public void setPresenter(Presenter presenter) {
@@ -544,12 +552,12 @@ public class DiskResourceViewImpl implements DiskResourceView {
 	public void setSingleSelect() {
 		grid.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		// Hide the checkbox column
-		cm.setHidden(0, true);
+        getDiskResourceColumnModel().setCheckboxColumnHidden(true);
 	}
 
 	@Override
 	public void disableDiskResourceHyperlink() {
-		Cell<DiskResource> cell = cm.getCell(1);
+        Cell<DiskResource> cell = getDiskResourceColumnModel().getNameColumn().getCell();
 		if (cell instanceof DiskResourceNameCell) {
 			((DiskResourceNameCell) cell).setHyperlinkEnabled(false);
 		}
