@@ -73,7 +73,6 @@ public class InfoTypeEditorDialog extends IPlantDialog {
                    }
                }
                infoTypeCbo.add(types);
-               infoTypeCbo.add("other");
                infoTypeCbo.setValue(type);
             }
             

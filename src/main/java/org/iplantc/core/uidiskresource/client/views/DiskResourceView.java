@@ -281,4 +281,8 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
     boolean isCenterHidden();
 
+    void unmaskDetailsPanel();
+
+    void maskDetailsPanel();
+
 }

@@ -450,6 +450,13 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void doShare() {
         DataSharingDialog dlg = new DataSharingDialog(getSelectedDiskResources());
         dlg.show();
+        dlg.addOkButtonSelectHandler(new SelectHandler() {
+            
+            @Override
+            public void onSelect(SelectEvent event) {
+                onDiskResourceSelected(getSelectedDiskResources());
+            }
+        });
     }
 
     @Override

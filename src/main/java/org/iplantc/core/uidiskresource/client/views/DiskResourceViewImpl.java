@@ -844,6 +844,15 @@ public class DiskResourceViewImpl implements DiskResourceView {
         return panel;
 	}
 	
+	@Override
+	public void maskDetailsPanel() {
+	    detailsPanel.mask(I18N.DISPLAY.loadingMask());
+	}
+	
+	@Override
+	public void unmaskDetailsPanel() {
+	    detailsPanel.unmask();
+	}
 	
 	private class InfoTypeClickHandler implements ClickHandler {
 	 
