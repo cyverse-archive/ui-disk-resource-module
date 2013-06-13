@@ -155,6 +155,8 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
         void unMaskView(boolean clearRegisteredHandlers);
 
         void setSelectedDiskResourcesById(List<HasId> selectedDiskResources);
+        
+        void OnInfoTypeClick(String id, String infoType);
     }
 
     /**

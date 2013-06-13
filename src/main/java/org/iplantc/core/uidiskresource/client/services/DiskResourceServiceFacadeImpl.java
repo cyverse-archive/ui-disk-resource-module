@@ -466,10 +466,10 @@ public class DiskResourceServiceFacadeImpl implements DiskResourceServiceFacade 
 			AsyncCallback<String> callback) {
 		JSONObject obj = new JSONObject();
 		obj.put("path", new JSONString(filePath));
+		obj.put("type",new JSONString(type));
 
 		String address = DEProperties.getInstance().getMuleServiceBaseUrl()
-				+ "filetypes/type?type=" + type
-				+ DEProperties.getInstance().getDefaultOutputFolderName();
+				+ "filetypes/type";
 		ServiceCallWrapper wrapper = new ServiceCallWrapper(
 				ServiceCallWrapper.Type.POST, address, obj.toString());
 		DEServiceFacade.getInstance().getServiceData(wrapper, callback);

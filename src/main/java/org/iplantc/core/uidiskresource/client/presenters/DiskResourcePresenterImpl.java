@@ -62,6 +62,7 @@ import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceSearchView;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.HasHandlerRegistrationMgmt;
+import org.iplantc.core.uidiskresource.client.views.dialogs.InfoTypeEditorDialog;
 import org.iplantc.core.uidiskresource.client.views.metadata.DiskResourceMetadataDialog;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
@@ -363,17 +364,16 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void onDiskResourceSelected(Set<DiskResource> selection) {
         if (selection != null && selection.size() == 1) {
             Iterator<DiskResource> it = selection.iterator();
-            getDetails(it.next());
+            getDetails(it.next().getId());
         } else {
             view.resetDetailsPanel();
         }
 
     }
 
-    private void getDetails(DiskResource resource) {
+    private void getDetails(String path) {
         JSONObject obj = new JSONObject();
         JSONArray arr = new JSONArray();
-        final String path = resource.getId();
         arr.set(0, new JSONString(path));
         obj.put("paths", arr);
         diskResourceService.getStat(obj.toString(), new GetDiskResourceDetailsCallback(this, path, drFactory));
@@ -891,6 +891,32 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             }
         });
         dlg.show();
+    }
+
+    @Override
+    public void OnInfoTypeClick(final String id, final String type) {
+        final InfoTypeEditorDialog dialog = new InfoTypeEditorDialog(type);
+        dialog.show();
+        dialog.addOkButtonSelectHandler(new SelectHandler() {
+         
+         @Override
+         public void onSelect(SelectEvent event) {
+           String newType = dialog.getSelectedValue();
+           diskResourceService.setFileType(id, newType, new AsyncCallback<String>() {
+
+            @Override
+            public void onFailure(Throwable arg0) {
+               ErrorHandler.post(arg0);
+            }
+
+            @Override
+            public void onSuccess(String arg0) {
+              getDetails(id);
+            }
+        });
+         }
+     });
+        
     }
 
 }

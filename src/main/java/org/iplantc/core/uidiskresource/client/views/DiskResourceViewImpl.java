@@ -21,6 +21,7 @@ import org.iplantc.core.uidiskresource.client.models.Permissions;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
+import org.iplantc.core.uidiskresource.client.views.dialogs.InfoTypeEditorDialog;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
 import com.google.common.collect.Lists;
@@ -67,6 +68,8 @@ import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
@@ -774,23 +777,33 @@ public class DiskResourceViewImpl implements DiskResourceView {
 				detailsPanel.add(getSharingLabel(I18N.DISPLAY.share(),
 						info.getShareCount(), info.getPermissions()));
 				if (info.getType().equalsIgnoreCase("file")) {
-					detailsPanel
-							.add(getStringLabel(
-									I18N.DISPLAY.size(),
-									DiskResourceUtil.formatFileSize(info
-											.getSize() + ""))); //$NON-NLS-1$
-					detailsPanel
-							.add(getStringLabel("Type", info.getFileType()));
-
+					addFileDetails(info);
+           
 				} else {
-					detailsPanel.add(getDirFileCount(I18N.DISPLAY.files()
-							+ " / " + I18N.DISPLAY.folders(), //$NON-NLS-1$
-							info.getFileCount(), info.getDirCount()));
+					addFolderDetails(info);
 				}
 			}
 
 		}
 	}
+
+    private void addFolderDetails(DiskResourceInfo info) {
+        detailsPanel.add(getDirFileCount(I18N.DISPLAY.files()
+        		+ " / " + I18N.DISPLAY.folders(), //$NON-NLS-1$
+        		info.getFileCount(), info.getDirCount()));
+    }
+
+    private void addFileDetails(DiskResourceInfo info) {
+        detailsPanel
+        		.add(getStringLabel(
+        				I18N.DISPLAY.size(),
+        				DiskResourceUtil.formatFileSize(info
+        						.getSize() + ""))); //$NON-NLS-1$
+        detailsPanel
+        		.add(getStringLabel("Type", info.getFileType()));
+        detailsPanel
+        .add(getInfoTypeLabel("Info-Type", info));
+    }
 
 	private HorizontalPanel getSharingLabel(String label, int shareCount,
 			Permissions permissions) {
@@ -814,13 +827,45 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
 		return panel;
 	}
+	
+	private HorizontalPanel getInfoTypeLabel(String label,DiskResourceInfo info) {
+	    IPlantAnchor link = null;
+	    HorizontalPanel panel = buildRow();
+        FieldLabel fl = new FieldLabel();
+        fl.setHTML(getDetailAsHtml(label, true));
+        panel.add(fl);
+        String infoType = info.getInfoType();
+        if(infoType!=null && !infoType.isEmpty()) {
+            link = new IPlantAnchor(infoType, 100, new InfoTypeClickHandler(infoType));
+        } else {
+            link = new IPlantAnchor("Select", 100, new InfoTypeClickHandler(""));
+        }
+        panel.add(link);
+        return panel;
+	}
+	
+	
+	private class InfoTypeClickHandler implements ClickHandler {
+	 
+	    private String infoType;
+	    
+	    public InfoTypeClickHandler(String type) {
+	        this.infoType = type;
+	    }
+	    
+        @Override
+        public void onClick(ClickEvent arg0) {
+            Set<DiskResource> selection = getSelectedDiskResources();
+            Iterator<DiskResource> it = selection.iterator();
+            presenter.OnInfoTypeClick(it.next().getId(), infoType);
+        }
+	    
+	}
 
 	private class SharingLabelClickHandler implements ClickHandler {
 		@Override
 		public void onClick(ClickEvent event) {
-			DataSharingDialog dsd = new DataSharingDialog(
-					getSelectedDiskResources());
-			dsd.show();
+			presenter.doShare();
 
 		}
 	}

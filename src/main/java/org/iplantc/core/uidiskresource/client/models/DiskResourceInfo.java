@@ -63,5 +63,12 @@ public interface DiskResourceInfo {
     String getFileType();
 
     @PropertyName("mime-type")
-     void setFileType(String type);
+    void setFileType(String mimeType);
+    
+    @PropertyName("info-type")
+    String getInfoType();
+    
+    @PropertyName("info-type")
+    void setInfoType(String infoType);
+    
 }
