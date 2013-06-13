@@ -219,7 +219,7 @@ public class SimpleFileUploadDialog extends IPlantDialog {
         String results = Format.stripTags(results2);
         Splittable split = StringQuoter.split(results);
         IPCFileUploadField field = fufList.get(formList.indexOf(event.getSource()));
-        if ((split.get("file") == null)) {
+        if (split.isUndefined("file") || (split.get("file") == null)) {
             field.markInvalid(I18N.ERROR.fileUploadFailed(field.getValue()));
             IplantAnnouncer.getInstance().schedule(I18N.ERROR.fileUploadFailed(field.getValue()),
                     new ErrorAnnouncementConfig());
