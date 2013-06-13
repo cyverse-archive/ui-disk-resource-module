@@ -565,17 +565,15 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             if (DiskResourceUtil.isChildOfFolder(targetFolder, dr)) {
                 return false;
             }
-            if (dr instanceof Folder) {
 
+            if (dr instanceof Folder) {
                 // cannot drag an ancestor (parent, grandparent, etc) onto a child and/or descendant
-                if (DiskResourceUtil.isDescendantOfFolder(targetFolder, (Folder)dr)) {
+                if (DiskResourceUtil.isDescendantOfFolder((Folder)dr, targetFolder)) {
                     return false;
                 }
-
-            } else if (dr instanceof File) {
-
             }
         }
+
         return true;
     }
 
@@ -586,17 +584,48 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     }
 
     @Override
+    public Set<? extends DiskResource> getDragSources(IsWidget source, Element dragStartEl) {
+        // Verify the drag started from a valid item in the tree or grid, then return the selected items.
+        if (isViewGrid(source)) {
+            Set<DiskResource> selectedResources = getSelectedDiskResources();
+
+            if (!selectedResources.isEmpty()) {
+                // Verify the dragStartEl is a row within the grid.
+                Element targetRow = view.findGridRow(dragStartEl);
+
+                if (targetRow != null) {
+                    int dropIndex = view.findRowIndex(targetRow);
+
+                    DiskResource selDiskResource = view.getListStore().get(dropIndex);
+                    if (selDiskResource != null) {
+                        return Sets.newHashSet(selectedResources);
+                    }
+                }
+            }
+        } else if (isViewTree(source) && (getSelectedFolder() != null)) {
+            // Verify the dragStartEl is a folder within the tree.
+            Folder srcFolder = getDropTargetFolder(source, dragStartEl);
+
+            if (srcFolder != null) {
+                return Sets.newHashSet(srcFolder);
+            }
+        }
+
+        return null;
+    }
+
+    @Override
     public Folder getDropTargetFolder(IsWidget target, Element eventTargetElement) {
         Folder ret = null;
         if (view.isViewTree(target) && (view.findTreeNode(eventTargetElement) != null)) {
             TreeNode<Folder> targetTreeNode = view.findTreeNode(eventTargetElement);
             ret = targetTreeNode.getModel();
         } else if (view.isViewGrid(target)) {
-            Element targetRow = view.findGridRow(target.asWidget().getElement()).cast();
+            Element targetRow = view.findGridRow(eventTargetElement).cast();
 
             if (targetRow != null) {
                 int dropIndex = view.findRowIndex(targetRow);
-                // TODO JDS Do some type checking here. got errors last time for casting file to folder
+
                 DiskResource selDiskResource = view.getListStore().get(dropIndex);
                 ret = (selDiskResource instanceof Folder) ? (Folder)selDiskResource : null;
             }

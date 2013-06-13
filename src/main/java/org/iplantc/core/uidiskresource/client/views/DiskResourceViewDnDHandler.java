@@ -11,6 +11,7 @@ import org.iplantc.core.uidiskresource.client.views.DiskResourceView.Presenter;
 
 import com.google.common.collect.Sets;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.EventTarget;
 import com.sencha.gxt.dnd.core.client.DndDragEnterEvent;
 import com.sencha.gxt.dnd.core.client.DndDragEnterEvent.DndDragEnterHandler;
 import com.sencha.gxt.dnd.core.client.DndDragMoveEvent;
@@ -19,30 +20,68 @@ import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
 import com.sencha.gxt.dnd.core.client.DndDragStartEvent.DndDragStartHandler;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DndDropEvent.DndDropHandler;
+import com.sencha.gxt.dnd.core.client.StatusProxy;
+import com.sencha.gxt.fx.client.DragMoveEvent;
 
 class DiskResourceViewDnDHandler implements DndDragStartHandler, DndDropHandler, DndDragMoveHandler,
         DndDragEnterHandler {
 
     private final Presenter presenter;
 
+    /**
+     * Guard against rapid clicks triggering drag+drop events.
+     */
+    private boolean moved;
+
     public DiskResourceViewDnDHandler(final DiskResourceView.Presenter presenter) {
         this.presenter = presenter;
     }
 
-    @Override
-    public void onDragStart(DndDragStartEvent event) {
-        // Just load up data from selection
-        Set<? extends DiskResource> newSet = null;
-        if (presenter.isViewGrid(event.getTarget()) && !presenter.getSelectedDiskResources().isEmpty()) {
-            newSet = Sets.newHashSet(presenter.getSelectedDiskResources());
-        } else if (presenter.isViewTree(event.getTarget()) && (presenter.getSelectedFolder() != null)) {
-            newSet = Sets.newHashSet(presenter.getSelectedFolder());
+    private boolean validateDropStatus(Folder targetFolder, Set<DiskResource> dropData,
+            StatusProxy status) {
+        // Verify we have drag data.
+        if (dropData == null) {
+            status.setStatus(false);
+            return false;
         }
 
-        if ((newSet != null)
-                && !newSet.isEmpty()) {
-            event.setData(newSet);
-            event.getStatusProxy().update(I18N.DISPLAY.dataDragDropStatusText(newSet.size()));
+        // Reset status message
+        status.setStatus(true);
+        status.update(I18N.DISPLAY.dataDragDropStatusText(dropData.size()));
+
+        // Verify we have a drop target.
+        if (targetFolder == null) {
+            status.setStatus(false);
+            return false;
+        }
+
+        // Check for permissions
+        if (!(targetFolder.getPermissions().isWritable() && DiskResourceUtil.isMovable(dropData))) {
+            status.setStatus(false);
+            status.update(I18N.ERROR.permissionErrorMessage());
+            return false;
+        }
+
+        // Check if the drop data contains an ancestor folder of the target folder.
+        if (!presenter.canDragDataToTargetFolder(targetFolder, dropData)) {
+            status.setStatus(false);
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onDragStart(DndDragStartEvent event) {
+        moved = false;
+
+        Element dragStartEl = event.getDragStartEvent().getStartElement();
+
+        Set<? extends DiskResource> dragData = presenter.getDragSources(event.getTarget(), dragStartEl);
+
+        if ((dragData != null) && !dragData.isEmpty()) {
+            event.setData(dragData);
+            event.getStatusProxy().update(I18N.DISPLAY.dataDragDropStatusText(dragData.size()));
             event.getStatusProxy().setStatus(true);
             event.setCancelled(false);
         } else {
@@ -52,96 +91,52 @@ class DiskResourceViewDnDHandler implements DndDragStartHandler, DndDropHandler,
 
     @Override
     public void onDragEnter(DndDragEnterEvent event) {
+        moved = false;
+
         Set<DiskResource> dropData = getDropData(event.getDragSource().getData());
-        // Verify that drag data is a list of disk resources
-        if (dropData == null) {
+        DragMoveEvent dragEnterEvent = event.getDragEnterEvent();
+        EventTarget target = dragEnterEvent.getNativeEvent().getEventTarget();
+        Folder targetFolder = presenter.getDropTargetFolder(dragEnterEvent.getTarget(),
+                Element.as(target));
+
+        if (!validateDropStatus(targetFolder, dropData, event.getStatusProxy())) {
             event.setCancelled(true);
             return;
         }
+
         // Reset status message
         event.getStatusProxy().update(I18N.DISPLAY.dataDragDropStatusText(dropData.size()));
-        // Cancel if user does not own the data
-        if (!DiskResourceUtil.isOwner(dropData)) {
-            event.getStatusProxy().setStatus(false);
-            event.getStatusProxy().update(I18N.ERROR.permissionErrorMessage());
-            event.setCancelled(true);
-        } else if (presenter.isViewGrid(event.getTarget())) {// If we are entering the View's grid
-            Folder selectedFolder = presenter.getSelectedFolder();
-            /*
-             * if there is no drop data
-             * if the current selected folder is null
-             * OR user does not own the selected folder
-             * OR the drop data contains an ancestor folder of current selected folder.
-             * THEN cancel the event and set visual status to false
-             */
-            if (selectedFolder == null) {
-                // Check that drop data and the drop area is valid.
-                event.getStatusProxy().setStatus(false);
-                event.getStatusProxy().update(I18N.ERROR.noFolderSelected());
-                event.setCancelled(true);
-            } else if (!selectedFolder.getPermissions().isWritable()
-                    || !DiskResourceUtil.isMovable(dropData)) {
-                // Check for permissions
-                event.getStatusProxy().setStatus(false);
-                event.getStatusProxy().update(I18N.ERROR.permissionErrorMessage());
-                event.setCancelled(true);
-
-            } else if (!presenter.canDragDataToTargetFolder(selectedFolder, dropData)) {
-                event.getStatusProxy().setStatus(false);
-                event.getStatusProxy().update(I18N.ERROR.resourcesContainAncestors());
-                event.setCancelled(true);
-            }
-        }
     }
 
     @Override
     public void onDragMove(DndDragMoveEvent event) {
-        // Reset status message
+        moved = true;
+
         Set<DiskResource> dropData = getDropData(event.getDragSource().getData());
+        EventTarget target = event.getDragMoveEvent().getNativeEvent().getEventTarget();
+        Folder targetFolder = presenter.getDropTargetFolder(event.getDropTarget().getWidget(),
+                Element.as(target));
 
-        if (dropData == null) {
+        if (!validateDropStatus(targetFolder, dropData, event.getStatusProxy())) {
             event.setCancelled(true);
-            return;
         }
-
-        event.getStatusProxy().setStatus(true);
-        event.getStatusProxy().update(I18N.DISPLAY.dataDragDropStatusText(dropData.size()));
-
-        Folder targetFolder = presenter.getDropTargetFolder(event.getDropTarget().getWidget(), event
-                .getDragMoveEvent().getNativeEvent().getEventTarget().<Element> cast());
-
-        // Permissions of drop data should have been checked on drag enter
-        // if the target is not a folder, don't allow a drop there
-        if (targetFolder == null) {
-            event.getStatusProxy().update("NULL FOLDER");
-            event.getStatusProxy().setStatus(false);
-            event.setCancelled(true);
-        } else if (!(targetFolder instanceof Folder)) {
-            event.getStatusProxy().setStatus(false);
-        } else if (!targetFolder.getPermissions().isWritable()
-                || !DiskResourceUtil.isMovable(dropData)) {
-            // Check for permissions
-            event.getStatusProxy().setStatus(false);
-            event.getStatusProxy().update(I18N.ERROR.permissionErrorMessage());
-            event.setCancelled(true);
-        } else if (!presenter.canDragDataToTargetFolder(targetFolder, dropData)) {
-            event.getStatusProxy().setStatus(false);
-            event.getStatusProxy().update(I18N.ERROR.resourcesContainAncestors());
-            event.setCancelled(true);
-        } else if (presenter.isViewTree(event.getTarget())) {
-            // If it is the view's tree,
-        }
-
     }
 
     @Override
     public void onDrop(DndDropEvent event) {
-        // Reset status message
-        Set<DiskResource> dropData = getDropData(event.getData());
-        event.getStatusProxy().update(I18N.DISPLAY.dataDragDropStatusText(dropData.size()));
+        // Guard against rapid clicks triggering drag+drop events.
+        if (!moved) {
+            return;
+        }
 
-        Folder targetFolder = presenter.getDropTargetFolder(event.getDropTarget().getWidget(), event
-                .getDragEndEvent().getNativeEvent().getEventTarget().<Element> cast());
+        Set<DiskResource> dropData = getDropData(event.getData());
+        EventTarget target = event.getDragEndEvent().getNativeEvent().getEventTarget();
+        Folder targetFolder = presenter.getDropTargetFolder(event.getDropTarget().getWidget(),
+                Element.as(target));
+
+        if (!validateDropStatus(targetFolder, dropData, event.getStatusProxy())) {
+            return;
+        }
 
         presenter.doMoveDiskResources(targetFolder, dropData);
     }

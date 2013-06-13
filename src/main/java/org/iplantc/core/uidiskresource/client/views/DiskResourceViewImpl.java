@@ -539,11 +539,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
 	@Override
 	public Element findGridRow(Element el) {
-		Element row = grid.getView().findRow(el);
-		if (row == null && listStore.size() > 0) {
-			row = grid.getView().getRow(grid.getStore().size() - 1).cast();
-		}
-		return row;
+        return grid.getView().findRow(el);
 	}
 
 	@Override
