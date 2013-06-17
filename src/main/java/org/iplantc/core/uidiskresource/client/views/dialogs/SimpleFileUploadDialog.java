@@ -8,6 +8,7 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
+import org.iplantc.core.uicommons.client.validators.NameValidator3;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uicommons.client.widgets.IPCFileUploadField;
 import org.iplantc.core.uidiskresource.client.events.FileUploadedEvent;
@@ -116,8 +117,16 @@ public class SimpleFileUploadDialog extends IPlantDialog {
         fufList = Lists.newArrayList(fuf0, fuf1, fuf2, fuf3, fuf4);
         tbList = Lists.newArrayList(btn0, btn1, btn2, btn3, btn4);
         statList = Lists.newArrayList(status0, status1, status2, status3, status4);
-
+        addValidators();
+  
         initDestPathLabel();
+    }
+    
+    
+    private void addValidators() {
+        for (IPCFileUploadField f : fufList) {
+            f.addValidator(new NameValidator3());
+        }
     }
 
     private void initDestPathLabel() {
@@ -171,8 +180,7 @@ public class SimpleFileUploadDialog extends IPlantDialog {
 
     private boolean isValidForm() {
         for (IPCFileUploadField f : fufList) {
-            if (!Strings.isNullOrEmpty(f.getValue())
-                    && !f.getValue().equalsIgnoreCase(uploadDest.getId())) {
+            if (!Strings.isNullOrEmpty(f.getValue()) && !f.getValue().equalsIgnoreCase(uploadDest.getId()) && f.isValid()) {
                 return true;
             }
         }
