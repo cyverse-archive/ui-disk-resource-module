@@ -144,8 +144,8 @@ public class DiskResourceUtil {
         return folder.getId().startsWith(ancestor.getId());
     }
 
-    public static boolean isMovable(Iterable<DiskResource> dropData) {
-        return isOwner(dropData);
+    public static boolean isMovable(Folder targetFolder, Iterable<DiskResource> dropData) {
+        return isOwner(dropData) && targetFolder.getPermissions().isWritable();
     }
 
     public static boolean canUploadTo(DiskResource resource) {

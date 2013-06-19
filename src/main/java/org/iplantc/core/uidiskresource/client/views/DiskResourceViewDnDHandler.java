@@ -56,7 +56,7 @@ class DiskResourceViewDnDHandler implements DndDragStartHandler, DndDropHandler,
         }
 
         // Check for permissions
-        if (!(targetFolder.getPermissions().isWritable() && DiskResourceUtil.isMovable(dropData))) {
+        if (!(DiskResourceUtil.isMovable(targetFolder, dropData))) {
             status.setStatus(false);
             status.update(I18N.ERROR.permissionErrorMessage());
             return false;

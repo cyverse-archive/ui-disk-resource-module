@@ -14,6 +14,8 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
+import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
@@ -108,9 +110,9 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 
 /**
- *
+ * 
  * @author jstroot
- *
+ * 
  */
 public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         DiskResourceViewToolbarImpl.Presenter, HasHandlerRegistrationMgmt {
@@ -129,9 +131,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
-            final DiskResourceServiceFacade diskResourceService,
-            final IplantDisplayStrings display, final DiskResourceAutoBeanFactory factory,
- final DataSearchAutoBeanFactory dataSearchFactory) {
+            final DiskResourceServiceFacade diskResourceService, final IplantDisplayStrings display,
+            final DiskResourceAutoBeanFactory factory, final DataSearchAutoBeanFactory dataSearchFactory) {
         this.view = view;
         this.proxy = proxy;
         this.diskResourceService = diskResourceService;
@@ -284,8 +285,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void setSelectedDiskResourcesById(final List<HasId> diskResourcesToSelect) {
-        SelectDiskResourceByIdStoreAddHandler diskResourceStoreAddHandler = new SelectDiskResourceByIdStoreAddHandler(diskResourcesToSelect, this);
-        HandlerRegistration diskResHandlerReg = view.getListStore().addStoreAddHandler(diskResourceStoreAddHandler);
+        SelectDiskResourceByIdStoreAddHandler diskResourceStoreAddHandler = new SelectDiskResourceByIdStoreAddHandler(
+                diskResourcesToSelect, this);
+        HandlerRegistration diskResHandlerReg = view.getListStore().addStoreAddHandler(
+                diskResourceStoreAddHandler);
         addEventHandlerRegistration(diskResourceStoreAddHandler, diskResHandlerReg);
     }
 
@@ -302,7 +305,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             view.setSelectedFolder(folder);
         } else {
             // Create and add the SelectFolderByIdLoadHandler to the treeLoader.
-            SelectFolderByIdLoadHandler handler = new SelectFolderByIdLoadHandler(folderToSelect, this, diskResourceService);
+            SelectFolderByIdLoadHandler handler = new SelectFolderByIdLoadHandler(folderToSelect, this,
+                    diskResourceService);
             HandlerRegistration reg = treeLoader.addLoadHandler(handler);
             addEventHandlerRegistration(handler, reg);
 
@@ -379,17 +383,19 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         JSONArray arr = new JSONArray();
         arr.set(0, new JSONString(path));
         obj.put("paths", arr);
-        diskResourceService.getStat(obj.toString(), new GetDiskResourceDetailsCallback(this, path, drFactory));
+        diskResourceService.getStat(obj.toString(), new GetDiskResourceDetailsCallback(this, path,
+                drFactory));
 
     }
 
-//    @Override
-//    public void onFolderLoad(Folder loadedFolder, Set<DiskResource> folderChildren) {
-//        // FIXME JDS This method needs to go away. Instead, this action should be performed via a loadHandler.
-//        if ((getSelectedFolder() != null) && getSelectedFolder().equals(loadedFolder)) {
-//            view.setDiskResources(folderChildren);
-//        }
-//    }
+    // @Override
+    // public void onFolderLoad(Folder loadedFolder, Set<DiskResource> folderChildren) {
+    // // FIXME JDS This method needs to go away. Instead, this action should be performed via a
+    // loadHandler.
+    // if ((getSelectedFolder() != null) && getSelectedFolder().equals(loadedFolder)) {
+    // view.setDiskResources(folderChildren);
+    // }
+    // }
 
     @Override
     public void doBulkUpload() {
@@ -449,12 +455,14 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doSimpleDownload() {
-        EventBus.getInstance().fireEvent(new RequestSimpleDownloadEvent(this, getSelectedDiskResources(), getSelectedFolder()));
+        EventBus.getInstance().fireEvent(
+                new RequestSimpleDownloadEvent(this, getSelectedDiskResources(), getSelectedFolder()));
     }
 
     @Override
     public void doBulkDownload() {
-        EventBus.getInstance().fireEvent(new RequestBulkDownloadEvent(this, getSelectedDiskResources(), getSelectedFolder()));
+        EventBus.getInstance().fireEvent(
+                new RequestBulkDownloadEvent(this, getSelectedDiskResources(), getSelectedFolder()));
     }
 
     @Override
@@ -469,7 +477,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         DataSharingDialog dlg = new DataSharingDialog(getSelectedDiskResources());
         dlg.show();
         dlg.addOkButtonSelectHandler(new SelectHandler() {
-            
+
             @Override
             public void onSelect(SelectEvent event) {
                 onDiskResourceSelected(getSelectedDiskResources());
@@ -544,10 +552,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         view.addFolderSelectionHandler(selectionHandler);
     }
 
-//    @Override
-//    public void setSelectedDiskResourcesById(Set<String> diskResourceIdList) {
-//
-//    }
+    // @Override
+    // public void setSelectedDiskResourcesById(Set<String> diskResourceIdList) {
+    //
+    // }
 
     @Override
     public void unregisterHandler(EventHandler handler) {
@@ -844,7 +852,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             }
 
             @Override
-            public void onSuccess(String result) {/* DO NOTHING */}
+            public void onSuccess(String result) {/* DO NOTHING */
+            }
         });
     }
 
@@ -928,17 +937,17 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         dlg.setWidth(550);
         dlg.setOkButtonText(I18N.DISPLAY.done());
         DataLinkPanel.Presenter<DiskResource> dlPresenter = new DataLinkPresenter<DiskResource>(
-               new ArrayList<DiskResource>(getSelectedDiskResources()));
+                new ArrayList<DiskResource>(getSelectedDiskResources()));
         dlPresenter.go(dlg);
         final ToolButton btn = dlg.gelHelpToolButton();
         btn.addSelectHandler(new SelectHandler() {
-            
+
             @Override
             public void onSelect(SelectEvent event) {
                 ContextualHelpPopup popup = new ContextualHelpPopup();
                 popup.add(new HTML(I18N.HELP.manageDataLinksHelp()));
                 popup.showAt(btn.getAbsoluteLeft(), btn.getAbsoluteTop() + 15);
-                
+
             }
         });
         dlg.show();
@@ -949,25 +958,25 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         final InfoTypeEditorDialog dialog = new InfoTypeEditorDialog(type);
         dialog.show();
         dialog.addOkButtonSelectHandler(new SelectHandler() {
-         
-         @Override
-         public void onSelect(SelectEvent event) {
-           String newType = dialog.getSelectedValue();
-           diskResourceService.setFileType(id, newType, new AsyncCallback<String>() {
 
             @Override
-            public void onFailure(Throwable arg0) {
-               ErrorHandler.post(arg0);
-            }
+            public void onSelect(SelectEvent event) {
+                String newType = dialog.getSelectedValue();
+                diskResourceService.setFileType(id, newType, new AsyncCallback<String>() {
 
-            @Override
-            public void onSuccess(String arg0) {
-              getDetails(id);
+                    @Override
+                    public void onFailure(Throwable arg0) {
+                        ErrorHandler.post(arg0);
+                    }
+
+                    @Override
+                    public void onSuccess(String arg0) {
+                        getDetails(id);
+                    }
+                });
             }
         });
-         }
-     });
-        
+
     }
 
     @Override
@@ -975,15 +984,27 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         final FolderSelectDialog fsd = new FolderSelectDialog();
         fsd.show();
         fsd.addOkButtonSelectHandler(new SelectHandler() {
-            
+
             @Override
             public void onSelect(SelectEvent event) {
-                Folder dest = fsd.getValue();
+                Folder targetFolder = fsd.getValue();
                 final Set<DiskResource> selectedResources = getSelectedDiskResources();
-                diskResourceService.moveDiskResources(selectedResources, dest, new DiskResourceMoveCallback(view, dest, selectedResources));
+                if (DiskResourceUtil.isMovable(targetFolder, selectedResources)) {
+                    if (canDragDataToTargetFolder(targetFolder, selectedResources)) {
+                        diskResourceService.moveDiskResources(selectedResources, targetFolder,
+                                new DiskResourceMoveCallback(view, targetFolder, selectedResources));
+                    } else {
+                        IplantAnnouncer.getInstance().schedule(I18N.ERROR.diskResourceIncompleteMove(),
+                                new ErrorAnnouncementConfig());
+                    }
+                } else {
+                    IplantAnnouncer.getInstance().schedule(I18N.ERROR.permissionErrorMessage(),
+                            new ErrorAnnouncementConfig());
+                }
+
             }
         });
-        
+
     }
 
 }
