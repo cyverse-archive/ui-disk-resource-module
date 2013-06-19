@@ -33,8 +33,7 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
 
     @Override
     public void onDiskResourcesDeleted(Collection<DiskResource> resources, Folder parentFolder) {
-        view.refreshFolder(parentFolder);
-        presenter.setSelectedFolderById(parentFolder);
+        presenter.refreshFolder(parentFolder);
     }
 
     @Override
@@ -58,19 +57,19 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
             String parentFolderId = DiskResourceUtil.parseParent(selectedFolder.getId());
             Folder parentFolder = view.getFolderById(parentFolderId);
 
-            view.refreshFolder(destinationFolder);
+            presenter.refreshFolder(destinationFolder);
             if (!DiskResourceUtil.isDescendantOfFolder(destinationFolder, parentFolder)) {
-                view.refreshFolder(parentFolder);
+                presenter.refreshFolder(parentFolder);
             }
 
             presenter.setSelectedFolderById(destinationFolder);
         } else {
             if (DiskResourceUtil.containsFolder(resourcesToMove)) {
                 // Refresh the destination since it has new children.
-                view.refreshFolder(destinationFolder);
+                presenter.refreshFolder(destinationFolder);
                 if (!DiskResourceUtil.isDescendantOfFolder(destinationFolder, selectedFolder)) {
                     // Refresh the selected Folder since it lost children.
-                    view.refreshFolder(selectedFolder);
+                    presenter.refreshFolder(selectedFolder);
                 }
             }
 

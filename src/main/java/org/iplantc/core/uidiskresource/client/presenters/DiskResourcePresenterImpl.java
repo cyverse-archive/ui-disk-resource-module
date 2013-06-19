@@ -426,7 +426,22 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doRefresh() {
-        view.refreshFolder(getSelectedFolder());
+        Folder selectedFolder = getSelectedFolder();
+        view.refreshFolder(selectedFolder);
+        setSelectedFolderById(selectedFolder);
+    }
+
+    @Override
+    public void refreshFolder(Folder folder) {
+        if (folder == null) {
+            return;
+        }
+
+        if (getSelectedFolder() == folder) {
+            doRefresh();
+        } else {
+            view.refreshFolder(folder);
+        }
     }
 
     @Override
@@ -848,10 +863,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
                     @Override
                     public void onSuccess(String result) {
-                        Folder f = view.getFolderById(UserInfo.getInstance().getTrashPath());
-                        if (f != null) {
-                            view.refreshFolder(f);
-                        }
+                        refreshFolder(view.getFolderById(UserInfo.getInstance().getTrashPath()));
                     }
 
                     @Override

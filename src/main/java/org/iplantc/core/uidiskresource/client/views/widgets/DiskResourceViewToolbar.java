@@ -22,6 +22,14 @@ public interface DiskResourceViewToolbar extends IsWidget {
          */
         void doRefresh();
 
+        /**
+         * Reloads the given folder in the view's navigation tree, and also the data grid if it's the
+         * currently selected folder.
+         * 
+         * @param folder The folder to reload from the service.
+         */
+        void refreshFolder(Folder folder);
+
         void doSimpleDownload();
 
         void doBulkDownload();
