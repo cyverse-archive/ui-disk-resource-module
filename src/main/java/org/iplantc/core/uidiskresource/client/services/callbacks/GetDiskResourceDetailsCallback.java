@@ -1,4 +1,4 @@
-package org.iplantc.core.uidiskresource.client.presenters;
+package org.iplantc.core.uidiskresource.client.services.callbacks;
 
 import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.resources.client.messages.I18N;
@@ -16,12 +16,12 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
-final class GetDiskResourceDetailsCallback implements AsyncCallback<String> {
+public final class GetDiskResourceDetailsCallback implements AsyncCallback<String> {
     private final DiskResourceView.Presenter presenter;
     private final String path;
     private final DiskResourceAutoBeanFactory factory;
 
-    GetDiskResourceDetailsCallback(DiskResourceView.Presenter presenter, String path, DiskResourceAutoBeanFactory factory) {
+    public GetDiskResourceDetailsCallback(DiskResourceView.Presenter presenter, String path, DiskResourceAutoBeanFactory factory) {
         this.presenter = presenter;
         this.path = path;
         this.factory = factory;

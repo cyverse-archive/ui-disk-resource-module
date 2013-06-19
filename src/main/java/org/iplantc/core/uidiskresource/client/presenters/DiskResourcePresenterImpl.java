@@ -56,12 +56,14 @@ import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceDel
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMoveCallback;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceRestoreCallback;
+import org.iplantc.core.uidiskresource.client.services.callbacks.GetDiskResourceDetailsCallback;
 import org.iplantc.core.uidiskresource.client.services.callbacks.RenameDiskResourceCallback;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceSearchView;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.HasHandlerRegistrationMgmt;
+import org.iplantc.core.uidiskresource.client.views.dialogs.FolderSelectDialog;
 import org.iplantc.core.uidiskresource.client.views.dialogs.InfoTypeEditorDialog;
 import org.iplantc.core.uidiskresource.client.views.metadata.DiskResourceMetadataDialog;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
@@ -241,6 +243,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         toolbar.setDeleteButtonEnabled(false);
         toolbar.setRestoreMenuItemEnabled(false);
         toolbar.setEditEnabled(false);
+        toolbar.setMoveButtonEnabled(false);
     }
 
     @Override
@@ -964,6 +967,22 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         });
          }
      });
+        
+    }
+
+    @Override
+    public void onMove() {
+        final FolderSelectDialog fsd = new FolderSelectDialog();
+        fsd.show();
+        fsd.addOkButtonSelectHandler(new SelectHandler() {
+            
+            @Override
+            public void onSelect(SelectEvent event) {
+                Folder dest = fsd.getValue();
+                final Set<DiskResource> selectedResources = getSelectedDiskResources();
+                diskResourceService.moveDiskResources(selectedResources, dest, new DiskResourceMoveCallback(view, dest, selectedResources));
+            }
+        });
         
     }
 

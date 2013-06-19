@@ -122,6 +122,7 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setDeleteButtonEnabled(with(false));
                 oneOf(toolbar).setRestoreMenuItemEnabled(with(false));
                 oneOf(toolbar).setEditEnabled(with(false));
+                oneOf(toolbar).setMoveButtonEnabled(with(false));
             }
         });
     }
@@ -252,6 +253,7 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setSimpleDowloadButtonEnabled(with(false));
                 oneOf(toolbar).setBulkDownloadButtonEnabled(with(true));
                 oneOf(toolbar).setRenameButtonEnabled(with(true));
+                oneOf(toolbar).setMoveButtonEnabled(with(true));
                 oneOf(toolbar).setDeleteButtonEnabled(with(true));
                 oneOf(toolbar).setShareButtonEnabled(with(true));
                 oneOf(toolbar).setShareMenuItemEnabled(with(true));
@@ -302,6 +304,7 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setSimpleDowloadButtonEnabled(with(false));
                 oneOf(toolbar).setBulkDownloadButtonEnabled(with(true));
                 oneOf(toolbar).setRenameButtonEnabled(with(false));
+                oneOf(toolbar).setMoveButtonEnabled(with(false));
                 oneOf(toolbar).setDeleteButtonEnabled(with(false));
                 oneOf(toolbar).setShareButtonEnabled(with(false));
                 oneOf(toolbar).setShareMenuItemEnabled(with(false));
@@ -351,6 +354,7 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setSimpleDowloadButtonEnabled(with(false));
                 oneOf(toolbar).setBulkDownloadButtonEnabled(with(true));
                 oneOf(toolbar).setRenameButtonEnabled(with(true));
+                oneOf(toolbar).setMoveButtonEnabled(with(true));
                 oneOf(toolbar).setDeleteButtonEnabled(with(true));
                 oneOf(toolbar).setShareButtonEnabled(with(true));
                 oneOf(toolbar).setShareMenuItemEnabled(with(true));
@@ -405,6 +409,7 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setSimpleDowloadButtonEnabled(with(false));
                 oneOf(toolbar).setBulkDownloadButtonEnabled(with(true));
                 oneOf(toolbar).setRenameButtonEnabled(with(false));
+                oneOf(toolbar).setMoveButtonEnabled(with(false));
                 oneOf(toolbar).setDeleteButtonEnabled(with(false));
                 oneOf(toolbar).setShareButtonEnabled(with(false));
                 oneOf(toolbar).setShareMenuItemEnabled(with(false));

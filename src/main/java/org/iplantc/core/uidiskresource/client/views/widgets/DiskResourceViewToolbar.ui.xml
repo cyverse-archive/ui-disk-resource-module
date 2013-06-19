@@ -77,6 +77,9 @@
 						<menu:MenuItem debugId="idRenameBtn" ui:field="renameButton"
 							text="{display.rename}" icon="{res.fileRename}">
 						</menu:MenuItem>
+						<menu:MenuItem debugId="idMoveBtn" ui:field="moveButton"
+							text="{display.move}" icon="{res.edit}">
+						</menu:MenuItem>
 						<menu:MenuItem debugId="idDeleteBtn" ui:field="deleteButton"
 							text="{display.delete}" icon="{res.fileDelete}">
 						</menu:MenuItem>

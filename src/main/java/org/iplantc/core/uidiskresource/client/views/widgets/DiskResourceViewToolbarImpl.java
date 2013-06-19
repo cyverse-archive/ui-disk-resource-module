@@ -67,6 +67,9 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
 
     @UiField
     MenuItem renameButton;
+    
+    @UiField
+    MenuItem moveButton;
 
     @UiField
     MenuItem deleteButton;
@@ -177,6 +180,11 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
             dlg.show();
         }
     }
+    
+    @UiHandler("moveButton")
+    void onMoveClicked(SelectionEvent<Item> event) {
+        presenter.onMove();
+    }
 
     @UiHandler("deleteButton")
     void onDeleteClicked(SelectionEvent<Item> event) {
@@ -265,6 +273,11 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     @Override
     public void setRenameButtonEnabled(boolean enabled) {
         renameButton.setEnabled(enabled);
+    }
+    
+    @Override
+    public void setMoveButtonEnabled(boolean enabled) {
+        moveButton.setEnabled(enabled);
     }
 
     @Override

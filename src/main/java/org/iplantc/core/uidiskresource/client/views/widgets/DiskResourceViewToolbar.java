@@ -60,6 +60,8 @@ public interface DiskResourceViewToolbar extends IsWidget {
 
         void doDataLinks();
 
+        void onMove();
+
     }
 
    
@@ -103,4 +105,6 @@ public interface DiskResourceViewToolbar extends IsWidget {
     void setMetaDatMenuItemEnabled(boolean canEditMetadata);
 
     void setEditEnabled(boolean canEdit);
+
+    void setMoveButtonEnabled(boolean enabled);
 }
