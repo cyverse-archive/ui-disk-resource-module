@@ -230,6 +230,8 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
     void refreshFolder(Folder folder);
 
+    void removeChildren(Folder folder);
+
     DiskResourceViewToolbar getToolbar();
 
     /**
@@ -286,5 +288,4 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
     void unmaskDetailsPanel();
 
     void maskDetailsPanel();
-
 }

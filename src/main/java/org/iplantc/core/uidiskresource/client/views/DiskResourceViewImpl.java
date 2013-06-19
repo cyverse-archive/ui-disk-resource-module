@@ -18,10 +18,8 @@ import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvide
 import org.iplantc.core.uidiskresource.client.models.File;
 import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.models.Permissions;
-import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
 import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
-import org.iplantc.core.uidiskresource.client.views.dialogs.InfoTypeEditorDialog;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
 import com.google.common.collect.Lists;
@@ -68,8 +66,6 @@ import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
@@ -453,13 +449,22 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
 	@Override
 	public void refreshFolder(Folder folder) {
-		if (folder == null) {
+        if (folder == null || treeStore.findModel(folder) == null) {
 			return;
 		}
 
-		treeStore.removeChildren(folder);
+        removeChildren(folder);
 		treeLoader.load(folder);
 	}
+
+    @Override
+    public void removeChildren(Folder folder) {
+        if (folder == null || treeStore.findModel(folder) == null) {
+            return;
+        }
+
+        treeStore.removeChildren(folder);
+    }
 
 	@Override
 	public DiskResourceViewToolbar getToolbar() {
@@ -852,7 +857,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 	
 	private class InfoTypeClickHandler implements ClickHandler {
 	 
-	    private String infoType;
+	    private final String infoType;
 	    
 	    public InfoTypeClickHandler(String type) {
 	        this.infoType = type;
