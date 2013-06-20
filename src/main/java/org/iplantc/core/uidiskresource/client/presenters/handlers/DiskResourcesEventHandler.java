@@ -45,7 +45,7 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
                     new ShowFilePreviewEvent((File)event.getSelectedItem(), this));
         }
     }
-    
+
     @Override
     public void onDiskResourcesMoved(DiskResourcesMovedEvent event) {
         Set<DiskResource> resourcesToMove = event.getResourcesToMove();
@@ -53,49 +53,57 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
         Folder selectedFolder = presenter.getSelectedFolder();
 
         if (resourcesToMove.contains(selectedFolder)) {
-            // If the selected folder happens to be one of the moved items, then view the destination by
-            // setting it as the selected folder.
-            String parentFolderId = DiskResourceUtil.parseParent(selectedFolder.getId());
-            Folder parentFolder = view.getFolderById(parentFolderId);
-
-            if (DiskResourceUtil.isDescendantOfFolder(parentFolder, destinationFolder)) {
-                // The destination is under the parent, so if we prune the parent and set the destination
-                // as the selected folder, the parent will lazy-load down to the destination.
-                view.removeChildren(parentFolder);
-            } else if (DiskResourceUtil.isDescendantOfFolder(destinationFolder, parentFolder)) {
-                // The parent is under the destination, so we only need to view the destination folder's
-                // contents and refresh its children.
-                presenter.refreshFolder(destinationFolder);
-            } else {
-                // Refresh the parent folder since it has lost a child.
-                presenter.refreshFolder(parentFolder);
-                // Refresh the destination folder since it has gained a child.
-                presenter.refreshFolder(destinationFolder);
-            }
-
-            // View the destination folder's contents.
-            presenter.setSelectedFolderById(destinationFolder);
+            selectedFolderMovedFromNavTree(selectedFolder, destinationFolder);
         } else {
-            // The selected folder has not been moved.
-            if (DiskResourceUtil.containsFolder(resourcesToMove)) {
-                // Refresh the destination folder, since it has gained a child.
-                if (DiskResourceUtil.isDescendantOfFolder(destinationFolder, selectedFolder)) {
-                    view.removeChildren(destinationFolder);
-                } else {
-                    // Refresh the selected folder since it has lost a child. This will also reload the
-                    // selected folder's contents in the grid.
-                    presenter.refreshFolder(selectedFolder);
-                    // Refresh the destination folder since it has gained a child.
-                    presenter.refreshFolder(destinationFolder);
-                    return;
-                }
-            }
-
-            // Refresh the selected folder's contents.
-            presenter.setSelectedFolderById(selectedFolder);
+            diskResourcesMovedFromGrid(resourcesToMove, selectedFolder, destinationFolder);
         }
     }
-    
+
+    private void selectedFolderMovedFromNavTree(Folder selectedFolder, Folder destinationFolder) {
+        // If the selected folder happens to be one of the moved items, then view the destination by
+        // setting it as the selected folder.
+        String parentFolderId = DiskResourceUtil.parseParent(selectedFolder.getId());
+        Folder parentFolder = view.getFolderById(parentFolderId);
+
+        if (DiskResourceUtil.isDescendantOfFolder(parentFolder, destinationFolder)) {
+            // The destination is under the parent, so if we prune the parent and set the destination
+            // as the selected folder, the parent will lazy-load down to the destination.
+            view.removeChildren(parentFolder);
+        } else if (DiskResourceUtil.isDescendantOfFolder(destinationFolder, parentFolder)) {
+            // The parent is under the destination, so we only need to view the destination folder's
+            // contents and refresh its children.
+            presenter.refreshFolder(destinationFolder);
+        } else {
+            // Refresh the parent folder since it has lost a child.
+            presenter.refreshFolder(parentFolder);
+            // Refresh the destination folder since it has gained a child.
+            presenter.refreshFolder(destinationFolder);
+        }
+
+        // View the destination folder's contents.
+        presenter.setSelectedFolderById(destinationFolder);
+    }
+
+    private void diskResourcesMovedFromGrid(Set<DiskResource> resourcesToMove, Folder selectedFolder,
+            Folder destinationFolder) {
+        if (DiskResourceUtil.containsFolder(resourcesToMove)) {
+            // Refresh the destination folder, since it has gained a child.
+            if (DiskResourceUtil.isDescendantOfFolder(destinationFolder, selectedFolder)) {
+                view.removeChildren(destinationFolder);
+            } else {
+                // Refresh the selected folder since it has lost a child. This will also reload the
+                // selected folder's contents in the grid.
+                presenter.refreshFolder(selectedFolder);
+                // Refresh the destination folder since it has gained a child.
+                presenter.refreshFolder(destinationFolder);
+                return;
+            }
+        }
+
+        // Refresh the selected folder's contents.
+        presenter.setSelectedFolderById(selectedFolder);
+    }
+
     @Override
     public void onRename(DiskResource originalDr, DiskResource newDr) {
         view.updateDiskResource(originalDr, newDr);
