@@ -145,6 +145,14 @@ public interface DiskResourceServiceErrorStrings extends Messages {
      * @return localized error string.
      */
     String diskResourceIsAFolder(String resourceNames);
+    
+    
+    /**
+     * Error message displayed when a data service call fails because of unexpected reason
+     * 
+     * @return localized error string.
+     */
+    String diskResourceError();
 
     /**
      * Error message displayed when a service call fails because folder(s) do not exist.
