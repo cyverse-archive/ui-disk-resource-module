@@ -22,7 +22,9 @@ public final class SelectDiskResourceByIdStoreAddHandler implements StoreAddHand
 
     @Override
     public void onAdd(StoreAddEvent<DiskResource> event) {
-        for (DiskResource addedItem : event.getItems()) {
+        List<DiskResource> items = event.getItems();
+        if(diskResourcesToSelect != null && diskResourcesToSelect.size() > 0 && items!= null & items.size() >0) {
+        for (DiskResource addedItem : items) {
             for (HasId toSelect : diskResourcesToSelect) {
                 // If we match at least one of the disk resources to select, send them
                 // to the view.
@@ -40,5 +42,6 @@ public final class SelectDiskResourceByIdStoreAddHandler implements StoreAddHand
                 }
             }
         }
+    }
     }
 }
