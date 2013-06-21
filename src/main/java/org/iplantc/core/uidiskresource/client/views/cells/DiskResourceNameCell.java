@@ -83,6 +83,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
             sb.append(templates.cell(CSS.drFolder(), nameStyle,
                     SafeHtmlUtils.fromString(value.getName())));
         }
+        
     }
 
     @Override
@@ -112,13 +113,13 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
     }
 
     private void doOnMouseOut(Element eventTarget, DiskResource value) {
-        if (eventTarget.getAttribute("name").equalsIgnoreCase("drName") && hyperlinkEnabled) {
+        if (eventTarget.getAttribute("name").equalsIgnoreCase("drName") && hyperlinkEnabled && tag != DiskResourceNameCell.CALLER_TAG.SHARING) {
             eventTarget.getStyle().setTextDecoration(TextDecoration.NONE);
         }
     }
 
     private void doOnMouseOver(Element eventTarget, DiskResource value) {
-        if (eventTarget.getAttribute("name").equalsIgnoreCase("drName") && hyperlinkEnabled) {
+        if (eventTarget.getAttribute("name").equalsIgnoreCase("drName") && hyperlinkEnabled && tag != DiskResourceNameCell.CALLER_TAG.SHARING) {
             eventTarget.getStyle().setTextDecoration(TextDecoration.UNDERLINE);
         }
     }

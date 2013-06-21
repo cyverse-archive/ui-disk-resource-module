@@ -309,6 +309,16 @@ public class DataSharingPermissionsPanel implements IsWidget {
         permission.setWidth(150);
         SafeStyles permTextStyles = SafeStylesUtils.fromTrustedString("color:#0098AA;cursor:pointer;");
         permission.setColumnTextStyle(permTextStyles);
+        permission.setSortable(false);
+        permission.setFixed(true);
+        ColumnConfig<DataSharing, String> remove = buildRemoveColumn();
+        configs.add(name);
+        configs.add(permission);
+        configs.add(remove);
+        return new ColumnModel<DataSharing>(configs);
+    }
+
+    private ColumnConfig<DataSharing, String> buildRemoveColumn() {
         ColumnConfig<DataSharing, String> remove = new ColumnConfig<DataSharing, String>(
                 new ValueProvider<DataSharing, String>() {
 
@@ -329,16 +339,15 @@ public class DataSharingPermissionsPanel implements IsWidget {
                     }
                 });
 
+        remove.setSortable(false);
+        remove.setFixed(true);
         SafeStyles textStyles = SafeStylesUtils.fromTrustedString("padding-left: 10px;cursor:pointer;");
         remove.setColumnStyle(textStyles);
         remove.setWidth(50);
         remove.setToolTip(I18N.DISPLAY.unshare());
         TextButtonCell button = buildRemoveButtonCell();
         remove.setCell(button);
-        configs.add(name);
-        configs.add(permission);
-        configs.add(remove);
-        return new ColumnModel<DataSharing>(configs);
+        return remove;
     }
 
     private TextButtonCell buildRemoveButtonCell() {

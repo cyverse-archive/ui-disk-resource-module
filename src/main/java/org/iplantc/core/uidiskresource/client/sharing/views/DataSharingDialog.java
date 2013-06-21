@@ -23,7 +23,6 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 
@@ -32,9 +31,6 @@ import com.sencha.gxt.widget.core.client.grid.ColumnModel;
  *
  */
 public class DataSharingDialog extends IPlantDialog {
-
-    // private CheckBoxSelectionModel<Collaborator> collabCheckBoxModel;
-    private CheckBoxSelectionModel<DiskResource> drCheckBoxModel;
 
     public DataSharingDialog(Set<DiskResource> resources) {
         super(true);
@@ -76,13 +72,10 @@ public class DataSharingDialog extends IPlantDialog {
     private ColumnModel<DiskResource> buildDiskResourceColumnModel() {
         List<ColumnConfig<DiskResource, ?>> list = new ArrayList<ColumnConfig<DiskResource, ?>>();
 
-        drCheckBoxModel = new CheckBoxSelectionModel<DiskResource>(
-                new IdentityValueProvider<DiskResource>());
         ColumnConfig<DiskResource, DiskResource> name = new ColumnConfig<DiskResource, DiskResource>(
                 new IdentityValueProvider<DiskResource>(), 130, I18N.DISPLAY.name());
         name.setCell(new DiskResourceNameCell(DiskResourceNameCell.CALLER_TAG.SHARING));
 
-        list.add(drCheckBoxModel.getColumn());
         list.add(name);
 
         return new ColumnModel<DiskResource>(list);
