@@ -8,6 +8,8 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
+import org.iplantc.core.uicommons.client.models.HasPaths;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.validators.NameValidator3;
@@ -277,9 +279,11 @@ public class SimpleFileUploadDialog extends IPlantDialog {
         }
 
         if (!destResourceMap.isEmpty()) {
-            ArrayList<String> ids = Lists.newArrayList(destResourceMap.keySet());
-            drService.diskResourcesExist(ids, new CheckDuplicatesCallback(ids, destResourceMap,
-                    statList, fufList, submittedForms, formList));
+            final ArrayList<String> ids = Lists.newArrayList(destResourceMap.keySet());
+            final HasPaths dto = DiskResourceAutoBeanFactory.INSTANCE.pathsList().as();
+            dto.setPaths(ids);
+            final CheckDuplicatesCallback cb = new CheckDuplicatesCallback(ids, destResourceMap, statList, fufList, submittedForms, formList);
+            drService.diskResourcesExist(dto, cb);
         }
     }
 

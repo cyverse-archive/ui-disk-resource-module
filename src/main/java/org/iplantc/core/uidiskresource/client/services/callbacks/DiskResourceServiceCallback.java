@@ -12,7 +12,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * @author psarando
  * 
  */
-public abstract class DiskResourceServiceCallback implements AsyncCallback<String> {
+public abstract class DiskResourceServiceCallback<T> implements AsyncCallback<T> {
 
     private IsMaskable maskedCaller;
 
@@ -36,7 +36,7 @@ public abstract class DiskResourceServiceCallback implements AsyncCallback<Strin
      * Child classes are expected to override this method and call it as super. {@inheritDoc}
      */
     @Override
-    public void onSuccess(String result) {
+    public void onSuccess(final T result) {
         unmaskCaller();
     }
 

@@ -1,12 +1,13 @@
 package org.iplantc.core.uidiskresource.client.views.dialogs;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.uicommons.client.models.HasPaths;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
@@ -161,8 +162,9 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
         }
 
         if (!destResourceMap.isEmpty()) {
-            List<String> constructedIds = Lists.newArrayList(destResourceMap.keySet());
-            drService.diskResourcesExist(constructedIds, new CheckDuplicatesCallback<FileUploadByUrlDialog>(destResourceMap, fieldToStatusMap, uploadDest, drService, this));
+            final HasPaths dto = DiskResourceAutoBeanFactory.INSTANCE.pathsList().as();
+            dto.setPaths(Lists.newArrayList(destResourceMap.keySet()));
+            drService.diskResourcesExist(dto, new CheckDuplicatesCallback<FileUploadByUrlDialog>(destResourceMap, fieldToStatusMap, uploadDest, drService, this));
         }
     }
 

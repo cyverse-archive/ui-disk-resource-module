@@ -5,7 +5,6 @@ import static com.google.gwt.dom.client.BrowserEvents.CLICK;
 import org.iplantc.core.resources.client.DataLinkPanelCellStyle;
 import org.iplantc.core.resources.client.IplantResources;
 import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.resources.client.DataLinkResources;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.File;
 import org.iplantc.core.uidiskresource.client.dataLink.models.DataLink;
@@ -58,7 +57,6 @@ final class DataLinkPanelCell<M extends DiskResource> extends AbstractCell<M> {
     public void render(com.google.gwt.cell.client.Cell.Context context, M value, SafeHtmlBuilder sb) {
 
         if (value instanceof DataLink) {
-            String copyToClipId = "clip-id-" + value.getId();
             SafeHtml dataLinkText = SafeHtmlUtils.fromString(dataLinkUrlPrefix + value.getId());
             // sb.append(templates.dataLinkCellWithCopyIcon(dataLinkCss.dataLinkDelete(),
             // I18N.DISPLAY.deleteDataLinkToolTip(), dataLinkText, copyToClipId,

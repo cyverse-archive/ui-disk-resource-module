@@ -12,7 +12,6 @@ import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.Splittable;
-import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
 
 /**
  * A DiskResourceServiceCallback for data service "restore" endpoint requests.
@@ -20,7 +19,7 @@ import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
  * @author psarando
  * 
  */
-public class DiskResourceRestoreCallback extends DiskResourceServiceCallback {
+public class DiskResourceRestoreCallback extends DiskResourceServiceCallback<String> {
     private final DiskResourceView view;
     private final DiskResourceAutoBeanFactory drFactory;
     private final Set<DiskResource> selectedResources;

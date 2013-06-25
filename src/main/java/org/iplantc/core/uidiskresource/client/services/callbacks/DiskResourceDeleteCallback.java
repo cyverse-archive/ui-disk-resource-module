@@ -17,7 +17,7 @@ import com.google.gwt.core.shared.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
-public class DiskResourceDeleteCallback extends DiskResourceServiceCallback {
+public class DiskResourceDeleteCallback extends DiskResourceServiceCallback<String> {
 
     private final Collection<DiskResource> resources;
     private final Folder parentFolder;

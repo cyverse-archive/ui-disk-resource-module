@@ -9,7 +9,7 @@ import com.google.gwt.core.shared.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
-public class DiskResourceMetadataUpdateCallback extends DiskResourceServiceCallback {
+public class DiskResourceMetadataUpdateCallback extends DiskResourceServiceCallback<String> {
 
     public DiskResourceMetadataUpdateCallback() {
         super(null);
