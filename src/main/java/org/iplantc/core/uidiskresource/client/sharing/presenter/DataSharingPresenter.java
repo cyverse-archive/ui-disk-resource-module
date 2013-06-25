@@ -11,6 +11,7 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.collaborators.models.Collaborator;
 import org.iplantc.core.uicommons.client.collaborators.util.CollaboratorsUtil;
+import org.iplantc.core.uicommons.client.gin.ServicesInjector;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
@@ -18,7 +19,6 @@ import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.diskresources.Permissions;
 import org.iplantc.core.uicommons.client.models.sharing.Sharing;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
-import org.iplantc.core.uidiskresource.client.gin.DiskResourceInjector;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing.TYPE;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingPermissionsPanel;
@@ -53,7 +53,7 @@ public class DataSharingPresenter implements Presenter {
     private static DiskResourceAutoBeanFactory factory = GWT.create(DiskResourceAutoBeanFactory.class);
 
     public DataSharingPresenter(List<DiskResource> selectedResources, DataSharingView view) {
-        facade = DiskResourceInjector.INSTANCE.getDiskResourceServiceFacade();
+        facade = ServicesInjector.INSTANCE.getDiskResourceServiceFacade();
         this.view = view;
         this.selectedResources = selectedResources;
         view.setPresenter(this);

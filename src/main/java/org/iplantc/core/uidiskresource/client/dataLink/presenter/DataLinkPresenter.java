@@ -6,6 +6,7 @@ import java.util.Map;
 import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
+import org.iplantc.core.uicommons.client.gin.ServicesInjector;
 import org.iplantc.core.uicommons.client.models.DEProperties;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
@@ -15,7 +16,6 @@ import org.iplantc.core.uidiskresource.client.dataLink.models.DataLink;
 import org.iplantc.core.uidiskresource.client.dataLink.models.DataLinkFactory;
 import org.iplantc.core.uidiskresource.client.dataLink.models.DataLinkList;
 import org.iplantc.core.uidiskresource.client.dataLink.view.DataLinkPanel;
-import org.iplantc.core.uidiskresource.client.gin.DiskResourceInjector;
 import org.iplantc.de.client.UUIDService;
 import org.iplantc.de.client.UUIDServiceAsync;
 
@@ -39,7 +39,7 @@ public class DataLinkPresenter<M extends DiskResource> implements DataLinkPanel.
 
     private final DataLinkPanel<M> view;
     private final UUIDServiceAsync uuidService = GWT.create(UUIDService.class);
-    private final DiskResourceServiceFacade drService = DiskResourceInjector.INSTANCE.getDiskResourceServiceFacade();
+    private final DiskResourceServiceFacade drService = ServicesInjector.INSTANCE.getDiskResourceServiceFacade();
     private final DataLinkFactory dlFactory = GWT.create(DataLinkFactory.class);
 
     public DataLinkPresenter(List<M> resources) {
