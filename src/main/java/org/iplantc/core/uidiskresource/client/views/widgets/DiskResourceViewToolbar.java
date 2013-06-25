@@ -2,8 +2,8 @@ package org.iplantc.core.uidiskresource.client.views.widgets;
 
 import java.util.Set;
 
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.Folder;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 
 import com.google.gwt.user.client.ui.IsWidget;
 

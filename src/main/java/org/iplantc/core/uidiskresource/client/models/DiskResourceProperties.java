@@ -2,6 +2,9 @@ package org.iplantc.core.uidiskresource.client.models;
 
 import java.util.Date;
 
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+
+
 import com.google.gwt.editor.client.Editor.Path;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.LabelProvider;

@@ -4,8 +4,8 @@
 package org.iplantc.core.uidiskresource.client.views.cells;
 
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uidiskresource.client.events.DataSearchPathSelectedEvent;
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.ValueUpdater;

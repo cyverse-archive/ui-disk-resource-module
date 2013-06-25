@@ -1,6 +1,6 @@
 package org.iplantc.core.uidiskresource.client.gin;
 
-import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
+import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
 import com.google.gwt.core.client.GWT;

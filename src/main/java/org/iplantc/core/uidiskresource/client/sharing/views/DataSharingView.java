@@ -5,8 +5,8 @@ package org.iplantc.core.uidiskresource.client.sharing.views;
 
 import java.util.List;
 
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.Permissions;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.Permissions;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing.TYPE;
 
 import com.google.gwt.user.client.ui.IsWidget;

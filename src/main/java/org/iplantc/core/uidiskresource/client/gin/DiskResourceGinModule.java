@@ -1,10 +1,10 @@
 package org.iplantc.core.uidiskresource.client.gin;
 
-import org.iplantc.core.uidiskresource.client.models.Folder;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
+import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacadeImpl;
 import org.iplantc.core.uidiskresource.client.presenters.DiskResourcePresenterImpl;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderRpcProxy;
-import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
-import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacadeImpl;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceViewImpl;
 

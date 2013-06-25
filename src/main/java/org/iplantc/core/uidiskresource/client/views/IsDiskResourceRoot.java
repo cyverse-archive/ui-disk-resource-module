@@ -1,6 +1,6 @@
 package org.iplantc.core.uidiskresource.client.views;
 
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 
 public interface IsDiskResourceRoot {
 

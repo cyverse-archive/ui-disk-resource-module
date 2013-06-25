@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.Folder;
-import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView.Presenter;
 
 import com.google.common.collect.Sets;

@@ -6,10 +6,10 @@
 package org.iplantc.core.uidiskresource.client.sharing.models;
 
 import org.iplantc.core.uicommons.client.collaborators.models.Collaborator;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
+import org.iplantc.core.uicommons.client.models.diskresources.Permissions;
 import org.iplantc.core.uicommons.client.models.sharing.Sharing;
-import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uidiskresource.client.models.Permissions;
-import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
+import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONBoolean;
