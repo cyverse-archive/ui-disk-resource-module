@@ -3,9 +3,9 @@ package org.iplantc.core.uidiskresource.client.dataLink.view;
 import java.util.List;
 
 import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.dataLink.models.DataLink;
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;

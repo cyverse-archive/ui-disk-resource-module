@@ -4,10 +4,10 @@ import java.util.Set;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uidiskresource.client.models.RestoreResponse;
-import org.iplantc.core.uidiskresource.client.models.RestoreResponse.RestoredResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
+import org.iplantc.core.uicommons.client.models.diskresources.RestoreResponse;
+import org.iplantc.core.uicommons.client.models.diskresources.RestoreResponse.RestoredResource;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;

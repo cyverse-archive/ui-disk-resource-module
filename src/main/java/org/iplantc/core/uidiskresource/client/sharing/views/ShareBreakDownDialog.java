@@ -8,10 +8,10 @@ import java.util.List;
 
 import org.iplantc.core.resources.client.IplantResources;
 import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharingKeyProvider;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharingProperties;
-import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.sencha.gxt.core.client.ValueProvider;

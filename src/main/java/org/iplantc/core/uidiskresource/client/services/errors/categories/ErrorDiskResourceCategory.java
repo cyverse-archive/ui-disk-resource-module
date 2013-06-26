@@ -83,8 +83,10 @@ public class ErrorDiskResourceCategory {
                 return errStrings.diskResourceIncompleteMove();
             case ERR_INCOMPLETE_RENAME:
                 return errStrings.diskResourceIncompleteRename();
+            case ERR_NOT_OWNER:
+                 return errStrings.dataErrorNotAuthorized();
             default:
-                return null;
+                    return errStrings.diskResourceError();
         }
     }
 }

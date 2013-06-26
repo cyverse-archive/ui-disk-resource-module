@@ -2,7 +2,7 @@ package org.iplantc.core.uidiskresource.client.dataLink.models;
 
 import java.util.Date;
 
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 
 import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
 import com.sencha.gxt.widget.core.client.tree.Tree;

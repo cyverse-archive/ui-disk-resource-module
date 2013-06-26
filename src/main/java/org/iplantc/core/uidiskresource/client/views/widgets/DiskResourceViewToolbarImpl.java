@@ -1,8 +1,8 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.File;
-import org.iplantc.core.uidiskresource.client.models.Folder;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.File;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uidiskresource.client.views.dialogs.CreateFolderDialog;
 import org.iplantc.core.uidiskresource.client.views.dialogs.RenameFileDialog;
 import org.iplantc.core.uidiskresource.client.views.dialogs.RenameFolderDialog;
@@ -67,6 +67,9 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
 
     @UiField
     MenuItem renameButton;
+    
+    @UiField
+    MenuItem moveButton;
 
     @UiField
     MenuItem deleteButton;
@@ -177,6 +180,11 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
             dlg.show();
         }
     }
+    
+    @UiHandler("moveButton")
+    void onMoveClicked(SelectionEvent<Item> event) {
+        presenter.onMove();
+    }
 
     @UiHandler("deleteButton")
     void onDeleteClicked(SelectionEvent<Item> event) {
@@ -265,6 +273,11 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     @Override
     public void setRenameButtonEnabled(boolean enabled) {
         renameButton.setEnabled(enabled);
+    }
+    
+    @Override
+    public void setMoveButtonEnabled(boolean enabled) {
+        moveButton.setEnabled(enabled);
     }
 
     @Override

@@ -3,8 +3,8 @@ package org.iplantc.core.uidiskresource.client.presenters.handlers;
 import java.util.List;
 
 import org.iplantc.core.uicommons.client.models.UserInfo;
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
-import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
 /**
@@ -35,6 +35,7 @@ public class ToolbarButtonVisibilityGridHandler extends
         boolean canEditMetadata = oneSelected && owner && !selectionInTrash;
         boolean canDelete = owner;
         boolean canEdit = canRename || canDelete || canEditMetadata;
+        boolean canMove = owner && !selectionInTrash;
 
         toolbar.setDownloadsEnabled(canDownload);
         toolbar.setBulkDownloadButtonEnabled(canDownload);
@@ -47,6 +48,7 @@ public class ToolbarButtonVisibilityGridHandler extends
         toolbar.setRestoreMenuItemEnabled(selectionInTrash);
         toolbar.setMetaDatMenuItemEnabled(canEditMetadata);
         toolbar.setEditEnabled(canEdit);
+        toolbar.setMoveButtonEnabled(canMove);
     }
 
     /**

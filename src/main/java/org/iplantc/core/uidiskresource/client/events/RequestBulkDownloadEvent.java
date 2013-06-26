@@ -2,9 +2,9 @@ package org.iplantc.core.uidiskresource.client.events;
 
 import java.util.Set;
 
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uidiskresource.client.events.RequestBulkDownloadEvent.RequestBulkDownloadEventHandler;
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.Folder;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;

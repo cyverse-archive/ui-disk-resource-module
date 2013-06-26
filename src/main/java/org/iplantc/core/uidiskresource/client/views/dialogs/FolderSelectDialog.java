@@ -2,9 +2,9 @@ package org.iplantc.core.uidiskresource.client.views.dialogs;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.gin.DiskResourceInjector;
-import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
 import com.google.gwt.event.logical.shared.SelectionEvent;

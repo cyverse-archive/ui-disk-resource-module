@@ -3,8 +3,8 @@
  */
 package org.iplantc.core.uidiskresource.client.events;
 
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent.DataSearchNameSelectedEventHandler;
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;

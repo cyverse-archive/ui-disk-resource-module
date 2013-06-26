@@ -1,7 +1,7 @@
 package org.iplantc.core.uidiskresource.client.services.errors.categories;
 
+import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.services.errors.ErrorGetManifest;
-import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.web.bindery.autobean.shared.AutoBean;

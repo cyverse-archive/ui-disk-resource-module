@@ -14,8 +14,18 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
+import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.core.uicommons.client.models.HasPaths;
 import org.iplantc.core.uicommons.client.models.UserInfo;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceMetadata;
+import org.iplantc.core.uicommons.client.models.diskresources.File;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
+import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uicommons.client.widgets.ContextualHelpPopup;
 import org.iplantc.core.uidiskresource.client.dataLink.presenter.DataLinkPresenter;
@@ -35,12 +45,6 @@ import org.iplantc.core.uidiskresource.client.events.RequestImportFromUrlEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestSimpleDownloadEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestSimpleUploadEvent;
 import org.iplantc.core.uidiskresource.client.events.ShowFilePreviewEvent;
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadata;
-import org.iplantc.core.uidiskresource.client.models.File;
-import org.iplantc.core.uidiskresource.client.models.Folder;
-import org.iplantc.core.uidiskresource.client.models.HasPaths;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.DataSearchHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.DiskResourcesEventHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityGridHandler;
@@ -50,18 +54,19 @@ import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectFolderByIdL
 import org.iplantc.core.uidiskresource.client.search.models.DataSearch;
 import org.iplantc.core.uidiskresource.client.search.models.DataSearchAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.search.models.DataSearchResult;
-import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.services.callbacks.CreateFolderCallback;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceDeleteCallback;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMoveCallback;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceRestoreCallback;
+import org.iplantc.core.uidiskresource.client.services.callbacks.GetDiskResourceDetailsCallback;
 import org.iplantc.core.uidiskresource.client.services.callbacks.RenameDiskResourceCallback;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
-import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceSearchView;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.HasHandlerRegistrationMgmt;
+import org.iplantc.core.uidiskresource.client.views.dialogs.FolderSelectDialog;
+import org.iplantc.core.uidiskresource.client.views.dialogs.InfoTypeEditorDialog;
 import org.iplantc.core.uidiskresource.client.views.metadata.DiskResourceMetadataDialog;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
@@ -105,9 +110,9 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 
 /**
- *
+ * 
  * @author jstroot
- *
+ * 
  */
 public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         DiskResourceViewToolbarImpl.Presenter, HasHandlerRegistrationMgmt {
@@ -126,9 +131,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
-            final DiskResourceServiceFacade diskResourceService,
-            final IplantDisplayStrings display, final DiskResourceAutoBeanFactory factory,
- final DataSearchAutoBeanFactory dataSearchFactory) {
+            final DiskResourceServiceFacade diskResourceService, final IplantDisplayStrings display,
+            final DiskResourceAutoBeanFactory factory, final DataSearchAutoBeanFactory dataSearchFactory) {
         this.view = view;
         this.proxy = proxy;
         this.diskResourceService = diskResourceService;
@@ -240,6 +244,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         toolbar.setDeleteButtonEnabled(false);
         toolbar.setRestoreMenuItemEnabled(false);
         toolbar.setEditEnabled(false);
+        toolbar.setMoveButtonEnabled(false);
     }
 
     @Override
@@ -280,8 +285,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void setSelectedDiskResourcesById(final List<HasId> diskResourcesToSelect) {
-        SelectDiskResourceByIdStoreAddHandler diskResourceStoreAddHandler = new SelectDiskResourceByIdStoreAddHandler(diskResourcesToSelect, this);
-        HandlerRegistration diskResHandlerReg = view.getListStore().addStoreAddHandler(diskResourceStoreAddHandler);
+        SelectDiskResourceByIdStoreAddHandler diskResourceStoreAddHandler = new SelectDiskResourceByIdStoreAddHandler(
+                diskResourcesToSelect, this);
+        HandlerRegistration diskResHandlerReg = view.getListStore().addStoreAddHandler(
+                diskResourceStoreAddHandler);
         addEventHandlerRegistration(diskResourceStoreAddHandler, diskResHandlerReg);
     }
 
@@ -298,7 +305,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             view.setSelectedFolder(folder);
         } else {
             // Create and add the SelectFolderByIdLoadHandler to the treeLoader.
-            SelectFolderByIdLoadHandler handler = new SelectFolderByIdLoadHandler(folderToSelect, this, diskResourceService);
+            SelectFolderByIdLoadHandler handler = new SelectFolderByIdLoadHandler(folderToSelect, this,
+                    diskResourceService);
             HandlerRegistration reg = treeLoader.addLoadHandler(handler);
             addEventHandlerRegistration(handler, reg);
 
@@ -363,30 +371,31 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void onDiskResourceSelected(Set<DiskResource> selection) {
         if (selection != null && selection.size() == 1) {
             Iterator<DiskResource> it = selection.iterator();
-            getDetails(it.next());
+            getDetails(it.next().getId());
         } else {
             view.resetDetailsPanel();
         }
 
     }
 
-    private void getDetails(DiskResource resource) {
+    private void getDetails(String path) {
         JSONObject obj = new JSONObject();
         JSONArray arr = new JSONArray();
-        final String path = resource.getId();
         arr.set(0, new JSONString(path));
         obj.put("paths", arr);
-        diskResourceService.getStat(obj.toString(), new GetDiskResourceDetailsCallback(this, path, drFactory));
+        diskResourceService.getStat(obj.toString(), new GetDiskResourceDetailsCallback(this, path,
+                drFactory));
 
     }
 
-//    @Override
-//    public void onFolderLoad(Folder loadedFolder, Set<DiskResource> folderChildren) {
-//        // FIXME JDS This method needs to go away. Instead, this action should be performed via a loadHandler.
-//        if ((getSelectedFolder() != null) && getSelectedFolder().equals(loadedFolder)) {
-//            view.setDiskResources(folderChildren);
-//        }
-//    }
+    // @Override
+    // public void onFolderLoad(Folder loadedFolder, Set<DiskResource> folderChildren) {
+    // // FIXME JDS This method needs to go away. Instead, this action should be performed via a
+    // loadHandler.
+    // if ((getSelectedFolder() != null) && getSelectedFolder().equals(loadedFolder)) {
+    // view.setDiskResources(folderChildren);
+    // }
+    // }
 
     @Override
     public void doBulkUpload() {
@@ -426,17 +435,34 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doRefresh() {
-        view.refreshFolder(getSelectedFolder());
+        Folder selectedFolder = getSelectedFolder();
+        view.refreshFolder(selectedFolder);
+        setSelectedFolderById(selectedFolder);
+    }
+
+    @Override
+    public void refreshFolder(Folder folder) {
+        if (folder == null) {
+            return;
+        }
+
+        if (getSelectedFolder() == folder) {
+            doRefresh();
+        } else {
+            view.refreshFolder(folder);
+        }
     }
 
     @Override
     public void doSimpleDownload() {
-        EventBus.getInstance().fireEvent(new RequestSimpleDownloadEvent(this, getSelectedDiskResources(), getSelectedFolder()));
+        EventBus.getInstance().fireEvent(
+                new RequestSimpleDownloadEvent(this, getSelectedDiskResources(), getSelectedFolder()));
     }
 
     @Override
     public void doBulkDownload() {
-        EventBus.getInstance().fireEvent(new RequestBulkDownloadEvent(this, getSelectedDiskResources(), getSelectedFolder()));
+        EventBus.getInstance().fireEvent(
+                new RequestBulkDownloadEvent(this, getSelectedDiskResources(), getSelectedFolder()));
     }
 
     @Override
@@ -450,6 +476,13 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void doShare() {
         DataSharingDialog dlg = new DataSharingDialog(getSelectedDiskResources());
         dlg.show();
+        dlg.addOkButtonSelectHandler(new SelectHandler() {
+
+            @Override
+            public void onSelect(SelectEvent event) {
+                onDiskResourceSelected(getSelectedDiskResources());
+            }
+        });
     }
 
     @Override
@@ -519,10 +552,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         view.addFolderSelectionHandler(selectionHandler);
     }
 
-//    @Override
-//    public void setSelectedDiskResourcesById(Set<String> diskResourceIdList) {
-//
-//    }
+    // @Override
+    // public void setSelectedDiskResourcesById(Set<String> diskResourceIdList) {
+    //
+    // }
 
     @Override
     public void unregisterHandler(EventHandler handler) {
@@ -558,17 +591,15 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             if (DiskResourceUtil.isChildOfFolder(targetFolder, dr)) {
                 return false;
             }
-            if (dr instanceof Folder) {
 
+            if (dr instanceof Folder) {
                 // cannot drag an ancestor (parent, grandparent, etc) onto a child and/or descendant
-                if (DiskResourceUtil.isDescendantOfFolder(targetFolder, (Folder)dr)) {
+                if (DiskResourceUtil.isDescendantOfFolder((Folder)dr, targetFolder)) {
                     return false;
                 }
-
-            } else if (dr instanceof File) {
-
             }
         }
+
         return true;
     }
 
@@ -579,17 +610,48 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     }
 
     @Override
+    public Set<? extends DiskResource> getDragSources(IsWidget source, Element dragStartEl) {
+        // Verify the drag started from a valid item in the tree or grid, then return the selected items.
+        if (isViewGrid(source)) {
+            Set<DiskResource> selectedResources = getSelectedDiskResources();
+
+            if (!selectedResources.isEmpty()) {
+                // Verify the dragStartEl is a row within the grid.
+                Element targetRow = view.findGridRow(dragStartEl);
+
+                if (targetRow != null) {
+                    int dropIndex = view.findRowIndex(targetRow);
+
+                    DiskResource selDiskResource = view.getListStore().get(dropIndex);
+                    if (selDiskResource != null) {
+                        return Sets.newHashSet(selectedResources);
+                    }
+                }
+            }
+        } else if (isViewTree(source) && (getSelectedFolder() != null)) {
+            // Verify the dragStartEl is a folder within the tree.
+            Folder srcFolder = getDropTargetFolder(source, dragStartEl);
+
+            if (srcFolder != null) {
+                return Sets.newHashSet(srcFolder);
+            }
+        }
+
+        return null;
+    }
+
+    @Override
     public Folder getDropTargetFolder(IsWidget target, Element eventTargetElement) {
         Folder ret = null;
         if (view.isViewTree(target) && (view.findTreeNode(eventTargetElement) != null)) {
             TreeNode<Folder> targetTreeNode = view.findTreeNode(eventTargetElement);
             ret = targetTreeNode.getModel();
         } else if (view.isViewGrid(target)) {
-            Element targetRow = view.findGridRow(target.asWidget().getElement()).cast();
+            Element targetRow = view.findGridRow(eventTargetElement).cast();
 
             if (targetRow != null) {
                 int dropIndex = view.findRowIndex(targetRow);
-                // TODO JDS Do some type checking here. got errors last time for casting file to folder
+
                 DiskResource selDiskResource = view.getListStore().get(dropIndex);
                 ret = (selDiskResource instanceof Folder) ? (Folder)selDiskResource : null;
             }
@@ -790,7 +852,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             }
 
             @Override
-            public void onSuccess(String result) {/* DO NOTHING */}
+            public void onSuccess(String result) {/* DO NOTHING */
+            }
         });
     }
 
@@ -812,10 +875,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
                     @Override
                     public void onSuccess(String result) {
-                        Folder f = view.getFolderById(UserInfo.getInstance().getTrashPath());
-                        if (f != null) {
-                            view.refreshFolder(f);
-                        }
+                        refreshFolder(view.getFolderById(UserInfo.getInstance().getTrashPath()));
                     }
 
                     @Override
@@ -877,20 +937,74 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         dlg.setWidth(550);
         dlg.setOkButtonText(I18N.DISPLAY.done());
         DataLinkPanel.Presenter<DiskResource> dlPresenter = new DataLinkPresenter<DiskResource>(
-               new ArrayList<DiskResource>(getSelectedDiskResources()));
+                new ArrayList<DiskResource>(getSelectedDiskResources()));
         dlPresenter.go(dlg);
         final ToolButton btn = dlg.gelHelpToolButton();
         btn.addSelectHandler(new SelectHandler() {
-            
+
             @Override
             public void onSelect(SelectEvent event) {
                 ContextualHelpPopup popup = new ContextualHelpPopup();
                 popup.add(new HTML(I18N.HELP.manageDataLinksHelp()));
                 popup.showAt(btn.getAbsoluteLeft(), btn.getAbsoluteTop() + 15);
-                
+
             }
         });
         dlg.show();
+    }
+
+    @Override
+    public void OnInfoTypeClick(final String id, final String type) {
+        final InfoTypeEditorDialog dialog = new InfoTypeEditorDialog(type);
+        dialog.show();
+        dialog.addOkButtonSelectHandler(new SelectHandler() {
+
+            @Override
+            public void onSelect(SelectEvent event) {
+                String newType = dialog.getSelectedValue();
+                diskResourceService.setFileType(id, newType, new AsyncCallback<String>() {
+
+                    @Override
+                    public void onFailure(Throwable arg0) {
+                        ErrorHandler.post(arg0);
+                    }
+
+                    @Override
+                    public void onSuccess(String arg0) {
+                        getDetails(id);
+                    }
+                });
+            }
+        });
+
+    }
+
+    @Override
+    public void onMove() {
+        final FolderSelectDialog fsd = new FolderSelectDialog();
+        fsd.show();
+        fsd.addOkButtonSelectHandler(new SelectHandler() {
+
+            @Override
+            public void onSelect(SelectEvent event) {
+                Folder targetFolder = fsd.getValue();
+                final Set<DiskResource> selectedResources = getSelectedDiskResources();
+                if (DiskResourceUtil.isMovable(targetFolder, selectedResources)) {
+                    if (canDragDataToTargetFolder(targetFolder, selectedResources)) {
+                        diskResourceService.moveDiskResources(selectedResources, targetFolder,
+                                new DiskResourceMoveCallback(view, targetFolder, selectedResources));
+                    } else {
+                        IplantAnnouncer.getInstance().schedule(I18N.ERROR.diskResourceIncompleteMove(),
+                                new ErrorAnnouncementConfig());
+                    }
+                } else {
+                    IplantAnnouncer.getInstance().schedule(I18N.ERROR.permissionErrorMessage(),
+                            new ErrorAnnouncementConfig());
+                }
+
+            }
+        });
+
     }
 
 }

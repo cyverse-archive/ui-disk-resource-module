@@ -8,11 +8,12 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
+import org.iplantc.core.uicommons.client.validators.NameValidator3;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uicommons.client.widgets.IPCFileUploadField;
 import org.iplantc.core.uidiskresource.client.events.FileUploadedEvent;
-import org.iplantc.core.uidiskresource.client.models.Folder;
-import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DuplicateDiskResourceCallback;
 
 import com.google.common.base.Strings;
@@ -116,8 +117,16 @@ public class SimpleFileUploadDialog extends IPlantDialog {
         fufList = Lists.newArrayList(fuf0, fuf1, fuf2, fuf3, fuf4);
         tbList = Lists.newArrayList(btn0, btn1, btn2, btn3, btn4);
         statList = Lists.newArrayList(status0, status1, status2, status3, status4);
-
+        addValidators();
+  
         initDestPathLabel();
+    }
+    
+    
+    private void addValidators() {
+        for (IPCFileUploadField f : fufList) {
+            f.addValidator(new NameValidator3());
+        }
     }
 
     private void initDestPathLabel() {
@@ -171,8 +180,7 @@ public class SimpleFileUploadDialog extends IPlantDialog {
 
     private boolean isValidForm() {
         for (IPCFileUploadField f : fufList) {
-            if (!Strings.isNullOrEmpty(f.getValue())
-                    && !f.getValue().equalsIgnoreCase(uploadDest.getId())) {
+            if (!Strings.isNullOrEmpty(f.getValue()) && !f.getValue().equalsIgnoreCase(uploadDest.getId()) && f.isValid()) {
                 return true;
             }
         }
@@ -219,7 +227,7 @@ public class SimpleFileUploadDialog extends IPlantDialog {
         String results = Format.stripTags(results2);
         Splittable split = StringQuoter.split(results);
         IPCFileUploadField field = fufList.get(formList.indexOf(event.getSource()));
-        if ((split.get("file") == null)) {
+        if (split.isUndefined("file") || (split.get("file") == null)) {
             field.markInvalid(I18N.ERROR.fileUploadFailed(field.getValue()));
             IplantAnnouncer.getInstance().schedule(I18N.ERROR.fileUploadFailed(field.getValue()),
                     new ErrorAnnouncementConfig());

@@ -6,11 +6,11 @@ import java.util.Date;
 import java.util.List;
 
 import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.File;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceProperties;
-import org.iplantc.core.uidiskresource.client.models.File;
-import org.iplantc.core.uidiskresource.client.models.Folder;
-import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
 
 import com.google.gwt.cell.client.AbstractCell;

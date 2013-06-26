@@ -16,9 +16,9 @@ import org.iplantc.core.uicommons.client.collaborators.util.UserSearchField;
 import org.iplantc.core.uicommons.client.collaborators.views.ManageCollaboratorsDailog;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.models.UserInfo;
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uidiskresource.client.models.Permissions;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
+import org.iplantc.core.uicommons.client.models.diskresources.Permissions;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharing;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharingKeyProvider;
 import org.iplantc.core.uidiskresource.client.sharing.models.DataSharingProperties;
@@ -309,6 +309,16 @@ public class DataSharingPermissionsPanel implements IsWidget {
         permission.setWidth(150);
         SafeStyles permTextStyles = SafeStylesUtils.fromTrustedString("color:#0098AA;cursor:pointer;");
         permission.setColumnTextStyle(permTextStyles);
+        permission.setSortable(false);
+        permission.setFixed(true);
+        ColumnConfig<DataSharing, String> remove = buildRemoveColumn();
+        configs.add(name);
+        configs.add(permission);
+        configs.add(remove);
+        return new ColumnModel<DataSharing>(configs);
+    }
+
+    private ColumnConfig<DataSharing, String> buildRemoveColumn() {
         ColumnConfig<DataSharing, String> remove = new ColumnConfig<DataSharing, String>(
                 new ValueProvider<DataSharing, String>() {
 
@@ -329,16 +339,15 @@ public class DataSharingPermissionsPanel implements IsWidget {
                     }
                 });
 
+        remove.setSortable(false);
+        remove.setFixed(true);
         SafeStyles textStyles = SafeStylesUtils.fromTrustedString("padding-left: 10px;cursor:pointer;");
         remove.setColumnStyle(textStyles);
         remove.setWidth(50);
         remove.setToolTip(I18N.DISPLAY.unshare());
         TextButtonCell button = buildRemoveButtonCell();
         remove.setCell(button);
-        configs.add(name);
-        configs.add(permission);
-        configs.add(remove);
-        return new ColumnModel<DataSharing>(configs);
+        return remove;
     }
 
     private TextButtonCell buildRemoveButtonCell() {

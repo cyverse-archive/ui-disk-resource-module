@@ -1,9 +1,9 @@
 package org.iplantc.core.uidiskresource.client.views.dialogs;
 
 import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.validators.NameValidator3;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantPromptDialog;
-import org.iplantc.core.uidiskresource.client.models.Folder;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
 import com.google.gwt.user.client.ui.HTML;

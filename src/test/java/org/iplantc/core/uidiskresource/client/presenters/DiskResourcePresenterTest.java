@@ -9,16 +9,16 @@ import java.util.Set;
 
 import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
 import org.iplantc.core.uicommons.client.models.UserInfo;
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadata;
-import org.iplantc.core.uidiskresource.client.models.File;
-import org.iplantc.core.uidiskresource.client.models.Folder;
-import org.iplantc.core.uidiskresource.client.models.Permissions;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceMetadata;
+import org.iplantc.core.uicommons.client.models.diskresources.File;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uicommons.client.models.diskresources.Permissions;
+import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityGridHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityNavigationHandler;
 import org.iplantc.core.uidiskresource.client.search.models.DataSearchAutoBeanFactory;
-import org.iplantc.core.uidiskresource.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 import org.jmock.Expectations;
@@ -122,6 +122,7 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setDeleteButtonEnabled(with(false));
                 oneOf(toolbar).setRestoreMenuItemEnabled(with(false));
                 oneOf(toolbar).setEditEnabled(with(false));
+                oneOf(toolbar).setMoveButtonEnabled(with(false));
             }
         });
     }
@@ -252,6 +253,7 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setSimpleDowloadButtonEnabled(with(false));
                 oneOf(toolbar).setBulkDownloadButtonEnabled(with(true));
                 oneOf(toolbar).setRenameButtonEnabled(with(true));
+                oneOf(toolbar).setMoveButtonEnabled(with(true));
                 oneOf(toolbar).setDeleteButtonEnabled(with(true));
                 oneOf(toolbar).setShareButtonEnabled(with(true));
                 oneOf(toolbar).setShareMenuItemEnabled(with(true));
@@ -302,6 +304,7 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setSimpleDowloadButtonEnabled(with(false));
                 oneOf(toolbar).setBulkDownloadButtonEnabled(with(true));
                 oneOf(toolbar).setRenameButtonEnabled(with(false));
+                oneOf(toolbar).setMoveButtonEnabled(with(false));
                 oneOf(toolbar).setDeleteButtonEnabled(with(false));
                 oneOf(toolbar).setShareButtonEnabled(with(false));
                 oneOf(toolbar).setShareMenuItemEnabled(with(false));
@@ -351,6 +354,7 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setSimpleDowloadButtonEnabled(with(false));
                 oneOf(toolbar).setBulkDownloadButtonEnabled(with(true));
                 oneOf(toolbar).setRenameButtonEnabled(with(true));
+                oneOf(toolbar).setMoveButtonEnabled(with(true));
                 oneOf(toolbar).setDeleteButtonEnabled(with(true));
                 oneOf(toolbar).setShareButtonEnabled(with(true));
                 oneOf(toolbar).setShareMenuItemEnabled(with(true));
@@ -405,6 +409,7 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setSimpleDowloadButtonEnabled(with(false));
                 oneOf(toolbar).setBulkDownloadButtonEnabled(with(true));
                 oneOf(toolbar).setRenameButtonEnabled(with(false));
+                oneOf(toolbar).setMoveButtonEnabled(with(false));
                 oneOf(toolbar).setDeleteButtonEnabled(with(false));
                 oneOf(toolbar).setShareButtonEnabled(with(false));
                 oneOf(toolbar).setShareMenuItemEnabled(with(false));

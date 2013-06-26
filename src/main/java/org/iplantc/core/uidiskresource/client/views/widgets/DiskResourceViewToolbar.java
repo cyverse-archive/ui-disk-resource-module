@@ -2,8 +2,8 @@ package org.iplantc.core.uidiskresource.client.views.widgets;
 
 import java.util.Set;
 
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
-import org.iplantc.core.uidiskresource.client.models.Folder;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -21,6 +21,14 @@ public interface DiskResourceViewToolbar extends IsWidget {
          * Reloads the view's current selected folders.
          */
         void doRefresh();
+
+        /**
+         * Reloads the given folder in the view's navigation tree, and also the data grid if it's the
+         * currently selected folder.
+         * 
+         * @param folder The folder to reload from the service.
+         */
+        void refreshFolder(Folder folder);
 
         void doSimpleDownload();
 
@@ -51,6 +59,8 @@ public interface DiskResourceViewToolbar extends IsWidget {
         void restore();
 
         void doDataLinks();
+
+        void onMove();
 
     }
 
@@ -95,4 +105,6 @@ public interface DiskResourceViewToolbar extends IsWidget {
     void setMetaDatMenuItemEnabled(boolean canEditMetadata);
 
     void setEditEnabled(boolean canEdit);
+
+    void setMoveButtonEnabled(boolean enabled);
 }

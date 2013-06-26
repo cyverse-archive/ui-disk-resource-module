@@ -2,8 +2,8 @@ package org.iplantc.core.uidiskresource.client.presenters.handlers;
 
 import java.util.List;
 
-import org.iplantc.core.uidiskresource.client.models.Folder;
-import org.iplantc.core.uidiskresource.client.util.DiskResourceUtil;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
 /**

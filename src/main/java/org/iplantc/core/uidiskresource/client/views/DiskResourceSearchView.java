@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.uidiskresource.client.models.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourcePathCell;

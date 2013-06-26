@@ -1,7 +1,7 @@
 package org.iplantc.core.uidiskresource.client.events;
 
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uidiskresource.client.events.RequestSimpleUploadEvent.RequestSimpleUploadEventHandler;
-import org.iplantc.core.uidiskresource.client.models.Folder;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
