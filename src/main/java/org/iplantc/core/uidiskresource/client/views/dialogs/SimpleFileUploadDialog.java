@@ -61,6 +61,7 @@ public class SimpleFileUploadDialog extends IPlantDialog {
 
     private static final String FORM_WIDTH = "475";
     private static final String FORM_HEIGHT = "28";
+    private static final DiskResourceAutoBeanFactory FS_FACTORY = GWT.create(DiskResourceAutoBeanFactory.class);
     public static final String HDN_PARENT_ID_KEY = "dest";
     public static final String HDN_USER_ID_KEY = "user";
     public static final String FILE_TYPE = "type";
@@ -280,7 +281,7 @@ public class SimpleFileUploadDialog extends IPlantDialog {
 
         if (!destResourceMap.isEmpty()) {
             final ArrayList<String> ids = Lists.newArrayList(destResourceMap.keySet());
-            final HasPaths dto = DiskResourceAutoBeanFactory.INSTANCE.pathsList().as();
+            final HasPaths dto = FS_FACTORY.pathsList().as();
             dto.setPaths(ids);
             final CheckDuplicatesCallback cb = new CheckDuplicatesCallback(ids, destResourceMap, statList, fufList, submittedForms, formList);
             drService.diskResourcesExist(dto, cb);

@@ -45,6 +45,8 @@ import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
 public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<Entry<Field<String>, Status>> {
 
+    private static final DiskResourceAutoBeanFactory FS_FACTORY = GWT.create(DiskResourceAutoBeanFactory.class);
+
     private static FileUploadByUrlPanelUiBinder UIBINDER = GWT.create(FileUploadByUrlPanelUiBinder.class);
 
     @UiTemplate("FileUploadByUrlPanel.ui.xml")
@@ -162,7 +164,7 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
         }
 
         if (!destResourceMap.isEmpty()) {
-            final HasPaths dto = DiskResourceAutoBeanFactory.INSTANCE.pathsList().as();
+            final HasPaths dto = FS_FACTORY.pathsList().as();
             dto.setPaths(Lists.newArrayList(destResourceMap.keySet()));
             drService.diskResourcesExist(dto, new CheckDuplicatesCallback<FileUploadByUrlDialog>(destResourceMap, fieldToStatusMap, uploadDest, drService, this));
         }
