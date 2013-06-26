@@ -2,7 +2,6 @@
 package org.iplantc.core.uidiskresource.client.services.callbacks;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 import org.iplantc.core.resources.client.messages.I18N;
@@ -32,10 +31,9 @@ public abstract class DuplicateDiskResourceCallback extends DiskResourceServiceC
     }
 
     @Override
-    public void onSuccess(final DiskResourceExistMap response) {
+    public void onSuccess(final DiskResourceExistMap existMapping) {
         unmaskCaller();
 
-        final Map<String, Boolean> existMapping = response.getMap();
         final Set<String> dupes = Sets.newHashSet();
         for (String res : diskResourceIds) {
             if (existMapping.get(res)) {
