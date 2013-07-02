@@ -115,7 +115,7 @@
             <form:TextField
                 debugId="idSearchTxt"
                 ui:field="searchField"
-                emptyText="search by name" />
+                emptyText="{display.searchData}" />
         </toolbar:child>
 		<toolbar:child>
 			<button:TextButton debugId="idTrashBtn" ui:field="trash"
