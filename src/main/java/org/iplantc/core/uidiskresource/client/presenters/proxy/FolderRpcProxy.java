@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.diskresources.RootFolders;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
@@ -12,7 +11,6 @@ import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
-import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
@@ -21,14 +19,12 @@ import com.sencha.gxt.data.client.loader.RpcProxy;
 
 public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements DiskResourceView.Proxy {
 
-    private final DiskResourceAutoBeanFactory factory;
     private DiskResourceView.Presenter presenter;
     private final DiskResourceServiceFacade drService;
 
     @Inject
-    public FolderRpcProxy(DiskResourceServiceFacade drService, DiskResourceAutoBeanFactory factory) {
+    public FolderRpcProxy(DiskResourceServiceFacade drService) {
         this.drService = drService;
-        this.factory = factory;
     }
 
     @Override
@@ -36,14 +32,11 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
 
         if (parentFolder == null) {
             presenter.maskView();
-            drService.getHomeFolder(new AsyncCallback<String>() {
+            drService.getRootFolders(new AsyncCallback<RootFolders>() {
 
                 @Override
-                public void onSuccess(String result) {
-                    // Looking for "roots" key here
-                    AutoBean<RootFolders> bean = AutoBeanCodex
-                            .decode(factory, RootFolders.class, result);
-                    List<Folder> roots = bean.as().getRoots();
+                public void onSuccess(final RootFolders rootFolders) {
+                    List<Folder> roots = rootFolders.getRoots();
                     if (callback != null) {
                         callback.onSuccess(roots);
                     }
