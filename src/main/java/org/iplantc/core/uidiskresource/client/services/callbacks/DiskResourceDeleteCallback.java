@@ -6,6 +6,7 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
+import org.iplantc.core.uicommons.client.models.HasPaths;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.views.IsMaskable;
@@ -17,7 +18,7 @@ import com.google.gwt.core.shared.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
-public class DiskResourceDeleteCallback extends DiskResourceServiceCallback<String> {
+public class DiskResourceDeleteCallback extends DiskResourceServiceCallback<HasPaths> {
 
     private final Collection<DiskResource> resources;
     private final Folder parentFolder;
@@ -29,7 +30,7 @@ public class DiskResourceDeleteCallback extends DiskResourceServiceCallback<Stri
     }
 
     @Override
-    public void onSuccess(String result) {
+    public void onSuccess(final HasPaths unused) {
         unmaskCaller();
         IplantAnnouncer.getInstance().schedule(I18N.DISPLAY.deleteMsg());
         EventBus.getInstance().fireEvent(new DiskResourcesDeletedEvent(resources, parentFolder));

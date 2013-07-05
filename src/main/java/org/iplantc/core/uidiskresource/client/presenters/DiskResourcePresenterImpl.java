@@ -521,7 +521,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     private void delete(Set<DiskResource> drSet) {
         view.mask(DISPLAY.loadingMask());
-        AsyncCallback<String> callback = new DiskResourceDeleteCallback(drSet, getSelectedFolder(), view);
+        final AsyncCallback<HasPaths> callback = new DiskResourceDeleteCallback(drSet, getSelectedFolder(), view);
         diskResourceService.deleteDiskResources(drSet, callback);
     }
 
