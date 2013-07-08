@@ -212,6 +212,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
 		// by default no details to show...
 		resetDetailsPanel();
+		setGridEmptyText();
 	}
 
 	@Override
@@ -497,6 +498,10 @@ public class DiskResourceViewImpl implements DiskResourceView {
 			}
 		}
 	}
+	
+	private void setGridEmptyText() {
+	        gridView.setEmptyText(I18N.DISPLAY.noItemsToDisplay());
+	}
 
 	@Override
 	public void updateDiskResource(DiskResource originalDr, DiskResource newDr) {
@@ -525,6 +530,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 				listStore.add(newDr);
 			}
 		}
+		
 	}
 
 	@Override
