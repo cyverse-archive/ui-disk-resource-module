@@ -256,7 +256,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
 	@UiFactory
 	ColumnModel<DiskResource> createColumnModel() {
-        return new DiskResourceColumnModel(sm);
+        return new DiskResourceColumnModel(this, sm);
 	}
 
     private DiskResourceColumnModel getDiskResourceColumnModel() {
@@ -566,10 +566,10 @@ public class DiskResourceViewImpl implements DiskResourceView {
 	}
 
 	@Override
-	public void disableDiskResourceHyperlink() {
+	public void disableFilePreview() {
         Cell<DiskResource> cell = getDiskResourceColumnModel().getNameColumn().getCell();
 		if (cell instanceof DiskResourceNameCell) {
-			((DiskResourceNameCell) cell).setHyperlinkEnabled(false);
+			((DiskResourceNameCell) cell).setPreviewEnabled(false);
 		}
 
 	}

@@ -718,8 +718,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         }
 
         @Override
-        public Builder disableDiskResourceHyperlink() {
-            presenter.getView().disableDiskResourceHyperlink();
+        public Builder disableFilePreview() {
+            presenter.getView().disableFilePreview();
             return this;
         }
 

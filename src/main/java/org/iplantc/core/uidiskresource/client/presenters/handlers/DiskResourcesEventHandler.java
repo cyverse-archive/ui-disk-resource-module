@@ -38,6 +38,10 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
 
     @Override
     public void onSelect(DiskResourceSelectedEvent event) {
+        if (event.getSource() != view) {
+            return;
+        }
+
         if (event.getSelectedItem() instanceof Folder) {
             presenter.setSelectedFolderById(event.getSelectedItem());
         } else if (event.getSelectedItem() instanceof File) {

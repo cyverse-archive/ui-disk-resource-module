@@ -101,7 +101,7 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<Fi
 
         // Tell the presenter to add the view with the north and east widgets hidden.
         DiskResourceView.Presenter.Builder b = presenter.builder().hideNorth().hideEast()
-                .disableDiskResourceHyperlink();
+                .disableFilePreview();
         if (singleSelect) {
             b.singleSelect();
         }

@@ -25,6 +25,7 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.sencha.gxt.widget.core.client.tips.Tip;
 
 /**
@@ -40,10 +41,9 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
 
     private static final DiskResourceNameCellStyle CSS = IplantResources.RESOURCES.diskResourceNameCss();
 
-	public static enum CALLER_TAG {
+    public static enum CALLER_TAG {
         DATA, SEARCH, SHARING;
     }
-
 
     /**
      * The HTML templates used to render the cell.
@@ -54,17 +54,18 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         SafeHtml cell(String imgClassName, String diskResourceClassName, SafeHtml diskResourceName);
     }
 
-
- 
     final Templates templates = GWT.create(Templates.class);
-    private boolean hyperlinkEnabled = true;
+    private final IsWidget caller;
+    private boolean previewEnabled = true;
 
     final CALLER_TAG tag;
 
-    public DiskResourceNameCell(CALLER_TAG tag) {
+    public DiskResourceNameCell(IsWidget caller, CALLER_TAG tag) {
         super(CLICK, MOUSEOVER, MOUSEOUT);
+
         this.tag = tag;
-       CSS.ensureInjected();
+        this.caller = caller;
+        CSS.ensureInjected();
     }
 
     @Override
@@ -73,17 +74,14 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
             return;
         }
 
-        String nameStyle = hyperlinkEnabled ? CSS.nameStyle() : CSS
-                .nameStyleNoPointer();
+        SafeHtml name = SafeHtmlUtils.fromString(value.getName());
         if (value instanceof File) {
-            sb.append(templates.cell(CSS.drFile(), nameStyle,
-                    SafeHtmlUtils.fromString(value.getName())));
-
+            String nameStyle = previewEnabled ? CSS.nameStyle() : CSS.nameStyleNoPointer();
+            sb.append(templates.cell(CSS.drFile(), nameStyle, name));
         } else if (value instanceof Folder) {
-            sb.append(templates.cell(CSS.drFolder(), nameStyle,
-                    SafeHtmlUtils.fromString(value.getName())));
+            sb.append(templates.cell(CSS.drFolder(), CSS.nameStyle(), name));
         }
-        
+
     }
 
     @Override
@@ -113,32 +111,43 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
     }
 
     private void doOnMouseOut(Element eventTarget, DiskResource value) {
-        if (eventTarget.getAttribute("name").equalsIgnoreCase("drName") && hyperlinkEnabled && tag != DiskResourceNameCell.CALLER_TAG.SHARING) {
-            eventTarget.getStyle().setTextDecoration(TextDecoration.NONE);
+        if (!isValidClickTarget(eventTarget, value)) {
+            return;
         }
+
+        eventTarget.getStyle().setTextDecoration(TextDecoration.NONE);
     }
 
     private void doOnMouseOver(Element eventTarget, DiskResource value) {
-        if (eventTarget.getAttribute("name").equalsIgnoreCase("drName") && hyperlinkEnabled && tag != DiskResourceNameCell.CALLER_TAG.SHARING) {
-            eventTarget.getStyle().setTextDecoration(TextDecoration.UNDERLINE);
+        if (!isValidClickTarget(eventTarget, value)) {
+            return;
         }
+
+        eventTarget.getStyle().setTextDecoration(TextDecoration.UNDERLINE);
     }
 
     private void doOnClick(Element eventTarget, DiskResource value,
             ValueUpdater<DiskResource> valueUpdater) {
-        
-        if (eventTarget.getAttribute("name").equalsIgnoreCase("drName") && hyperlinkEnabled ) {
-            if(tag.equals(CALLER_TAG.DATA)) {
-            EventBus.getInstance().fireEvent(new DiskResourceSelectedEvent(this, value));
-            } else if (tag.equals(CALLER_TAG.SEARCH)) {
-                EventBus.getInstance().fireEvent(new DataSearchNameSelectedEvent(value));
-            }
+
+        if (!isValidClickTarget(eventTarget, value)) {
+            return;
         }
 
+        if (tag.equals(CALLER_TAG.DATA)) {
+            EventBus.getInstance().fireEvent(new DiskResourceSelectedEvent(caller, value));
+        } else if (tag.equals(CALLER_TAG.SEARCH)) {
+            EventBus.getInstance().fireEvent(new DataSearchNameSelectedEvent(value));
+        }
     }
 
-    public void setHyperlinkEnabled(boolean hyperlinkEnabled) {
-        this.hyperlinkEnabled = hyperlinkEnabled;
+    private boolean isValidClickTarget(Element eventTarget, DiskResource value) {
+        return eventTarget.getAttribute("name").equalsIgnoreCase("drName") //$NON-NLS-1$ //$NON-NLS-2$
+                && tag != DiskResourceNameCell.CALLER_TAG.SHARING
+                && (previewEnabled || !(value instanceof File));
+    }
+
+    public void setPreviewEnabled(boolean previewEnabled) {
+        this.previewEnabled = previewEnabled;
     }
 
 }
