@@ -15,6 +15,7 @@ import org.iplantc.core.uidiskresource.client.gin.DiskResourceInjector;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView.Presenter;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -158,18 +159,24 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<Fi
 
         @Override
         public void onSelectionChanged(SelectionChangedEvent<DiskResource> event) {
-            if ((event.getSelection() == null) || event.getSelection().isEmpty()) {
-                // Disable the okButton
-                okButton.setEnabled(false);
+            // Disable the okButton
+            okButton.setEnabled(false);
+
+            if (event.getSelection() == null) {
                 return;
             }
+
             ArrayList<File> newArrayList = Lists.newArrayList(DiskResourceUtil.extractFiles(event
                     .getSelection()));
             dlg.setValue(newArrayList);
             List<String> idList = DiskResourceUtil.asStringIdList(newArrayList);
-            textbox.setValue(DiskResourceUtil.asCommaSeperatedNameList(idList));
-            // Enable the okButton
-            okButton.setEnabled(true);
+            String fileNames = DiskResourceUtil.asCommaSeperatedNameList(idList);
+            textbox.setValue(fileNames);
+
+            if (!Strings.isNullOrEmpty(fileNames)) {
+                // Enable the okButton
+                okButton.setEnabled(true);
+            }
         }
     }
 
