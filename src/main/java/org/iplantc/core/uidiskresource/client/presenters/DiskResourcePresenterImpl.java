@@ -994,12 +994,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
                         diskResourceService.moveDiskResources(selectedResources, targetFolder,
                                 new DiskResourceMoveCallback(view, targetFolder, selectedResources));
                     } else {
-                        IplantAnnouncer.getInstance().schedule(I18N.ERROR.diskResourceIncompleteMove(),
-                                new ErrorAnnouncementConfig());
+                        IplantAnnouncer.getInstance().schedule(
+                                new ErrorAnnouncementConfig(I18N.ERROR.diskResourceIncompleteMove()));
                     }
                 } else {
-                    IplantAnnouncer.getInstance().schedule(I18N.ERROR.permissionErrorMessage(),
-                            new ErrorAnnouncementConfig());
+                    IplantAnnouncer.getInstance().schedule(
+                            new ErrorAnnouncementConfig(I18N.ERROR.permissionErrorMessage()));
                 }
 
             }
