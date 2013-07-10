@@ -48,7 +48,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
             Builder singleSelect();
 
-            Builder disableDiskResourceHyperlink();
+            Builder disableFilePreview();
         }
 
         void go(HasOneWidget container, HasId folderToSelect, List<HasId> diskResourcesToSelect);
@@ -269,7 +269,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
     void setSingleSelect();
 
-    void disableDiskResourceHyperlink();
+    void disableFilePreview();
 
     void showDataListingWidget();
 

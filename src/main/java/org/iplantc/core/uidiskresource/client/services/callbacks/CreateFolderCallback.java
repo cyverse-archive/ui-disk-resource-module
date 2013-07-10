@@ -16,7 +16,7 @@ import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
-public class CreateFolderCallback extends DiskResourceServiceCallback {
+public class CreateFolderCallback extends DiskResourceServiceCallback<String> {
 
     private final Folder parentFolder;
     private final String newName;

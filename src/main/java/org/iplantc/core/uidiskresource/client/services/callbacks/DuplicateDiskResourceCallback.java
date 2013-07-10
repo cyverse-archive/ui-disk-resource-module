@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceExistMap;
 import org.iplantc.core.uicommons.client.views.IsMaskable;
 import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceErrorAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.services.errors.ErrorDuplicateDiskResource;
@@ -14,11 +15,9 @@ import com.google.common.collect.Sets;
 import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
-import com.google.web.bindery.autobean.shared.Splittable;
-import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
 
-public abstract class DuplicateDiskResourceCallback extends DiskResourceServiceCallback {
+public abstract class DuplicateDiskResourceCallback extends DiskResourceServiceCallback<DiskResourceExistMap> {
     private final Set<String> diskResourceIds;
 
     public DuplicateDiskResourceCallback(Iterable<String> diskResourceIds, final IsMaskable maskable) {
@@ -32,19 +31,19 @@ public abstract class DuplicateDiskResourceCallback extends DiskResourceServiceC
     }
 
     @Override
-    public void onSuccess(String response) {
+    public void onSuccess(final DiskResourceExistMap existMapping) {
         unmaskCaller();
-        Splittable split = StringQuoter.split(response).get("paths");
-        Set<String> dupes = Sets.newHashSet();
-        for (String key : split.getPropertyKeys()) {
-            if (split.get(key).asBoolean()) {
-                dupes.add(key);
+
+        final Set<String> dupes = Sets.newHashSet();
+        for (String res : diskResourceIds) {
+            if (existMapping.get(res)) {
+                dupes.add(res);
             }
         }
 
         // always call mark duplicates. if no duplicates are found the list is empty.
         // clients implementing this class then just needs to override only on method
-        markDuplicates(Sets.intersection(dupes, diskResourceIds));
+        markDuplicates(dupes);
     }
 
     @Override

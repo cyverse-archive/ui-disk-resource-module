@@ -8,6 +8,8 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
+import org.iplantc.core.uicommons.client.models.HasPaths;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.validators.NameValidator3;
@@ -59,6 +61,7 @@ public class SimpleFileUploadDialog extends IPlantDialog {
 
     private static final String FORM_WIDTH = "475";
     private static final String FORM_HEIGHT = "28";
+    private static final DiskResourceAutoBeanFactory FS_FACTORY = GWT.create(DiskResourceAutoBeanFactory.class);
     public static final String HDN_PARENT_ID_KEY = "dest";
     public static final String HDN_USER_ID_KEY = "user";
     public static final String FILE_TYPE = "type";
@@ -229,8 +232,8 @@ public class SimpleFileUploadDialog extends IPlantDialog {
         IPCFileUploadField field = fufList.get(formList.indexOf(event.getSource()));
         if (split.isUndefined("file") || (split.get("file") == null)) {
             field.markInvalid(I18N.ERROR.fileUploadFailed(field.getValue()));
-            IplantAnnouncer.getInstance().schedule(I18N.ERROR.fileUploadFailed(field.getValue()),
-                    new ErrorAnnouncementConfig());
+            IplantAnnouncer.getInstance().schedule(
+                    new ErrorAnnouncementConfig(I18N.ERROR.fileUploadFailed(field.getValue())));
         } else {
             IplantAnnouncer.getInstance().schedule(I18N.DISPLAY.fileUploadSuccess(field.getValue()));
         }
@@ -277,9 +280,11 @@ public class SimpleFileUploadDialog extends IPlantDialog {
         }
 
         if (!destResourceMap.isEmpty()) {
-            ArrayList<String> ids = Lists.newArrayList(destResourceMap.keySet());
-            drService.diskResourcesExist(ids, new CheckDuplicatesCallback(ids, destResourceMap,
-                    statList, fufList, submittedForms, formList));
+            final ArrayList<String> ids = Lists.newArrayList(destResourceMap.keySet());
+            final HasPaths dto = FS_FACTORY.pathsList().as();
+            dto.setPaths(ids);
+            final CheckDuplicatesCallback cb = new CheckDuplicatesCallback(ids, destResourceMap, statList, fufList, submittedForms, formList);
+            drService.diskResourcesExist(dto, cb);
         }
     }
 

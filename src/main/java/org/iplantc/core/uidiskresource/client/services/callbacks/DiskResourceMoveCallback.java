@@ -16,7 +16,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
-public class DiskResourceMoveCallback extends DiskResourceServiceCallback{
+public class DiskResourceMoveCallback extends DiskResourceServiceCallback<String> {
 
     private final Set<DiskResource> resourcesToMove;
     private final Folder destFolder;

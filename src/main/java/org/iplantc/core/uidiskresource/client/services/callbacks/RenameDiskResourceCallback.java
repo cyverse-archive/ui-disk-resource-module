@@ -20,7 +20,7 @@ import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
-public class RenameDiskResourceCallback extends DiskResourceServiceCallback {
+public class RenameDiskResourceCallback extends DiskResourceServiceCallback<String> {
 
     private final DiskResource dr;
     private final DiskResourceAutoBeanFactory factory;

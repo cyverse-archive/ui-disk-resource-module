@@ -61,7 +61,7 @@ public class DiskResourceSearchView implements IsWidget {
         sm = new CheckBoxSelectionModel<DiskResource>(new IdentityValueProvider<DiskResource>());
         ColumnConfig<DiskResource, DiskResource> name = new ColumnConfig<DiskResource, DiskResource>(
                 new IdentityValueProvider<DiskResource>(), 130, I18N.DISPLAY.name());
-        name.setCell(new DiskResourceNameCell(DiskResourceNameCell.CALLER_TAG.SEARCH));
+        name.setCell(new DiskResourceNameCell(this, DiskResourceNameCell.CALLER_TAG.SEARCH));
 
 
         ColumnConfig<DiskResource, DiskResource> path = new ColumnConfig<DiskResource, DiskResource>(

@@ -521,7 +521,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     private void delete(Set<DiskResource> drSet) {
         view.mask(DISPLAY.loadingMask());
-        AsyncCallback<String> callback = new DiskResourceDeleteCallback(drSet, getSelectedFolder(), view);
+        final AsyncCallback<HasPaths> callback = new DiskResourceDeleteCallback(drSet, getSelectedFolder(), view);
         diskResourceService.deleteDiskResources(drSet, callback);
     }
 
@@ -718,8 +718,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         }
 
         @Override
-        public Builder disableDiskResourceHyperlink() {
-            presenter.getView().disableDiskResourceHyperlink();
+        public Builder disableFilePreview() {
+            presenter.getView().disableFilePreview();
             return this;
         }
 
@@ -994,12 +994,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
                         diskResourceService.moveDiskResources(selectedResources, targetFolder,
                                 new DiskResourceMoveCallback(view, targetFolder, selectedResources));
                     } else {
-                        IplantAnnouncer.getInstance().schedule(I18N.ERROR.diskResourceIncompleteMove(),
-                                new ErrorAnnouncementConfig());
+                        IplantAnnouncer.getInstance().schedule(
+                                new ErrorAnnouncementConfig(I18N.ERROR.diskResourceIncompleteMove()));
                     }
                 } else {
-                    IplantAnnouncer.getInstance().schedule(I18N.ERROR.permissionErrorMessage(),
-                            new ErrorAnnouncementConfig());
+                    IplantAnnouncer.getInstance().schedule(
+                            new ErrorAnnouncementConfig(I18N.ERROR.permissionErrorMessage()));
                 }
 
             }

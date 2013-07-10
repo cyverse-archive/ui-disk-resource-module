@@ -74,7 +74,7 @@ public class DataSharingDialog extends IPlantDialog {
 
         ColumnConfig<DiskResource, DiskResource> name = new ColumnConfig<DiskResource, DiskResource>(
                 new IdentityValueProvider<DiskResource>(), 130, I18N.DISPLAY.name());
-        name.setCell(new DiskResourceNameCell(DiskResourceNameCell.CALLER_TAG.SHARING));
+        name.setCell(new DiskResourceNameCell(this, DiskResourceNameCell.CALLER_TAG.SHARING));
 
         list.add(name);
 

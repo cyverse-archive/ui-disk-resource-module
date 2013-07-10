@@ -26,11 +26,11 @@ import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 
 public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
 
-    public DiskResourceColumnModel(CheckBoxSelectionModel<DiskResource> sm) {
-        super(createColumnConfigList(sm));
+    public DiskResourceColumnModel(DiskResourceView view, CheckBoxSelectionModel<DiskResource> sm) {
+        super(createColumnConfigList(view, sm));
     }
 
-    public static List<ColumnConfig<DiskResource, ?>> createColumnConfigList(
+    public static List<ColumnConfig<DiskResource, ?>> createColumnConfigList(DiskResourceView view,
             CheckBoxSelectionModel<DiskResource> sm) {
         List<ColumnConfig<DiskResource, ?>> list = new ArrayList<ColumnConfig<DiskResource, ?>>();
 
@@ -38,7 +38,7 @@ public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
 
         ColumnConfig<DiskResource, DiskResource> name = new ColumnConfig<DiskResource, DiskResource>(
                 new IdentityValueProvider<DiskResource>("name"), 100, I18N.DISPLAY.name());
-        name.setCell(new DiskResourceNameCell(DiskResourceNameCell.CALLER_TAG.DATA));
+        name.setCell(new DiskResourceNameCell(view, DiskResourceNameCell.CALLER_TAG.DATA));
         name.setComparator(new DiskResourceNameComparator());
 
         ColumnConfig<DiskResource, Date> lastModified = new ColumnConfig<DiskResource, Date>(
