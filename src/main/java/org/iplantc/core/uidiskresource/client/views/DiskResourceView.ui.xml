@@ -99,7 +99,7 @@
       <!-- Navigation Panel -->
       <container:west layoutData="{westData}">
          <gxt:ContentPanel ui:field="westPanel"
-                           headerVisible="false">
+                           headerVisible="true" headingText="Navigation" collapsible="false">
             <tree:Tree ui:field="tree"/>
          </gxt:ContentPanel>
       </container:west>
