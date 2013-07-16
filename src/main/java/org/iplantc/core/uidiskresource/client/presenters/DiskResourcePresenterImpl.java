@@ -740,7 +740,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
                 @Override
                 public boolean select(Store<DiskResource> store, DiskResource parent, DiskResource item) {
-                    return item.getName().contains(val);
+                    return item.getName().toLowerCase().contains(val.toLowerCase());
                 }
             });
             store.setEnableFilters(true);

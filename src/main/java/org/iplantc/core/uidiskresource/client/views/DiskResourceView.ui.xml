@@ -20,7 +20,7 @@
             type="com.sencha.gxt.widget.core.client.grid.ColumnModel" />
    <ui:with field="gridView"
             type="com.sencha.gxt.widget.core.client.grid.GridView">
-      <ui:attributes forceFit="true"
+      <ui:attributes forceFit="false"
                      autoFill="true"/>
    </ui:with>
 
