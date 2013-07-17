@@ -305,22 +305,27 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             view.setSelectedFolder(folder);
         } else {
             // Create and add the SelectFolderByIdLoadHandler to the treeLoader.
-            SelectFolderByIdLoadHandler handler = new SelectFolderByIdLoadHandler(folderToSelect, this,
-                    diskResourceService);
+            final SelectFolderByIdLoadHandler handler = new SelectFolderByIdLoadHandler(folderToSelect,
+                    this);
             HandlerRegistration reg = treeLoader.addLoadHandler(handler);
             addEventHandlerRegistration(handler, reg);
 
             // If a parent folder of folderToSelect already exists, then we need to load its children.
             String parentId = DiskResourceUtil.parseParent(folderToSelect.getId());
             Folder parentFolder = view.getFolderById(parentId);
-            while (!Strings.isNullOrEmpty(parentId) && !parentId.equals("/") && parentFolder == null) {
+            while (validParentPath(parentId) && parentFolder == null) {
                 parentId = DiskResourceUtil.parseParent(parentId);
                 parentFolder = view.getFolderById(parentId);
             }
-            if (!Strings.isNullOrEmpty(parentId) && !parentId.equals("/") && parentFolder != null) {
+
+            if (validParentPath(parentId) && parentFolder != null) {
                 treeLoader.loadChildren(parentFolder);
             }
         }
+    }
+
+    private boolean validParentPath(String path) {
+        return !Strings.isNullOrEmpty(path) && !path.equals("/"); //$NON-NLS-1$
     }
 
     @Override
