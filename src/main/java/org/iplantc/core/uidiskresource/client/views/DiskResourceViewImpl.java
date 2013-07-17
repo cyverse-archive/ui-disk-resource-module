@@ -634,7 +634,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 		if (bolded) {
 			return "<span style='font-size:10px'><b>" + detail + "</b> </span>"; //$NON-NLS-1$ //$NON-NLS-2$
 		} else {
-			return "<span style='font-size:10px'>" + detail + "</span>"; //$NON-NLS-1$ //$NON-NLS-2$
+			return "<span style='font-size:10px; padding-left:4px;'>" + detail + "</span>"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -698,7 +698,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 	private HorizontalPanel buildRow() {
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.setHeight("25px"); //$NON-NLS-1$
-		panel.setSpacing(3);
+		panel.setSpacing(1);
 		return panel;
 	}
 
