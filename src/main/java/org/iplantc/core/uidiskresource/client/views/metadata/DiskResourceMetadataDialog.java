@@ -104,6 +104,7 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
 
     public DiskResourceMetadataDialog(final DiskResource resource,
             final DiskResourceView.Presenter presenter) {
+        super(true);
         this.resource = resource;
         setSize("500", "300");
         setWidget(uiBinder.createAndBindUi(this));
