@@ -1,0 +1,11 @@
+.wrap {
+  height: 22px;
+  position: relative;
+}
+
+.buttonWrap {
+  position: absolute;
+  right: 0;
+  z-index: 1;
+  top: 0;
+}
