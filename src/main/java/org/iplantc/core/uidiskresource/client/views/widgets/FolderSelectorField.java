@@ -1,5 +1,7 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
+import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.events.UserSettingsUpdatedEvent;
 import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.UserSettings;
@@ -59,6 +61,8 @@ public class FolderSelectorField extends AbstractDiskResourceSelector<Folder> {
             // cache the last used path
             if (userSettings.isRememberLastPath()) {
                 userSettings.setLastPathId(value.getId());
+                UserSettingsUpdatedEvent usue = new UserSettingsUpdatedEvent();
+                EventBus.getInstance().fireEvent(usue);
             }
             ValueChangeEvent.fire(FolderSelectorField.this, value);
         }

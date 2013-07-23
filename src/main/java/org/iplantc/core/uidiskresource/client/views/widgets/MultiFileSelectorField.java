@@ -154,8 +154,9 @@ public class MultiFileSelectorField extends Composite implements IsField<List<Ha
         @Override
         public void onHide(HideEvent event) {
             Set<DiskResource> diskResources = dlg.getDiskResources();
-            if ((diskResources == null) || diskResources.isEmpty())
+            if ((diskResources == null) || diskResources.isEmpty()) {
                 return;
+            }
             store.addAll(diskResources);
             ValueChangeEvent.fire(MultiFileSelectorField.this, Lists.<HasId> newArrayList(store.getAll()));
         }
