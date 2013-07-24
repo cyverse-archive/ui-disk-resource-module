@@ -2,9 +2,17 @@ package org.iplantc.core.uidiskresource.client.views.widgets;
 
 import java.util.List;
 
+import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.resources.client.messages.IplantErrorStrings;
+import org.iplantc.core.uicommons.client.errorHandling.models.ServiceErrorCode;
+import org.iplantc.core.uicommons.client.errorHandling.models.SimpleServiceError;
+import org.iplantc.core.uicommons.client.gin.ServicesInjector;
 import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.core.uicommons.client.models.HasPaths;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceStatMap;
+import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.shared.GWT;
@@ -13,6 +21,7 @@ import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.EditorError;
+import com.google.gwt.editor.client.HasEditorErrors;
 import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -25,6 +34,8 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.XDOM;
 import com.sencha.gxt.core.client.dom.XElement;
@@ -36,6 +47,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.IsField;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
+import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 
 /**
  * Abstract class for single select DiskResource fields.
@@ -47,12 +59,14 @@ import com.sencha.gxt.widget.core.client.form.Validator;
  * 
  */
 public abstract class AbstractDiskResourceSelector<R extends DiskResource> extends Component implements
-        IsField<HasId>, ValueAwareEditor<HasId>, HasValueChangeHandlers<HasId> {
+ IsField<HasId>, ValueAwareEditor<HasId>, HasValueChangeHandlers<HasId>, HasEditorErrors<HasId> {
 
     interface FileFolderSelectorStyle extends CssResource {
         String buttonWrap();
 
         String wrap();
+
+        String errorText();
     }
 
     interface Resources extends ClientBundle {
@@ -79,7 +93,11 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
 
     // by default do not validate permissions
     private boolean validatePermissions = false;
-    private DiskResourceSelectionPermissionsValidator<R> validator;
+    private final DiskResourceServiceFacade drServiceFacade;
+    private HasId model;
+
+    private DefaultEditorError permissionEditorError = null;
+    private DefaultEditorError existsEditorError = null;
 
     protected AbstractDiskResourceSelector() {
         res.style().ensureInjected();
@@ -107,7 +125,7 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
             }
         });
         
-        validator = new DiskResourceSelectionPermissionsValidator<R>();
+        drServiceFacade = ServicesInjector.INSTANCE.getDiskResourceServiceFacade();
 
         infoText = DOM.createDiv();
         infoText.getStyle().setDisplay(Display.NONE);
@@ -120,16 +138,64 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     }
 
     protected void setSelectedResource(R selectedResource) {
-        if (validator != null) {
-            validator.setDiskResource(selectedResource);
-        }
+        this.selectedResource = selectedResource;
         setValue(selectedResource);
     }
 
     @Override
     public void setValue(HasId value) {
-        selectedResource = value;
+        if ((value == model)) {
+            // JDS If model is not changing
+            return;
+        } else if ((model != null) && (value != null) && model.getId().equals(value.getId())) {
+            return;
+        }
+        model = value;
         input.setValue(value == null ? null : value.getId());
+
+        doGetStat(value);
+    }
+
+    private void doGetStat(final HasId value) {
+        final String diskResourceId = value.getId();
+        HasPaths diskResourcePaths = drServiceFacade.getDiskResourceFactory().pathsList().as();
+        diskResourcePaths.setPaths(Lists.newArrayList(diskResourceId));
+
+        permissionEditorError = null;
+        existsEditorError = null;
+        drServiceFacade.getStat(diskResourcePaths, new AsyncCallback<DiskResourceStatMap>() {
+
+            @Override
+            public void onSuccess(DiskResourceStatMap result) {
+                if (!validatePermissions) {
+                    setInfoErrorText("");
+                    return;
+                }
+                DiskResource diskResource = result.get(diskResourceId);
+                if (diskResource == null) {
+                    permissionEditorError = new DefaultEditorError(input, I18N.DISPLAY.permissionSelectErrorMessage(), diskResourceId);
+                    setInfoErrorText(I18N.DISPLAY.permissionSelectErrorMessage());
+                } else if (!(diskResource.getPermissions().isWritable() || diskResource.getPermissions().isOwner())) {
+                    permissionEditorError = new DefaultEditorError(input, I18N.DISPLAY.permissionSelectErrorMessage(), diskResourceId);
+                    setInfoErrorText(I18N.DISPLAY.permissionSelectErrorMessage());
+                } else {
+                    setInfoErrorText("");
+                }
+                ValueChangeEvent.fire(AbstractDiskResourceSelector.this, value);
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                final IplantErrorStrings errorStrings = I18N.ERROR;
+                SimpleServiceError serviceError = AutoBeanCodex.decode(drServiceFacade.getDiskResourceFactory(), SimpleServiceError.class, caught.getMessage()).as();
+                if (serviceError.getErrorCode().equals(ServiceErrorCode.ERR_DOES_NOT_EXIST.toString())) {
+                    existsEditorError = new DefaultEditorError(input, errorStrings.diskResourceDoesNotExist(diskResourceId), diskResourceId);
+                    setInfoErrorText(errorStrings.diskResourceDoesNotExist(diskResourceId));
+                    ValueChangeEvent.fire(AbstractDiskResourceSelector.this, value);
+                }
+            }
+        });
+
     }
 
     public void setInfoTextClassName(String className) {
@@ -154,6 +220,11 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         infoText.setInnerSafeHtml(safeText);
     }
 
+    public void setInfoErrorText(String errorMessage) {
+        setInfoTextClassName(res.style().errorText());
+        setInfoText(errorMessage);
+    }
+
     /**
      * Convenience method which creates a HasId object from a given string id.
      * 
@@ -165,7 +236,7 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
 
     @Override
     public HasId getValue() {
-        return selectedResource;
+        return CommonModelUtils.createHasIdFromString(input.getCurrentValue());
     }
 
     protected abstract void onBrowseSelected();
@@ -236,6 +307,11 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
                 errors.addAll(errs);
             }
         }
+        if (permissionEditorError != null) {
+            errors.add(permissionEditorError);
+        } else if (existsEditorError != null) {
+            errors.add(existsEditorError);
+        }
         if(!preventMark) {
             input.showErrors(errors);
         }
@@ -246,13 +322,17 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     }
 
     @Override
+    public void showErrors(List<EditorError> errors) {
+        input.showErrors(errors);
+    }
+
+    @Override
     public void flush() {
         // Validate on flush.
         validate(false);
         input.flush();
-        // Transfer any errors we have to the EditorDelegate<Splittable>
-        for (EditorError e : errors) {
-            editorDelegate.recordError(e.getMessage(), e.getValue(), input);
+        if (editorDelegate == null) {
+            return;
         }
     }
 
@@ -289,15 +369,14 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
      */
     public void setValidatePermissions(boolean validatePermissions) {
         this.validatePermissions = validatePermissions;
-        if(validatePermissions) {
-            input.addValidator(validator);
-        } else {
-            input.removeValidator(validator);
-        }
     }
 
     public void setRequired(boolean required) {
         input.setAllowBlank(!required);
+    }
+
+    public List<EditorError> getErrors() {
+        return errors;
     }
 
 }
