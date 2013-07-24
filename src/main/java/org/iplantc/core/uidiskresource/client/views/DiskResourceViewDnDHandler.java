@@ -134,11 +134,9 @@ class DiskResourceViewDnDHandler implements DndDragStartHandler, DndDropHandler,
         Folder targetFolder = presenter.getDropTargetFolder(event.getDropTarget().getWidget(),
                 Element.as(target));
 
-        if (!validateDropStatus(targetFolder, dropData, event.getStatusProxy())) {
-            return;
+        if (validateDropStatus(targetFolder, dropData, event.getStatusProxy())) {
+            presenter.doMoveDiskResources(targetFolder, dropData);
         }
-
-        presenter.doMoveDiskResources(targetFolder, dropData);
     }
 
     @SuppressWarnings("unchecked")

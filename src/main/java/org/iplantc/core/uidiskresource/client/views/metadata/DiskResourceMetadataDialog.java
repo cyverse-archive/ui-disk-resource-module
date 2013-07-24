@@ -10,6 +10,7 @@ import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBe
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceMetadata;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceMetadataList;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
+import org.iplantc.core.uicommons.client.widgets.ContextualHelpPopup;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadataProperties;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
@@ -30,6 +31,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
@@ -39,6 +41,7 @@ import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.Change;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.event.CompleteEditEvent;
 import com.sencha.gxt.widget.core.client.event.CompleteEditEvent.CompleteEditHandler;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent;
@@ -101,12 +104,14 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
 
     public DiskResourceMetadataDialog(final DiskResource resource,
             final DiskResourceView.Presenter presenter) {
+        super(true);
         this.resource = resource;
         setSize("500", "300");
         setWidget(uiBinder.createAndBindUi(this));
         setHeadingText(I18N.DISPLAY.metadata() + ":" + resource.getId());
 
         okButton = getButtonById(PredefinedButton.OK.name());
+        addHelp();
 
         addOkButtonSelectHandler(new SelectHandler() {
 
@@ -123,6 +128,20 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
 
         presenter.getDiskResourceMetadata(resource, new RetrieveMetadataCallback(listStore,
                 autoBeanFactory));
+    }
+    
+    private void addHelp() {
+        final ToolButton toolBtn = gelHelpToolButton();
+        toolBtn.addSelectHandler(new SelectHandler() {
+            
+            @Override
+            public void onSelect(SelectEvent event) {
+                ContextualHelpPopup popup = new ContextualHelpPopup();
+                popup.add(new HTML(I18N.HELP.metadataHelp()));
+                popup.showAt(toolBtn.getAbsoluteLeft(), toolBtn.getAbsoluteTop() + 15);
+                
+            }
+        });
     }
 
     private void initGridEditing(final Grid<DiskResourceMetadata> grid,

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.iplantc.core.resources.client.DataCollapseStyle;
 import org.iplantc.core.resources.client.IplantResources;
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.events.EventBus;
@@ -63,9 +64,13 @@ import com.sencha.gxt.dnd.core.client.DragSource;
 import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.theme.blue.client.status.BlueStatusAppearance.BlueStatusResources;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
@@ -82,7 +87,31 @@ import com.sencha.gxt.widget.core.client.tree.TreeView;
 
 public class DiskResourceViewImpl implements DiskResourceView {
 
-	@UiTemplate("DiskResourceView.ui.xml")
+	private final class GridSelectionHandler implements SelectionChangedHandler<DiskResource> {
+        @Override
+        public void onSelectionChanged(
+        		SelectionChangedEvent<DiskResource> event) {
+        	if ((event.getSelection() != null)
+        			&& !event.getSelection().isEmpty()) {
+        		presenter.onDiskResourceSelected(Sets
+        				.newHashSet(event.getSelection()));
+        	} else {
+        		resetDetailsPanel();
+        	}
+        }
+    }
+
+    private final class TreeSelectionHandler implements SelectionHandler<Folder> {
+        @Override
+        public void onSelection(SelectionEvent<Folder> event) {
+        	if (DiskResourceViewImpl.this.widget.isAttached()
+        			&& (event.getSelectedItem() != null)) {
+        		onFolderSelected(event.getSelectedItem());
+        	}
+        }
+    }
+
+    @UiTemplate("DiskResourceView.ui.xml")
 	interface DiskResourceViewUiBinder extends
 			UiBinder<Widget, DiskResourceViewImpl> {
 	}
@@ -150,7 +179,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
 	public DiskResourceViewImpl(final Tree<Folder, String> tree) {
 		this.tree = tree;
 		this.treeStore = tree.getStore();
-
 		// KLUDGE GXT 3.0.1 hasn't implemented the tree loading icon, so we'll
 		// use the one from Status.
 		tree.setView(new TreeView<Folder>() {
@@ -181,39 +209,34 @@ public class DiskResourceViewImpl implements DiskResourceView {
 		treeStyle.setLeafIcon(appearance.closeNodeIcon());
 		tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		tree.getSelectionModel().addSelectionHandler(
-				new SelectionHandler<Folder>() {
-
-					@Override
-					public void onSelection(SelectionEvent<Folder> event) {
-						if (DiskResourceViewImpl.this.widget.isAttached()
-								&& (event.getSelectedItem() != null)) {
-							onFolderSelected(event.getSelectedItem());
-						}
-					}
-
-				});
+				new TreeSelectionHandler());
 
 		grid.getSelectionModel().addSelectionChangedHandler(
-				new SelectionChangedHandler<DiskResource>() {
-
-					@Override
-					public void onSelectionChanged(
-							SelectionChangedEvent<DiskResource> event) {
-						if ((event.getSelection() != null)
-								&& !event.getSelection().isEmpty()) {
-							presenter.onDiskResourceSelected(Sets
-									.newHashSet(event.getSelection()));
-						} else {
-							resetDetailsPanel();
-						}
-					}
-
-				});
+				new GridSelectionHandler());
 
 		// by default no details to show...
 		resetDetailsPanel();
 		setGridEmptyText();
+		addTreeCollapseButton();
 	}
+
+    private void addTreeCollapseButton() {
+        westPanel.setCollapsible(false);
+        DataCollapseStyle style = IplantResources.RESOURCES.getDataCollapseStyle();
+        style.ensureInjected();
+        ToolButton tool = new ToolButton(new IconConfig(style.collapse(),style.collapseHover()));
+        tool.setId("idTreeCollapse");
+        tool.setToolTip(I18N.DISPLAY.collapseAll());
+		tool.addSelectHandler(new SelectHandler() {
+            
+            @Override
+            public void onSelect(SelectEvent event) {
+                tree.collapseAll();
+            }
+        });
+		westPanel.getHeader().removeTool(westPanel.getHeader().getTool(0));
+        westPanel.getHeader().addTool(tool);
+    }
 
 	@Override
 	public void onDiskResourceSelected(Set<DiskResource> selection) {
@@ -611,7 +634,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 		if (bolded) {
 			return "<span style='font-size:10px'><b>" + detail + "</b> </span>"; //$NON-NLS-1$ //$NON-NLS-2$
 		} else {
-			return "<span style='font-size:10px'>" + detail + "</span>"; //$NON-NLS-1$ //$NON-NLS-2$
+			return "<span style='font-size:10px; padding-left:4px;'>" + detail + "</span>"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -675,7 +698,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 	private HorizontalPanel buildRow() {
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.setHeight("25px"); //$NON-NLS-1$
-		panel.setSpacing(3);
+		panel.setSpacing(1);
 		return panel;
 	}
 

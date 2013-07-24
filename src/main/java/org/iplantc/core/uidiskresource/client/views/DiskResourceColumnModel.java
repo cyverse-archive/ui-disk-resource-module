@@ -49,11 +49,26 @@ public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
                 new DiskResourceSizeValueProvider(),
                 50, I18N.DISPLAY.size());
         size.setCell(new DiskResourceSizeCell());
-
+        
+        ColumnConfig<DiskResource, String> path = new ColumnConfig<DiskResource, String>(
+                props.id(),100, I18N.DISPLAY.path());
+    
+        path.setHidden(true);
+        path.setMenuDisabled(true);
+        path.setSortable(false);
+        
+        ColumnConfig<DiskResource, Date> created = new ColumnConfig<DiskResource, Date>(
+                props.dateSubmitted(), 120, I18N.DISPLAY.dateSubmitted());
+        lastModified.setCell(new DateCell(DateTimeFormat
+                .getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM)));
+        created.setHidden(true);
+        
         list.add(sm.getColumn());
         list.add(name);
         list.add(lastModified);
         list.add(size);
+        list.add(path);
+        list.add(created);
 
         return list;
     }
