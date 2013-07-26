@@ -14,6 +14,7 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.gin.ServicesInjector;
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.HasId;
@@ -121,7 +122,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private final DiskResourceView.Proxy proxy;
     private final TreeLoader<Folder> treeLoader;
     private final HashMap<EventHandler, HandlerRegistration> registeredHandlers = new HashMap<EventHandler, HandlerRegistration>();
-    private DiskResourceServiceFacade diskResourceService;
+    private final DiskResourceServiceFacade diskResourceService;
     private final IplantDisplayStrings DISPLAY;
     private final DiskResourceAutoBeanFactory drFactory;
     private final Builder builder;
@@ -131,11 +132,11 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
-            final DiskResourceServiceFacade diskResourceService, final IplantDisplayStrings display,
-            final DiskResourceAutoBeanFactory factory, final DataSearchAutoBeanFactory dataSearchFactory) {
+            final IplantDisplayStrings display, final DiskResourceAutoBeanFactory factory,
+            final DataSearchAutoBeanFactory dataSearchFactory) {
         this.view = view;
         this.proxy = proxy;
-        this.diskResourceService = diskResourceService;
+        this.diskResourceService = ServicesInjector.INSTANCE.getDiskResourceServiceFacade();
         this.DISPLAY = display;
         this.drFactory = factory;
         this.dataSearchFactory = dataSearchFactory;

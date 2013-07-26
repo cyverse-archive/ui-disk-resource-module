@@ -4,13 +4,13 @@ import java.util.List;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
+import org.iplantc.core.uicommons.client.gin.ServicesInjector;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.diskresources.RootFolders;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.inject.Inject;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
@@ -20,12 +20,8 @@ import com.sencha.gxt.data.client.loader.RpcProxy;
 public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements DiskResourceView.Proxy {
 
     private DiskResourceView.Presenter presenter;
-    private final DiskResourceServiceFacade drService;
-
-    @Inject
-    public FolderRpcProxy(DiskResourceServiceFacade drService) {
-        this.drService = drService;
-    }
+    private final DiskResourceServiceFacade drService = ServicesInjector.INSTANCE
+            .getDiskResourceServiceFacade();
 
     @Override
     public void load(final Folder parentFolder, final AsyncCallback<List<Folder>> callback) {
