@@ -36,7 +36,7 @@ public class FileSelectorField extends AbstractDiskResourceSelector<File> {
             if (userSettings.isRememberLastPath()) {
                 String id = userSettings.getLastPathId();
                 if (id != null) {
-                    fileSD = FileSelectDialog.selectParentFolderById(id);
+                    fileSD = FileSelectDialog.selectParentFolderById(id,true);
                 } else {
                     fileSD = FileSelectDialog.singleSelect(null);
                 }

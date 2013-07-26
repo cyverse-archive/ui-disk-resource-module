@@ -77,7 +77,7 @@ public class MultiFileSelectorField extends Composite implements IsField<List<Ha
     ColumnModel<DiskResource> cm;
 
     private boolean addDeleteButtonsEnabled = true;
-    
+
     UserSettings userSettings = UserSettings.getInstance();
 
     public MultiFileSelectorField() {
@@ -115,18 +115,15 @@ public class MultiFileSelectorField extends Composite implements IsField<List<Ha
             return;
         }
         // Open a multiselect file selector
-        FileSelectDialog dlg = new FileSelectDialog();
-        dlg.addHideHandler(new FileSelectDialogHideHandler(dlg, listStore));
+        FileSelectDialog dlg = null;
+
         if (userSettings.isRememberLastPath()) {
             String id = userSettings.getLastPathId();
-            if (id != null) {
-                dlg = FileSelectDialog.selectParentFolderById(id);
-            } else {
-                dlg = FileSelectDialog.singleSelect(null);
-            }
+            dlg = FileSelectDialog.selectParentFolderById(id,false);
         } else {
-            dlg = FileSelectDialog.singleSelect(null);
+            dlg = FileSelectDialog.selectParentFolderById(null,false);
         }
+        dlg.addHideHandler(new FileSelectDialogHideHandler(dlg, listStore));
         dlg.show();
     }
 
