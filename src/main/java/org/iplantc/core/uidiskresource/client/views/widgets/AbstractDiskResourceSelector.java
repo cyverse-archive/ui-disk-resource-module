@@ -67,6 +67,8 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         String wrap();
 
         String errorText();
+        
+        String inputWrap();
     }
 
     interface Resources extends ClientBundle {
@@ -106,7 +108,9 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         builder.append(template.render(res.style()));
         setElement(XDOM.create(builder.toSafeHtml()));
 
+        
         input.setReadOnly(true);
+        input.setStyleName(res.style().inputWrap());
         getElement().appendChild(input.getElement());
 
         sinkEvents(Event.ONCHANGE | Event.ONCLICK | Event.MOUSEEVENTS);
@@ -197,6 +201,8 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         });
 
     }
+    
+
 
     public void setInfoTextClassName(String className) {
         infoText.setClassName(className);
