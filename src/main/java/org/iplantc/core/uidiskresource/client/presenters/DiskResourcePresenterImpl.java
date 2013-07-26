@@ -422,7 +422,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void doCreateNewFolder(final Folder parentFolder, final String newFolderName) {
         view.mask(DISPLAY.loadingMask());
         diskResourceService.createFolder(parentFolder, newFolderName, new CreateFolderCallback(
-                parentFolder, view, newFolderName));
+                parentFolder, view));
     }
 
     @Override
