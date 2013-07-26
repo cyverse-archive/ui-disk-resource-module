@@ -4,8 +4,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.events.UserSettingsUpdatedEvent;
 import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceProperties;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FileSelectDialog;
@@ -73,6 +77,8 @@ public class MultiFileSelectorField extends Composite implements IsField<List<Ha
     ColumnModel<DiskResource> cm;
 
     private boolean addDeleteButtonsEnabled = true;
+    
+    UserSettings userSettings = UserSettings.getInstance();
 
     public MultiFileSelectorField() {
         initWidget(BINDER.createAndBindUi(this));
@@ -111,6 +117,16 @@ public class MultiFileSelectorField extends Composite implements IsField<List<Ha
         // Open a multiselect file selector
         FileSelectDialog dlg = new FileSelectDialog();
         dlg.addHideHandler(new FileSelectDialogHideHandler(dlg, listStore));
+        if (userSettings.isRememberLastPath()) {
+            String id = userSettings.getLastPathId();
+            if (id != null) {
+                dlg = FileSelectDialog.selectParentFolderById(id);
+            } else {
+                dlg = FileSelectDialog.singleSelect(null);
+            }
+        } else {
+            dlg = FileSelectDialog.singleSelect(null);
+        }
         dlg.show();
     }
 
@@ -158,6 +174,11 @@ public class MultiFileSelectorField extends Composite implements IsField<List<Ha
                 return;
             }
             store.addAll(diskResources);
+            if (userSettings.isRememberLastPath()) {
+                userSettings.setLastPathId(DiskResourceUtil.parseParent(store.get(0).getId()));
+                UserSettingsUpdatedEvent usue = new UserSettingsUpdatedEvent();
+                EventBus.getInstance().fireEvent(usue);
+            }
             ValueChangeEvent.fire(MultiFileSelectorField.this, Lists.<HasId> newArrayList(store.getAll()));
         }
     }
