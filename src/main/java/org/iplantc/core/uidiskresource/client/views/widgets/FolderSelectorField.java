@@ -1,5 +1,6 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.events.UserSettingsUpdatedEvent;
 import org.iplantc.core.uicommons.client.models.CommonModelUtils;
@@ -16,6 +17,10 @@ import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 public class FolderSelectorField extends AbstractDiskResourceSelector<Folder> {
 
     UserSettings userSettings = UserSettings.getInstance();
+
+    public FolderSelectorField() {
+        setEmptyText(I18N.DISPLAY.selectAFolder());
+    }
 
     @Override
     protected void onBrowseSelected() {

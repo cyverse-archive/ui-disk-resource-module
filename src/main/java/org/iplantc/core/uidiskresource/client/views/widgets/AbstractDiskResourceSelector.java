@@ -385,4 +385,7 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         return errors;
     }
 
+    public void setEmptyText(String emptyText) {
+        input.setEmptyText(emptyText);
+    }
 }

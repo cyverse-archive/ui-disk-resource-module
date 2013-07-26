@@ -2,6 +2,7 @@ package org.iplantc.core.uidiskresource.client.views.widgets;
 
 import java.util.List;
 
+import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.events.UserSettingsUpdatedEvent;
 import org.iplantc.core.uicommons.client.models.HasId;
@@ -19,6 +20,10 @@ import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 public class FileSelectorField extends AbstractDiskResourceSelector<File> {
 
     UserSettings userSettings = UserSettings.getInstance();
+
+    public FileSelectorField() {
+        setEmptyText(I18N.DISPLAY.selectAFile());
+    }
 
     @Override
     protected void onBrowseSelected() {
