@@ -11,10 +11,6 @@ import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.web.bindery.autobean.shared.AutoBeanCodex;
-import com.google.web.bindery.autobean.shared.AutoBeanUtils;
-import com.google.web.bindery.autobean.shared.Splittable;
-import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 import com.sencha.gxt.data.client.loader.RpcProxy;
 
 public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements DiskResourceView.Proxy {
@@ -51,29 +47,23 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
 
             });
         } else {
-            drService.getFolderContents(parentFolder.getId(), false,
-                    new AsyncCallback<String>() {
+            drService.getSubFolders(parentFolder.getId(), new AsyncCallback<List<Folder>>() {
 
-                        @Override
-                        public void onSuccess(String result) {
-                            // Turn json result into a Splittable and wrap the loaded folder
-                            Splittable split = StringQuoter.split(result);
-                            AutoBeanCodex.decodeInto(split,
-                                    AutoBeanUtils.<Folder, Folder> getAutoBean(parentFolder));
+                @Override
+                public void onSuccess(List<Folder> result) {
+                    if (callback != null) {
+                        callback.onSuccess(result);
+                    }
+                }
 
-                            if (callback != null) {
-                                callback.onSuccess(parentFolder.getFolders());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Throwable caught) {
-                            ErrorHandler.post(I18N.ERROR.retrieveFolderInfoFailed(), caught);
-                            if (callback != null) {
-                                callback.onFailure(caught);
-                            }
-                        }
-                    });
+                @Override
+                public void onFailure(Throwable caught) {
+                    ErrorHandler.post(I18N.ERROR.retrieveFolderInfoFailed(), caught);
+                    if (callback != null) {
+                        callback.onFailure(caught);
+                    }
+                }
+            });
         }
     }
 
