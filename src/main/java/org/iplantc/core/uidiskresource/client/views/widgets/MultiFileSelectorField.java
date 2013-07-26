@@ -236,4 +236,8 @@ public class MultiFileSelectorField extends Composite implements IsField<List<Ha
         addDeleteButtonsEnabled = false;
     }
 
+    public void setEmptyText(String emptyText) {
+        gridView.setEmptyText(emptyText);
+    }
+
 }
