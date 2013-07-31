@@ -31,12 +31,12 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 /**
  * An <code>IPlantDialog</code> which wraps the standard <code>DiskResourceView</code> for file
  * selection.
- * 
+ *
  * Users of this class are responsible adding hide handlers to get the selected file. FIXME JDS Needs to
  * support MultiSelect, TakesValue<List<String>>
- * 
+ *
  * @author jstroot
- * 
+ *
  */
 public class FileSelectDialog extends IPlantDialog implements TakesValue<List<File>> {
 
@@ -48,22 +48,18 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<Fi
         return new FileSelectDialog(diskResourcesToSelect, true);
     }
 
-    public FileSelectDialog() {
-        this(null, false);
+    public static FileSelectDialog selectParentFolderById(String folderId, boolean singleSelect) {
+        return new FileSelectDialog(folderId,singleSelect);
     }
 
-    public static FileSelectDialog selectParentFolderById(String folderId) {
-        return new FileSelectDialog(folderId);
-    }
-
-    protected FileSelectDialog(String folderId) {
+    protected FileSelectDialog(String folderId, boolean singleSelect) {
         presenter = DiskResourceInjector.INSTANCE.getDiskResourceViewPresenter();
-        init(true);
+        init(singleSelect);
 
         HasId folderToSelect = null;
         if(folderId!= null) {
             folderToSelect = CommonModelUtils.createHasIdFromString(folderId);
-        } 
+        }
 
         presenter.go(this, folderToSelect, null);
     }

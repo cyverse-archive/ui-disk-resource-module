@@ -1,6 +1,8 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.messages.IplantErrorStrings;
@@ -15,6 +17,7 @@ import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceStatMa
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Display;
@@ -39,6 +42,14 @@ import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.XDOM;
 import com.sencha.gxt.core.client.dom.XElement;
+import com.sencha.gxt.dnd.core.client.DND.Operation;
+import com.sencha.gxt.dnd.core.client.DndDragEnterEvent;
+import com.sencha.gxt.dnd.core.client.DndDragEnterEvent.DndDragEnterHandler;
+import com.sencha.gxt.dnd.core.client.DndDragMoveEvent;
+import com.sencha.gxt.dnd.core.client.DndDragMoveEvent.DndDragMoveHandler;
+import com.sencha.gxt.dnd.core.client.DndDropEvent.DndDropHandler;
+import com.sencha.gxt.dnd.core.client.DropTarget;
+import com.sencha.gxt.dnd.core.client.StatusProxy;
 import com.sencha.gxt.widget.core.client.Component;
 import com.sencha.gxt.widget.core.client.ComponentHelper;
 import com.sencha.gxt.widget.core.client.button.TextButton;
@@ -59,7 +70,8 @@ import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
  * 
  */
 public abstract class AbstractDiskResourceSelector<R extends DiskResource> extends Component implements
- IsField<HasId>, ValueAwareEditor<HasId>, HasValueChangeHandlers<HasId>, HasEditorErrors<HasId> {
+        IsField<HasId>, ValueAwareEditor<HasId>, HasValueChangeHandlers<HasId>, HasEditorErrors<HasId>,
+        DndDragEnterHandler, DndDragMoveHandler, DndDropHandler {
 
     interface FileFolderSelectorStyle extends CssResource {
         String buttonWrap();
@@ -67,6 +79,8 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         String wrap();
 
         String errorText();
+        
+        String inputWrap();
     }
 
     interface Resources extends ClientBundle {
@@ -106,7 +120,9 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         builder.append(template.render(res.style()));
         setElement(XDOM.create(builder.toSafeHtml()));
 
+        
         input.setReadOnly(true);
+        input.setStyleName(res.style().inputWrap());
         getElement().appendChild(input.getElement());
 
         sinkEvents(Event.ONCHANGE | Event.ONCLICK | Event.MOUSEEVENTS);
@@ -130,6 +146,16 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         infoText = DOM.createDiv();
         infoText.getStyle().setDisplay(Display.NONE);
         getElement().appendChild(infoText);
+
+        initDragAndDrop();
+    }
+
+    private void initDragAndDrop() {
+        DropTarget dataDrop = new DropTarget(this);
+        dataDrop.setOperation(Operation.COPY);
+        dataDrop.addDragEnterHandler(this);
+        dataDrop.addDragMoveHandler(this);
+        dataDrop.addDropHandler(this);
     }
 
     @Override
@@ -197,6 +223,8 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         });
 
     }
+    
+
 
     public void setInfoTextClassName(String className) {
         infoText.setClassName(className);
@@ -379,4 +407,43 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         return errors;
     }
 
+    public void setEmptyText(String emptyText) {
+        input.setEmptyText(emptyText);
+    }
+
+    @Override
+    public void onDragEnter(DndDragEnterEvent event) {
+        Set<DiskResource> dropData = getDropData(event.getDragSource().getData());
+
+        if (!validateDropStatus(dropData, event.getStatusProxy())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @Override
+    public void onDragMove(DndDragMoveEvent event) {
+        Set<DiskResource> dropData = getDropData(event.getDragSource().getData());
+
+        if (!validateDropStatus(dropData, event.getStatusProxy())) {
+            event.setCancelled(true);
+        }
+    }
+
+    abstract protected boolean validateDropStatus(Set<DiskResource> dropData, StatusProxy status);
+
+    @SuppressWarnings("unchecked")
+    protected Set<DiskResource> getDropData(Object data) {
+        if (!(data instanceof Collection<?>)) {
+            return null;
+        }
+        Collection<?> dataColl = (Collection<?>)data;
+        if (dataColl.isEmpty() || !(dataColl.iterator().next() instanceof DiskResource)) {
+            return null;
+        }
+
+        Set<DiskResource> dropData = null;
+        dropData = Sets.newHashSet((Collection<DiskResource>)dataColl);
+
+        return dropData;
+    }
 }

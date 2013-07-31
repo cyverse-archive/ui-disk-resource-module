@@ -188,6 +188,9 @@ public class DiskResourceViewImpl implements DiskResourceView {
 			@Override
 			public void onLoading(TreeNode<Folder> node) {
 				onIconStyleChange(node, resources.loading());
+
+                // Does nothing in GXT 3.0.1, but call it in case of any future version updates.
+                super.onLoading(node);
 			}
 		});
 
