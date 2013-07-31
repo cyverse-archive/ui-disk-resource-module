@@ -53,6 +53,8 @@ import com.sencha.gxt.dnd.core.client.StatusProxy;
 import com.sencha.gxt.widget.core.client.Component;
 import com.sencha.gxt.widget.core.client.ComponentHelper;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.event.InvalidEvent.HasInvalidHandlers;
+import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.IsField;
@@ -71,7 +73,7 @@ import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
  */
 public abstract class AbstractDiskResourceSelector<R extends DiskResource> extends Component implements
         IsField<HasId>, ValueAwareEditor<HasId>, HasValueChangeHandlers<HasId>, HasEditorErrors<HasId>,
-        DndDragEnterHandler, DndDragMoveHandler, DndDropHandler {
+        DndDragEnterHandler, DndDragMoveHandler, DndDropHandler, HasInvalidHandlers {
 
     interface FileFolderSelectorStyle extends CssResource {
         String buttonWrap();
@@ -100,8 +102,7 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     private final FileUploadTemplate template = GWT.create(FileUploadTemplate.class);
     private final int buttonOffset = 3;
     private EditorDelegate<HasId> editorDelegate;
-    private List<EditorError> errors = Lists.newArrayList();
-    private HasId selectedResource;
+    private final List<EditorError> errors = Lists.newArrayList();
     private final Element infoText;
     private boolean browseButtonEnabled = true;
 
@@ -112,6 +113,7 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
 
     private DefaultEditorError permissionEditorError = null;
     private DefaultEditorError existsEditorError = null;
+    private String infoTextString;
 
     protected AbstractDiskResourceSelector() {
         res.style().ensureInjected();
@@ -164,7 +166,6 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     }
 
     protected void setSelectedResource(R selectedResource) {
-        this.selectedResource = selectedResource;
         setValue(selectedResource);
     }
 
@@ -197,17 +198,21 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
                     setInfoErrorText("");
                     return;
                 }
+                ValueChangeEvent.fire(AbstractDiskResourceSelector.this, value);
                 DiskResource diskResource = result.get(diskResourceId);
                 if (diskResource == null) {
                     permissionEditorError = new DefaultEditorError(input, I18N.DISPLAY.permissionSelectErrorMessage(), diskResourceId);
+                    errors.add(permissionEditorError);
+                    input.showErrors(Lists.<EditorError> newArrayList(permissionEditorError));
                     setInfoErrorText(I18N.DISPLAY.permissionSelectErrorMessage());
                 } else if (!(diskResource.getPermissions().isWritable() || diskResource.getPermissions().isOwner())) {
                     permissionEditorError = new DefaultEditorError(input, I18N.DISPLAY.permissionSelectErrorMessage(), diskResourceId);
+                    errors.add(permissionEditorError);
+                    input.showErrors(Lists.<EditorError> newArrayList(permissionEditorError));
                     setInfoErrorText(I18N.DISPLAY.permissionSelectErrorMessage());
-                } else {
+                } else if ((getInfoText() != null) && getInfoText().equalsIgnoreCase(I18N.DISPLAY.permissionSelectErrorMessage())) {
                     setInfoErrorText("");
                 }
-                ValueChangeEvent.fire(AbstractDiskResourceSelector.this, value);
             }
 
             @Override
@@ -216,6 +221,7 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
                 SimpleServiceError serviceError = AutoBeanCodex.decode(drServiceFacade.getDiskResourceFactory(), SimpleServiceError.class, caught.getMessage()).as();
                 if (serviceError.getErrorCode().equals(ServiceErrorCode.ERR_DOES_NOT_EXIST.toString())) {
                     existsEditorError = new DefaultEditorError(input, errorStrings.diskResourceDoesNotExist(diskResourceId), diskResourceId);
+                    errors.add(existsEditorError);
                     setInfoErrorText(errorStrings.diskResourceDoesNotExist(diskResourceId));
                     ValueChangeEvent.fire(AbstractDiskResourceSelector.this, value);
                 }
@@ -230,11 +236,16 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         infoText.setClassName(className);
     }
 
+    public String getInfoText() {
+        return infoTextString;
+    }
+
     /**
      * 
      * @param text the text to be shown in the info text element. Passing in null will hide the element.
      */
     public void setInfoText(String text) {
+        this.infoTextString = text;
         if (text == null) {
             infoText.getStyle().setDisplay(Display.NONE);
             infoText.setInnerHTML(""); //$NON-NLS-1$
@@ -328,7 +339,9 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
 
     @Override
     public boolean validate(boolean preventMark) {
-        errors = Lists.newArrayList();
+        errors.clear();
+        // Clear errors
+        input.showErrors(errors);
         for (Validator<String> v : input.getValidators()) {
             List<EditorError> errs = v.validate(input, input.getCurrentValue());
             if (errs != null) {
@@ -351,14 +364,12 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
 
     @Override
     public void showErrors(List<EditorError> errors) {
-        input.showErrors(errors);
     }
 
     @Override
     public void flush() {
         // Validate on flush.
         validate(false);
-        input.flush();
         if (editorDelegate == null) {
             return;
         }
@@ -445,5 +456,10 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         dropData = Sets.newHashSet((Collection<DiskResource>)dataColl);
 
         return dropData;
+    }
+
+    @Override
+    public HandlerRegistration addInvalidHandler(InvalidHandler handler) {
+        return input.addInvalidHandler(handler);
     }
 }
