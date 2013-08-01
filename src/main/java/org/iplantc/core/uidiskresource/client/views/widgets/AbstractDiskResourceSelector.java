@@ -150,6 +150,17 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         initDragAndDrop();
     }
 
+    
+    /**
+     * set id to browse button
+     * 
+     * @param id id to be set for browse button
+     */
+    public void setBrowseButtonId(String id) {
+        button.setId(id);
+    }
+    
+    
     private void initDragAndDrop() {
         DropTarget dataDrop = new DropTarget(this);
         dataDrop.setOperation(Operation.COPY);
