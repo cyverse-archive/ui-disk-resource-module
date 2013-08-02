@@ -73,7 +73,7 @@ import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
  */
 public abstract class AbstractDiskResourceSelector<R extends DiskResource> extends Component implements
         IsField<HasId>, ValueAwareEditor<HasId>, HasValueChangeHandlers<HasId>, HasEditorErrors<HasId>,
-        DndDragEnterHandler, DndDragMoveHandler, DndDropHandler, HasInvalidHandlers {
+        DndDragEnterHandler, DndDragMoveHandler, DndDropHandler, HasInvalidHandlers, DiskResourceSelector {
 
     interface FileFolderSelectorStyle extends CssResource {
         String buttonWrap();
@@ -101,7 +101,6 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     private final Resources res = GWT.create(Resources.class);
     private final FileUploadTemplate template = GWT.create(FileUploadTemplate.class);
     private final int buttonOffset = 3;
-    private EditorDelegate<HasId> editorDelegate;
     private final List<EditorError> errors = Lists.newArrayList();
     private final Element infoText;
     private boolean browseButtonEnabled = true;
@@ -242,7 +241,6 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     }
     
 
-
     public void setInfoTextClassName(String className) {
         infoText.setClassName(className);
     }
@@ -374,26 +372,19 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     }
 
     @Override
-    public void showErrors(List<EditorError> errors) {
-    }
-
-    @Override
     public void flush() {
         // Validate on flush.
         validate(false);
-        if (editorDelegate == null) {
-            return;
-        }
     }
 
     @Override
-    public void onPropertyChange(String... paths) {
-    }
+    public void showErrors(List<EditorError> errors) {/* Do Nothing */}
 
     @Override
-    public void setDelegate(EditorDelegate<HasId> delegate) {
-        editorDelegate = delegate;
-    }
+    public void onPropertyChange(String... paths) {/* Do Nothing */}
+
+    @Override
+    public void setDelegate(EditorDelegate<HasId> delegate) {/* Do Nothing */}
 
     public void disableBrowseButton() {
         browseButtonEnabled = false;
@@ -421,10 +412,12 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         this.validatePermissions = validatePermissions;
     }
 
+    @Override
     public void setRequired(boolean required) {
         input.setAllowBlank(!required);
     }
 
+    @Override
     public List<EditorError> getErrors() {
         return errors;
     }
