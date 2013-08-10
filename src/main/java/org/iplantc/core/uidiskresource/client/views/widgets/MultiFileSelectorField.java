@@ -18,6 +18,7 @@ import org.iplantc.core.uicommons.client.models.HasPaths;
 import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceStatMap;
+import org.iplantc.core.uicommons.client.models.diskresources.File;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
@@ -276,12 +277,12 @@ public class MultiFileSelectorField extends Composite implements IsField<List<Ha
 
         @Override
         public void onHide(HideEvent event) {
-            Set<DiskResource> diskResources = dlg.getDiskResources();
-            if ((diskResources == null) || diskResources.isEmpty()) {
+            Set<File> files = DiskResourceUtil.filterFiles(dlg.getDiskResources());
+            if (files.isEmpty()) {
                 return;
             }
-            store.addAll(diskResources);
-            if (userSettings.isRememberLastPath()) {
+            store.addAll(files);
+            if (userSettings.isRememberLastPath() && store.size() > 0) {
                 userSettings.setLastPathId(DiskResourceUtil.parseParent(store.get(0).getId()));
                 UserSettingsUpdatedEvent usue = new UserSettingsUpdatedEvent();
                 EventBus.getInstance().fireEvent(usue);
@@ -390,7 +391,7 @@ public class MultiFileSelectorField extends Composite implements IsField<List<Ha
 
         if (validateDropStatus(dropData, event.getStatusProxy())) {
             for (DiskResource data : dropData) {
-                if (listStore.findModel(data) == null) {
+                if ((data instanceof File) && listStore.findModel(data) == null) {
                     listStore.add(data);
                 }
             }
