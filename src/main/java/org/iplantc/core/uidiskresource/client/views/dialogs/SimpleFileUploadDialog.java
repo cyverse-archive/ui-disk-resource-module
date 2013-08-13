@@ -12,7 +12,7 @@ import org.iplantc.core.uicommons.client.models.HasPaths;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
-import org.iplantc.core.uicommons.client.validators.NameValidator3;
+import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uicommons.client.widgets.IPCFileUploadField;
 import org.iplantc.core.uidiskresource.client.events.FileUploadedEvent;
@@ -128,7 +128,7 @@ public class SimpleFileUploadDialog extends IPlantDialog {
     
     private void addValidators() {
         for (IPCFileUploadField f : fufList) {
-            f.addValidator(new NameValidator3());
+            f.addValidator(new DiskResourceNameValidator());
         }
     }
 
