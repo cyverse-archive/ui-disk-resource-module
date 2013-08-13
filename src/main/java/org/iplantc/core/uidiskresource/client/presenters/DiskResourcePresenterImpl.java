@@ -27,7 +27,6 @@ import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
-import org.iplantc.core.uicommons.client.widgets.ContextualHelpPopup;
 import org.iplantc.core.uidiskresource.client.dataLink.presenter.DataLinkPresenter;
 import org.iplantc.core.uidiskresource.client.dataLink.view.DataLinkPanel;
 import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
@@ -100,7 +99,6 @@ import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
 import com.sencha.gxt.widget.core.client.box.MessageBox;
-import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -944,17 +942,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         DataLinkPanel.Presenter<DiskResource> dlPresenter = new DataLinkPresenter<DiskResource>(
                 new ArrayList<DiskResource>(getSelectedDiskResources()));
         dlPresenter.go(dlg);
-        final ToolButton btn = dlg.gelHelpToolButton();
-        btn.addSelectHandler(new SelectHandler() {
-
-            @Override
-            public void onSelect(SelectEvent event) {
-                ContextualHelpPopup popup = new ContextualHelpPopup();
-                popup.add(new HTML(I18N.HELP.manageDataLinksHelp()));
-                popup.showAt(btn.getAbsoluteLeft(), btn.getAbsoluteTop() + 15);
-
-            }
-        });
+        dlg.addHelp(new HTML(I18N.HELP.manageDataLinksHelp()));
         dlg.show();
     }
 

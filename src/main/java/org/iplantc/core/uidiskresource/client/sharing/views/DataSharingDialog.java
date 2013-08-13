@@ -11,7 +11,6 @@ import java.util.Set;
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
-import org.iplantc.core.uicommons.client.widgets.ContextualHelpPopup;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.sharing.presenter.DataSharingPresenter;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingView.Presenter;
@@ -20,7 +19,6 @@ import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
 import com.google.gwt.user.client.ui.HTML;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
-import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
@@ -56,17 +54,7 @@ public class DataSharingDialog extends IPlantDialog {
     }
 
     private void addHelp() {
-        final ToolButton toolBtn = gelHelpToolButton();
-        toolBtn.addSelectHandler(new SelectHandler() {
-            
-            @Override
-            public void onSelect(SelectEvent event) {
-                ContextualHelpPopup popup = new ContextualHelpPopup();
-                popup.add(new HTML(I18N.HELP.sharePermissionsHelp()));
-                popup.showAt(toolBtn.getAbsoluteLeft(), toolBtn.getAbsoluteTop() + 15);
-                
-            }
-        });
+        addHelp(new HTML(I18N.HELP.sharePermissionsHelp()));
     }
 
     private ColumnModel<DiskResource> buildDiskResourceColumnModel() {

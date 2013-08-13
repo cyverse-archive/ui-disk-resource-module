@@ -55,7 +55,7 @@
         <con:SimpleContainer>
             <con:HorizontalLayoutContainer>
                 <con:child layoutData="{centerLayoutData}">
-                    <form:TextArea ui:field="url0" />
+                    <form:TextArea debugId="idUrlImport0" ui:field="url0" />
                 </con:child>
                 <con:child layoutData="{sideLayoutData}">
                     <gxt:Status ui:field="formStatus0" />
@@ -65,7 +65,7 @@
         <con:SimpleContainer>
             <con:HorizontalLayoutContainer>
                 <con:child layoutData="{centerLayoutData}">
-                    <form:TextArea ui:field="url1" />
+                    <form:TextArea debugId="idUrlImport1" ui:field="url1" />
                 </con:child>
                 <con:child layoutData="{sideLayoutData}">
                     <gxt:Status ui:field="formStatus1" />
@@ -75,7 +75,7 @@
         <con:SimpleContainer>
             <con:HorizontalLayoutContainer>
                 <con:child layoutData="{centerLayoutData}">
-                    <form:TextArea ui:field="url2" />
+                    <form:TextArea debugId="idUrlImport2" ui:field="url2" />
                 </con:child>
                 <con:child layoutData="{sideLayoutData}">
                     <gxt:Status ui:field="formStatus2" />
@@ -85,7 +85,7 @@
         <con:SimpleContainer>
             <con:HorizontalLayoutContainer>
                 <con:child layoutData="{centerLayoutData}">
-                    <form:TextArea ui:field="url3" />
+                    <form:TextArea debugId="idUrlImport3" ui:field="url3" />
                 </con:child>
                 <con:child layoutData="{sideLayoutData}">
                     <gxt:Status ui:field="formStatus3" />
@@ -95,7 +95,7 @@
         <con:SimpleContainer>
             <con:HorizontalLayoutContainer>
                 <con:child layoutData="{centerLayoutData}">
-                    <form:TextArea ui:field="url4" />
+                    <form:TextArea debugId="idUrlImport4" ui:field="url4" />
                 </con:child>
                 <con:child layoutData="{sideLayoutData}">
                     <gxt:Status ui:field="formStatus4" />
