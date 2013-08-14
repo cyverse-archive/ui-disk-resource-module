@@ -873,17 +873,20 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void emptyTrash() {
+        view.mask(I18N.DISPLAY.loadingMask());
         diskResourceService.emptyTrash(UserInfo.getInstance().getUsername(),
                 new AsyncCallback<String>() {
 
                     @Override
                     public void onSuccess(String result) {
                         refreshFolder(view.getFolderById(UserInfo.getInstance().getTrashPath()));
+                        view.unmask();
                     }
 
                     @Override
                     public void onFailure(Throwable caught) {
                         ErrorHandler.post(caught);
+                        view.unmask();
                     }
                 });
 

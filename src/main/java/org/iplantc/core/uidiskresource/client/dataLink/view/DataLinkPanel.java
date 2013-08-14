@@ -159,6 +159,14 @@ public class DataLinkPanel<M extends DiskResource> implements IsWidget {
     public Widget asWidget() {
         return widget;
     }
+    
+    public void mask() {
+        tree.mask(I18N.DISPLAY.loadingMask());
+    }
+    
+    public void unmask() {
+        tree.unmask();
+    }
 
 
     /**

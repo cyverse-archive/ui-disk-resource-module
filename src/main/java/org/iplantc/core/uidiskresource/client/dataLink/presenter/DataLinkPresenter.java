@@ -77,6 +77,7 @@ public class DataLinkPresenter<M extends DiskResource> implements DataLinkPanel.
         for (DataLink dl : dataLinks) {
             dataLinkIds.add(dl.getId());
         }
+        view.mask();
         drService.deleteDataLinks(dataLinkIds, new DeleteDataLinksCallback(view.getTree()));
     }
 
@@ -89,6 +90,7 @@ public class DataLinkPresenter<M extends DiskResource> implements DataLinkPanel.
             }
         }
 
+        view.mask();
         uuidService.getUUIDs(drResourceIds.size(), new CreateDataLinkUuidsCallback(drResourceIds));
         
     }
@@ -113,7 +115,8 @@ public class DataLinkPresenter<M extends DiskResource> implements DataLinkPanel.
 
         @Override
         public void onFailure(Throwable caught) {
-            ErrorHandler.post(caught);
+            ErrorHandler.post(I18N.ERROR.createDataLinksError(),caught);
+            view.unmask();
         }
 
     }
@@ -146,11 +149,13 @@ public class DataLinkPresenter<M extends DiskResource> implements DataLinkPanel.
                     tree.setChecked((M)dl, CheckState.CHECKED);
                 }
             }
+            view.unmask();
         }
 
         @Override
         public void onFailure(Throwable caught) {
             ErrorHandler.post(I18N.ERROR.createDataLinksError(), caught);
+            view.unmask();
         }
     }
     
@@ -173,12 +178,15 @@ public class DataLinkPresenter<M extends DiskResource> implements DataLinkPanel.
                     tree.getStore().remove(m);
                 }
             }
+            
+            view.unmask();
     
         }
     
         @Override
         public void onFailure(Throwable caught) {
             ErrorHandler.post(I18N.ERROR.deleteDataLinksError(), caught);
+            view.unmask();
         }
     }
     
