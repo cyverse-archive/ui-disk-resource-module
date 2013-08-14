@@ -971,8 +971,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
                 final Set<DiskResource> selectedResources = getSelectedDiskResources();
                 if (DiskResourceUtil.isMovable(targetFolder, selectedResources)) {
                     if (canDragDataToTargetFolder(targetFolder, selectedResources)) {
-                        diskResourceService.moveDiskResources(selectedResources, targetFolder,
-                                new DiskResourceMoveCallback(view, targetFolder, selectedResources));
+                        doMoveDiskResources(targetFolder, selectedResources);
                     } else {
                         IplantAnnouncer.getInstance().schedule(
                                 new ErrorAnnouncementConfig(I18N.ERROR.diskResourceIncompleteMove()));

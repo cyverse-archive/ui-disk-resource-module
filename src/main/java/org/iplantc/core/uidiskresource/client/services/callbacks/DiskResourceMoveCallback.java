@@ -7,6 +7,7 @@ import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uicommons.client.models.services.DiskResourceMove;
 import org.iplantc.core.uicommons.client.views.IsMaskable;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesMovedEvent;
 import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceErrorAutoBeanFactory;
@@ -16,7 +17,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
-public class DiskResourceMoveCallback extends DiskResourceServiceCallback<String> {
+public class DiskResourceMoveCallback extends DiskResourceServiceCallback<DiskResourceMove> {
 
     private final Set<DiskResource> resourcesToMove;
     private final Folder destFolder;
@@ -28,7 +29,7 @@ public class DiskResourceMoveCallback extends DiskResourceServiceCallback<String
     }
 
     @Override
-    public void onSuccess(String result){
+    public void onSuccess(DiskResourceMove result) {
         unmaskCaller();
         /*
          * JDS Result should have a "sources" key
