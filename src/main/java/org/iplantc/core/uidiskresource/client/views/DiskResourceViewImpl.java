@@ -13,7 +13,6 @@ import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceInfo;
-import org.iplantc.core.uicommons.client.models.diskresources.File;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.diskresources.Permissions;
 import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
@@ -531,11 +530,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
         if (listStoreModel != null) {
             listStore.remove(listStoreModel);
-            if (listStoreModel instanceof File) {
-                listStore.add(newDr);
-            } else {
-                listStore.add(newDr);
-            }
+            listStore.add(newDr);
         }
 
     }
