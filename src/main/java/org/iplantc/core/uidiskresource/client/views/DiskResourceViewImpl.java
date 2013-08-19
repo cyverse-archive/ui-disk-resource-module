@@ -473,7 +473,26 @@ public class DiskResourceViewImpl implements DiskResourceView {
             return;
         }
 
-        treeStore.removeChildren(folder);
+        // KLUDGE TreeStore#removeChildren doesn't actually remove the children from their parent's
+        // TreeModel wrapper, so remove the parent as well, then re-add it without children.
+        Folder parent = null;
+        int index = treeStore.getRootItems().indexOf(folder);
+        if (index < 0) {
+            parent = treeStore.getParent(folder);
+
+            if (parent != null) {
+                index = treeStore.indexOf(folder);
+            }
+        }
+
+        treeStore.remove(folder);
+        folder.setFolders(null);
+
+        if (parent == null) {
+            treeStore.insert(index, folder);
+        } else {
+            treeStore.insert(parent, index, folder);
+        }
     }
 
     @Override
