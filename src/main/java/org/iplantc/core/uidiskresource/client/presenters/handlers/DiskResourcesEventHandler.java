@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.events.diskresources.DiskResourceRefreshEvent;
+import org.iplantc.core.uicommons.client.events.diskresources.DiskResourceRefreshEvent.DiskResourceRefreshEventHandler;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.File;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
@@ -22,7 +24,8 @@ import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
 public final class DiskResourcesEventHandler implements DiskResourcesDeletedEventHandler,
         DiskResourceSelectedEventHandler, DiskResourcesMovedEventHandler,
-        DiskResourceRenamedEventHandler, FolderCreatedEventHandler, FileUploadedEventHandler {
+        DiskResourceRenamedEventHandler, FolderCreatedEventHandler, FileUploadedEventHandler,
+        DiskResourceRefreshEventHandler {
     private final DiskResourceView.Presenter presenter;
     private final DiskResourceView view;
 
@@ -32,8 +35,13 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
     }
 
     @Override
+    public void onRefresh(DiskResourceRefreshEvent event) {
+        presenter.refreshFolder(event.getCurrentFolderId(), event.getResources());
+    }
+
+    @Override
     public void onDiskResourcesDeleted(Collection<DiskResource> resources, Folder parentFolder) {
-        presenter.refreshFolder(parentFolder);
+        presenter.doRefresh(parentFolder);
     }
 
     @Override
@@ -76,12 +84,12 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
         } else if (DiskResourceUtil.isDescendantOfFolder(destinationFolder, parentFolder)) {
             // The parent is under the destination, so we only need to view the destination folder's
             // contents and refresh its children.
-            presenter.refreshFolder(destinationFolder);
+            presenter.doRefresh(destinationFolder);
         } else {
             // Refresh the parent folder since it has lost a child.
-            presenter.refreshFolder(parentFolder);
+            presenter.doRefresh(parentFolder);
             // Refresh the destination folder since it has gained a child.
-            presenter.refreshFolder(destinationFolder);
+            presenter.doRefresh(destinationFolder);
         }
 
         // View the destination folder's contents.
@@ -97,9 +105,9 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
             } else {
                 // Refresh the selected folder since it has lost a child. This will also reload the
                 // selected folder's contents in the grid.
-                presenter.refreshFolder(selectedFolder);
+                presenter.doRefresh(selectedFolder);
                 // Refresh the destination folder since it has gained a child.
-                presenter.refreshFolder(destinationFolder);
+                presenter.doRefresh(destinationFolder);
                 return;
             }
         }

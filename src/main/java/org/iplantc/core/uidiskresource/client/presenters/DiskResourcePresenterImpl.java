@@ -14,6 +14,7 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.events.diskresources.DiskResourceRefreshEvent;
 import org.iplantc.core.uicommons.client.gin.ServicesInjector;
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
@@ -217,6 +218,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
         EventBus eventBus = EventBus.getInstance();
         DiskResourcesEventHandler diskResourcesEventHandler = new DiskResourcesEventHandler(this);
+        eventBus.addHandler(DiskResourceRefreshEvent.TYPE, diskResourcesEventHandler);
         eventBus.addHandler(FileUploadedEvent.TYPE, diskResourcesEventHandler);
         eventBus.addHandler(DiskResourcesDeletedEvent.TYPE, diskResourcesEventHandler);
         eventBus.addHandler(FolderCreatedEvent.TYPE, diskResourcesEventHandler);
@@ -424,22 +426,24 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     }
 
     @Override
-    public void doRefresh() {
-        Folder selectedFolder = getSelectedFolder();
-        view.refreshFolder(selectedFolder);
-        setSelectedFolderById(selectedFolder);
+    public void doRefresh(Folder folder) {
+        String folderId = folder.getId();
+        ArrayList<DiskResource> selectedResources = Lists.newArrayList(getSelectedDiskResources());
+        EventBus.getInstance().fireEvent(new DiskResourceRefreshEvent(folderId, selectedResources));
     }
 
     @Override
-    public void refreshFolder(Folder folder) {
+    public void refreshFolder(String folderId, List<DiskResource> selectedResources) {
+        Folder folder = view.getFolderById(folderId);
         if (folder == null) {
             return;
         }
 
-        if (getSelectedFolder() == folder) {
-            doRefresh();
-        } else {
-            view.refreshFolder(folder);
+        Folder selectedFolder = getSelectedFolder();
+        view.refreshFolder(folder);
+
+        if (selectedFolder == folder) {
+            setSelectedFolderById(selectedFolder);
         }
     }
 
@@ -865,7 +869,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
                     @Override
                     public void onSuccess(String result) {
-                        refreshFolder(view.getFolderById(UserInfo.getInstance().getTrashPath()));
+                        doRefresh(view.getFolderById(UserInfo.getInstance().getTrashPath()));
                         view.unmask();
                     }
 
