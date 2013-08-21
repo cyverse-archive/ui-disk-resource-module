@@ -15,6 +15,7 @@ import org.iplantc.core.uicommons.client.models.HasPaths;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceStatMap;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
+import org.iplantc.core.uicommons.client.widgets.IPlantSideErrorHandler;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -38,6 +39,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.XDOM;
@@ -74,6 +76,20 @@ import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 public abstract class AbstractDiskResourceSelector<R extends DiskResource> extends Component implements
         IsField<HasId>, ValueAwareEditor<HasId>, HasValueChangeHandlers<HasId>, HasEditorErrors<HasId>,
         DndDragEnterHandler, DndDragMoveHandler, DndDropHandler, HasInvalidHandlers, DiskResourceSelector {
+
+    private final class DrSideErrorHandler extends IPlantSideErrorHandler {
+        private DrSideErrorHandler(Widget target) {
+            super(target);
+        }
+
+        @Override
+        public void clearInvalid() {
+            if (isShowing()) {
+                input.setWidth(input.getOffsetWidth() + 16);
+            }
+            super.clearInvalid();
+        }
+    }
 
     interface FileFolderSelectorStyle extends CssResource {
         String buttonWrap();
@@ -113,6 +129,7 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     private DefaultEditorError permissionEditorError = null;
     private DefaultEditorError existsEditorError = null;
     private String infoTextString;
+    private IPlantSideErrorHandler errorHandler;
 
     protected AbstractDiskResourceSelector() {
         res.style().ensureInjected();
@@ -121,7 +138,6 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         builder.append(template.render(res.style()));
         setElement(XDOM.create(builder.toSafeHtml()));
 
-        
         input.setReadOnly(true);
         input.setStyleName(res.style().inputWrap());
         getElement().appendChild(input.getElement());
@@ -149,6 +165,10 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         getElement().appendChild(infoText);
 
         initDragAndDrop();
+        
+        errorHandler = new DrSideErrorHandler(input);
+        errorHandler.setAdjustTargetWidth(false);
+        input.setErrorSupport(errorHandler);
     }
 
     
@@ -310,8 +330,12 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
 
     @Override
     protected void onResize(int width, int height) {
+        int offset = button.getOffsetWidth() + buttonOffset;
+        if (errorHandler.isShowing()) {
+            offset += 16;
+        }
         super.onResize(width, height);
-        input.setWidth(width - button.getOffsetWidth() - buttonOffset);
+        input.setWidth(width - offset);
     }
 
     @Override
