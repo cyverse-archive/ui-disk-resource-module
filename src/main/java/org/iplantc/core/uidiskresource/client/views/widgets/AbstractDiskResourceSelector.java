@@ -79,6 +79,12 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         IsField<HasId>, ValueAwareEditor<HasId>, HasValueChangeHandlers<HasId>, HasEditorErrors<HasId>,
         DndDragEnterHandler, DndDragMoveHandler, DndDropHandler, HasInvalidHandlers, DiskResourceSelector {
 
+    /**
+     * KLUDGE: CORE-4671,
+     * 
+     * @author jstroot
+     * 
+     */
     private final class DrSideErrorHandler extends IPlantSideErrorHandler {
         private final Widget container;
         private final Component input;
