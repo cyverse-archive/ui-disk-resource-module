@@ -19,6 +19,8 @@ import org.iplantc.core.uicommons.client.widgets.IPlantSideErrorHandler;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Display;
@@ -78,16 +80,37 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         DndDragEnterHandler, DndDragMoveHandler, DndDropHandler, HasInvalidHandlers, DiskResourceSelector {
 
     private final class DrSideErrorHandler extends IPlantSideErrorHandler {
-        private DrSideErrorHandler(Widget target) {
+        private final Widget container;
+        private final Component input;
+        private final Widget button;
+
+        private DrSideErrorHandler(Component target, Widget container, Widget button) {
             super(target);
+            this.input = target;
+            this.container = container;
+            this.button = button;
         }
 
         @Override
         public void clearInvalid() {
-            if (isShowing()) {
-                input.setWidth(input.getOffsetWidth() + 16);
-            }
             super.clearInvalid();
+            int offset = button.getOffsetWidth() + buttonOffset;
+            input.setWidth(container.getOffsetWidth() - offset);
+        }
+
+        @Override
+        public void markInvalid(List<EditorError> errors) {
+            super.markInvalid(errors);
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+                @Override
+                public void execute() {
+                    if (isShowing()) {
+                        int offset = button.getOffsetWidth() + buttonOffset + 16;
+                        input.setWidth(container.getOffsetWidth() - offset);
+                    }
+                }
+            });
         }
     }
 
@@ -166,7 +189,7 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
 
         initDragAndDrop();
         
-        errorHandler = new DrSideErrorHandler(input);
+        errorHandler = new DrSideErrorHandler(input, this, button);
         errorHandler.setAdjustTargetWidth(false);
         input.setErrorSupport(errorHandler);
     }
@@ -373,8 +396,6 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     @Override
     public boolean validate(boolean preventMark) {
         errors.clear();
-        // Clear errors
-        input.showErrors(errors);
         for (Validator<String> v : input.getValidators()) {
             List<EditorError> errs = v.validate(input, input.getCurrentValue());
             if (errs != null) {
