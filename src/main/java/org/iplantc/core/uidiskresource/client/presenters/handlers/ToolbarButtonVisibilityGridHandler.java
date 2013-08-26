@@ -32,7 +32,7 @@ public class ToolbarButtonVisibilityGridHandler extends
         boolean canRename = oneSelected && owner && !selectionInTrash;
         boolean canShare = !selectionInTrash && DiskResourceUtil.hasOwner(selection);
         boolean canShareDataLink = canShare && DiskResourceUtil.containsFile(selection);
-        boolean canEditMetadata = oneSelected && owner && !selectionInTrash;
+        boolean canEditMetadata = oneSelected && selection.get(0).getPermissions().isWritable() && !selectionInTrash;
         boolean canDelete = owner;
         boolean canEdit = canRename || canDelete || canEditMetadata;
         boolean canMove = owner && !selectionInTrash;
