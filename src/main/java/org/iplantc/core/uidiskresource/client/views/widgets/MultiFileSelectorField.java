@@ -21,6 +21,7 @@ import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceStatMa
 import org.iplantc.core.uicommons.client.models.diskresources.File;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
+import org.iplantc.core.uicommons.client.widgets.IPlantSideErrorHandler;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceProperties;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FileSelectDialog;
@@ -138,7 +139,7 @@ public class MultiFileSelectorField extends Composite implements IsField<List<Ha
 
         drServiceFacade = ServicesInjector.INSTANCE.getDiskResourceServiceFacade();
         initDragAndDrop();
-        this.errorSupport = new SideErrorHandler(this);
+        this.errorSupport = new IPlantSideErrorHandler(this);
     }
 
     private void initDragAndDrop() {

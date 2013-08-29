@@ -15,9 +15,12 @@ import org.iplantc.core.uicommons.client.models.HasPaths;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceStatMap;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
+import org.iplantc.core.uicommons.client.widgets.IPlantSideErrorHandler;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Display;
@@ -38,6 +41,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.XDOM;
@@ -74,6 +78,47 @@ import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 public abstract class AbstractDiskResourceSelector<R extends DiskResource> extends Component implements
         IsField<HasId>, ValueAwareEditor<HasId>, HasValueChangeHandlers<HasId>, HasEditorErrors<HasId>,
         DndDragEnterHandler, DndDragMoveHandler, DndDropHandler, HasInvalidHandlers, DiskResourceSelector {
+
+    /**
+     * KLUDGE: CORE-4671,
+     * 
+     * @author jstroot
+     * 
+     */
+    private final class DrSideErrorHandler extends IPlantSideErrorHandler {
+        private final Widget container;
+        private final Component input;
+        private final Widget button;
+
+        private DrSideErrorHandler(Component target, Widget container, Widget button) {
+            super(target);
+            this.input = target;
+            this.container = container;
+            this.button = button;
+        }
+
+        @Override
+        public void clearInvalid() {
+            super.clearInvalid();
+            int offset = button.getOffsetWidth() + buttonOffset;
+            input.setWidth(container.getOffsetWidth() - offset);
+        }
+
+        @Override
+        public void markInvalid(List<EditorError> errors) {
+            super.markInvalid(errors);
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+                @Override
+                public void execute() {
+                    if (isShowing()) {
+                        int offset = button.getOffsetWidth() + buttonOffset + 16;
+                        input.setWidth(container.getOffsetWidth() - offset);
+                    }
+                }
+            });
+        }
+    }
 
     interface FileFolderSelectorStyle extends CssResource {
         String buttonWrap();
@@ -113,6 +158,7 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     private DefaultEditorError permissionEditorError = null;
     private DefaultEditorError existsEditorError = null;
     private String infoTextString;
+    private IPlantSideErrorHandler errorHandler;
 
     protected AbstractDiskResourceSelector() {
         res.style().ensureInjected();
@@ -121,7 +167,6 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         builder.append(template.render(res.style()));
         setElement(XDOM.create(builder.toSafeHtml()));
 
-        
         input.setReadOnly(true);
         input.setStyleName(res.style().inputWrap());
         getElement().appendChild(input.getElement());
@@ -149,6 +194,10 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         getElement().appendChild(infoText);
 
         initDragAndDrop();
+        
+        errorHandler = new DrSideErrorHandler(input, this, button);
+        errorHandler.setAdjustTargetWidth(false);
+        input.setErrorSupport(errorHandler);
     }
 
     
@@ -310,8 +359,12 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
 
     @Override
     protected void onResize(int width, int height) {
+        int offset = button.getOffsetWidth() + buttonOffset;
+        if (errorHandler.isShowing()) {
+            offset += 16;
+        }
         super.onResize(width, height);
-        input.setWidth(width - button.getOffsetWidth() - buttonOffset);
+        input.setWidth(width - offset);
     }
 
     @Override
@@ -349,8 +402,6 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     @Override
     public boolean validate(boolean preventMark) {
         errors.clear();
-        // Clear errors
-        input.showErrors(errors);
         for (Validator<String> v : input.getValidators()) {
             List<EditorError> errs = v.validate(input, input.getCurrentValue());
             if (errs != null) {

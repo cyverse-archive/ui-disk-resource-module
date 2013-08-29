@@ -264,7 +264,8 @@ public class DiskResourcePresenterTest {
                 will(returnValue(true));
                 allowing(folder).getPermissions();
                 will(returnValue(permissions));
-
+                allowing(permissions).isWritable();
+                will(returnValue(true));
                 allowing(folder).getId();
                 will(returnValue(""));
 
@@ -313,6 +314,8 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setMetaDatMenuItemEnabled(with(false));
 
                 allowing(permissions).isOwner();
+                will(returnValue(false));
+                allowing(permissions).isWritable();
                 will(returnValue(false));
                 allowing(folder).getPermissions();
                 will(returnValue(permissions));
@@ -363,6 +366,8 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setMetaDatMenuItemEnabled(with(true));
 
                 allowing(permissions).isOwner();
+                will(returnValue(true));
+                allowing(permissions).isWritable();
                 will(returnValue(true));
                 allowing(folder).getPermissions();
                 will(returnValue(permissions));
@@ -419,6 +424,8 @@ public class DiskResourcePresenterTest {
 
                 allowing(permissions).isOwner();
                 will(returnValue(false));
+                allowing(permissions).isWritable();
+                will(returnValue(false));
                 allowing(folder).getPermissions();
                 will(returnValue(permissions));
 
@@ -457,6 +464,8 @@ public class DiskResourcePresenterTest {
                 will(returnValue(permissions));
                 allowing(permissions).isOwner();
                 will(returnValue(true));
+                allowing(permissions).isWritable();
+                will(returnValue(true));
                 oneOf(file).getId();
 
                 oneOf(view).getSelectedFolder();
@@ -494,6 +503,8 @@ public class DiskResourcePresenterTest {
                 will(returnValue(permissions));
                 allowing(permissions).isOwner();
                 will(returnValue(true));
+                allowing(permissions).isWritable();
+                will(returnValue(true));
                 oneOf(file).getId();
                 oneOf(folder).getId();
 
@@ -524,6 +535,8 @@ public class DiskResourcePresenterTest {
                 allowing(folder).getPermissions();
                 will(returnValue(permissions));
                 allowing(permissions).isOwner();
+                will(returnValue(true));
+                allowing(permissions).isWritable();
                 will(returnValue(true));
                 oneOf(folder).getId();
 
@@ -569,6 +582,8 @@ public class DiskResourcePresenterTest {
                 allowing(permissions).isOwner();
                 will(returnValue(true));
                 allowing(permissionsNotOwner).isOwner();
+                will(returnValue(false));
+                allowing(permissions).isWritable();
                 will(returnValue(false));
 
                 allowing(view).getSelectedFolder();
