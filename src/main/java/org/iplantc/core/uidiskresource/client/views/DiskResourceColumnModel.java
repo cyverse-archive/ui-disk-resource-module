@@ -50,13 +50,10 @@ public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
                 50, I18N.DISPLAY.size());
         size.setCell(new DiskResourceSizeCell());
         
-        ColumnConfig<DiskResource, String> path = new ColumnConfig<DiskResource, String>(
-                props.id(),100, I18N.DISPLAY.path());
-    
+        ColumnConfig<DiskResource, String> path = new ColumnConfig<DiskResource, String>(props.id(),
+                100, I18N.DISPLAY.path());
         path.setHidden(true);
-        path.setMenuDisabled(true);
-        path.setSortable(false);
-        
+
         ColumnConfig<DiskResource, Date> created = new ColumnConfig<DiskResource, Date>(
                 props.dateSubmitted(), 120, I18N.DISPLAY.dateSubmitted());
         lastModified.setCell(new DateCell(DateTimeFormat
