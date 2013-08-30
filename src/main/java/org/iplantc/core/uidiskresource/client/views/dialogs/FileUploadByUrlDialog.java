@@ -11,7 +11,7 @@ import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBe
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
-import org.iplantc.core.uicommons.client.validators.UrlValidator;
+import org.iplantc.core.uicommons.client.validators.ImportUrlValidator;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IsHideable;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DuplicateDiskResourceCallback;
@@ -106,7 +106,7 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
     @UiFactory
     TextArea buildUrlField() {
         TextArea urlField = new TextArea();
-        urlField.addValidator(new UrlValidator());
+        urlField.addValidator(new ImportUrlValidator());
         urlField.setAutoValidate(true);
         return urlField;
     }

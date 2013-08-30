@@ -2,6 +2,8 @@ package org.iplantc.core.uidiskresource.client.services.callbacks;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
+import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
+import org.iplantc.core.uicommons.client.info.SuccessAnnouncementConfig;
 import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceErrorAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.services.errors.ErrorUpdateMetadata;
 
@@ -13,6 +15,12 @@ public class DiskResourceMetadataUpdateCallback extends DiskResourceServiceCallb
 
     public DiskResourceMetadataUpdateCallback() {
         super(null);
+    }
+    
+    @Override
+    public void onSuccess(String result) {
+        super.onSuccess(result);
+        IplantAnnouncer.getInstance().schedule(new SuccessAnnouncementConfig(I18N.DISPLAY.metadataSuccess()));
     }
 
     @Override

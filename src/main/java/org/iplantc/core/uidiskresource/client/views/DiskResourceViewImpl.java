@@ -621,7 +621,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
         FieldLabel fl = new FieldLabel();
         fl.setLabelWidth(detailsPanel.getOffsetWidth(true) - 10);
         fl.setLabelSeparator(""); //$NON-NLS-1$
-        fl.setHTML(getDetailAsHtml("&nbsp;&nbsp;" + I18N.DISPLAY.noDetails(), true)); //$NON-NLS-1$
+        fl.setHTML(getDetailAsHtml("&nbsp;&nbsp;" + I18N.DISPLAY.noDetails(), false)); //$NON-NLS-1$
         HorizontalPanel hp = new HorizontalPanel();
         hp.add(fl);
         detailsPanel.add(hp);
