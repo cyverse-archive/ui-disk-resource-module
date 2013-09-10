@@ -607,8 +607,9 @@ public class DiskResourceViewImpl implements DiskResourceView {
         FieldLabel fl = new FieldLabel();
         fl.setLabelWidth(detailsPanel.getOffsetWidth(true) - 10);
         fl.setLabelSeparator(""); //$NON-NLS-1$
-        fl.setHTML(getDetailAsHtml("&nbsp;&nbsp;" + I18N.DISPLAY.noDetails(), false)); //$NON-NLS-1$
+        fl.setHTML(getDetailAsHtml(I18N.DISPLAY.noDetails(), false)); //$NON-NLS-1$
         HorizontalPanel hp = new HorizontalPanel();
+        hp.setSpacing(2);
         hp.add(fl);
         detailsPanel.add(hp);
     }
@@ -617,7 +618,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
         if (bolded) {
             return "<span style='font-size:10px'><b>" + detail + "</b> </span>"; //$NON-NLS-1$ //$NON-NLS-2$
         } else {
-            return "<span style='font-size:10px; padding-left:4px;'>" + detail + "</span>"; //$NON-NLS-1$ //$NON-NLS-2$
+            return "<span style='font-size:10px;'>" + detail + "</span>"; //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
