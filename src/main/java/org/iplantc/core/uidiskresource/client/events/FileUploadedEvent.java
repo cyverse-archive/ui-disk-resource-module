@@ -14,9 +14,13 @@ public class FileUploadedEvent extends GwtEvent<FileUploadedEventHandler> {
 
     public static final GwtEvent.Type<FileUploadedEventHandler> TYPE = new GwtEvent.Type<FileUploadedEventHandler>();
     private final Folder uploadDest;
+    private String filepath;
+    private String response;
 
-    public FileUploadedEvent(Folder uploadDest) {
+    public FileUploadedEvent(Folder uploadDest, String filepath, String response ) {
         this.uploadDest = uploadDest;
+        this.setFilepath(filepath);
+        this.setResponse(response);
     }
 
     @Override
@@ -31,6 +35,34 @@ public class FileUploadedEvent extends GwtEvent<FileUploadedEventHandler> {
 
     public Folder getUploadDestFolderFolder() {
         return uploadDest;
+    }
+
+    /**
+     * @return the filepath
+     */
+    public String getFilepath() {
+        return filepath;
+    }
+
+    /**
+     * @param filepath the filepath to set
+     */
+    public void setFilepath(String filepath) {
+        this.filepath = filepath;
+    }
+
+    /**
+     * @return the response
+     */
+    public String getResponse() {
+        return response;
+    }
+
+    /**
+     * @param response the response to set
+     */
+    public void setResponse(String response) {
+        this.response = response;
     }
 
 }

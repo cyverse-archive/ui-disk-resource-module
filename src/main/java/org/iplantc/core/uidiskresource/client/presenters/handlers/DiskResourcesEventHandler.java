@@ -14,15 +14,13 @@ import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent.D
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent.DiskResourcesDeletedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesMovedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesMovedEvent.DiskResourcesMovedEventHandler;
-import org.iplantc.core.uidiskresource.client.events.FileUploadedEvent;
-import org.iplantc.core.uidiskresource.client.events.FileUploadedEvent.FileUploadedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent.FolderCreatedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.ShowFilePreviewEvent;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
 public final class DiskResourcesEventHandler implements DiskResourcesDeletedEventHandler,
         DiskResourceSelectedEventHandler, DiskResourcesMovedEventHandler,
-        DiskResourceRenamedEventHandler, FolderCreatedEventHandler, FileUploadedEventHandler {
+        DiskResourceRenamedEventHandler, FolderCreatedEventHandler {
     private final DiskResourceView.Presenter presenter;
     private final DiskResourceView view;
 
@@ -116,11 +114,6 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
     @Override
     public void onFolderCreated(Folder parentFolder, Folder newFolder) {
         view.addFolder(parentFolder, newFolder);
-    }
-    
-    @Override
-    public void onFileUploaded(FileUploadedEvent event) {
-        presenter.setSelectedFolderById(event.getUploadDestFolderFolder());
     }
 
 }

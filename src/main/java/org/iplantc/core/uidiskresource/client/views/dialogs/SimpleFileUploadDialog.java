@@ -121,6 +121,7 @@ public class SimpleFileUploadDialog extends IPlantDialog {
         tbList = Lists.newArrayList(btn0, btn1, btn2, btn3, btn4);
         statList = Lists.newArrayList(status0, status1, status2, status3, status4);
         addValidators();
+        setModal(false);
   
         initDestPathLabel();
     }
@@ -235,11 +236,10 @@ public class SimpleFileUploadDialog extends IPlantDialog {
             IplantAnnouncer.getInstance().schedule(
                     new ErrorAnnouncementConfig(I18N.ERROR.fileUploadFailed(field.getValue())));
         } else {
-            IplantAnnouncer.getInstance().schedule(I18N.DISPLAY.fileUploadSuccess(field.getValue()));
+            eventBus.fireEvent(new FileUploadedEvent(uploadDest, field.getValue(), results));
         }
 
         if (submittedForms.size() == 0) {
-            eventBus.fireEvent(new FileUploadedEvent(uploadDest));
             hide();
         }
 

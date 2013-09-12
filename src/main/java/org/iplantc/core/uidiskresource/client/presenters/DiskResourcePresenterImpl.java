@@ -36,7 +36,6 @@ import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesMovedEvent;
-import org.iplantc.core.uidiskresource.client.events.FileUploadedEvent;
 import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestBulkDownloadEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestBulkUploadEvent;
@@ -217,7 +216,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
         EventBus eventBus = EventBus.getInstance();
         DiskResourcesEventHandler diskResourcesEventHandler = new DiskResourcesEventHandler(this);
-        eventBus.addHandler(FileUploadedEvent.TYPE, diskResourcesEventHandler);
         eventBus.addHandler(DiskResourcesDeletedEvent.TYPE, diskResourcesEventHandler);
         eventBus.addHandler(FolderCreatedEvent.TYPE, diskResourcesEventHandler);
         eventBus.addHandler(DiskResourceRenamedEvent.TYPE, diskResourcesEventHandler);
