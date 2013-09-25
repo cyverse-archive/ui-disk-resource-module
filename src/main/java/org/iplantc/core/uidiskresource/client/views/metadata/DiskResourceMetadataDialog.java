@@ -56,6 +56,7 @@ import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.Grid.GridCell;
 import com.sencha.gxt.widget.core.client.grid.GridSelectionModel;
+import com.sencha.gxt.widget.core.client.grid.editing.ClicksToEdit;
 import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
@@ -131,6 +132,7 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
     private void initGridEditing(final Grid<DiskResourceMetadata> grid,
             final ListStore<DiskResourceMetadata> listStore, final TextButton okButton) {
         gridInlineEditing = new GridInlineEditing<DiskResourceMetadata>(grid);
+        gridInlineEditing.setClicksToEdit(ClicksToEdit.TWO);
         ColumnConfig<DiskResourceMetadata, String> column1 = grid.getColumnModel().getColumn(0);
         ColumnConfig<DiskResourceMetadata, String> column2 = grid.getColumnModel().getColumn(1);
 
@@ -166,7 +168,7 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
 
             @Override
             public String getKey(DiskResourceMetadata item) {
-                return item.getAttribute();
+                return item.getAttribute() + "-" + item.getValue() + "-" + item.getUnit();
             }
         });
     }
