@@ -500,7 +500,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             if (DiskResourceUtil.containsTrashedResource(drSet)) {
                 confirmDelete(drSet);
             } else {
-                delete(drSet);
+                delete(drSet, DISPLAY.deleteMsg());
             }
         }
     }
@@ -512,7 +512,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             @Override
             public void onHide(HideEvent event) {
                 if (confirm.getHideButton() == confirm.getButtonById(PredefinedButton.YES.name())) {
-                    delete(drSet);
+                    delete(drSet, DISPLAY.deleteTrash());
                 }
             }
         });
@@ -520,9 +520,9 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         confirm.show();
     }
 
-    private void delete(Set<DiskResource> drSet) {
+    private void delete(Set<DiskResource> drSet, String announce) {
         view.mask(DISPLAY.loadingMask());
-        final AsyncCallback<HasPaths> callback = new DiskResourceDeleteCallback(drSet, getSelectedFolder(), view);
+        final AsyncCallback<HasPaths> callback = new DiskResourceDeleteCallback(drSet, getSelectedFolder(), view, announce);
         diskResourceService.deleteDiskResources(drSet, callback);
     }
 
