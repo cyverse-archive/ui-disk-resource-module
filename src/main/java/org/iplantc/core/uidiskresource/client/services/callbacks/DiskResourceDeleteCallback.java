@@ -22,17 +22,19 @@ public class DiskResourceDeleteCallback extends DiskResourceServiceCallback<HasP
 
     private final Collection<DiskResource> resources;
     private final Folder parentFolder;
+    private String announce;
 
-    public DiskResourceDeleteCallback(Collection<DiskResource> resources, Folder parentFolder, IsMaskable maskedCaller) {
+    public DiskResourceDeleteCallback(Collection<DiskResource> resources, Folder parentFolder, IsMaskable maskedCaller, String announce) {
         super(maskedCaller);
         this.resources = resources;
         this.parentFolder = parentFolder;
+        this.announce = announce;
     }
 
     @Override
     public void onSuccess(final HasPaths unused) {
         unmaskCaller();
-        IplantAnnouncer.getInstance().schedule(I18N.DISPLAY.deleteMsg());
+        IplantAnnouncer.getInstance().schedule(announce);
         EventBus.getInstance().fireEvent(new DiskResourcesDeletedEvent(resources, parentFolder));
     }
 
