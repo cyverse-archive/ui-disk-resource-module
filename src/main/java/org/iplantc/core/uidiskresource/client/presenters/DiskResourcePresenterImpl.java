@@ -29,9 +29,6 @@ import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.dataLink.presenter.DataLinkPresenter;
 import org.iplantc.core.uidiskresource.client.dataLink.view.DataLinkPanel;
-import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
-import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent;
-import org.iplantc.core.uidiskresource.client.events.DataSearchPathSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent;
@@ -43,7 +40,6 @@ import org.iplantc.core.uidiskresource.client.events.RequestImportFromUrlEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestSimpleDownloadEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestSimpleUploadEvent;
 import org.iplantc.core.uidiskresource.client.events.ShowFilePreviewEvent;
-import org.iplantc.core.uidiskresource.client.presenters.handlers.DataSearchHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.DiskResourcesEventHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityGridHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityNavigationHandler;
@@ -118,6 +114,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private final DiskResourceView.Proxy proxy;
     private final TreeLoader<Folder> treeLoader;
     private final HashMap<EventHandler, HandlerRegistration> registeredHandlers = new HashMap<EventHandler, HandlerRegistration>();
+    private final List<HandlerRegistration> dreventHandlers = new ArrayList<HandlerRegistration>();
     private DiskResourceServiceFacade diskResourceService;
     private final IplantDisplayStrings DISPLAY;
     private final DiskResourceAutoBeanFactory drFactory;
@@ -125,6 +122,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private final DataSearchAutoBeanFactory dataSearchFactory;
     private final List<String> searchHistory = Lists.newArrayList();
     private String currentSearchTerm;
+     
 
     @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
@@ -216,16 +214,16 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
         EventBus eventBus = EventBus.getInstance();
         DiskResourcesEventHandler diskResourcesEventHandler = new DiskResourcesEventHandler(this);
-        eventBus.addHandler(DiskResourcesDeletedEvent.TYPE, diskResourcesEventHandler);
-        eventBus.addHandler(FolderCreatedEvent.TYPE, diskResourcesEventHandler);
-        eventBus.addHandler(DiskResourceRenamedEvent.TYPE, diskResourcesEventHandler);
-        eventBus.addHandler(DiskResourceSelectedEvent.TYPE, diskResourcesEventHandler);
-        eventBus.addHandler(DiskResourcesMovedEvent.TYPE, diskResourcesEventHandler);
+        dreventHandlers.add(eventBus.addHandler(DiskResourcesDeletedEvent.TYPE, diskResourcesEventHandler));
+        dreventHandlers.add(eventBus.addHandler(FolderCreatedEvent.TYPE, diskResourcesEventHandler));
+        dreventHandlers.add(eventBus.addHandler(DiskResourceRenamedEvent.TYPE, diskResourcesEventHandler));
+        dreventHandlers.add(eventBus.addHandler(DiskResourceSelectedEvent.TYPE, diskResourcesEventHandler));
+        dreventHandlers.add(eventBus.addHandler(DiskResourcesMovedEvent.TYPE, diskResourcesEventHandler));
 
-        DataSearchHandler dataSearchHandler = new DataSearchHandler(this);
-        eventBus.addHandler(DataSearchNameSelectedEvent.TYPE, dataSearchHandler);
-        eventBus.addHandler(DataSearchPathSelectedEvent.TYPE, dataSearchHandler);
-        eventBus.addHandler(DataSearchHistorySelectedEvent.TYPE, dataSearchHandler);
+//        DataSearchHandler dataSearchHandler = new DataSearchHandler(this);
+//        eventBus.addHandler(DataSearchNameSelectedEvent.TYPE, dataSearchHandler);
+//        eventBus.addHandler(DataSearchPathSelectedEvent.TYPE, dataSearchHandler);
+//        eventBus.addHandler(DataSearchHistorySelectedEvent.TYPE, dataSearchHandler);
     }
 
     private void initToolbar(DiskResourceViewToolbar toolbar) {
@@ -241,6 +239,14 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         toolbar.setRestoreMenuItemEnabled(false);
         toolbar.setEditEnabled(false);
         toolbar.setMoveButtonEnabled(false);
+    }
+    
+    @Override
+    public void cleanUp() {
+        EventBus eventBus = EventBus.getInstance();
+        for (HandlerRegistration hr : dreventHandlers) {
+           eventBus.removeHandler(hr);
+        }
     }
 
     @Override
@@ -995,7 +1001,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
                     IplantAnnouncer.getInstance().schedule(
                             new ErrorAnnouncementConfig(I18N.ERROR.permissionErrorMessage()));
                 }
-
             }
         });
 
