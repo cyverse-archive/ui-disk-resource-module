@@ -52,6 +52,11 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
         }
 
         void go(HasOneWidget container, HasId folderToSelect, List<HasId> diskResourcesToSelect);
+        
+        /**
+         * Method to clean up all the events when it is no longer required.
+         */
+        void cleanUp();
 
         Builder builder();
 

@@ -74,6 +74,17 @@ public class SaveAsDialog extends IPlantDialog {
         }
 
     }
+    
+    public void cleanUp() {
+        presenter.cleanUp();
+    }
+    
+    
+    @Override
+    public void onHide(){
+        cleanUp();
+    }
+    
 
     private final class FileNameValueChangeHandler implements ValueChangeHandler<String> {
         private final HasEnabled okButton;

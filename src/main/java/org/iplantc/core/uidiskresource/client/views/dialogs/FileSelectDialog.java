@@ -78,6 +78,17 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<Fi
         presenter.go(this, folderToSelect, diskResourcesToSelect);
     }
 
+    
+    public void cleanUp() {
+        presenter.cleanUp();
+    }
+    
+    @Override
+    public void onHide(){
+        cleanUp();
+    }
+    
+    
     private void init(boolean singleSelect) {
 
         // Disable Ok button by default.
@@ -140,7 +151,7 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<Fi
 
         }
     }
-
+    
     private final class FileSelectionChangedHandler implements SelectionChangedHandler<DiskResource> {
         private final HasValue<String> textbox;
         private final HasEnabled okButton;
