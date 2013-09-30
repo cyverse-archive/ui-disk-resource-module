@@ -55,6 +55,10 @@ public class FolderSelectDialog extends IPlantDialog implements TakesValue<Folde
         presenter.setSelectedFolderById(folderToSelect);
     }
 
+    public void cleanUp() {
+        presenter.cleanUp();
+    }
+    
     private final class FolderSelectionChangedHandler implements SelectionHandler<Folder> {
         private final HasValue<String> textBox;
         private final HasEnabled okButton;
@@ -82,6 +86,14 @@ public class FolderSelectDialog extends IPlantDialog implements TakesValue<Folde
         }
     }
 
+    
+    @Override
+    public void onHide() {
+        presenter.cleanUp();
+    }
+    
+    
+    
     @Override
     public Folder getValue() {
         return selectedFolder;

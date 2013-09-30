@@ -469,6 +469,7 @@ public class DiskResourcePresenterTest {
                 oneOf(file).getId();
 
                 oneOf(view).getSelectedFolder();
+                oneOf(display).deleteMsg();
                 oneOf(diskResourceService).deleteDiskResources(with(Sets.newHashSet(file)),
                         with(aNonNull(AsyncCallback.class)));
             }
@@ -509,6 +510,7 @@ public class DiskResourcePresenterTest {
                 oneOf(folder).getId();
 
                 oneOf(view).getSelectedFolder();
+                oneOf(display).deleteMsg();
                 oneOf(diskResourceService).deleteDiskResources(with(Sets.newHashSet(file, folder)),
                         with(aNonNull(AsyncCallback.class)));
             }
@@ -542,6 +544,7 @@ public class DiskResourcePresenterTest {
 
                 allowing(view).getSelectedFolder();
                 will(returnValue(folder));
+                oneOf(display).deleteMsg();
                 oneOf(diskResourceService).deleteDiskResources(with(Sets.newHashSet(folder)),
                         with(aNonNull(AsyncCallback.class)));
             }
