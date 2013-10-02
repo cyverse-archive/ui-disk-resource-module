@@ -250,9 +250,6 @@ public class DataSharingPermissionsPanel implements IsWidget {
         }
     }
     
-    public void setExplainPanelVisible(boolean visible) {
-        explainPanel.setVisible(visible);
-    }
 
     private void removeModels(DataSharing model) {
         ListStore<DataSharing> store = grid.getStore();

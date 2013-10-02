@@ -182,13 +182,8 @@ public class DataSharingPresenter implements Presenter {
                 }
 
                 final List<String> usernames = new ArrayList<String>();
-                if(usernames.size() > 0) {
-                    usernames.addAll(sharingList.keySet());
-                    CollaboratorsUtil.getUserInfo(usernames, new GetUserInfoCallback(usernames));
-                } else {
-                    permissionsPanel.setExplainPanelVisible(false);
-                    permissionsPanel.unmask();
-                }
+                usernames.addAll(sharingList.keySet());
+                CollaboratorsUtil.getUserInfo(usernames, new GetUserInfoCallback(usernames));
             }
     }
     }
