@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.Set;
 
 import org.iplantc.core.jsonutil.JsonUtil;
@@ -15,7 +16,6 @@ import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.events.diskresources.DiskResourceRefreshEvent;
-import org.iplantc.core.uicommons.client.gin.ServicesInjector;
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.HasId;
@@ -90,6 +90,7 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
+import com.sencha.gxt.data.shared.loader.LoadEvent;
 import com.sencha.gxt.data.shared.loader.LoadHandler;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
@@ -127,11 +128,11 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
-            final IplantDisplayStrings display, final DiskResourceAutoBeanFactory factory,
-            final DataSearchAutoBeanFactory dataSearchFactory) {
+            final DiskResourceServiceFacade diskResourceService, final IplantDisplayStrings display,
+            final DiskResourceAutoBeanFactory factory, final DataSearchAutoBeanFactory dataSearchFactory) {
         this.view = view;
         this.proxy = proxy;
-        this.diskResourceService = ServicesInjector.INSTANCE.getDiskResourceServiceFacade();
+        this.diskResourceService = diskResourceService;
         this.DISPLAY = display;
         this.drFactory = factory;
         this.dataSearchFactory = dataSearchFactory;

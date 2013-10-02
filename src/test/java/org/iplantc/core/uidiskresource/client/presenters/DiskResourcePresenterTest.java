@@ -136,8 +136,8 @@ public class DiskResourcePresenterTest {
     public void testOnFolderSelected_OneFolder() {
 
         checkConstruction();
-        final DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy, display,
-                drFactory, dataSearchFactory);
+        final DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
+                diskResourceService, display, drFactory, dataSearchFactory);
 
         final Folder folder = context.mock(Folder.class);
 
@@ -449,8 +449,8 @@ public class DiskResourcePresenterTest {
     @Test
     public void testDoDelete_diskResourcesSelected_noFolders_isOwner() {
         checkConstruction();
-        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy, display,
-                drFactory, dataSearchFactory);
+        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
+                diskResourceService, display, drFactory, dataSearchFactory);
         final File file = context.mock(File.class);
         final Permissions permissions = context.mock(Permissions.class);
         context.checking(new Expectations() {
@@ -483,8 +483,8 @@ public class DiskResourcePresenterTest {
     @Test
     public void testDoDelete_diskResourcesSelected_withFolders_isOwner() {
         checkConstruction();
-        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy, display,
-                drFactory, dataSearchFactory);
+        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
+                diskResourceService, display, drFactory, dataSearchFactory);
         final File file = context.mock(File.class);
         final Folder folder = context.mock(Folder.class);
         final Set<DiskResource> resSet = Sets.newHashSet();
@@ -524,8 +524,8 @@ public class DiskResourcePresenterTest {
     @Test
     public void testDoDelete_folderSelected_noDiskResourcesSelected_isOwner() {
         checkConstruction();
-        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy, display,
-                drFactory, dataSearchFactory);
+        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
+                diskResourceService, display, drFactory, dataSearchFactory);
         final Folder folder = context.mock(Folder.class);
         final Permissions permissions = context.mock(Permissions.class);
         context.checking(new Expectations() {
@@ -558,8 +558,8 @@ public class DiskResourcePresenterTest {
     @Test
     public void testDoDelete_diskResourcesSelected_oneNotOwner() {
         checkConstruction();
-        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy, display,
-                drFactory, dataSearchFactory);
+        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
+                diskResourceService, display, drFactory, dataSearchFactory);
         final File file = context.mock(File.class);
         final Folder folder = context.mock(Folder.class);
         final Folder parentFolder = context.mock(Folder.class, "ParentFolder");
@@ -607,8 +607,8 @@ public class DiskResourcePresenterTest {
     @Test
     public void testDoRename() {
         checkConstruction();
-        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy, display,
-                drFactory, dataSearchFactory);
+        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
+                diskResourceService, display, drFactory, dataSearchFactory);
         final DiskResource resource = context.mock(DiskResource.class);
         final String newName = "new name";
         context.checking(new Expectations() {
@@ -627,8 +627,8 @@ public class DiskResourcePresenterTest {
     @Test
     public void testDoFolderCreate() {
         checkConstruction();
-        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy, display,
-                drFactory, dataSearchFactory);
+        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
+                diskResourceService, display, drFactory, dataSearchFactory);
         final Folder parentFolder = context.mock(Folder.class);
         final String newFolderName = "new folder name";
         context.checking(new Expectations() {
@@ -650,8 +650,8 @@ public class DiskResourcePresenterTest {
     @Test
     public void testGetMetadata() {
         checkConstruction();
-        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy, display,
-                drFactory, dataSearchFactory);
+        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
+                diskResourceService, display, drFactory, dataSearchFactory);
 
         final DiskResource resource = context.mock(DiskResource.class);
         context.checking(new Expectations() {
@@ -671,8 +671,8 @@ public class DiskResourcePresenterTest {
     @Test
     public void testSetMetadata() {
         checkConstruction();
-        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy, display,
-                drFactory, dataSearchFactory);
+        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
+                diskResourceService, display, drFactory, dataSearchFactory);
 
         final Set<DiskResourceMetadata> metadataToDelete = Sets.newHashSet();
         final Set<DiskResourceMetadata> metadataToAdd = Sets.newHashSet();
