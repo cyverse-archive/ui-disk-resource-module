@@ -36,14 +36,13 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.sencha.gxt.data.shared.loader.PagingLoader;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 
-
-
 /**
  * @author jstroot
- *
+ * 
  */
 @RunWith(JMock.class)
 public class DiskResourcePresenterTest {
@@ -70,7 +69,8 @@ public class DiskResourcePresenterTest {
      * @throws java.lang.Exception
      */
     @AfterClass
-    public static void tearDownAfterClass() throws Exception {}
+    public static void tearDownAfterClass() throws Exception {
+    }
 
     /**
      * @throws java.lang.Exception
@@ -89,7 +89,8 @@ public class DiskResourcePresenterTest {
      * @throws java.lang.Exception
      */
     @After
-    public void tearDown() throws Exception {}
+    public void tearDown() throws Exception {
+    }
 
     @SuppressWarnings("unchecked")
     private void checkConstruction() {
@@ -107,10 +108,12 @@ public class DiskResourcePresenterTest {
 
                 oneOf(view).setTreeLoader(with(aNonNull(TreeLoader.class)));
                 oneOf(view).setPresenter(with(aNonNull(DiskResourceView.Presenter.class)));
+                oneOf(view).setViewLoader(with(aNonNull(PagingLoader.class)));
                 oneOf(proxy).setPresenter(with(aNonNull(DiskResourceView.Presenter.class)));
                 // TODO Temp. remove search
                 // oneOf(diskResourceService).getDataSearchHistory(with(aNonNull(AsyncCallback.class)));
-                oneOf(diskResourceService).getUserTrashPath(with(aNonNull(String.class)), with(aNonNull(AsyncCallback.class)));
+                oneOf(diskResourceService).getUserTrashPath(with(aNonNull(String.class)),
+                        with(aNonNull(AsyncCallback.class)));
 
                 oneOf(toolbar).setNewFolderButtonEnabled(with(false));
                 oneOf(toolbar).setRefreshButtonEnabled(with(false));
@@ -146,10 +149,10 @@ public class DiskResourcePresenterTest {
             {
                 oneOf(view).deSelectDiskResources();
                 oneOf(view).showDataListingWidget();
-                oneOf(view).mask(with(aNonNull(String.class)));
-                oneOf(display).loadingMask();
                 oneOf(folder).getId();
                 oneOf(diskResourceService).getFolderContents(with(aNonNull(String.class)),
+                        with(aNonNull(int.class)), with(aNonNull(int.class)),
+                        with(aNonNull(String.class)), with(aNonNull(String.class)),
                         with(aNonNull(AsyncCallback.class)));
             }
         });
@@ -163,10 +166,10 @@ public class DiskResourcePresenterTest {
             {
                 oneOf(view).deSelectDiskResources();
                 oneOf(view).showDataListingWidget();
-                oneOf(view).mask(with(aNonNull(String.class)));
-                oneOf(display).loadingMask();
                 oneOf(folder).getId();
                 oneOf(diskResourceService).getFolderContents(with(aNonNull(String.class)),
+                        with(aNonNull(int.class)), with(aNonNull(int.class)),
+                        with(aNonNull(String.class)), with(aNonNull(String.class)),
                         with(aNonNull(AsyncCallback.class)));
             }
         });
@@ -178,56 +181,55 @@ public class DiskResourcePresenterTest {
 
     /**
      * This tests the case when {@link DiskResourceView.Presenter#onFolderLoad(Folder, ArrayList)} is
-     * called with a
-     * folder which <em>is not equal</em> to the currently selected folder.
-     * The expected result here is that the view will not be updated.
+     * called with a folder which <em>is not equal</em> to the currently selected folder. The expected
+     * result here is that the view will not be updated.
      */
-//    @SuppressWarnings("unchecked")
-//    @Test
-//    public void testOnFolderLoadWithNonMatchingSelectedFolder() {
-//
-//        final Folder folder = context.mock(Folder.class, "inputFolder");
-//        final Folder retFolder = context.mock(Folder.class, "retFolder");
-//        checkConstruction();
-//        DiskResourcePresenterImpl presenter = new DiskResourcePresenterImpl(view, proxy,
-//                diskResourceService, display, drFactory, dataSearchFactory);
-//        context.checking(new Expectations() {
-//            {
-//                atLeast(1).of(view).getSelectedFolder();
-//                will(returnValue(retFolder));
-//                never(view).setDiskResources(with(any(Set.class)));
-//            }
-//        });
-//
-//        presenter.onFolderLoad(folder, null);
-//
-//        context.assertIsSatisfied();
-//    }
+    // @SuppressWarnings("unchecked")
+    // @Test
+    // public void testOnFolderLoadWithNonMatchingSelectedFolder() {
+    //
+    // final Folder folder = context.mock(Folder.class, "inputFolder");
+    // final Folder retFolder = context.mock(Folder.class, "retFolder");
+    // checkConstruction();
+    // DiskResourcePresenterImpl presenter = new DiskResourcePresenterImpl(view, proxy,
+    // diskResourceService, display, drFactory, dataSearchFactory);
+    // context.checking(new Expectations() {
+    // {
+    // atLeast(1).of(view).getSelectedFolder();
+    // will(returnValue(retFolder));
+    // never(view).setDiskResources(with(any(Set.class)));
+    // }
+    // });
+    //
+    // presenter.onFolderLoad(folder, null);
+    //
+    // context.assertIsSatisfied();
+    // }
 
     /**
      * This tests the case when {@link DiskResourceView.Presenter#onFolderLoad(Folder, ArrayList)} is
      * called with a folder which <em>is equal</em> to the currently selected folder.
      */
-//    @Test
-//    public void testOnFolderLoadWithMatchingSelectedFolder() {
-//
-//        final Folder folder = context.mock(Folder.class);
-//        final Set<DiskResource> folderChildren = Sets.newHashSet();
-//        checkConstruction();
-//        DiskResourcePresenterImpl presenter = new DiskResourcePresenterImpl(view, proxy,
-//                diskResourceService, display, drFactory, dataSearchFactory);
-//        context.checking(new Expectations() {
-//            {
-//                atLeast(1).of(view).getSelectedFolder();
-//                will(returnValue(folder));
-//                oneOf(view).setDiskResources(with(folderChildren));
-//            }
-//        });
-//
-//        presenter.onFolderLoad(folder, folderChildren);
-//
-//        context.assertIsSatisfied();
-//    }
+    // @Test
+    // public void testOnFolderLoadWithMatchingSelectedFolder() {
+    //
+    // final Folder folder = context.mock(Folder.class);
+    // final Set<DiskResource> folderChildren = Sets.newHashSet();
+    // checkConstruction();
+    // DiskResourcePresenterImpl presenter = new DiskResourcePresenterImpl(view, proxy,
+    // diskResourceService, display, drFactory, dataSearchFactory);
+    // context.checking(new Expectations() {
+    // {
+    // atLeast(1).of(view).getSelectedFolder();
+    // will(returnValue(folder));
+    // oneOf(view).setDiskResources(with(folderChildren));
+    // }
+    // });
+    //
+    // presenter.onFolderLoad(folder, folderChildren);
+    //
+    // context.assertIsSatisfied();
+    // }
 
     @Test
     public void testToolbarVisibility_FolderSelection_HasOwnership() {
@@ -680,8 +682,7 @@ public class DiskResourcePresenterTest {
         context.checking(new Expectations() {
             {
                 oneOf(diskResourceService).setDiskResourceMetaData(with(resource), with(metadataToAdd),
-                        with(metadataToDelete),
-                        with(any(AsyncCallback.class)));
+                        with(metadataToDelete), with(any(AsyncCallback.class)));
             }
         });
 

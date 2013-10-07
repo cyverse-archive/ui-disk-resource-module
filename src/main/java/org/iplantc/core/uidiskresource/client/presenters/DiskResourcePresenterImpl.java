@@ -44,6 +44,8 @@ import org.iplantc.core.uidiskresource.client.events.ShowFilePreviewEvent;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.DiskResourcesEventHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityGridHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityNavigationHandler;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoadConfig;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsRpcProxy;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectDiskResourceByIdStoreAddHandler;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectFolderByIdLoadHandler;
 import org.iplantc.core.uidiskresource.client.search.models.DataSearch;
@@ -85,11 +87,14 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
+import com.sencha.gxt.data.client.loader.RpcProxy;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
 import com.sencha.gxt.data.shared.loader.LoadHandler;
+import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+import com.sencha.gxt.data.shared.loader.PagingLoader;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
@@ -122,7 +127,9 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private final DataSearchAutoBeanFactory dataSearchFactory;
     private final List<String> searchHistory = Lists.newArrayList();
     private String currentSearchTerm;
-     
+    @SuppressWarnings("rawtypes")
+    private RpcProxy rpc_proxy;
+    private PagingLoader<FolderContentsLoadConfig, PagingLoadResult<DiskResource>> gridLoader;
 
     @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
@@ -135,6 +142,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         this.drFactory = factory;
         this.dataSearchFactory = dataSearchFactory;
 
+        initFolderContentRpc();
+        
         builder = new MyBuilder(this);
 
         treeLoader = new TreeLoader<Folder>(this.proxy) {
@@ -154,6 +163,16 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         loadUserTrashPath();
     }
 
+    private void initFolderContentRpc() {
+        rpc_proxy = new FolderContentsRpcProxy(diskResourceService);
+        gridLoader = new PagingLoader<FolderContentsLoadConfig, PagingLoadResult<DiskResource>>(
+                rpc_proxy);
+        FolderContentsLoadConfig config = new FolderContentsLoadConfig();
+        gridLoader.useLoadConfig(config);
+        gridLoader.setReuseLoadConfig(true);
+        view.setViewLoader(gridLoader);
+    }
+    
     private void initDragAndDrop() {
 
     }
@@ -343,23 +362,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void onFolderSelected(final Folder folder) {
+        view.clearData();
         view.showDataListingWidget();
         view.deSelectDiskResources();
-        maskView();
-        diskResourceService.getFolderContents(folder.getId(), new AsyncCallback<Set<DiskResource>>() {
-
-            @Override
-            public void onSuccess(Set<DiskResource> result) {
-                view.setDiskResources(result);
-                unMaskView();
-            }
-
-            @Override
-            public void onFailure(Throwable caught) {
-                ErrorHandler.post(I18N.ERROR.retrieveFolderInfoFailed(), caught);
-                unMaskView();
-            }
-        });
+        FolderContentsLoadConfig config = gridLoader.getLastLoadConfig();
+        config.setFolder(folder);
+        gridLoader.load(0,view.getViewCacheSize());
     }
 
     @Override
