@@ -1,6 +1,7 @@
 package org.iplantc.core.uidiskresource.client.presenters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -89,6 +90,7 @@ import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 import com.sencha.gxt.data.client.loader.RpcProxy;
 import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.SortInfo;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
@@ -141,8 +143,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         this.DISPLAY = display;
         this.drFactory = factory;
         this.dataSearchFactory = dataSearchFactory;
-
-        initFolderContentRpc();
         
         builder = new MyBuilder(this);
 
@@ -161,8 +161,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         initDragAndDrop();
         // loadSearchHistory();
         loadUserTrashPath();
+        initFolderContentRpc();
     }
 
+    @SuppressWarnings("unchecked")
     private void initFolderContentRpc() {
         rpc_proxy = new FolderContentsRpcProxy(diskResourceService);
         gridLoader = new PagingLoader<FolderContentsLoadConfig, PagingLoadResult<DiskResource>>(
@@ -362,12 +364,11 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void onFolderSelected(final Folder folder) {
-        view.clearData();
         view.showDataListingWidget();
         view.deSelectDiskResources();
         FolderContentsLoadConfig config = gridLoader.getLastLoadConfig();
         config.setFolder(folder);
-        gridLoader.load(0,view.getViewCacheSize());
+        gridLoader.load();
     }
 
     @Override
@@ -1000,6 +1001,13 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             }
         });
 
+    }
+
+    @Override
+    public void updateSortInfo(SortInfo sortInfo) {
+        FolderContentsLoadConfig config = gridLoader.getLastLoadConfig();
+        config.setSortInfo(Arrays.asList(sortInfo));
+        gridLoader.load();
     }
 
 }

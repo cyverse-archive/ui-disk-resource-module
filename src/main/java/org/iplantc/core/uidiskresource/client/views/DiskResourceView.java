@@ -24,6 +24,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.SortInfo;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.loader.DataProxy;
 import com.sencha.gxt.data.shared.loader.PagingLoadResult;
@@ -167,6 +168,8 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
         void OnInfoTypeClick(String id, String infoType);
 
         Set<? extends DiskResource> getDragSources(IsWidget source, Element dragStartEl);
+
+        void updateSortInfo(SortInfo sortInfo);
     }
 
     /**
@@ -299,7 +302,4 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
     void setViewLoader(PagingLoader<FolderContentsLoadConfig, PagingLoadResult<DiskResource>> gridLoader);
 
-    int getViewCacheSize();
-
-    void clearData();
 }

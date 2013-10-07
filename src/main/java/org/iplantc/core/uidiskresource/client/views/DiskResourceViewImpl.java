@@ -56,8 +56,6 @@ import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.resources.ThemeStyles;
 import com.sencha.gxt.data.shared.ListStore;
-import com.sencha.gxt.data.shared.SortDir;
-import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.loader.PagingLoadResult;
 import com.sencha.gxt.data.shared.loader.PagingLoader;
@@ -71,13 +69,14 @@ import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.event.SortChangeEvent;
+import com.sencha.gxt.widget.core.client.event.SortChangeEvent.SortChangeHandler;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
-import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.LiveGridView;
@@ -206,10 +205,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
         detailsPanel.setScrollMode(ScrollMode.AUTO);
 
         grid.setSelectionModel(sm);
-        ColumnConfig<DiskResource, DiskResource> name = getDiskResourceColumnModel().getNameColumn();
-        grid.getStore().addSortInfo(
-                new StoreSortInfo<DiskResource>(name.getValueProvider(), name.getComparator(),
-                        SortDir.ASC));
 
         // Set Leaf icon to a folder
         TreeStyle treeStyle = tree.getStyle();
@@ -219,6 +214,16 @@ public class DiskResourceViewImpl implements DiskResourceView {
         tree.getSelectionModel().addSelectionHandler(new TreeSelectionHandler());
 
         grid.getSelectionModel().addSelectionChangedHandler(new GridSelectionHandler());
+        grid.addSortChangeHandler(new SortChangeHandler() {
+            
+            @Override
+            public void onSortChange(SortChangeEvent event) {
+                System.out.println(event.getSortInfo().getSortField() + " " + event.getSortInfo().getSortDir().toString());
+                if(presenter!=null) {
+                    presenter.updateSortInfo(event.getSortInfo());
+                }
+            }
+        });
 
         // by default no details to show...
         resetDetailsPanel();
@@ -229,6 +234,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     private void initLiveView() {
         gridView.setRowHeight(25);
+        gridView.setCacheSize(50);
         grid.setView(gridView);
      
         grid.setLoadMask(true);
@@ -281,11 +287,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
         return listStore2;
     }
 
-    @Override
-    public int getViewCacheSize() {
-        return gridView.getCacheSize();
-    }
-    
     @UiFactory
     public ValueProvider<Folder, String> createValueProvider() {
         return new ValueProvider<Folder, String>() {
@@ -923,11 +924,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     }
     
-    @Override
-    public void clearData() {
-        listStore.clear();
-    }
-
     private class SharingLabelClickHandler implements ClickHandler {
         @Override
         public void onClick(ClickEvent event) {

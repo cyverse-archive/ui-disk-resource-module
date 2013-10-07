@@ -2,9 +2,9 @@ package org.iplantc.core.uidiskresource.client.presenters.proxy;
 
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 
-import com.sencha.gxt.data.shared.loader.PagingLoadConfigBean;
+import com.sencha.gxt.data.shared.loader.FilterPagingLoadConfigBean;
 
-public class FolderContentsLoadConfig extends PagingLoadConfigBean {
+public class FolderContentsLoadConfig extends FilterPagingLoadConfigBean {
 
     /**
      * 
