@@ -143,7 +143,7 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
 
     @UiHandler("refreshButton")
     void onRefreshClicked(SelectEvent event) {
-        presenter.doRefresh();
+        presenter.doRefresh(presenter.getSelectedFolder());
     }
 
     @UiHandler("simpleDownloadButton")

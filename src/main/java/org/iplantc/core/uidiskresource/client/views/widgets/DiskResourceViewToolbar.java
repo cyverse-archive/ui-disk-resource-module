@@ -1,5 +1,6 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
+import java.util.List;
 import java.util.Set;
 
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
@@ -18,17 +19,21 @@ public interface DiskResourceViewToolbar extends IsWidget {
         void doImport();
 
         /**
-         * Reloads the view's current selected folders.
-         */
-        void doRefresh();
-
-        /**
-         * Reloads the given folder in the view's navigation tree, and also the data grid if it's the
-         * currently selected folder.
+         * Reloads the given folder in the view's navigation tree, and if it's the currently selected
+         * folder then the data grid is refreshed as well.
          * 
          * @param folder The folder to reload from the service.
          */
-        void refreshFolder(Folder folder);
+        void doRefresh(Folder folder);
+
+        /**
+         * Reloads the folder with the given ID in the view's navigation tree, and if it's the currently
+         * selected folder then the data grid is refreshed with the given selected resources.
+         * 
+         * @param selectedResources
+         * @param folderId
+         */
+        void refreshFolder(String folderId, List<DiskResource> selectedResources);
 
         void doSimpleDownload();
 

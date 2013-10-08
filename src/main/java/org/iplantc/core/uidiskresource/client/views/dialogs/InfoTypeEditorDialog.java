@@ -8,8 +8,8 @@ import java.util.List;
 
 import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.uicommons.client.ErrorHandler;
+import org.iplantc.core.uicommons.client.gin.ServicesInjector;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
-import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacadeImpl;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 
 import com.google.gwt.json.client.JSONArray;
@@ -36,7 +36,7 @@ public class InfoTypeEditorDialog extends IPlantDialog {
         setSize("300", "100");
         this.type = currentType;
         setHeadingText("Select Type");
-        this.facade = new DiskResourceServiceFacadeImpl();
+        this.facade = ServicesInjector.INSTANCE.getDiskResourceServiceFacade();
         infoTypeCbo = new SimpleComboBox<String>(new LabelProvider<String>() {
 
             @Override

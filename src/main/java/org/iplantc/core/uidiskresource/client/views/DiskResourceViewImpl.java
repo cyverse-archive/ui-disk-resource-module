@@ -13,13 +13,13 @@ import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceInfo;
-import org.iplantc.core.uicommons.client.models.diskresources.File;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.diskresources.Permissions;
 import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
 import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoadConfig;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
@@ -54,10 +54,11 @@ import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
+import com.sencha.gxt.core.client.resources.ThemeStyles;
 import com.sencha.gxt.data.shared.ListStore;
-import com.sencha.gxt.data.shared.SortDir;
-import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.data.shared.TreeStore;
+import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+import com.sencha.gxt.data.shared.loader.PagingLoader;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.dnd.core.client.DND.Operation;
 import com.sencha.gxt.dnd.core.client.DragSource;
@@ -69,16 +70,20 @@ import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.event.SortChangeEvent;
+import com.sencha.gxt.widget.core.client.event.SortChangeEvent.SortChangeHandler;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
-import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
-import com.sencha.gxt.widget.core.client.grid.GridView;
+import com.sencha.gxt.widget.core.client.grid.LiveGridView;
+import com.sencha.gxt.widget.core.client.grid.LiveToolItem;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
+import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeAppearance;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
@@ -131,7 +136,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     final TreeStore<Folder> treeStore;
 
     @UiField
-    ContentPanel centerPanel;
+    VerticalLayoutContainer centerPanel;
 
     @UiField
     Grid<DiskResource> grid;
@@ -143,7 +148,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     ListStore<DiskResource> listStore;
 
     @UiField
-    GridView<DiskResource> gridView;
+    LiveGridView<DiskResource> gridView;
 
     @UiField
     VerticalLayoutContainer detailsPanel;
@@ -162,6 +167,12 @@ public class DiskResourceViewImpl implements DiskResourceView {
     BorderLayoutData northData;
     @UiField
     BorderLayoutData southData;
+    
+    @UiField
+    VerticalLayoutData centerLayoutData;
+    
+    @UiField
+    ToolBar pagingToolBar;
 
     private final Widget widget;
 
@@ -194,10 +205,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
         detailsPanel.setScrollMode(ScrollMode.AUTO);
 
         grid.setSelectionModel(sm);
-        ColumnConfig<DiskResource, DiskResource> name = getDiskResourceColumnModel().getNameColumn();
-        grid.getStore().addSortInfo(
-                new StoreSortInfo<DiskResource>(name.getValueProvider(), name.getComparator(),
-                        SortDir.ASC));
 
         // Set Leaf icon to a folder
         TreeStyle treeStyle = tree.getStyle();
@@ -207,13 +214,43 @@ public class DiskResourceViewImpl implements DiskResourceView {
         tree.getSelectionModel().addSelectionHandler(new TreeSelectionHandler());
 
         grid.getSelectionModel().addSelectionChangedHandler(new GridSelectionHandler());
+        grid.addSortChangeHandler(new SortChangeHandler() {
+            
+            @Override
+            public void onSortChange(SortChangeEvent event) {
+                System.out.println(event.getSortInfo().getSortField() + " " + event.getSortInfo().getSortDir().toString());
+                if(presenter!=null) {
+                    presenter.updateSortInfo(event.getSortInfo());
+                }
+            }
+        });
 
         // by default no details to show...
         resetDetailsPanel();
         setGridEmptyText();
         addTreeCollapseButton();
+        
     }
 
+    private void initLiveView() {
+        gridView.setRowHeight(25);
+        gridView.setCacheSize(50);
+        grid.setView(gridView);
+     
+        grid.setLoadMask(true);
+        pagingToolBar.add(new LiveToolItem(grid));
+        pagingToolBar.addStyleName(ThemeStyles.getStyle().borderTop());
+        pagingToolBar.getElement().getStyle().setProperty("borderBottom", "none");
+    }
+
+    @Override
+    public void setViewLoader(
+            PagingLoader<FolderContentsLoadConfig, PagingLoadResult<DiskResource>> gridLoader) {
+       grid.setLoader(gridLoader);
+       gridLoader.setRemoteSort(true);
+       initLiveView();
+    }
+    
     private void addTreeCollapseButton() {
         westPanel.setCollapsible(false);
         DataCollapseStyle style = IplantResources.RESOURCES.getDataCollapseStyle();
@@ -474,7 +511,26 @@ public class DiskResourceViewImpl implements DiskResourceView {
             return;
         }
 
-        treeStore.removeChildren(folder);
+        // KLUDGE TreeStore#removeChildren doesn't actually remove the children from their parent's
+        // TreeModel wrapper, so remove the parent as well, then re-add it without children.
+        Folder parent = null;
+        int index = treeStore.getRootItems().indexOf(folder);
+        if (index < 0) {
+            parent = treeStore.getParent(folder);
+
+            if (parent != null) {
+                index = treeStore.indexOf(folder);
+            }
+        }
+
+        treeStore.remove(folder);
+        folder.setFolders(null);
+
+        if (parent == null) {
+            treeStore.insert(index, folder);
+        } else {
+            treeStore.insert(parent, index, folder);
+        }
     }
 
     @Override
@@ -531,11 +587,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
         if (listStoreModel != null) {
             listStore.remove(listStoreModel);
-            if (listStoreModel instanceof File) {
-                listStore.add(newDr);
-            } else {
-                listStore.add(newDr);
-            }
+            listStore.add(newDr);
         }
 
     }
@@ -585,7 +637,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     public void showDataListingWidget() {
         if (!grid.isAttached()) {
             centerPanel.clear();
-            centerPanel.add(grid, centerData);
+            centerPanel.add(grid, centerLayoutData);
             // reset search
             presenter.setCurrentSearchTerm(null);
             toolbar.clearSearchTerm();
@@ -597,7 +649,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
         if (!w.asWidget().isAttached()) {
             w.asWidget().setHeight(centerPanel.getOffsetHeight(true) + "px"); //$NON-NLS-1$
             centerPanel.clear();
-            centerPanel.add(w.asWidget(), centerData);
+            centerPanel.add(w.asWidget(), centerLayoutData);
         }
     }
 
@@ -871,7 +923,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
         }
 
     }
-
+    
     private class SharingLabelClickHandler implements ClickHandler {
         @Override
         public void onClick(ClickEvent event) {
