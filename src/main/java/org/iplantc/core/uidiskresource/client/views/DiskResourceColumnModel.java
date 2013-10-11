@@ -20,18 +20,17 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
-import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 
 public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
 
-    public DiskResourceColumnModel(DiskResourceView view, CheckBoxSelectionModel<DiskResource> sm) {
+    public DiskResourceColumnModel(DiskResourceView view, DiskResourceSelectionModel sm) {
         super(createColumnConfigList(view, sm));
     }
 
     public static List<ColumnConfig<DiskResource, ?>> createColumnConfigList(DiskResourceView view,
-            CheckBoxSelectionModel<DiskResource> sm) {
+            DiskResourceSelectionModel sm) {
         List<ColumnConfig<DiskResource, ?>> list = new ArrayList<ColumnConfig<DiskResource, ?>>();
 
         DiskResourceProperties props = GWT.create(DiskResourceProperties.class);

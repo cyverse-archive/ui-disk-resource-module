@@ -65,24 +65,28 @@ import com.sencha.gxt.dnd.core.client.DragSource;
 import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.theme.blue.client.status.BlueStatusAppearance.BlueStatusResources;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.Status;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.LiveGridViewUpdateEvent;
+import com.sencha.gxt.widget.core.client.event.LiveGridViewUpdateEvent.LiveGridViewUpdateHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.event.SortChangeEvent;
 import com.sencha.gxt.widget.core.client.event.SortChangeEvent.SortChangeHandler;
+import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
-import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.LiveGridView;
 import com.sencha.gxt.widget.core.client.grid.LiveToolItem;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
+import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeAppearance;
@@ -91,6 +95,54 @@ import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 import com.sencha.gxt.widget.core.client.tree.TreeView;
 
 public class DiskResourceViewImpl implements DiskResourceView {
+
+    private final class CustomTreeView extends TreeView<Folder> {
+        private final BlueStatusResources resources = GWT.create(BlueStatusResources.class);
+
+        @Override
+        public void onLoading(TreeNode<Folder> node) {
+            onIconStyleChange(node, resources.loading());
+
+            // Does nothing in GXT 3.0.1, but call it in case of any future version updates.
+            super.onLoading(node);
+        }
+    }
+
+    private final class SelectionChangeHandlerImpl implements SelectionChangedHandler<DiskResource> {
+        @Override
+        public void onSelectionChanged(SelectionChangedEvent<DiskResource> event) {
+            updateSelectionCount(sm.getSelectedItemsCache().size());
+        }
+    }
+
+    private final class SortChangeHandlerImpl implements SortChangeHandler {
+        @Override
+        public void onSortChange(SortChangeEvent event) {
+            System.out.println(event.getSortInfo().getSortField() + " " + event.getSortInfo().getSortDir().toString());
+            if(presenter!=null) {
+                presenter.updateSortInfo(event.getSortInfo());
+            }
+        }
+    }
+
+    private final class LiveGridViewUpdateHandlerImpl implements LiveGridViewUpdateHandler {
+        @Override
+        public void onUpdate(LiveGridViewUpdateEvent event) {
+            System.out.println("rowcount==>" + event.getRowCount() + " ==>index" + event.getLiveStoreOffset());
+           
+            List<DiskResource> temp =  sm.getSelectedItemsCache();
+            for (DiskResource dr : temp) {
+                DiskResource item = listStore.findModel(dr);
+                if(item != null ) {
+                    sm.select(item, true);
+                }
+            }
+            
+            //update row and off set
+            sm.setRowCount(event.getRowCount());
+            sm.setViewIndex(event.getViewIndex());
+        }
+    }
 
     private final class GridSelectionHandler implements SelectionChangedHandler<DiskResource> {
         @Override
@@ -178,7 +230,10 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     private TreeLoader<Folder> treeLoader;
 
-    private final CheckBoxSelectionModel<DiskResource> sm;
+    private final DiskResourceSelectionModel sm;
+    
+    private Status selectionStatus;
+    private CheckBox selectAllChkBox;
 
     @Inject
     public DiskResourceViewImpl(final Tree<Folder, String> tree) {
@@ -186,19 +241,9 @@ public class DiskResourceViewImpl implements DiskResourceView {
         this.treeStore = tree.getStore();
         // KLUDGE GXT 3.0.1 hasn't implemented the tree loading icon, so we'll
         // use the one from Status.
-        tree.setView(new TreeView<Folder>() {
-            private final BlueStatusResources resources = GWT.create(BlueStatusResources.class);
+        tree.setView(new CustomTreeView());
 
-            @Override
-            public void onLoading(TreeNode<Folder> node) {
-                onIconStyleChange(node, resources.loading());
-
-                // Does nothing in GXT 3.0.1, but call it in case of any future version updates.
-                super.onLoading(node);
-            }
-        });
-
-        sm = new CheckBoxSelectionModel<DiskResource>(new IdentityValueProvider<DiskResource>());
+        sm = new DiskResourceSelectionModel(new IdentityValueProvider<DiskResource>());
 
         widget = BINDER.createAndBindUi(this);
 
@@ -206,24 +251,16 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
         grid.setSelectionModel(sm);
 
-        // Set Leaf icon to a folder
-        TreeStyle treeStyle = tree.getStyle();
-        TreeAppearance appearance = tree.getAppearance();
-        treeStyle.setLeafIcon(appearance.closeNodeIcon());
+        setLeafIcon(tree);
         tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         tree.getSelectionModel().addSelectionHandler(new TreeSelectionHandler());
 
         grid.getSelectionModel().addSelectionChangedHandler(new GridSelectionHandler());
-        grid.addSortChangeHandler(new SortChangeHandler() {
-            
-            @Override
-            public void onSortChange(SortChangeEvent event) {
-                System.out.println(event.getSortInfo().getSortField() + " " + event.getSortInfo().getSortDir().toString());
-                if(presenter!=null) {
-                    presenter.updateSortInfo(event.getSortInfo());
-                }
-            }
-        });
+        grid.addSortChangeHandler(new SortChangeHandlerImpl());
+        
+        grid.getSelectionModel().addSelectionChangedHandler(new SelectionChangeHandlerImpl());
+
+        gridView.addLiveGridViewUpdateHandler(new LiveGridViewUpdateHandlerImpl());
 
         // by default no details to show...
         resetDetailsPanel();
@@ -232,6 +269,13 @@ public class DiskResourceViewImpl implements DiskResourceView {
         
     }
 
+    private void setLeafIcon(final Tree<Folder, String> tree) {
+        // Set Leaf icon to a folder
+        TreeStyle treeStyle = tree.getStyle();
+        TreeAppearance appearance = tree.getAppearance();
+        treeStyle.setLeafIcon(appearance.closeNodeIcon());
+    }
+    
     private void initLiveView() {
         gridView.setRowHeight(25);
         gridView.setCacheSize(50);
@@ -239,8 +283,23 @@ public class DiskResourceViewImpl implements DiskResourceView {
      
         grid.setLoadMask(true);
         pagingToolBar.add(new LiveToolItem(grid));
+        
+        selectionStatus = new Status();
+        
+        pagingToolBar.add(new FillToolItem());
+        pagingToolBar.add(selectionStatus);
+        
+        selectAllChkBox = new CheckBox();
+        selectAllChkBox.setBoxLabel("Select all");
+        pagingToolBar.add(new FillToolItem());
+        pagingToolBar.add(selectAllChkBox);
+        
         pagingToolBar.addStyleName(ThemeStyles.getStyle().borderTop());
         pagingToolBar.getElement().getStyle().setProperty("borderBottom", "none");
+    }
+    
+    private void updateSelectionCount(int selectionCount) {
+        selectionStatus.setText(selectionCount + " item(s)");
     }
 
     @Override
