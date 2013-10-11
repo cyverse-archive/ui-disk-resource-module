@@ -39,11 +39,13 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -78,7 +80,6 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.event.SortChangeEvent;
 import com.sencha.gxt.widget.core.client.event.SortChangeEvent.SortChangeHandler;
-import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
@@ -96,6 +97,24 @@ import com.sencha.gxt.widget.core.client.tree.TreeView;
 
 public class DiskResourceViewImpl implements DiskResourceView {
 
+    private final class SelectAllCheckBoxHandlerImpl implements ClickHandler {
+        @Override
+        public void onClick(ClickEvent event) {
+            boolean checked = ((CheckBox) event.getSource()).getValue();
+            if(checked) {
+                sm.setSelectAll(true);
+                sm.setSelection(listStore.getAll()); 
+                updateSelectionCount(sm.getTotal());
+            } else {
+                sm.setSelectAll(false);
+                sm.deselectAll();
+                sm.clearSelectedItemsCache();
+                updateSelectionCount(0);
+            }
+            
+        }
+    }
+
     private final class CustomTreeView extends TreeView<Folder> {
         private final BlueStatusResources resources = GWT.create(BlueStatusResources.class);
 
@@ -111,7 +130,16 @@ public class DiskResourceViewImpl implements DiskResourceView {
     private final class SelectionChangeHandlerImpl implements SelectionChangedHandler<DiskResource> {
         @Override
         public void onSelectionChanged(SelectionChangedEvent<DiskResource> event) {
-            updateSelectionCount(sm.getSelectedItemsCache().size());
+            if(!sm.isSelectAll()) {
+                updateSelectionCount(sm.getSelectedItemsCache().size());
+            }
+            
+            if(sm.getTotal() == sm.getSelectedItemsCache().size()) {
+                selectAllChkBox.setValue(true);
+            } else {
+                selectAllChkBox.setValue(false);
+            }
+            
         }
     }
 
@@ -130,6 +158,11 @@ public class DiskResourceViewImpl implements DiskResourceView {
         public void onUpdate(LiveGridViewUpdateEvent event) {
             System.out.println("rowcount==>" + event.getRowCount() + " ==>index" + event.getLiveStoreOffset());
            
+            if(sm.isSelectAll()) {
+                sm.setSelection(listStore.getAll()); 
+                return;
+            }
+            
             List<DiskResource> temp =  sm.getSelectedItemsCache();
             for (DiskResource dr : temp) {
                 DiskResource item = listStore.findModel(dr);
@@ -141,6 +174,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
             //update row and off set
             sm.setRowCount(event.getRowCount());
             sm.setViewIndex(event.getViewIndex());
+            sm.setTotal(event.getTotalCount());
         }
     }
 
@@ -282,20 +316,31 @@ public class DiskResourceViewImpl implements DiskResourceView {
         grid.setView(gridView);
      
         grid.setLoadMask(true);
-        pagingToolBar.add(new LiveToolItem(grid));
+        LiveToolItem toolItem = new LiveToolItem(grid);
+        toolItem.setWidth(150);
+        pagingToolBar.add(toolItem);
         
         selectionStatus = new Status();
+        selectionStatus.setWidth(100);
+        updateSelectionCount(0);
         
         pagingToolBar.add(new FillToolItem());
         pagingToolBar.add(selectionStatus);
         
-        selectAllChkBox = new CheckBox();
-        selectAllChkBox.setBoxLabel("Select all");
+        initSelectAllChkBox();
+       
         pagingToolBar.add(new FillToolItem());
         pagingToolBar.add(selectAllChkBox);
         
         pagingToolBar.addStyleName(ThemeStyles.getStyle().borderTop());
         pagingToolBar.getElement().getStyle().setProperty("borderBottom", "none");
+    }
+
+    private void initSelectAllChkBox() {
+        SafeHtmlBuilder builder = new SafeHtmlBuilder();
+        builder.appendHtmlConstant("<span style='font-size:11px;'> Select all </span>");
+        selectAllChkBox = new CheckBox(builder.toSafeHtml());
+        selectAllChkBox.addClickHandler(new SelectAllCheckBoxHandlerImpl());
     }
     
     private void updateSelectionCount(int selectionCount) {
@@ -546,6 +591,11 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     @Override
     public void deSelectDiskResources() {
+        //update cache n live view status
+        sm.clearSelectedItemsCache();
+        sm.setSelectAll(false);
+        selectAllChkBox.setValue(false);
+        updateSelectionCount(0);
         grid.getSelectionModel().deselectAll();
     }
 

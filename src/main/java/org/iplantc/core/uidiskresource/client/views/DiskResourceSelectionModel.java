@@ -58,6 +58,10 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
     private int viewIndex;
 
     private int rowcount;
+    
+    private boolean selectAll;
+
+    private int total;
 
     /**
      * Creates a CheckBoxSelectionModel that will operate on the row itself. To customize the row it is
@@ -131,7 +135,7 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
      * 
      * @return true if selected
      */
-    public boolean isSelectAllChecked() {
+    public boolean isHeaderChecked() {
         if (grid != null && grid.isViewReady()) {
             XElement hd = grid.getView().getHeader().getElement().child(".x-grid-hd-checker");
             return appearance.isHeaderChecked(hd);
@@ -207,6 +211,7 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
             // when a item is selected by clicking on the row (not on the checkbox)
             //we need to clear selection of everything else and select only that row.
             clearSelectedItemsCache();
+            setSelectAll(false);
             super.handleRowMouseDown(event);
         }
     }
@@ -237,6 +242,11 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
         updateHeaderCheckBox();
     };
 
+    
+    @Override
+    public List<DiskResource> getSelectedItems() {
+        return getSelectedItemsCache();
+    }
    
     public void addToSelectedCache(DiskResource dr) {
         selectedItemsCache.put(dr.getId(),dr);
@@ -278,13 +288,39 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
         }
     }
 
+    /**
+     * @return the selectAll
+     */
+    public boolean isSelectAll() {
+        return selectAll;
+    }
+
+    /**
+     * @param selectAll the selectAll to set
+     */
+    public void setSelectAll(boolean selectAll) {
+        this.selectAll = selectAll;
+    }
+
     //check if everything in the view is selected.
     private void updateHeaderCheckBox() {
         ListStore<DiskResource> store = grid.getStore();
-        if(rowcount == 0 || selectedItemsCache.size() == 0 ||selectedItemsCache.size() < rowcount) {
+        if(rowcount == 0 || selectedItemsCache.size() == 0) {
             setChecked(false);
             return;
         }
+        
+        if(selectedItemsCache.size() < rowcount) {
+            if(total == selectedItemsCache.size()) {
+                setChecked(true);
+                setSelectAll(true);
+            } else {
+                setChecked(false);
+                setSelectAll(false);
+            }
+            return;
+        }
+        
         for (int i = viewIndex; i < viewIndex + rowcount ; i++) {
             if(store.get(i)!= null && selectedItemsCache.get(store.get(i).getId()) == null) {
                 setChecked(false);
@@ -292,7 +328,14 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
             }
         }
         setChecked(true);
-        return;
+    }
+
+    public void setTotal(int totalCount) {
+        this.total = totalCount;
+    }
+    
+    public int getTotal() {
+        return total;
     }
 
 
