@@ -392,14 +392,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     }
 
-    // @Override
-    // public void onFolderLoad(Folder loadedFolder, Set<DiskResource> folderChildren) {
-    // // FIXME JDS This method needs to go away. Instead, this action should be performed via a
-    // loadHandler.
-    // if ((getSelectedFolder() != null) && getSelectedFolder().equals(loadedFolder)) {
-    // view.setDiskResources(folderChildren);
-    // }
-    // }
 
     @Override
     public void doBulkUpload() {

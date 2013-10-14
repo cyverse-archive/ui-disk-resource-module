@@ -6,6 +6,8 @@ import java.util.Set;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.events.diskresources.DiskResourceRefreshEvent;
 import org.iplantc.core.uicommons.client.events.diskresources.DiskResourceRefreshEvent.DiskResourceRefreshEventHandler;
+import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
+import org.iplantc.core.uicommons.client.info.SuccessAnnouncementConfig;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.File;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
@@ -66,6 +68,8 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
         } else {
             diskResourcesMovedFromGrid(resourcesToMove, selectedFolder, destinationFolder);
         }
+        
+        IplantAnnouncer.getInstance().schedule(new SuccessAnnouncementConfig("Selected item(s) moved to " + destinationFolder.getId()));
     }
 
     private void selectedFolderMovedFromNavTree(Folder selectedFolder, Folder destinationFolder) {

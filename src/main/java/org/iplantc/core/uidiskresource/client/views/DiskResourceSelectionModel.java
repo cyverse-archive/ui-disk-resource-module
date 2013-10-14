@@ -185,8 +185,28 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
         Element target = event.getEvent().getEventTarget().cast();
         if (target.getClassName().equals("x-grid-row-checker")) {
             return;
+        } else {
+            // when a item is selected by clicking on the row (not on the checkbox)
+            //we need to clear selection of everything else and select only that row.
+            clearSelectedItemsCache();
+            deselectAll();
+            setSelectAll(false);
+            int rowIndex = event.getRowIndex();
+            selectByRowIndex(rowIndex);
         }
         super.handleRowClick(event);
+    }
+
+    private void selectByRowIndex(int rowIndex) {
+        DiskResource model = listStore.get(rowIndex);
+        boolean sel = isSelected(model);
+        if (model != null) {
+            if (sel) {
+                deselect(model);
+            } else if (!sel) {
+                select(model, true);
+            }
+        }
     }
     
     public void clearSelectedItemsCache() {
@@ -198,20 +218,9 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
         boolean left = event.getEvent().getButton() == Event.BUTTON_LEFT;
         Element target = event.getEvent().getEventTarget().cast();
         if (left && target.getClassName().equals("x-grid-row-checker")) {
-            DiskResource model = listStore.get(event.getRowIndex());
-            boolean sel = isSelected(model);
-            if (model != null) {
-                if (sel) {
-                    deselect(model);
-                } else if (!sel) {
-                    select(model, true);
-                }
-            }
+            int rowIndex = event.getRowIndex();
+            selectByRowIndex(rowIndex);
         } else {
-            // when a item is selected by clicking on the row (not on the checkbox)
-            //we need to clear selection of everything else and select only that row.
-            clearSelectedItemsCache();
-            setSelectAll(false);
             super.handleRowMouseDown(event);
         }
     }

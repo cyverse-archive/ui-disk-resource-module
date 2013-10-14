@@ -25,6 +25,7 @@ import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewTool
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gwt.aria.client.LiveValue;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -156,8 +157,12 @@ public class DiskResourceViewImpl implements DiskResourceView {
     private final class LiveGridViewUpdateHandlerImpl implements LiveGridViewUpdateHandler {
         @Override
         public void onUpdate(LiveGridViewUpdateEvent event) {
-            System.out.println("rowcount==>" + event.getRowCount() + " ==>index" + event.getLiveStoreOffset());
-           
+            if(listStore.size() > 0 && !sm.getSelectionMode().equals(SelectionMode.SINGLE)) {
+                enableSelectAllCheckBox();
+            } else {
+                disableSelectAllCheckBox();
+            }
+            
             if(sm.isSelectAll()) {
                 sm.setSelection(listStore.getAll()); 
                 return;
@@ -494,6 +499,16 @@ public class DiskResourceViewImpl implements DiskResourceView {
         grid.getStore().clear();
         grid.getStore().addAll(folderChildren);
     }
+    
+    @Override
+    public void enableSelectAllCheckBox() {
+        selectAllChkBox.setEnabled(true);
+    }
+    
+    @Override
+    public void disableSelectAllCheckBox() {
+        selectAllChkBox.setEnabled(false);
+    }
 
     @Override
     public void setWestWidgetHidden(boolean hideWestWidget) {
@@ -577,6 +592,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     public void addFolder(Folder parent, Folder newChild) {
         treeStore.add(parent, newChild);
         listStore.add(newChild);
+        gridView.refresh();
     }
 
     @Override
@@ -731,6 +747,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
         grid.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         // Hide the checkbox column
         getDiskResourceColumnModel().setCheckboxColumnHidden(true);
+        disableSelectAllCheckBox();
     }
 
     @Override
