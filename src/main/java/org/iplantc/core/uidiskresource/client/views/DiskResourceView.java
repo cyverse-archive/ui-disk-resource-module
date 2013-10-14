@@ -55,6 +55,9 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
             Builder disableFilePreview();
         }
 
+        // No.of files/folders to fetch at a time from the paging service
+        public final int LOAD_LIMIT = 200; 
+        
         void go(HasOneWidget container, HasId folderToSelect, List<HasId> diskResourcesToSelect);
         
         /**

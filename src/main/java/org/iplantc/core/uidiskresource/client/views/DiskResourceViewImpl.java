@@ -25,7 +25,6 @@ import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewTool
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.gwt.aria.client.LiveValue;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -317,7 +316,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     
     private void initLiveView() {
         gridView.setRowHeight(25);
-        gridView.setCacheSize(50);
+        gridView.setCacheSize(Presenter.LOAD_LIMIT);
         grid.setView(gridView);
      
         grid.setLoadMask(true);

@@ -63,6 +63,7 @@ import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceSearchView;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.HasHandlerRegistrationMgmt;
+import org.iplantc.core.uidiskresource.client.views.DiskResourceView.Presenter;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FolderSelectDialog;
 import org.iplantc.core.uidiskresource.client.views.dialogs.InfoTypeEditorDialog;
 import org.iplantc.core.uidiskresource.client.views.metadata.DiskResourceMetadataDialog;
@@ -170,6 +171,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         gridLoader = new PagingLoader<FolderContentsLoadConfig, PagingLoadResult<DiskResource>>(
                 rpc_proxy);
         FolderContentsLoadConfig config = new FolderContentsLoadConfig();
+        config.setLimit(Presenter.LOAD_LIMIT);
         gridLoader.useLoadConfig(config);
         gridLoader.setReuseLoadConfig(true);
         view.setViewLoader(gridLoader);
