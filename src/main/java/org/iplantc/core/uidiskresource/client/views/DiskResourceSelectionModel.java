@@ -204,7 +204,7 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
             if (sel) {
                 deselect(model);
             } else if (!sel) {
-                select(model, true);
+               select(true,model);
             }
         }
     }
@@ -316,6 +316,7 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
         ListStore<DiskResource> store = grid.getStore();
         if(rowcount == 0 || selectedItemsCache.size() == 0) {
             setChecked(false);
+            setSelectAll(false);
             return;
         }
         
@@ -325,13 +326,12 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
                 setSelectAll(true);
             } else {
                 setChecked(false);
-                setSelectAll(false);
             }
             return;
         }
         
         for (int i = viewIndex; i < viewIndex + rowcount ; i++) {
-            if(store.get(i)!= null && selectedItemsCache.get(store.get(i).getId()) == null) {
+            if(store.get(i) != null && selectedItemsCache.get(store.get(i).getId()) == null) {
                 setChecked(false);
                 return;
             }
