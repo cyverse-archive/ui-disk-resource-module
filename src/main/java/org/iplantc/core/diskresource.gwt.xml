@@ -15,6 +15,10 @@
     <replace-with class="org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl">
        <when-type-is class="org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar"/>
     </replace-with>
+     <!-- Deferred binding rules -->
+    <replace-with class="org.iplantc.core.uidiskresource.client.views.CheckBoxColumnDefaultAppearance">
+       <when-type-is class="org.iplantc.core.uidiskresource.client.views.DiskResourceSelectionModel.CheckBoxColumnAppearance"/>
+    </replace-with>
    
 	<source path="client"/>
     <source path="uidiskresource"/>

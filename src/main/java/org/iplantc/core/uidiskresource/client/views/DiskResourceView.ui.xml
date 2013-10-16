@@ -5,6 +5,7 @@
              xmlns:tree="urn:import:com.sencha.gxt.widget.core.client.tree"
              xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client"
              xmlns:grid="urn:import:com.sencha.gxt.widget.core.client.grid"
+             xmlns:paging="urn:import:com.sencha.gxt.widget.core.client.toolbar"
              xmlns:toolbar="urn:import:org.iplantc.core.uidiskresource.client.views.widgets">
    <ui:with type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" field="DISPLAY" />
 
@@ -19,8 +20,8 @@
    <ui:with field="cm"
             type="com.sencha.gxt.widget.core.client.grid.ColumnModel" />
    <ui:with field="gridView"
-            type="com.sencha.gxt.widget.core.client.grid.GridView">
-      <ui:attributes forceFit="false"
+            type="com.sencha.gxt.widget.core.client.grid.LiveGridView">
+      <ui:attributes forceFit="true"
                      autoFill="true"/>
    </ui:with>
 
@@ -88,6 +89,17 @@
             width="1"
             height="0.55"/>
     </ui:with>
+    
+    <ui:with field="centerLayoutData"
+		type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
+		<ui:attributes height="1" width="1" margins="{centerMargins}" />
+
+	</ui:with>
+	 <ui:with field="centerBottomBarLayoutData"
+		type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
+		<ui:attributes height="25" width="1" margins="{centerMargins}" />
+
+	</ui:with>
 
    <container:BorderLayoutContainer ui:field="con"
                                     borders="true">
@@ -106,14 +118,18 @@
 
       <!-- Main Panel -->
       <container:center layoutData="{centerData}">
-         <gxt:ContentPanel ui:field="centerPanel"
-                           headerVisible="false"
-                           resize="true">
+         <container:VerticalLayoutContainer ui:field="centerPanel">
+          <container:child layoutData="{centerLayoutData}">
                   <grid:Grid ui:field="grid"
                              cm="{cm}"
                              store="{listStore}"
                              view="{gridView}" />
-         </gxt:ContentPanel>
+           </container:child>
+           <container:child layoutData="{centerBottomBarLayoutData}">
+           	<paging:ToolBar ui:field="pagingToolBar">
+           	</paging:ToolBar>
+           </container:child>
+         </container:VerticalLayoutContainer>
       </container:center>
 
       <!-- Details Panel -->

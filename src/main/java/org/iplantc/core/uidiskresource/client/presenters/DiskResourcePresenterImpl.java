@@ -1,6 +1,7 @@
 package org.iplantc.core.uidiskresource.client.presenters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,6 +15,7 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.events.diskresources.DiskResourceRefreshEvent;
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.HasId;
@@ -43,6 +45,8 @@ import org.iplantc.core.uidiskresource.client.events.ShowFilePreviewEvent;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.DiskResourcesEventHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityGridHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityNavigationHandler;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoadConfig;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsRpcProxy;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectDiskResourceByIdStoreAddHandler;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectFolderByIdLoadHandler;
 import org.iplantc.core.uidiskresource.client.search.models.DataSearch;
@@ -82,14 +86,17 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
-import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
+import com.sencha.gxt.data.client.loader.RpcProxy;
 import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.SortInfo;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
 import com.sencha.gxt.data.shared.loader.LoadHandler;
+import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+import com.sencha.gxt.data.shared.loader.PagingLoader;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
@@ -115,14 +122,16 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private final TreeLoader<Folder> treeLoader;
     private final HashMap<EventHandler, HandlerRegistration> registeredHandlers = new HashMap<EventHandler, HandlerRegistration>();
     private final List<HandlerRegistration> dreventHandlers = new ArrayList<HandlerRegistration>();
-    private DiskResourceServiceFacade diskResourceService;
+    private final DiskResourceServiceFacade diskResourceService;
     private final IplantDisplayStrings DISPLAY;
     private final DiskResourceAutoBeanFactory drFactory;
     private final Builder builder;
     private final DataSearchAutoBeanFactory dataSearchFactory;
     private final List<String> searchHistory = Lists.newArrayList();
     private String currentSearchTerm;
-     
+    @SuppressWarnings("rawtypes")
+    private RpcProxy rpc_proxy;
+    private PagingLoader<FolderContentsLoadConfig, PagingLoadResult<DiskResource>> gridLoader;
 
     @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
@@ -134,7 +143,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         this.DISPLAY = display;
         this.drFactory = factory;
         this.dataSearchFactory = dataSearchFactory;
-
+        
         builder = new MyBuilder(this);
 
         treeLoader = new TreeLoader<Folder>(this.proxy) {
@@ -152,8 +161,20 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         initDragAndDrop();
         // loadSearchHistory();
         loadUserTrashPath();
+        initFolderContentRpc();
     }
 
+    @SuppressWarnings("unchecked")
+    private void initFolderContentRpc() {
+        rpc_proxy = new FolderContentsRpcProxy(diskResourceService);
+        gridLoader = new PagingLoader<FolderContentsLoadConfig, PagingLoadResult<DiskResource>>(
+                rpc_proxy);
+        FolderContentsLoadConfig config = new FolderContentsLoadConfig();
+        gridLoader.useLoadConfig(config);
+        gridLoader.setReuseLoadConfig(true);
+        view.setViewLoader(gridLoader);
+    }
+    
     private void initDragAndDrop() {
 
     }
@@ -214,6 +235,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
         EventBus eventBus = EventBus.getInstance();
         DiskResourcesEventHandler diskResourcesEventHandler = new DiskResourcesEventHandler(this);
+        dreventHandlers.add(eventBus.addHandler(DiskResourceRefreshEvent.TYPE, diskResourcesEventHandler));
         dreventHandlers.add(eventBus.addHandler(DiskResourcesDeletedEvent.TYPE, diskResourcesEventHandler));
         dreventHandlers.add(eventBus.addHandler(FolderCreatedEvent.TYPE, diskResourcesEventHandler));
         dreventHandlers.add(eventBus.addHandler(DiskResourceRenamedEvent.TYPE, diskResourcesEventHandler));
@@ -344,34 +366,9 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void onFolderSelected(final Folder folder) {
         view.showDataListingWidget();
         view.deSelectDiskResources();
-        maskView();
-        diskResourceService.getFolderContents(folder.getId(), new AsyncCallback<String>() {
-
-            @Override
-            public void onSuccess(String result) {
-                // TODO Perhaps updating the folder here should be pushed into the service facade's logic
-                // once it's refactored to cache results.
-                // Turn json result into a Splittable and wrap the loaded folder
-                Splittable split = StringQuoter.split(result);
-                AutoBeanCodex.decodeInto(split, AutoBeanUtils.<Folder, Folder> getAutoBean(folder));
-
-                Set<DiskResource> children = Sets.newHashSet();
-                if (folder.getFolders() != null) {
-                    children.addAll(folder.getFolders());
-                }
-                if (folder.getFiles() != null) {
-                    children.addAll(folder.getFiles());
-                }
-                view.setDiskResources(children);
-                unMaskView();
-            }
-
-            @Override
-            public void onFailure(Throwable caught) {
-                ErrorHandler.post(I18N.ERROR.retrieveFolderInfoFailed(), caught);
-                unMaskView();
-            }
-        });
+        FolderContentsLoadConfig config = gridLoader.getLastLoadConfig();
+        config.setFolder(folder);
+        gridLoader.load();
     }
 
     @Override
@@ -395,14 +392,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     }
 
-    // @Override
-    // public void onFolderLoad(Folder loadedFolder, Set<DiskResource> folderChildren) {
-    // // FIXME JDS This method needs to go away. Instead, this action should be performed via a
-    // loadHandler.
-    // if ((getSelectedFolder() != null) && getSelectedFolder().equals(loadedFolder)) {
-    // view.setDiskResources(folderChildren);
-    // }
-    // }
 
     @Override
     public void doBulkUpload() {
@@ -437,26 +426,28 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void doCreateNewFolder(final Folder parentFolder, final String newFolderName) {
         view.mask(DISPLAY.loadingMask());
         diskResourceService.createFolder(parentFolder, newFolderName, new CreateFolderCallback(
-                parentFolder, view, newFolderName));
+                parentFolder, view));
     }
 
     @Override
-    public void doRefresh() {
-        Folder selectedFolder = getSelectedFolder();
-        view.refreshFolder(selectedFolder);
-        setSelectedFolderById(selectedFolder);
+    public void doRefresh(Folder folder) {
+        String folderId = folder.getId();
+        ArrayList<DiskResource> selectedResources = Lists.newArrayList(getSelectedDiskResources());
+        EventBus.getInstance().fireEvent(new DiskResourceRefreshEvent(folderId, selectedResources));
     }
 
     @Override
-    public void refreshFolder(Folder folder) {
+    public void refreshFolder(String folderId, List<DiskResource> selectedResources) {
+        Folder folder = view.getFolderById(folderId);
         if (folder == null) {
             return;
         }
 
-        if (getSelectedFolder() == folder) {
-            doRefresh();
-        } else {
-            view.refreshFolder(folder);
+        Folder selectedFolder = getSelectedFolder();
+        view.refreshFolder(folder);
+
+        if (selectedFolder == folder) {
+            setSelectedFolderById(selectedFolder);
         }
     }
 
@@ -475,8 +466,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     @Override
     public void doRename(final DiskResource dr, final String newName) {
         view.mask(DISPLAY.loadingMask());
-        diskResourceService.renameDiskResource(dr, newName, new RenameDiskResourceCallback(dr, view,
-                drFactory));
+        diskResourceService.renameDiskResource(dr, newName, new RenameDiskResourceCallback(dr, view));
     }
 
     @Override
@@ -883,7 +873,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
                     @Override
                     public void onSuccess(String result) {
-                        refreshFolder(view.getFolderById(UserInfo.getInstance().getTrashPath()));
+                        doRefresh(view.getFolderById(UserInfo.getInstance().getTrashPath()));
                         view.unmask();
                     }
 
@@ -991,8 +981,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
                 final Set<DiskResource> selectedResources = getSelectedDiskResources();
                 if (DiskResourceUtil.isMovable(targetFolder, selectedResources)) {
                     if (canDragDataToTargetFolder(targetFolder, selectedResources)) {
-                        diskResourceService.moveDiskResources(selectedResources, targetFolder,
-                                new DiskResourceMoveCallback(view, targetFolder, selectedResources));
+                        doMoveDiskResources(targetFolder, selectedResources);
                     } else {
                         IplantAnnouncer.getInstance().schedule(
                                 new ErrorAnnouncementConfig(I18N.ERROR.diskResourceIncompleteMove()));
@@ -1004,6 +993,13 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             }
         });
 
+    }
+
+    @Override
+    public void updateSortInfo(SortInfo sortInfo) {
+        FolderContentsLoadConfig config = gridLoader.getLastLoadConfig();
+        config.setSortInfo(Arrays.asList(sortInfo));
+        gridLoader.load();
     }
 
 }

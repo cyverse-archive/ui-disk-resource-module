@@ -249,6 +249,7 @@ public class DataSharingPermissionsPanel implements IsWidget {
             sharingMap.put(userName, shareList);
         }
     }
+    
 
     private void removeModels(DataSharing model) {
         ListStore<DataSharing> store = grid.getStore();
