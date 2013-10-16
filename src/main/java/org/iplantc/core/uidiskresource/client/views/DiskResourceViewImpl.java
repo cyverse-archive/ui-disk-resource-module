@@ -164,25 +164,15 @@ public class DiskResourceViewImpl implements DiskResourceView {
             } else {
                 disableSelectAllCheckBox();
             }
-
-            if (sm.isSelectAll()) {
+            if(sm.isSelectAll()) {
                 sm.setSelection(listStore.getAll());
-            } else {
-                List<DiskResource> temp = sm.getSelectedItemsCache();
-                for (DiskResource dr : temp) {
-                    DiskResource item = listStore.findModel(dr);
-                    if (item != null) {
-                        sm.select(item, true);
-                    }
-                }
             }
-
-            // update row and off set
             sm.setRowCount(event.getRowCount());
-            sm.setViewIndex(event.getViewIndex());
             sm.setTotal(event.getTotalCount());
         }
     }
+    
+    
 
     private final class GridSelectionHandler implements SelectionChangedHandler<DiskResource> {
         @Override
@@ -301,12 +291,11 @@ public class DiskResourceViewImpl implements DiskResourceView {
         grid.getSelectionModel().addSelectionChangedHandler(new SelectionChangeHandlerImpl());
 
         gridView.addLiveGridViewUpdateHandler(new LiveGridViewUpdateHandlerImpl());
-
+        
         // by default no details to show...
         resetDetailsPanel();
         setGridEmptyText();
         addTreeCollapseButton();
-
     }
 
     private void setLeafIcon(final Tree<Folder, String> tree) {
@@ -318,8 +307,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     private void initLiveView() {
         gridView.setRowHeight(25);
-        gridView.setCacheSize(50);
- 
         grid.setLoadMask(true);
         LiveToolItem toolItem = new LiveToolItem(grid);
         toolItem.setWidth(150);

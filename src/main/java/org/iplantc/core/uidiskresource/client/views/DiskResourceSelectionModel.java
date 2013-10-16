@@ -55,8 +55,6 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
 
     private Map<String,DiskResource> selectedItemsCache = new HashMap<String,DiskResource>();
 
-    private int viewIndex;
-
     private int rowcount;
     
     private boolean selectAll;
@@ -234,6 +232,17 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
     protected void onAdd(List<? extends DiskResource> models) {
         super.onAdd(models);
         updateHeaderCheckBox();
+   //     doCheckToSelect(models);
+        
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void doCheckToSelect(List<? extends DiskResource> newItems) {
+        if(newItems != null) {
+            if (isSelectAll()) {
+                select((List<DiskResource>)newItems,true);
+            } 
+      }
     }
 
     @Override
@@ -248,6 +257,9 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
 
     protected void onRemove(DiskResource model) {
         super.onRemove(model);
+        if(!selectAll) {
+            selectedItemsCache.remove(model.getId());
+        }
         updateHeaderCheckBox();
     };
 
@@ -267,10 +279,6 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
 
     public DiskResource removeFromSelectedCache(DiskResource dr) {
         return selectedItemsCache.remove(dr.getId());
-    }
-
-    public void setViewIndex(int index) {
-        this.viewIndex = index;
     }
 
     public void setRowCount(int rowCount) {
@@ -330,8 +338,8 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
             return;
         }
         
-        for (int i = viewIndex; i < viewIndex + rowcount ; i++) {
-            if(store.get(i) != null && selectedItemsCache.get(store.get(i).getId()) == null) {
+        for (int i = 0; i < store.size() ; i++) {
+            if(selectedItemsCache.get(store.get(i).getId()) == null) {
                 setChecked(false);
                 return;
             }

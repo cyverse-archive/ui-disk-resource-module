@@ -368,7 +368,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         view.deSelectDiskResources();
         FolderContentsLoadConfig config = gridLoader.getLastLoadConfig();
         config.setFolder(folder);
-        gridLoader.load();
+        gridLoader.load(0,200);
     }
 
     @Override
