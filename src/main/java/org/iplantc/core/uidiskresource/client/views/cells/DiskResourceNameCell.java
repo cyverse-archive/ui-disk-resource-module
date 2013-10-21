@@ -64,6 +64,35 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
 
     private static final DiskResourceNameCellStyle CSS = IplantResources.RESOURCES.diskResourceNameCss();
 
+    private final class QuickShareAnchorClickHandlerImpl implements ClickHandler {
+        private final DiskResource value;
+
+        private QuickShareAnchorClickHandlerImpl(DiskResource value) {
+            this.value = value;
+        }
+
+        @Override
+        public void onClick(ClickEvent event) {
+            final DiskResourceServiceFacade drService = ServicesInjector.INSTANCE.getDiskResourceServiceFacade();
+            final DataLinkFactory dlFactory = GWT.create(DataLinkFactory.class);
+            drService.createDataLinks(Arrays.asList(value.getId()), new AsyncCallback<String>() {
+                
+                @Override
+                public void onSuccess(String result) {
+                    AutoBean<DataLinkList> tickets = AutoBeanCodex.decode(dlFactory, DataLinkList.class, result);
+                    List<DataLink> dlList = tickets.as().getTickets();
+                    showShareLink(DEProperties.getInstance().getKifShareTicketBaseUrl() + dlList.get(0).getId());
+                }
+                
+                @Override
+                public void onFailure(Throwable caught) {
+                    ErrorHandler.post(I18N.ERROR.createDataLinksError(), caught);
+                }
+            });
+            
+        }
+    }
+
     public static enum CALLER_TAG {
         DATA, SEARCH, SHARING;
     }
@@ -154,42 +183,40 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         
         if (value instanceof File && value.getPermissions().isOwner() && !DiskResourceUtil.inTrash(value)) {   
             buildQuickSharePopup(value);
-            linkPopup.showAt(eventTarget.getAbsoluteLeft() + 25, eventTarget.getAbsoluteTop() - 15);
+        } else {
+            buildFolderLink(value);
         }
-        
+        linkPopup.showAt(eventTarget.getAbsoluteLeft() + 25, eventTarget.getAbsoluteTop() - 15);
         eventTarget.getStyle().setTextDecoration(TextDecoration.UNDERLINE);
     }
-
-    private void buildQuickSharePopup(final DiskResource value) {
-        linkPopup = new Popup();
-        linkPopup.setBorders(true);
-        linkPopup.getElement().getStyle().setBackgroundColor("#F8F8F8");
+    
+ 
+    private void buildFolderLink(final DiskResource value) {
+        initPopup();
         Anchor hp = new Anchor();
         hp.addClickHandler(new ClickHandler() {
             
             @Override
             public void onClick(ClickEvent event) {
-                final DiskResourceServiceFacade drService = ServicesInjector.INSTANCE.getDiskResourceServiceFacade();
-                final DataLinkFactory dlFactory = GWT.create(DataLinkFactory.class);
-                drService.createDataLinks(Arrays.asList(value.getId()), new AsyncCallback<String>() {
-                    
-                    @Override
-                    public void onSuccess(String result) {
-                        AutoBean<DataLinkList> tickets = AutoBeanCodex.decode(dlFactory, DataLinkList.class, result);
-                        List<DataLink> dlList = tickets.as().getTickets();
-                        showQuickShareLink(dlList);
-                    }
-                    
-                    @Override
-                    public void onFailure(Throwable caught) {
-                        ErrorHandler.post(I18N.ERROR.createDataLinksError(), caught);
-                    }
-                });
-                
+               showShareLink(GWT.getHostPageBaseURL() + "?type=data&folder=" + value.getId());
             }
         });
+        hp.setHTML("<span style='color:#0098AA;font-size:11px; padding:2px;cursor:pointer;'>"+ I18N.DISPLAY.linkToFolder() + " " + value.getName() +  "</i></span>");
+        linkPopup.add(hp);
+    }
+
+    private void buildQuickSharePopup(final DiskResource value) {
+        initPopup();
+        Anchor hp = new Anchor();
+        hp.addClickHandler(new QuickShareAnchorClickHandlerImpl(value));
         hp.setHTML("<span style='color:#0098AA;font-size:11px; padding:2px;cursor:pointer;'>"+ I18N.DISPLAY.share() + " " + value.getName() + " " + I18N.DISPLAY.viaPublicLink() +  "</i></span>");
         linkPopup.add(hp);
+    }
+
+    private void initPopup() {
+        linkPopup = new Popup();
+        linkPopup.setBorders(true);
+        linkPopup.getElement().getStyle().setBackgroundColor("#F8F8F8");
     }
 
     private void doOnClick(Element eventTarget, DiskResource value,
@@ -216,7 +243,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         this.previewEnabled = previewEnabled;
     }
 
-    private void showQuickShareLink(List<DataLink> dlList) {
+    private void showShareLink(String linkId) {
         // Open dialog window with text selected.
         IPlantDialog dlg = new IPlantDialog();
         dlg.setHeadingText(I18N.DISPLAY.copy());
@@ -226,7 +253,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         TextField textBox = new TextField();
         textBox.setWidth(500);
         textBox.setReadOnly(true);
-        textBox.setValue(DEProperties.getInstance().getKifShareTicketBaseUrl() + dlList.get(0).getId());
+        textBox.setValue(linkId);
         VerticalLayoutContainer container = new VerticalLayoutContainer();
         dlg.setWidget(container);
         container.add(textBox);
