@@ -232,8 +232,6 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
     protected void onAdd(List<? extends DiskResource> models) {
         super.onAdd(models);
         updateHeaderCheckBox();
-   //     doCheckToSelect(models);
-        
     }
     
     @SuppressWarnings("unchecked")
@@ -256,10 +254,10 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
     }
 
     protected void onRemove(DiskResource model) {
-        super.onRemove(model);
         if(!selectAll) {
             selectedItemsCache.remove(model.getId());
         }
+        super.onRemove(model);
         updateHeaderCheckBox();
     };
 
