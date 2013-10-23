@@ -74,6 +74,8 @@ import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.BeforeExpandItemEvent;
+import com.sencha.gxt.widget.core.client.event.BeforeExpandItemEvent.BeforeExpandItemHandler;
 import com.sencha.gxt.widget.core.client.event.LiveGridViewUpdateEvent;
 import com.sencha.gxt.widget.core.client.event.LiveGridViewUpdateEvent.LiveGridViewUpdateHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -188,7 +190,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     private final class TreeSelectionHandler implements SelectionHandler<Folder> {
         @Override
         public void onSelection(SelectionEvent<Folder> event) {
-            if (DiskResourceViewImpl.this.widget.isAttached() && (event.getSelectedItem() != null)) {
+            if (DiskResourceViewImpl.this.widget.isAttached() && (event.getSelectedItem() != null) && !event.getSelectedItem().isFilter()) {
                 onFolderSelected(event.getSelectedItem());
             }
         }
@@ -283,6 +285,18 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
         setLeafIcon(tree);
         tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        tree.addBeforeExpandHandler(new BeforeExpandItemHandler<Folder>() {
+
+            @Override
+            public void onBeforeExpand(BeforeExpandItemEvent<Folder> event) {
+                    
+               if(event.getItem().isFilter()) {
+                   event.setCancelled(true);
+                   tree.getView().collapse(tree.findNode(event.getItem())); 
+               }
+                
+            }
+        });
         tree.getSelectionModel().addSelectionHandler(new TreeSelectionHandler());
 
         grid.getSelectionModel().addSelectionChangedHandler(new GridSelectionHandler());
@@ -296,6 +310,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
         resetDetailsPanel();
         setGridEmptyText();
         addTreeCollapseButton();
+      
     }
 
     private void setLeafIcon(final Tree<Folder, String> tree) {

@@ -64,6 +64,19 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
 
     private static final DiskResourceNameCellStyle CSS = IplantResources.RESOURCES.diskResourceNameCss();
 
+    private final class FolderLinkClikcHandler implements ClickHandler {
+        private final DiskResource value;
+
+        private FolderLinkClikcHandler(DiskResource value) {
+            this.value = value;
+        }
+
+        @Override
+        public void onClick(ClickEvent event) {
+           showShareLink(GWT.getHostPageBaseURL() + "?type=data&folder=" + value.getId());
+        }
+    }
+
     private final class QuickShareAnchorClickHandlerImpl implements ClickHandler {
         private final DiskResource value;
 
@@ -130,10 +143,13 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         SafeHtml name = SafeHtmlUtils.fromString(value.getName());
         if (value instanceof File) {
             String nameStyle = previewEnabled ? CSS.nameStyle() : CSS.nameStyleNoPointer();
+            nameStyle = value.isFilter() ? nameStyle + " " + CSS.nameDisabledStyle() : nameStyle;
             sb.append(templates.cell(CSS.drFile(), nameStyle, name));
         } else if (value instanceof Folder) {
-            sb.append(templates.cell(CSS.drFolder(), CSS.nameStyle(), name));
+            String nameStyle = CSS.nameStyle() + (value.isFilter() ? " " + CSS.nameDisabledStyle() : "");
+            sb.append(templates.cell(CSS.drFolder(), nameStyle, name));
         }
+        
 
     }
 
@@ -194,13 +210,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
     private void buildFolderLink(final DiskResource value) {
         initPopup();
         Anchor hp = new Anchor();
-        hp.addClickHandler(new ClickHandler() {
-            
-            @Override
-            public void onClick(ClickEvent event) {
-               showShareLink(GWT.getHostPageBaseURL() + "?type=data&folder=" + value.getId());
-            }
-        });
+        hp.addClickHandler(new FolderLinkClikcHandler(value));
         hp.setHTML("<span style='color:#0098AA;font-size:11px; padding:2px;cursor:pointer;'>"+ I18N.DISPLAY.linkToFolder() + " " + value.getName() +  "</i></span>");
         linkPopup.add(hp);
     }
@@ -236,7 +246,8 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
     private boolean isValidClickTarget(Element eventTarget, DiskResource value) {
         return eventTarget.getAttribute("name").equalsIgnoreCase("drName") //$NON-NLS-1$ //$NON-NLS-2$
                 && tag != DiskResourceNameCell.CALLER_TAG.SHARING
-                && (previewEnabled || !(value instanceof File));
+                && (previewEnabled || !(value instanceof File))
+                && (!value.isFilter());
     }
 
     public void setPreviewEnabled(boolean previewEnabled) {
