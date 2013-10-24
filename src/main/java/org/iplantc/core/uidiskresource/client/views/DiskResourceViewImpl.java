@@ -225,8 +225,13 @@ public class DiskResourceViewImpl implements DiskResourceView {
     private final class TreeSelectionHandler implements SelectionHandler<Folder> {
         @Override
         public void onSelection(SelectionEvent<Folder> event) {
-            if (DiskResourceViewImpl.this.widget.isAttached() && (event.getSelectedItem() != null) && !event.getSelectedItem().isFilter()) {
-                onFolderSelected(event.getSelectedItem());
+            Folder selectedItem = event.getSelectedItem();
+            if (DiskResourceViewImpl.this.widget.isAttached() && (selectedItem != null)) {
+                if(!selectedItem.isFilter()) {
+                    onFolderSelected(selectedItem);
+                } else {
+                    tree.getSelectionModel().deselect(selectedItem);
+                }
             }
         }
     }

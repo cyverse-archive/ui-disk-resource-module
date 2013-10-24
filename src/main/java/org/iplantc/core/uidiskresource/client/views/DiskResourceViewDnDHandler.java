@@ -79,7 +79,7 @@ class DiskResourceViewDnDHandler implements DndDragStartHandler, DndDropHandler,
 
         Set<? extends DiskResource> dragData = presenter.getDragSources(event.getTarget(), dragStartEl);
 
-        if ((dragData != null) && !dragData.isEmpty()) {
+        if ((dragData != null) && !dragData.isEmpty() && (!containsFilteredItems(dragData))) {
             event.setData(dragData);
             event.getStatusProxy().update(I18N.DISPLAY.dataDragDropStatusText(dragData.size()));
             event.getStatusProxy().setStatus(true);
@@ -87,6 +87,16 @@ class DiskResourceViewDnDHandler implements DndDragStartHandler, DndDropHandler,
         } else {
             event.setCancelled(true);
         }
+    }
+    
+    private boolean containsFilteredItems(Set<? extends DiskResource> dragData) {
+        for (DiskResource dr : dragData) {
+            if(dr.isFilter()) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     @Override
