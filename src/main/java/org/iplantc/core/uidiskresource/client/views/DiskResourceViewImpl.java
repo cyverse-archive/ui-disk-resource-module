@@ -41,6 +41,7 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
@@ -57,6 +58,7 @@ import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.resources.ThemeStyles;
+import com.sencha.gxt.core.client.util.Util;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.loader.PagingLoadResult;
@@ -76,6 +78,8 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.BeforeExpandItemEvent;
 import com.sencha.gxt.widget.core.client.event.BeforeExpandItemEvent.BeforeExpandItemHandler;
+import com.sencha.gxt.widget.core.client.event.ExpandItemEvent;
+import com.sencha.gxt.widget.core.client.event.ExpandItemEvent.ExpandItemHandler;
 import com.sencha.gxt.widget.core.client.event.LiveGridViewUpdateEvent;
 import com.sencha.gxt.widget.core.client.event.LiveGridViewUpdateEvent.LiveGridViewUpdateHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -86,6 +90,7 @@ import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
+import com.sencha.gxt.widget.core.client.grid.GridSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.LiveGridView;
 import com.sencha.gxt.widget.core.client.grid.LiveToolItem;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
@@ -99,6 +104,24 @@ import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 import com.sencha.gxt.widget.core.client.tree.TreeView;
 
 public class DiskResourceViewImpl implements DiskResourceView {
+
+    private final class TreeBeforeCollapseHandlerImpl implements BeforeExpandItemHandler<Folder> {
+        private final Tree<Folder, String> tree;
+
+        private TreeBeforeCollapseHandlerImpl(Tree<Folder, String> tree) {
+            this.tree = tree;
+        }
+
+        @Override
+        public void onBeforeExpand(BeforeExpandItemEvent<Folder> event) {
+                
+           if(event.getItem().isFilter()) {
+               event.setCancelled(true);
+               tree.getView().collapse(tree.findNode(event.getItem())); 
+           }
+            
+        }
+    }
 
     private final class SelectAllCheckBoxHandlerImpl implements ValueChangeHandler<Boolean> {
         @Override
@@ -114,6 +137,8 @@ public class DiskResourceViewImpl implements DiskResourceView {
                 sm.clearSelectedItemsCache();
                 updateSelectionCount(0);
             }
+            
+          
         }
     }
 
@@ -123,10 +148,22 @@ public class DiskResourceViewImpl implements DiskResourceView {
         @Override
         public void onLoading(TreeNode<Folder> node) {
             onIconStyleChange(node, resources.loading());
-
             // Does nothing in GXT 3.0.1, but call it in case of any future version updates.
             super.onLoading(node);
         }
+        
+        @Override
+        public void onTextChange(TreeNode<Folder> node, SafeHtml text) {
+            Element textEl = getTextElement(node);
+            if (textEl != null) {
+              Folder folder = node.getModel(); 
+              if(!folder.isFilter()) {
+                  textEl.setInnerHTML(Util.isEmptyString(text.asString()) ? "&#160;" : text.asString());
+              } else {
+                  textEl.setInnerHTML(Util.isEmptyString(text.asString()) ? "&#160;" : "<span style='color:red;font-style:italic;'>" + text.asString() + "</span>");
+              }
+            }
+          }
     }
 
     private final class SelectionChangeHandlerImpl implements SelectionChangedHandler<DiskResource> {
@@ -150,8 +187,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
     private final class SortChangeHandlerImpl implements SortChangeHandler {
         @Override
         public void onSortChange(SortChangeEvent event) {
-            System.out.println(event.getSortInfo().getSortField() + " "
-                    + event.getSortInfo().getSortDir().toString());
             if (presenter != null) {
                 presenter.updateSortInfo(event.getSortInfo());
             }
@@ -285,27 +320,33 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
         setLeafIcon(tree);
         tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        tree.addBeforeExpandHandler(new BeforeExpandItemHandler<Folder>() {
+        tree.addBeforeExpandHandler(new TreeBeforeCollapseHandlerImpl(tree));
+        tree.getSelectionModel().addSelectionHandler(new TreeSelectionHandler());
+
+        GridSelectionModel<DiskResource> selectionModel = grid.getSelectionModel();
+        selectionModel.addSelectionChangedHandler(new GridSelectionHandler());
+        selectionModel.addSelectionChangedHandler(new SelectionChangeHandlerImpl());
+
+        grid.addSortChangeHandler(new SortChangeHandlerImpl());
+        gridView.addLiveGridViewUpdateHandler(new LiveGridViewUpdateHandlerImpl());
+        
+        tree.addExpandHandler(new ExpandItemHandler<Folder>() {
 
             @Override
-            public void onBeforeExpand(BeforeExpandItemEvent<Folder> event) {
-                    
-               if(event.getItem().isFilter()) {
-                   event.setCancelled(true);
-                   tree.getView().collapse(tree.findNode(event.getItem())); 
-               }
+            public void onExpand(ExpandItemEvent<Folder> event) {
+                List<Folder> childrens = event.getItem().getFolders();
+                if(childrens != null && childrens.size() > 0) {
+                    for (Folder f : childrens) {
+                        if(f.isFilter()) {
+                            TreeNode<Folder> tn = tree.findNode(f);
+                            tree.getView().getTextElement(tn).setInnerHTML("<span style='color:red;font-style:italic;'>" + f.getName() + "</span>");
+                        }
+                    }
+                }
                 
             }
         });
-        tree.getSelectionModel().addSelectionHandler(new TreeSelectionHandler());
-
-        grid.getSelectionModel().addSelectionChangedHandler(new GridSelectionHandler());
-        grid.addSortChangeHandler(new SortChangeHandlerImpl());
-
-        grid.getSelectionModel().addSelectionChangedHandler(new SelectionChangeHandlerImpl());
-
-        gridView.addLiveGridViewUpdateHandler(new LiveGridViewUpdateHandlerImpl());
-        
+       
         // by default no details to show...
         resetDetailsPanel();
         setGridEmptyText();

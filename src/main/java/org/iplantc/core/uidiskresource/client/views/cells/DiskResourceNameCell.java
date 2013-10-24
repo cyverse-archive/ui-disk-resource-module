@@ -54,8 +54,8 @@ import com.sencha.gxt.widget.core.client.tips.Tip;
 /**
  * A cell for displaying the icons and names for <code>DiskResource</code> list items.
  * 
- * TODO JDS Implement preview tooltip.
- * Tooltip will probably have to be {@link Tip}, since this is a cell and not a widget.
+ * TODO JDS Implement preview tooltip. Tooltip will probably have to be {@link Tip}, since this is a cell
+ * and not a widget.
  * 
  * @author jstroot
  * 
@@ -73,7 +73,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
 
         @Override
         public void onClick(ClickEvent event) {
-           showShareLink(GWT.getHostPageBaseURL() + "?type=data&folder=" + value.getId());
+            showShareLink(GWT.getHostPageBaseURL() + "?type=data&folder=" + value.getId());
         }
     }
 
@@ -86,23 +86,26 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
 
         @Override
         public void onClick(ClickEvent event) {
-            final DiskResourceServiceFacade drService = ServicesInjector.INSTANCE.getDiskResourceServiceFacade();
+            final DiskResourceServiceFacade drService = ServicesInjector.INSTANCE
+                    .getDiskResourceServiceFacade();
             final DataLinkFactory dlFactory = GWT.create(DataLinkFactory.class);
             drService.createDataLinks(Arrays.asList(value.getId()), new AsyncCallback<String>() {
-                
+
                 @Override
                 public void onSuccess(String result) {
-                    AutoBean<DataLinkList> tickets = AutoBeanCodex.decode(dlFactory, DataLinkList.class, result);
+                    AutoBean<DataLinkList> tickets = AutoBeanCodex.decode(dlFactory, DataLinkList.class,
+                            result);
                     List<DataLink> dlList = tickets.as().getTickets();
-                    showShareLink(DEProperties.getInstance().getKifShareTicketBaseUrl() + dlList.get(0).getId());
+                    showShareLink(DEProperties.getInstance().getKifShareTicketBaseUrl()
+                            + dlList.get(0).getId());
                 }
-                
+
                 @Override
                 public void onFailure(Throwable caught) {
                     ErrorHandler.post(I18N.ERROR.createDataLinksError(), caught);
                 }
             });
-            
+
         }
     }
 
@@ -139,7 +142,6 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         if (value == null) {
             return;
         }
-
         SafeHtml name = SafeHtmlUtils.fromString(value.getName());
         if (value instanceof File) {
             String nameStyle = previewEnabled ? CSS.nameStyle() : CSS.nameStyleNoPointer();
@@ -149,7 +151,6 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
             String nameStyle = CSS.nameStyle() + (value.isFilter() ? " " + CSS.nameDisabledStyle() : "");
             sb.append(templates.cell(CSS.drFolder(), nameStyle, name));
         }
-        
 
     }
 
@@ -183,21 +184,24 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         if (!isValidClickTarget(eventTarget, value)) {
             return;
         }
-        
+
         eventTarget.getStyle().setTextDecoration(TextDecoration.NONE);
     }
 
     private void doOnMouseOver(Element eventTarget, DiskResource value) {
-        if (!isValidClickTarget(eventTarget, value)) {
-            return;
-        }
-        
-        if(linkPopup != null) {
+        if (linkPopup != null) {
             linkPopup.hide();
             linkPopup = null;
         }
-        
-        if (value instanceof File && value.getPermissions().isOwner() && !DiskResourceUtil.inTrash(value)) {   
+        if (!isValidClickTarget(eventTarget, value)) {
+            if (value.isFilter()) {
+                eventTarget.setTitle(I18N.DISPLAY.diskResourceNotAvailable());
+            }
+            return;
+        }
+
+        if (value instanceof File && value.getPermissions().isOwner()
+                && !DiskResourceUtil.inTrash(value)) {
             buildQuickSharePopup(value);
         } else {
             buildFolderLink(value);
@@ -205,13 +209,13 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         linkPopup.showAt(eventTarget.getAbsoluteLeft() + 25, eventTarget.getAbsoluteTop() - 15);
         eventTarget.getStyle().setTextDecoration(TextDecoration.UNDERLINE);
     }
-    
- 
+
     private void buildFolderLink(final DiskResource value) {
         initPopup();
         Anchor hp = new Anchor();
         hp.addClickHandler(new FolderLinkClikcHandler(value));
-        hp.setHTML("<span style='color:#0098AA;font-size:11px; padding:2px;cursor:pointer;'>"+ I18N.DISPLAY.linkToFolder() + " " + value.getName() +  "</i></span>");
+        hp.setHTML("<span style='color:#0098AA;font-size:11px; padding:2px;cursor:pointer;'>"
+                + I18N.DISPLAY.linkToFolder() + " " + value.getName() + "</i></span>");
         linkPopup.add(hp);
     }
 
@@ -219,7 +223,9 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         initPopup();
         Anchor hp = new Anchor();
         hp.addClickHandler(new QuickShareAnchorClickHandlerImpl(value));
-        hp.setHTML("<span style='color:#0098AA;font-size:11px; padding:2px;cursor:pointer;'>"+ I18N.DISPLAY.share() + " " + value.getName() + " " + I18N.DISPLAY.viaPublicLink() +  "</i></span>");
+        hp.setHTML("<span style='color:#0098AA;font-size:11px; padding:2px;cursor:pointer;'>"
+                + I18N.DISPLAY.share() + " " + value.getName() + " " + I18N.DISPLAY.viaPublicLink()
+                + "</i></span>");
         linkPopup.add(hp);
     }
 
@@ -246,8 +252,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
     private boolean isValidClickTarget(Element eventTarget, DiskResource value) {
         return eventTarget.getAttribute("name").equalsIgnoreCase("drName") //$NON-NLS-1$ //$NON-NLS-2$
                 && tag != DiskResourceNameCell.CALLER_TAG.SHARING
-                && (previewEnabled || !(value instanceof File))
-                && (!value.isFilter());
+                && (previewEnabled || !(value instanceof File)) && (!value.isFilter());
     }
 
     public void setPreviewEnabled(boolean previewEnabled) {
