@@ -89,7 +89,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
             final DiskResourceServiceFacade drService = ServicesInjector.INSTANCE
                     .getDiskResourceServiceFacade();
             final DataLinkFactory dlFactory = GWT.create(DataLinkFactory.class);
-            drService.createDataLinks(Arrays.asList(value.getId()), new AsyncCallback<String>() {
+            drService.createDataLinks(Arrays.asList(value.getPath()), new AsyncCallback<String>() {
 
                 @Override
                 public void onSuccess(String result) {

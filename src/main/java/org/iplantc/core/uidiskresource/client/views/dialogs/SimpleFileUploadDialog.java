@@ -134,7 +134,7 @@ public class SimpleFileUploadDialog extends IPlantDialog {
     }
 
     private void initDestPathLabel() {
-        String destPath = uploadDest.getId();
+        String destPath = uploadDest.getPath();
 
         htmlDestText.setHTML(Format.ellipse(I18N.DISPLAY.uploadingToFolder(destPath), 80));
         new ToolTip(htmlDestText, new ToolTipConfig(destPath));
@@ -153,7 +153,7 @@ public class SimpleFileUploadDialog extends IPlantDialog {
     @UiFactory
     HorizontalLayoutContainer createHLC() {
         HorizontalLayoutContainer hlc = new HorizontalLayoutContainer();
-        hlc.add(new Hidden(HDN_PARENT_ID_KEY, uploadDest.getId()));
+        hlc.add(new Hidden(HDN_PARENT_ID_KEY, uploadDest.getPath()));
         hlc.add(new Hidden(HDN_USER_ID_KEY, userName));
         return hlc;
     }
@@ -273,7 +273,7 @@ public class SimpleFileUploadDialog extends IPlantDialog {
             String fileName = field.getValue().replaceAll(".*[\\\\/]", "");
             field.setEnabled(!Strings.isNullOrEmpty(fileName) && !fileName.equalsIgnoreCase("null"));
             if (field.isEnabled()) {
-                destResourceMap.put(uploadDest.getId() + "/" + fileName, field);
+                destResourceMap.put(uploadDest.getPath() + "/" + fileName, field);
             } else {
                 field.setEnabled(false);
             }

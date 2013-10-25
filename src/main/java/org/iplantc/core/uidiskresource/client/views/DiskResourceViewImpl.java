@@ -61,6 +61,8 @@ import com.sencha.gxt.core.client.resources.ThemeStyles;
 import com.sencha.gxt.core.client.util.Util;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.TreeStore;
+import com.sencha.gxt.data.shared.event.StoreDataChangeEvent;
+import com.sencha.gxt.data.shared.event.StoreDataChangeEvent.StoreDataChangeHandler;
 import com.sencha.gxt.data.shared.loader.PagingLoadResult;
 import com.sencha.gxt.data.shared.loader.PagingLoader;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
@@ -78,8 +80,6 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.BeforeExpandItemEvent;
 import com.sencha.gxt.widget.core.client.event.BeforeExpandItemEvent.BeforeExpandItemHandler;
-import com.sencha.gxt.widget.core.client.event.ExpandItemEvent;
-import com.sencha.gxt.widget.core.client.event.ExpandItemEvent.ExpandItemHandler;
 import com.sencha.gxt.widget.core.client.event.LiveGridViewUpdateEvent;
 import com.sencha.gxt.widget.core.client.event.LiveGridViewUpdateEvent.LiveGridViewUpdateHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -114,12 +114,12 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
         @Override
         public void onBeforeExpand(BeforeExpandItemEvent<Folder> event) {
-                
-           if(event.getItem().isFilter()) {
-               event.setCancelled(true);
-               tree.getView().collapse(tree.findNode(event.getItem())); 
-           }
-            
+
+            if (event.getItem().isFilter()) {
+                event.setCancelled(true);
+                tree.getView().collapse(tree.findNode(event.getItem()));
+            }
+
         }
     }
 
@@ -137,8 +137,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
                 sm.clearSelectedItemsCache();
                 updateSelectionCount(0);
             }
-            
-          
+
         }
     }
 
@@ -151,19 +150,21 @@ public class DiskResourceViewImpl implements DiskResourceView {
             // Does nothing in GXT 3.0.1, but call it in case of any future version updates.
             super.onLoading(node);
         }
-        
+
         @Override
         public void onTextChange(TreeNode<Folder> node, SafeHtml text) {
             Element textEl = getTextElement(node);
             if (textEl != null) {
-              Folder folder = node.getModel(); 
-              if(!folder.isFilter()) {
-                  textEl.setInnerHTML(Util.isEmptyString(text.asString()) ? "&#160;" : text.asString());
-              } else {
-                  textEl.setInnerHTML(Util.isEmptyString(text.asString()) ? "&#160;" : "<span style='color:red;font-style:italic;'>" + text.asString() + "</span>");
-              }
+                Folder folder = node.getModel();
+                if (!folder.isFilter()) {
+                    textEl.setInnerHTML(Util.isEmptyString(text.asString()) ? "&#160;" : text.asString());
+                } else {
+                    textEl.setInnerHTML(Util.isEmptyString(text.asString()) ? "&#160;"
+                            : "<span style='color:red;font-style:italic;'>" + text.asString()
+                                    + "</span>");
+                }
             }
-          }
+        }
     }
 
     private final class SelectionChangeHandlerImpl implements SelectionChangedHandler<DiskResource> {
@@ -176,7 +177,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
             if (sm.getTotal() == sm.getSelectedItemsCache().size()) {
                 selectAllChkBox.setValue(true);
             } else {
-                if(!sm.isSelectAll()) {
+                if (!sm.isSelectAll()) {
                     selectAllChkBox.setValue(false);
                 }
             }
@@ -201,15 +202,13 @@ public class DiskResourceViewImpl implements DiskResourceView {
             } else {
                 disableSelectAllCheckBox();
             }
-            if(sm.isSelectAll()) {
+            if (sm.isSelectAll()) {
                 sm.setSelection(listStore.getAll());
             }
             sm.setRowCount(event.getRowCount());
             sm.setTotal(event.getTotalCount());
         }
     }
-    
-    
 
     private final class GridSelectionHandler implements SelectionChangedHandler<DiskResource> {
         @Override
@@ -227,7 +226,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
         public void onSelection(SelectionEvent<Folder> event) {
             Folder selectedItem = event.getSelectedItem();
             if (DiskResourceViewImpl.this.widget.isAttached() && (selectedItem != null)) {
-                if(!selectedItem.isFilter()) {
+                if (!selectedItem.isFilter()) {
                     onFolderSelected(selectedItem);
                 } else {
                     tree.getSelectionModel().deselect(selectedItem);
@@ -334,29 +333,32 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
         grid.addSortChangeHandler(new SortChangeHandlerImpl());
         gridView.addLiveGridViewUpdateHandler(new LiveGridViewUpdateHandlerImpl());
-        
-        tree.addExpandHandler(new ExpandItemHandler<Folder>() {
+        treeStore.addStoreDataChangeHandler(new StoreDataChangeHandler<Folder>() {
 
             @Override
-            public void onExpand(ExpandItemEvent<Folder> event) {
-                List<Folder> childrens = event.getItem().getFolders();
-                if(childrens != null && childrens.size() > 0) {
-                    for (Folder f : childrens) {
-                        if(f.isFilter()) {
+            public void onDataChange(StoreDataChangeEvent<Folder> event) {
+                Folder folder = event.getParent();
+                if (folder != null && treeStore.getAllChildren(folder)!=null) {
+                    for (Folder f : treeStore.getAllChildren(folder)) {
+                        if (f.isFilter()) {
                             TreeNode<Folder> tn = tree.findNode(f);
-                            tree.getView().getTextElement(tn).setInnerHTML("<span style='color:red;font-style:italic;'>" + f.getName() + "</span>");
+                            tree.getView()
+                                    .getTextElement(tn)
+                                    .setInnerHTML(
+                                            "<span style='color:red;font-style:italic;'>" + f.getName()
+                                                    + "</span>");
                         }
                     }
                 }
-                
             }
+
         });
-       
+
         // by default no details to show...
         resetDetailsPanel();
         setGridEmptyText();
         addTreeCollapseButton();
-      
+
     }
 
     private void setLeafIcon(final Tree<Folder, String> tree) {

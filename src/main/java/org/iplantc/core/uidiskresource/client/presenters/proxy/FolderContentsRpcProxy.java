@@ -11,7 +11,6 @@ import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.data.client.loader.RpcProxy;
-import com.sencha.gxt.data.shared.SortInfo;
 import com.sencha.gxt.data.shared.SortInfoBean;
 import com.sencha.gxt.data.shared.loader.PagingLoadResult;
 import com.sencha.gxt.data.shared.loader.PagingLoadResultBean;
@@ -56,9 +55,9 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
     public void load(final FolderContentsLoadConfig loadConfig, final AsyncCallback<PagingLoadResult<DiskResource>> callback) {
         List<SortInfoBean> sortInfos = loadConfig.getSortInfo();
         if(sortInfos!= null && sortInfos.size() == 1) {
-            drService.getFolderContents(loadConfig.getFolder().getId(),loadConfig.getLimit(),loadConfig.getOffset(),sortInfos.get(0).getSortField(),loadConfig.getSortInfo().get(0).getSortDir().toString(), new FolderContentsCallback(loadConfig, callback));
+            drService.getFolderContents(loadConfig.getFolder().getPath(),loadConfig.getLimit(),loadConfig.getOffset(),sortInfos.get(0).getSortField(),loadConfig.getSortInfo().get(0).getSortDir().toString(), new FolderContentsCallback(loadConfig, callback));
         } else {
-            drService.getFolderContents(loadConfig.getFolder().getId(),loadConfig.getLimit(),loadConfig.getOffset(),"NAME","ASC", new FolderContentsCallback(loadConfig, callback));
+            drService.getFolderContents(loadConfig.getFolder().getPath(),loadConfig.getLimit(),loadConfig.getOffset(),"NAME","ASC", new FolderContentsCallback(loadConfig, callback));
 
         }
             

@@ -212,7 +212,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
             @Override
             public void onFailure(Throwable caught) {
-                // best guess of user name. this is horrible
+                // best guess of user trash. this is horrible
                 UserInfo.getInstance().setTrashPath("/iplant/trash/home/rods/" + userName);
             }
 
@@ -375,7 +375,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public void onDiskResourceSelected(Set<DiskResource> selection) {
         if (selection != null && selection.size() == 1) {
             Iterator<DiskResource> it = selection.iterator();
-            getDetails(it.next().getId());
+            getDetails(it.next().getPath());
         } else {
             view.resetDetailsPanel();
         }

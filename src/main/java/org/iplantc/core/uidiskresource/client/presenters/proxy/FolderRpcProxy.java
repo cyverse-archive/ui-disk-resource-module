@@ -47,7 +47,7 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
 
             });
         } else {
-            drService.getSubFolders(parentFolder.getId(), new AsyncCallback<List<Folder>>() {
+            drService.getSubFolders(parentFolder.getPath(), new AsyncCallback<List<Folder>>() {
 
                 @Override
                 public void onSuccess(List<Folder> result) {

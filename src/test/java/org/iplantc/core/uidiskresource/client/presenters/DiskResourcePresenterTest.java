@@ -149,7 +149,7 @@ public class DiskResourcePresenterTest {
             {
                 oneOf(view).deSelectDiskResources();
                 oneOf(view).showDataListingWidget();
-                oneOf(folder).getId();
+                oneOf(folder).getPath();
                 oneOf(diskResourceService).getFolderContents(with(aNonNull(String.class)),
                         with(aNonNull(int.class)), with(aNonNull(int.class)),
                         with(aNonNull(String.class)), with(aNonNull(String.class)),
@@ -166,7 +166,7 @@ public class DiskResourcePresenterTest {
             {
                 oneOf(view).deSelectDiskResources();
                 oneOf(view).showDataListingWidget();
-                oneOf(folder).getId();
+                oneOf(folder).getPath();
                 oneOf(diskResourceService).getFolderContents(with(aNonNull(String.class)),
                         with(aNonNull(int.class)), with(aNonNull(int.class)),
                         with(aNonNull(String.class)), with(aNonNull(String.class)),
