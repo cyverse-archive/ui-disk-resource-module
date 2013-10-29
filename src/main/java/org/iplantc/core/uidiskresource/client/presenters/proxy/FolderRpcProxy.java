@@ -10,6 +10,7 @@ import org.iplantc.core.uicommons.client.models.diskresources.RootFolders;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.data.client.loader.RpcProxy;
 
@@ -47,7 +48,15 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
 
             });
         } else {
-            drService.getSubFolders(parentFolder.getId(), new AsyncCallback<List<Folder>>() {
+            if (parentFolder.isFilter()) {
+                if (callback != null) {
+                    List<Folder> emptyResult = Lists.newArrayList();
+                    callback.onSuccess(emptyResult);
+                }
+                return;
+            }
+
+            drService.getSubFolders(parentFolder.getPath(), new AsyncCallback<List<Folder>>() {
 
                 @Override
                 public void onSuccess(List<Folder> result) {

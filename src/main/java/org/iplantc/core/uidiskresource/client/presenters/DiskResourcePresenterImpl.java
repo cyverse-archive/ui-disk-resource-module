@@ -212,7 +212,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
             @Override
             public void onFailure(Throwable caught) {
-                // best guess of user name. this is horrible
+                // best guess of user trash. this is horrible
                 UserInfo.getInstance().setTrashPath("/iplant/trash/home/rods/" + userName);
             }
 
@@ -335,14 +335,14 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             addEventHandlerRegistration(handler, reg);
 
             // If a parent folder of folderToSelect already exists, then we need to load its children.
-            String parentId = DiskResourceUtil.parseParent(folderToSelect.getId());
-            Folder parentFolder = view.getFolderById(parentId);
-            while (validParentPath(parentId) && parentFolder == null) {
-                parentId = DiskResourceUtil.parseParent(parentId);
-                parentFolder = view.getFolderById(parentId);
+            String parentPath = DiskResourceUtil.parseParent(folderToSelect.getId());
+            Folder parentFolder = view.getFolderByPath(parentPath);
+            while (validParentPath(parentPath) && parentFolder == null) {
+                parentPath = DiskResourceUtil.parseParent(parentPath);
+                parentFolder = view.getFolderByPath(parentPath);
             }
 
-            if (validParentPath(parentId) && parentFolder != null) {
+            if (validParentPath(parentPath) && parentFolder != null) {
                 treeLoader.loadChildren(parentFolder);
             }
         }
@@ -368,14 +368,14 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         view.deSelectDiskResources();
         FolderContentsLoadConfig config = gridLoader.getLastLoadConfig();
         config.setFolder(folder);
-        gridLoader.load();
+        gridLoader.load(0,200);
     }
 
     @Override
     public void onDiskResourceSelected(Set<DiskResource> selection) {
         if (selection != null && selection.size() == 1) {
             Iterator<DiskResource> it = selection.iterator();
-            getDetails(it.next().getId());
+            getDetails(it.next().getPath());
         } else {
             view.resetDetailsPanel();
         }
@@ -873,7 +873,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
                     @Override
                     public void onSuccess(String result) {
-                        doRefresh(view.getFolderById(UserInfo.getInstance().getTrashPath()));
+                        doRefresh(view.getFolderByPath(UserInfo.getInstance().getTrashPath()));
                         view.unmask();
                     }
 

@@ -90,7 +90,7 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
     }
 
     private void initDestPathLabel() {
-        String destPath = uploadDest.getId();
+        String destPath = uploadDest.getPath();
 
         htmlDestText.setHTML(Format.ellipse(I18N.DISPLAY.uploadingToFolder(destPath), 80));
         new ToolTip(htmlDestText, new ToolTipConfig(destPath));
@@ -156,7 +156,7 @@ public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<En
                 status.setBusy("");
                 status.show();
                 field.setValue(url);
-                String resourceId = uploadDest.getId() + "/" + DiskResourceUtil.parseNameFromPath(url);
+                String resourceId = uploadDest.getPath() + "/" + DiskResourceUtil.parseNameFromPath(url);
                 destResourceMap.put(resourceId, field);
             } else {
                 field.setEnabled(false);

@@ -73,7 +73,7 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
             unmaskView();
         } else {
             path.add(pathsToLoad.pop());
-            Folder folder = view.getFolderById("/".concat(Joiner.on("/").join(path)));
+            Folder folder = view.getFolderByPath("/".concat(Joiner.on("/").join(path)));
             if (folder != null) {
                 // Trigger remote load by expanding folder
                 view.expandFolder(folder);
@@ -96,11 +96,11 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
      * This only needs to occur once.
      */
     private void initPathsToLoad() {
-        Folder folder = view.getFolderById(folderToSelect.getId());
+        Folder folder = view.getFolderByPath(folderToSelect.getId());
         // Find the paths which are not yet loaded, and push them onto the 'pathsToLoad' stack
         while ((folder == null) && !path.isEmpty()) {
             pathsToLoad.push(path.removeLast());
-            folder = view.getFolderById("/".concat(Joiner.on("/").join(path))); //$NON-NLS-1$ //$NON-NLS-2$
+            folder = view.getFolderByPath("/".concat(Joiner.on("/").join(path))); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         if (folder != null) {

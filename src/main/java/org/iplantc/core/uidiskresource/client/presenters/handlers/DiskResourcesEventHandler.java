@@ -75,8 +75,7 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
     private void selectedFolderMovedFromNavTree(Folder selectedFolder, Folder destinationFolder) {
         // If the selected folder happens to be one of the moved items, then view the destination by
         // setting it as the selected folder.
-        String parentFolderId = DiskResourceUtil.parseParent(selectedFolder.getId());
-        Folder parentFolder = view.getFolderById(parentFolderId);
+        Folder parentFolder = view.getParentFolder(selectedFolder);
 
         if (DiskResourceUtil.isDescendantOfFolder(parentFolder, destinationFolder)) {
             // The destination is under the parent, so if we prune the parent and set the destination
