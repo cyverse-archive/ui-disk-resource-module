@@ -150,6 +150,7 @@ public class DiskResourcePresenterTest {
                 oneOf(view).deSelectDiskResources();
                 oneOf(view).showDataListingWidget();
                 oneOf(folder).getPath();
+                oneOf(folder).isFilter();
                 oneOf(diskResourceService).getFolderContents(with(aNonNull(String.class)),
                         with(aNonNull(int.class)), with(aNonNull(int.class)),
                         with(aNonNull(String.class)), with(aNonNull(String.class)),
@@ -167,6 +168,7 @@ public class DiskResourcePresenterTest {
                 oneOf(view).deSelectDiskResources();
                 oneOf(view).showDataListingWidget();
                 oneOf(folder).getPath();
+                oneOf(folder).isFilter();
                 oneOf(diskResourceService).getFolderContents(with(aNonNull(String.class)),
                         with(aNonNull(int.class)), with(aNonNull(int.class)),
                         with(aNonNull(String.class)), with(aNonNull(String.class)),
@@ -268,6 +270,8 @@ public class DiskResourcePresenterTest {
                 will(returnValue(permissions));
                 allowing(permissions).isWritable();
                 will(returnValue(true));
+                allowing(folder).getPath();
+                will(returnValue(""));
                 allowing(folder).getId();
                 will(returnValue(""));
 
@@ -374,6 +378,8 @@ public class DiskResourcePresenterTest {
                 allowing(folder).getPermissions();
                 will(returnValue(permissions));
 
+                allowing(folder).getPath();
+                will(returnValue(""));
                 allowing(folder).getId();
                 will(returnValue(""));
             }
@@ -468,7 +474,7 @@ public class DiskResourcePresenterTest {
                 will(returnValue(true));
                 allowing(permissions).isWritable();
                 will(returnValue(true));
-                oneOf(file).getId();
+                oneOf(file).getPath();
 
                 oneOf(view).getSelectedFolder();
                 oneOf(display).deleteMsg();
@@ -508,8 +514,8 @@ public class DiskResourcePresenterTest {
                 will(returnValue(true));
                 allowing(permissions).isWritable();
                 will(returnValue(true));
-                oneOf(file).getId();
-                oneOf(folder).getId();
+                oneOf(file).getPath();
+                oneOf(folder).getPath();
 
                 oneOf(view).getSelectedFolder();
                 oneOf(display).deleteMsg();
@@ -542,7 +548,7 @@ public class DiskResourcePresenterTest {
                 will(returnValue(true));
                 allowing(permissions).isWritable();
                 will(returnValue(true));
-                oneOf(folder).getId();
+                oneOf(folder).getPath();
 
                 allowing(view).getSelectedFolder();
                 will(returnValue(folder));
