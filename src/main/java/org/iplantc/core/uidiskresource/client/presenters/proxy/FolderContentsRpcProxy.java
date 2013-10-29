@@ -9,6 +9,7 @@ import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.data.client.loader.RpcProxy;
 import com.sencha.gxt.data.shared.SortInfoBean;
@@ -52,14 +53,29 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
     }
     
     @Override
-    public void load(final FolderContentsLoadConfig loadConfig, final AsyncCallback<PagingLoadResult<DiskResource>> callback) {
-        List<SortInfoBean> sortInfos = loadConfig.getSortInfo();
-        if(sortInfos!= null && sortInfos.size() == 1) {
-            drService.getFolderContents(loadConfig.getFolder().getPath(),loadConfig.getLimit(),loadConfig.getOffset(),sortInfos.get(0).getSortField(),loadConfig.getSortInfo().get(0).getSortDir().toString(), new FolderContentsCallback(loadConfig, callback));
-        } else {
-            drService.getFolderContents(loadConfig.getFolder().getPath(),loadConfig.getLimit(),loadConfig.getOffset(),"NAME","ASC", new FolderContentsCallback(loadConfig, callback));
+    public void load(final FolderContentsLoadConfig loadConfig,
+            final AsyncCallback<PagingLoadResult<DiskResource>> callback) {
+        Folder folder = loadConfig.getFolder();
+        if (folder.isFilter()) {
+            if (callback != null) {
+                List<DiskResource> emptyResult = Lists.newArrayList();
+                callback.onSuccess(new PagingLoadResultBean<DiskResource>(emptyResult, 0, 0));
+            }
 
+            return;
         }
-            
+
+        String sortField = "NAME"; //$NON-NLS-1$
+        String sortDir = "ASC"; //$NON-NLS-1$
+
+        List<SortInfoBean> sortInfos = loadConfig.getSortInfo();
+        if (sortInfos != null && sortInfos.size() == 1) {
+            SortInfoBean sortInfo = sortInfos.get(0);
+            sortField = sortInfo.getSortField();
+            sortDir = sortInfo.getSortDir().toString();
+        }
+
+        drService.getFolderContents(folder.getPath(), loadConfig.getLimit(), loadConfig.getOffset(),
+                sortField, sortDir, new FolderContentsCallback(loadConfig, callback));
     }
 }

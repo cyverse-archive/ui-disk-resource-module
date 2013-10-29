@@ -79,8 +79,6 @@ import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
-import com.sencha.gxt.widget.core.client.event.BeforeExpandItemEvent;
-import com.sencha.gxt.widget.core.client.event.BeforeExpandItemEvent.BeforeExpandItemHandler;
 import com.sencha.gxt.widget.core.client.event.LiveGridViewUpdateEvent;
 import com.sencha.gxt.widget.core.client.event.LiveGridViewUpdateEvent.LiveGridViewUpdateHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -105,24 +103,6 @@ import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 import com.sencha.gxt.widget.core.client.tree.TreeView;
 
 public class DiskResourceViewImpl implements DiskResourceView {
-
-    private final class TreeBeforeCollapseHandlerImpl implements BeforeExpandItemHandler<Folder> {
-        private final Tree<Folder, String> tree;
-
-        private TreeBeforeCollapseHandlerImpl(Tree<Folder, String> tree) {
-            this.tree = tree;
-        }
-
-        @Override
-        public void onBeforeExpand(BeforeExpandItemEvent<Folder> event) {
-
-            if (event.getItem().isFilter()) {
-                event.setCancelled(true);
-                tree.getView().collapse(tree.findNode(event.getItem()));
-            }
-
-        }
-    }
 
     private final class SelectAllCheckBoxHandlerImpl implements ValueChangeHandler<Boolean> {
         @Override
@@ -325,7 +305,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
         setLeafIcon(tree);
         tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        tree.addBeforeExpandHandler(new TreeBeforeCollapseHandlerImpl(tree));
         tree.getSelectionModel().addSelectionHandler(new TreeSelectionHandler());
 
         GridSelectionModel<DiskResource> selectionModel = grid.getSelectionModel();
