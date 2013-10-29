@@ -235,6 +235,10 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
     Folder getFolderById(String folderId);
 
+    Folder getFolderByPath(String path);
+
+    Folder getParentFolder(Folder selectedFolder);
+
     void expandFolder(Folder folder);
 
     void deSelectDiskResources();
