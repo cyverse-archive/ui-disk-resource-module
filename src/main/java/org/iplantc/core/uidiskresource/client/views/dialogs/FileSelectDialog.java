@@ -112,7 +112,6 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<Fi
                 .disableFilePreview();
         if (singleSelect) {
             b.singleSelect();
-            presenter.getView().disableSelectAllCheckBox();
         }
     }
 

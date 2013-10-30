@@ -28,6 +28,7 @@ import com.sencha.gxt.widget.core.client.event.RefreshEvent;
 import com.sencha.gxt.widget.core.client.event.RefreshEvent.RefreshHandler;
 import com.sencha.gxt.widget.core.client.event.RowClickEvent;
 import com.sencha.gxt.widget.core.client.event.RowMouseDownEvent;
+import com.sencha.gxt.widget.core.client.event.XEvent;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.GridSelectionModel;
@@ -166,15 +167,17 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
             XElement hd = event.getEvent().getEventTarget().<Element> cast().getParentElement().cast();
             boolean isChecked = appearance.isHeaderChecked(hd);
             /**
-             * When header is checked, everything unselected and all items only in view should be
-             * selected. When header is unchecked, everything in the view should be unselected.
+             * When header is checked, everything unselected and all items should be
+             * selected. When header is unchecked, everything be unselected.
              */
             clearSelectedItemsCache();
             if (isChecked) {
                 setChecked(false);
+                setSelectAll(false);
                 deselectAll();
             } else {
                 setChecked(true);
+                setSelectAll(true);
                 selectAll();
             }
         }
@@ -191,10 +194,13 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
         if (model != null && !model.isFilter()) {
             // when a item is selected by clicking on the row (not on the checkbox)
             // we need to clear selection of everything else and select only that row.
-            clearSelectedItemsCache();
-            deselectAll();
-            setSelectAll(false);
-            selectByRowItem(model);
+            XEvent xe = event.getEvent().<XEvent> cast();
+            if(!xe.getShiftKey()){
+                clearSelectedItemsCache();
+                deselectAll();
+                setSelectAll(false);
+                selectByRowItem(model);
+            }
             super.handleRowClick(event);
         }
 
@@ -347,16 +353,20 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
                 setChecked(true);
                 setSelectAll(true);
             } else {
-                setChecked(false);
+                if(!isSelectAll()) {
+                    setChecked(false);
+                }
             }
             return;
         }
 
+        if(!isSelectAll()) {
         for (int i = 0; i < store.size(); i++) {
             if (selectedItemsCache.get(store.get(i).getId()) == null) {
                 setChecked(false);
                 return;
             }
+        }
         }
         setChecked(true);
     }

@@ -39,8 +39,6 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -85,7 +83,6 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.event.SortChangeEvent;
 import com.sencha.gxt.widget.core.client.event.SortChangeEvent.SortChangeHandler;
-import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
@@ -104,23 +101,31 @@ import com.sencha.gxt.widget.core.client.tree.TreeView;
 
 public class DiskResourceViewImpl implements DiskResourceView {
 
-    private final class SelectAllCheckBoxHandlerImpl implements ValueChangeHandler<Boolean> {
-        @Override
-        public void onValueChange(ValueChangeEvent<Boolean> event) {
-            boolean checked = ((CheckBox)event.getSource()).getValue();
-            if (checked) {
-                sm.setSelectAll(true);
-                sm.setSelection(listStore.getAll());
-                updateSelectionCount(sm.getTotal());
-            } else {
-                sm.setSelectAll(false);
-                sm.deselectAll();
-                sm.clearSelectedItemsCache();
-                updateSelectionCount(0);
-            }
+    private final class TreeStoreDataChangeHandlerImpl implements StoreDataChangeHandler<Folder> {
+        private final Tree<Folder, String> tree;
 
+        private TreeStoreDataChangeHandlerImpl(Tree<Folder, String> tree) {
+            this.tree = tree;
+        }
+
+        @Override
+        public void onDataChange(StoreDataChangeEvent<Folder> event) {
+            Folder folder = event.getParent();
+            if (folder != null && treeStore.getAllChildren(folder)!=null) {
+                for (Folder f : treeStore.getAllChildren(folder)) {
+                    if (f.isFilter()) {
+                        TreeNode<Folder> tn = tree.findNode(f);
+                        tree.getView()
+                                .getTextElement(tn)
+                                .setInnerHTML(
+                                        "<span style='color:red;font-style:italic;'>" + f.getName()
+                                                + "</span>");
+                    }
+                }
+            }
         }
     }
+
 
     private final class CustomTreeView extends TreeView<Folder> {
         private final BlueStatusResources resources = GWT.create(BlueStatusResources.class);
@@ -153,16 +158,9 @@ public class DiskResourceViewImpl implements DiskResourceView {
         public void onSelectionChanged(SelectionChangedEvent<DiskResource> event) {
             if (!sm.isSelectAll()) {
                 updateSelectionCount(sm.getSelectedItemsCache().size());
-            }
-
-            if (sm.getTotal() == sm.getSelectedItemsCache().size()) {
-                selectAllChkBox.setValue(true);
             } else {
-                if (!sm.isSelectAll()) {
-                    selectAllChkBox.setValue(false);
-                }
+                updateSelectionCount(sm.getTotal());
             }
-
         }
     }
 
@@ -178,11 +176,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
     private final class LiveGridViewUpdateHandlerImpl implements LiveGridViewUpdateHandler {
         @Override
         public void onUpdate(LiveGridViewUpdateEvent event) {
-            if (listStore.size() > 0 && !sm.getSelectionMode().equals(SelectionMode.SINGLE)) {
-                enableSelectAllCheckBox();
-            } else {
-                disableSelectAllCheckBox();
-            }
             if (sm.isSelectAll()) {
                 sm.setSelection(listStore.getAll());
             }
@@ -285,7 +278,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
     private final DiskResourceSelectionModel sm;
 
     private Status selectionStatus;
-    private CheckBox selectAllChkBox;
 
     @Inject
     public DiskResourceViewImpl(final Tree<Folder, String> tree) {
@@ -313,26 +305,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
         grid.addSortChangeHandler(new SortChangeHandlerImpl());
         gridView.addLiveGridViewUpdateHandler(new LiveGridViewUpdateHandlerImpl());
-        treeStore.addStoreDataChangeHandler(new StoreDataChangeHandler<Folder>() {
-
-            @Override
-            public void onDataChange(StoreDataChangeEvent<Folder> event) {
-                Folder folder = event.getParent();
-                if (folder != null && treeStore.getAllChildren(folder)!=null) {
-                    for (Folder f : treeStore.getAllChildren(folder)) {
-                        if (f.isFilter()) {
-                            TreeNode<Folder> tn = tree.findNode(f);
-                            tree.getView()
-                                    .getTextElement(tn)
-                                    .setInnerHTML(
-                                            "<span style='color:red;font-style:italic;'>" + f.getName()
-                                                    + "</span>");
-                        }
-                    }
-                }
-            }
-
-        });
+        treeStore.addStoreDataChangeHandler(new TreeStoreDataChangeHandlerImpl(tree));
 
         // by default no details to show...
         resetDetailsPanel();
@@ -362,19 +335,9 @@ public class DiskResourceViewImpl implements DiskResourceView {
         pagingToolBar.add(new FillToolItem());
         pagingToolBar.add(selectionStatus);
 
-        initSelectAllChkBox();
-
-        pagingToolBar.add(new FillToolItem());
-        pagingToolBar.add(selectAllChkBox);
-
+       
         pagingToolBar.addStyleName(ThemeStyles.getStyle().borderTop());
         pagingToolBar.getElement().getStyle().setProperty("borderBottom", "none");
-    }
-
-    private void initSelectAllChkBox() {
-        selectAllChkBox = new CheckBox();
-        selectAllChkBox.setBoxLabel("Select all");
-        selectAllChkBox.addValueChangeHandler(new SelectAllCheckBoxHandlerImpl());
     }
 
     private void updateSelectionCount(int selectionCount) {
@@ -529,16 +492,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
         grid.getStore().addAll(folderChildren);
     }
 
-    @Override
-    public void enableSelectAllCheckBox() {
-        selectAllChkBox.setEnabled(true);
-    }
-
-    @Override
-    public void disableSelectAllCheckBox() {
-        selectAllChkBox.setEnabled(false);
-    }
-
+   
     @Override
     public void setWestWidgetHidden(boolean hideWestWidget) {
         westData.setHidden(hideWestWidget);
@@ -658,7 +612,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
         // update cache n live view status
         sm.clearSelectedItemsCache();
         sm.setSelectAll(false);
-        selectAllChkBox.setValue(false, true);
         updateSelectionCount(0);
         grid.getSelectionModel().deselectAll();
     }
@@ -795,7 +748,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
         grid.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         // Hide the checkbox column
         getDiskResourceColumnModel().setCheckboxColumnHidden(true);
-        disableSelectAllCheckBox();
     }
 
     @Override

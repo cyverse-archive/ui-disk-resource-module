@@ -305,9 +305,4 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
     void maskDetailsPanel();
 
     void setViewLoader(PagingLoader<FolderContentsLoadConfig, PagingLoadResult<DiskResource>> gridLoader);
-
-    void enableSelectAllCheckBox();
-
-    void disableSelectAllCheckBox();
-
 }
