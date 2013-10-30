@@ -582,6 +582,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     @Override
     public boolean canDragDataToTargetFolder(final Folder targetFolder,
             final Collection<DiskResource> dropData) {
+        if (targetFolder.isFilter()) {
+            return false;
+        }
+
         // Assuming that ownership is of no concern.
         for (DiskResource dr : dropData) {
             // if the resource is a direct child of target folder
