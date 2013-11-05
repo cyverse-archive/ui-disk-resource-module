@@ -594,6 +594,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             }
 
             if (dr instanceof Folder) {
+                if (targetFolder.getPath().equals(dr.getPath())) {
+                    return false;
+                }
+
                 // cannot drag an ancestor (parent, grandparent, etc) onto a child and/or descendant
                 if (DiskResourceUtil.isDescendantOfFolder((Folder)dr, targetFolder)) {
                     return false;
