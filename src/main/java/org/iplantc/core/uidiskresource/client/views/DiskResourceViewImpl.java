@@ -23,7 +23,6 @@ import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoa
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.cell.client.Cell;
@@ -581,20 +580,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @Override
     public Folder getFolderById(String folderId) {
         return treeStore.findModelWithKey(folderId);
-    }
-
-    @Override
-    public Folder getFolderByPath(String path) {
-        List<Folder> allItems = treeStore.getAll();
-        if (!Strings.isNullOrEmpty(path) && allItems != null) {
-            for (Folder folder : allItems) {
-                if (path.equals(folder.getPath())) {
-                    return folder;
-                }
-            }
-        }
-
-        return null;
     }
 
     @Override
