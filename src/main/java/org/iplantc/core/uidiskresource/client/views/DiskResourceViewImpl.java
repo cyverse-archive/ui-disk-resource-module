@@ -67,7 +67,6 @@ import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.dnd.core.client.DND.Operation;
 import com.sencha.gxt.dnd.core.client.DragSource;
 import com.sencha.gxt.dnd.core.client.DropTarget;
-import com.sencha.gxt.theme.blue.client.status.BlueStatusAppearance.BlueStatusResources;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Status;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
@@ -127,14 +126,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
 
     private final class CustomTreeView extends TreeView<Folder> {
-        private final BlueStatusResources resources = GWT.create(BlueStatusResources.class);
-
-        @Override
-        public void onLoading(TreeNode<Folder> node) {
-            onIconStyleChange(node, resources.loading());
-            // Does nothing in GXT 3.0.1, but call it in case of any future version updates.
-            super.onLoading(node);
-        }
 
         @Override
         public void onTextChange(TreeNode<Folder> node, SafeHtml text) {
@@ -282,8 +273,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
     public DiskResourceViewImpl(final Tree<Folder, String> tree) {
         this.tree = tree;
         this.treeStore = tree.getStore();
-        // KLUDGE GXT 3.0.1 hasn't implemented the tree loading icon, so we'll
-        // use the one from Status.
         tree.setView(new CustomTreeView());
 
         sm = new DiskResourceSelectionModel(new IdentityValueProvider<DiskResource>());
