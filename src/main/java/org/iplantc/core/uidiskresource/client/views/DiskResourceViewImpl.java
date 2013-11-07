@@ -579,6 +579,17 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     @Override
     public Folder getFolderById(String folderId) {
+        // KLUDGE Until the services are able to use GUIDs for folder IDs, first check for a root folder
+        // whose path matches folderId, since a root folder may now also be listed under another root
+        // (such as the user's home folder listed under "Shared With Me").
+        if (treeStore.getRootItems() != null) {
+            for (Folder root : treeStore.getRootItems()) {
+                if (root.getPath().equals(folderId)) {
+                    return root;
+                }
+            }
+        }
+
         return treeStore.findModelWithKey(folderId);
     }
 
