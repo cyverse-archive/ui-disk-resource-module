@@ -40,6 +40,7 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -188,7 +189,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         eventTarget.getStyle().setTextDecoration(TextDecoration.NONE);
     }
 
-    private void doOnMouseOver(Element eventTarget, DiskResource value) {
+    private void doOnMouseOver(final Element eventTarget, DiskResource value) {
         if (linkPopup != null) {
             linkPopup.hide();
             linkPopup = null;
@@ -206,7 +207,17 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         } else {
             buildFolderLink(value);
         }
-        linkPopup.showAt(eventTarget.getAbsoluteLeft() + 25, eventTarget.getAbsoluteTop() - 15);
+        Timer t = new Timer() {
+            
+            @Override
+            public void run() {
+                if(linkPopup !=null) {
+                    linkPopup.showAt(eventTarget.getAbsoluteLeft() + 25, eventTarget.getAbsoluteTop() - 15);
+                }
+                
+            }
+        };
+        t.schedule(1500);
         eventTarget.getStyle().setTextDecoration(TextDecoration.UNDERLINE);
     }
 
