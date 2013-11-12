@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
+import org.iplantc.core.uicommons.client.info.SuccessAnnouncementConfig;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.diskresources.RestoreResponse;
@@ -60,6 +61,9 @@ public class DiskResourceRestoreCallback extends DiskResourceServiceCallback<Str
                 if (restoredResource.isPartialRestore()) {
                    IplantAnnouncer.getInstance().schedule(I18N.DISPLAY.partialRestore());
                    break;
+                } else {
+                    IplantAnnouncer.getInstance().schedule(new SuccessAnnouncementConfig(I18N.DISPLAY.restoreMsg()));
+                    break;
                 }
             }
         }
