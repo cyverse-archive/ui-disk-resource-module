@@ -1,8 +1,8 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
-import java.util.List;
-
 import com.google.gwt.editor.client.EditorError;
+
+import java.util.List;
 
 /**
  * An interface for all DiskResource selectors.
@@ -10,6 +10,9 @@ import com.google.gwt.editor.client.EditorError;
  *
  */
 public interface DiskResourceSelector {
+    public interface HasDisableBrowseButtons {
+        void disableBrowseButtons();
+    }
 
     List<EditorError> getErrors();
 

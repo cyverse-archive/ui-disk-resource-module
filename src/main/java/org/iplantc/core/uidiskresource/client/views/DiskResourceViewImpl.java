@@ -23,7 +23,6 @@ import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoa
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.cell.client.Cell;
@@ -68,7 +67,6 @@ import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.dnd.core.client.DND.Operation;
 import com.sencha.gxt.dnd.core.client.DragSource;
 import com.sencha.gxt.dnd.core.client.DropTarget;
-import com.sencha.gxt.theme.blue.client.status.BlueStatusAppearance.BlueStatusResources;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Status;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
@@ -128,14 +126,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
 
     private final class CustomTreeView extends TreeView<Folder> {
-        private final BlueStatusResources resources = GWT.create(BlueStatusResources.class);
-
-        @Override
-        public void onLoading(TreeNode<Folder> node) {
-            onIconStyleChange(node, resources.loading());
-            // Does nothing in GXT 3.0.1, but call it in case of any future version updates.
-            super.onLoading(node);
-        }
 
         @Override
         public void onTextChange(TreeNode<Folder> node, SafeHtml text) {
@@ -283,8 +273,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
     public DiskResourceViewImpl(final Tree<Folder, String> tree) {
         this.tree = tree;
         this.treeStore = tree.getStore();
-        // KLUDGE GXT 3.0.1 hasn't implemented the tree loading icon, so we'll
-        // use the one from Status.
         tree.setView(new CustomTreeView());
 
         sm = new DiskResourceSelectionModel(new IdentityValueProvider<DiskResource>());
@@ -580,21 +568,18 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     @Override
     public Folder getFolderById(String folderId) {
-        return treeStore.findModelWithKey(folderId);
-    }
-
-    @Override
-    public Folder getFolderByPath(String path) {
-        List<Folder> allItems = treeStore.getAll();
-        if (!Strings.isNullOrEmpty(path) && allItems != null) {
-            for (Folder folder : allItems) {
-                if (path.equals(folder.getPath())) {
-                    return folder;
+        // KLUDGE Until the services are able to use GUIDs for folder IDs, first check for a root folder
+        // whose path matches folderId, since a root folder may now also be listed under another root
+        // (such as the user's home folder listed under "Shared With Me").
+        if (treeStore.getRootItems() != null) {
+            for (Folder root : treeStore.getRootItems()) {
+                if (root.getPath().equals(folderId)) {
+                    return root;
                 }
             }
         }
 
-        return null;
+        return treeStore.findModelWithKey(folderId);
     }
 
     @Override
