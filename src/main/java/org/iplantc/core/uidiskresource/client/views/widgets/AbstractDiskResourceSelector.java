@@ -1,22 +1,5 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
-import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.resources.client.messages.IplantErrorStrings;
-import org.iplantc.core.uicommons.client.errorHandling.models.ServiceErrorCode;
-import org.iplantc.core.uicommons.client.errorHandling.models.SimpleServiceError;
-import org.iplantc.core.uicommons.client.gin.ServicesInjector;
-import org.iplantc.core.uicommons.client.models.CommonModelUtils;
-import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uicommons.client.models.HasPaths;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceStatMap;
-import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
-import org.iplantc.core.uicommons.client.widgets.IPlantSideErrorHandler;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.core.client.Scheduler;
@@ -43,6 +26,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.XDOM;
 import com.sencha.gxt.core.client.dom.XElement;
@@ -66,6 +50,23 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 
+import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.resources.client.messages.IplantErrorStrings;
+import org.iplantc.core.uicommons.client.errorHandling.models.ServiceErrorCode;
+import org.iplantc.core.uicommons.client.errorHandling.models.SimpleServiceError;
+import org.iplantc.core.uicommons.client.gin.ServicesInjector;
+import org.iplantc.core.uicommons.client.models.CommonModelUtils;
+import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.core.uicommons.client.models.HasPaths;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceStatMap;
+import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
+import org.iplantc.core.uicommons.client.widgets.IPlantSideErrorHandler;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
 /**
  * Abstract class for single select DiskResource fields.
  * 
@@ -77,7 +78,27 @@ import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
  */
 public abstract class AbstractDiskResourceSelector<R extends DiskResource> extends Component implements
         IsField<HasId>, ValueAwareEditor<HasId>, HasValueChangeHandlers<HasId>, HasEditorErrors<HasId>,
-        DndDragEnterHandler, DndDragMoveHandler, DndDropHandler, HasInvalidHandlers, DiskResourceSelector {
+        DndDragEnterHandler, DndDragMoveHandler, DndDropHandler, HasInvalidHandlers, DiskResourceSelector, DiskResourceSelector.HasDisableBrowseButtons {
+
+    public interface FileUploadTemplate extends XTemplates {
+        @XTemplate("<div class='{style.wrap}'></div>")
+        SafeHtml render(FileFolderSelectorStyle style);
+    }
+
+    interface FileFolderSelectorStyle extends CssResource {
+        String buttonWrap();
+
+        String errorText();
+
+        String inputWrap();
+        
+        String wrap();
+    }
+
+    interface Resources extends ClientBundle {
+        @Source("AbstractDiskResourceSelector.css")
+        FileFolderSelectorStyle style();
+    }
 
     /**
      * KLUDGE: CORE-4671,
@@ -86,22 +107,22 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
      * 
      */
     private final class DrSideErrorHandler extends IPlantSideErrorHandler {
+        private final Widget button1;
         private final Widget container;
-        private final Component input;
-        private final Widget button;
+        private final Component input1;
 
         private DrSideErrorHandler(Component target, Widget container, Widget button) {
             super(target);
-            this.input = target;
+            this.input1 = target;
             this.container = container;
-            this.button = button;
+            this.button1 = button;
         }
 
         @Override
         public void clearInvalid() {
             super.clearInvalid();
-            int offset = button.getOffsetWidth() + buttonOffset;
-            input.setWidth(container.getOffsetWidth() - offset);
+            int offset = button1.getOffsetWidth() + buttonOffset;
+            input1.setWidth(container.getOffsetWidth() - offset);
         }
 
         @Override
@@ -112,53 +133,33 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
                 @Override
                 public void execute() {
                     if (isShowing()) {
-                        int offset = button.getOffsetWidth() + buttonOffset + 16;
-                        input.setWidth(container.getOffsetWidth() - offset);
+                        int offset = button1.getOffsetWidth() + buttonOffset + 16;
+                        input1.setWidth(container.getOffsetWidth() - offset);
                     }
                 }
             });
         }
     }
 
-    interface FileFolderSelectorStyle extends CssResource {
-        String buttonWrap();
-
-        String wrap();
-
-        String errorText();
-        
-        String inputWrap();
-    }
-
-    interface Resources extends ClientBundle {
-        @Source("AbstractDiskResourceSelector.css")
-        FileFolderSelectorStyle style();
-    }
-
-    public interface FileUploadTemplate extends XTemplates {
-        @XTemplate("<div class='{style.wrap}'></div>")
-        SafeHtml render(FileFolderSelectorStyle style);
-    }
-
-    private final TextButton button;
-    private final TextField input = new TextField();
-
-    private final Resources res = GWT.create(Resources.class);
-    private final FileUploadTemplate template = GWT.create(FileUploadTemplate.class);
-    private final int buttonOffset = 3;
-    private final List<EditorError> errors = Lists.newArrayList();
-    private final Element infoText;
     private boolean browseButtonEnabled = true;
+    private final TextButton button;
 
-    // by default do not validate permissions
-    private boolean validatePermissions = false;
+    private final int buttonOffset = 3;
     private final DiskResourceServiceFacade drServiceFacade;
+    private IPlantSideErrorHandler errorHandler;
+    private final List<EditorError> errors = Lists.newArrayList();
+    private DefaultEditorError existsEditorError = null;
+    private final Element infoText;
+
+    private String infoTextString;
+    private final TextField input = new TextField();
     private HasId model;
 
     private DefaultEditorError permissionEditorError = null;
-    private DefaultEditorError existsEditorError = null;
-    private String infoTextString;
-    private IPlantSideErrorHandler errorHandler;
+    private final Resources res = GWT.create(Resources.class);
+    private final FileUploadTemplate template = GWT.create(FileUploadTemplate.class);
+    // by default do not validate permissions
+    private boolean validatePermissions = false;
 
     protected AbstractDiskResourceSelector() {
         res.style().ensureInjected();
@@ -201,6 +202,103 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     }
 
     
+    @Override
+    public HandlerRegistration addInvalidHandler(InvalidHandler handler) {
+        return input.addInvalidHandler(handler);
+    }
+    
+    
+    public void addValidator(Validator<String> validator) {
+        if (validator != null) {
+            input.addValidator(validator);
+        }
+    }
+
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<HasId> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
+    }
+
+    @Override
+    public void clear() {
+        input.clear();
+    }
+
+    @Override
+    public void clearInvalid() {
+        input.clearInvalid();
+        errors.clear();
+    }
+
+    @Override
+    public void disableBrowseButtons() {
+        browseButtonEnabled = false;
+    }
+    
+
+    @Override
+    public void flush() {
+        validate(false);
+    }
+
+    @Override
+    public List<EditorError> getErrors() {
+        return errors;
+    }
+
+    public String getInfoText() {
+        return infoTextString;
+    }
+
+    public List<Validator<String>> getValidators() {
+        return input.getValidators();
+    }
+
+    @Override
+    public HasId getValue() {
+        return CommonModelUtils.createHasIdFromString(input.getCurrentValue());
+    }
+
+    @Override
+    public boolean isValid(boolean preventMark) {
+        // If the input field is not valid, make a call to validate in order to
+        // propagate errors from the input field to the editor delegate.
+        if (!input.isValid(preventMark)) {
+            validate(preventMark);
+        }
+        return input.isValid(preventMark);
+    }
+
+    public boolean isValidatePermissions() {
+        return validatePermissions;
+    }
+
+    @Override
+    public void onDragEnter(DndDragEnterEvent event) {
+        Set<DiskResource> dropData = getDropData(event.getDragSource().getData());
+
+        if (!validateDropStatus(dropData, event.getStatusProxy())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @Override
+    public void onDragMove(DndDragMoveEvent event) {
+        Set<DiskResource> dropData = getDropData(event.getDragSource().getData());
+
+        if (!validateDropStatus(dropData, event.getStatusProxy())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @Override
+    public void onPropertyChange(String... paths) {/* Do Nothing */}
+
+    @Override
+    public void reset() {
+        input.reset();
+    }
+
     /**
      * set id to browse button
      * 
@@ -209,93 +307,17 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     public void setBrowseButtonId(String id) {
         button.setId(id);
     }
-    
-    
-    private void initDragAndDrop() {
-        DropTarget dataDrop = new DropTarget(this);
-        dataDrop.setOperation(Operation.COPY);
-        dataDrop.addDragEnterHandler(this);
-        dataDrop.addDragMoveHandler(this);
-        dataDrop.addDropHandler(this);
-    }
 
     @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<HasId> handler) {
-        return addHandler(handler, ValueChangeEvent.getType());
+    public void setDelegate(EditorDelegate<HasId> delegate) {/* Do Nothing */}
+
+    public void setEmptyText(String emptyText) {
+        input.setEmptyText(emptyText);
     }
 
-    protected void setSelectedResource(R selectedResource) {
-        setValue(selectedResource);
-    }
-
-    @Override
-    public void setValue(HasId value) {
-        if ((value == model)) {
-            // JDS If model is not changing
-            return;
-        } else if ((model != null) && (value != null) && model.getId().equals(value.getId())) {
-            return;
-        }
-        model = value;
-        input.setValue(value == null ? null : value.getId());
-
-        doGetStat(value);
-    }
-
-    private void doGetStat(final HasId value) {
-        final String diskResourceId = value.getId();
-        HasPaths diskResourcePaths = drServiceFacade.getDiskResourceFactory().pathsList().as();
-        diskResourcePaths.setPaths(Lists.newArrayList(diskResourceId));
-
-        permissionEditorError = null;
-        existsEditorError = null;
-        drServiceFacade.getStat(diskResourcePaths, new AsyncCallback<DiskResourceStatMap>() {
-
-            @Override
-            public void onSuccess(DiskResourceStatMap result) {
-                if (!validatePermissions) {
-                    setInfoErrorText("");
-                    return;
-                }
-                ValueChangeEvent.fire(AbstractDiskResourceSelector.this, value);
-                DiskResource diskResource = result.get(diskResourceId);
-                if (diskResource == null) {
-                    permissionEditorError = new DefaultEditorError(input, I18N.DISPLAY.permissionSelectErrorMessage(), diskResourceId);
-                    errors.add(permissionEditorError);
-                    input.showErrors(Lists.<EditorError> newArrayList(permissionEditorError));
-                    setInfoErrorText(I18N.DISPLAY.permissionSelectErrorMessage());
-                } else if (!(diskResource.getPermissions().isWritable() || diskResource.getPermissions().isOwner())) {
-                    permissionEditorError = new DefaultEditorError(input, I18N.DISPLAY.permissionSelectErrorMessage(), diskResourceId);
-                    errors.add(permissionEditorError);
-                    input.showErrors(Lists.<EditorError> newArrayList(permissionEditorError));
-                    setInfoErrorText(I18N.DISPLAY.permissionSelectErrorMessage());
-                } else if ((getInfoText() != null) && getInfoText().equalsIgnoreCase(I18N.DISPLAY.permissionSelectErrorMessage())) {
-                    setInfoErrorText("");
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable caught) {
-                final IplantErrorStrings errorStrings = I18N.ERROR;
-                SimpleServiceError serviceError = AutoBeanCodex.decode(drServiceFacade.getDiskResourceFactory(), SimpleServiceError.class, caught.getMessage()).as();
-                if (serviceError.getErrorCode().equals(ServiceErrorCode.ERR_DOES_NOT_EXIST.toString())) {
-                    existsEditorError = new DefaultEditorError(input, errorStrings.diskResourceDoesNotExist(diskResourceId), diskResourceId);
-                    errors.add(existsEditorError);
-                    setInfoErrorText(errorStrings.diskResourceDoesNotExist(diskResourceId));
-                    ValueChangeEvent.fire(AbstractDiskResourceSelector.this, value);
-                }
-            }
-        });
-
-    }
-    
-
-    public void setInfoTextClassName(String className) {
-        infoText.setClassName(className);
-    }
-
-    public String getInfoText() {
-        return infoTextString;
+    public void setInfoErrorText(String errorMessage) {
+        setInfoTextClassName(res.style().errorText());
+        setInfoText(errorMessage);
     }
 
     /**
@@ -317,9 +339,34 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         infoText.setInnerSafeHtml(safeText);
     }
 
-    public void setInfoErrorText(String errorMessage) {
-        setInfoTextClassName(res.style().errorText());
-        setInfoText(errorMessage);
+    public void setInfoTextClassName(String className) {
+        infoText.setClassName(className);
+    }
+
+    @Override
+    public void setRequired(boolean required) {
+        input.setAllowBlank(!required);
+    }
+
+    /**
+     * @param validatePermissions the validatePermissions to set
+     */
+    public void setValidatePermissions(boolean validatePermissions) {
+        this.validatePermissions = validatePermissions;
+    }
+
+    @Override
+    public void setValue(HasId value) {
+        if ((value == model)) {
+            // JDS If model is not changing
+            return;
+        } else if ((model != null) && (value != null) && model.getId().equals(value.getId())) {
+            return;
+        }
+        model = value;
+        input.setValue(value == null ? null : value.getId());
+
+        doGetStat(value);
     }
 
     /**
@@ -332,72 +379,7 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     }
 
     @Override
-    public HasId getValue() {
-        return CommonModelUtils.createHasIdFromString(input.getCurrentValue());
-    }
-
-    protected abstract void onBrowseSelected();
-
-    @Override
-    protected void doAttachChildren() {
-        super.doAttachChildren();
-        ComponentHelper.doAttach(input);
-        ComponentHelper.doAttach(button);
-    }
-
-    @Override
-    protected void doDetachChildren() {
-        super.doDetachChildren();
-        ComponentHelper.doDetach(input);
-        ComponentHelper.doDetach(button);
-    }
-
-    @Override
-    protected XElement getFocusEl() {
-        return input.getElement();
-    }
-
-    @Override
-    protected void onResize(int width, int height) {
-        int offset = button.getOffsetWidth() + buttonOffset;
-        if (errorHandler.isShowing()) {
-            offset += 16;
-        }
-        super.onResize(width, height);
-        input.setWidth(width - offset);
-    }
-
-    @Override
-    public void clear() {
-        input.clear();
-    }
-
-    @Override
-    public void clearInvalid() {
-        input.clearInvalid();
-        errors.clear();
-    }
-
-    @Override
-    public void reset() {
-        input.reset();
-    }
-
-    public void addValidator(Validator<String> validator) {
-        if (validator != null) {
-            input.addValidator(validator);
-        }
-    }
-
-    @Override
-    public boolean isValid(boolean preventMark) {
-        // If the input field is not valid, make a call to validate in order to
-        // propagate errors from the input field to the editor delegate.
-        if (!input.isValid(preventMark)) {
-            validate(preventMark);
-        }
-        return input.isValid(preventMark);
-    }
+    public void showErrors(List<EditorError> errors) {/* Do Nothing */}
 
     @Override
     public boolean validate(boolean preventMark) {
@@ -423,79 +405,18 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     }
 
     @Override
-    public void flush() {
-        // Validate on flush.
-        validate(false);
+    protected void doAttachChildren() {
+        super.doAttachChildren();
+        ComponentHelper.doAttach(input);
+        ComponentHelper.doAttach(button);
     }
 
     @Override
-    public void showErrors(List<EditorError> errors) {/* Do Nothing */}
-
-    @Override
-    public void onPropertyChange(String... paths) {/* Do Nothing */}
-
-    @Override
-    public void setDelegate(EditorDelegate<HasId> delegate) {/* Do Nothing */}
-
-    public void disableBrowseButton() {
-        browseButtonEnabled = false;
+    protected void doDetachChildren() {
+        super.doDetachChildren();
+        ComponentHelper.doDetach(input);
+        ComponentHelper.doDetach(button);
     }
-
-    protected boolean isBrowseButtonEnabled() {
-        return browseButtonEnabled;
-    }
-
-    public List<Validator<String>> getValidators() {
-        return input.getValidators();
-    }
-
-    /**
-     * @return the validatePermissions
-     */
-    public boolean isValidatePermissions() {
-        return validatePermissions;
-    }
-
-    /**
-     * @param validatePermissions the validatePermissions to set
-     */
-    public void setValidatePermissions(boolean validatePermissions) {
-        this.validatePermissions = validatePermissions;
-    }
-
-    @Override
-    public void setRequired(boolean required) {
-        input.setAllowBlank(!required);
-    }
-
-    @Override
-    public List<EditorError> getErrors() {
-        return errors;
-    }
-
-    public void setEmptyText(String emptyText) {
-        input.setEmptyText(emptyText);
-    }
-
-    @Override
-    public void onDragEnter(DndDragEnterEvent event) {
-        Set<DiskResource> dropData = getDropData(event.getDragSource().getData());
-
-        if (!validateDropStatus(dropData, event.getStatusProxy())) {
-            event.setCancelled(true);
-        }
-    }
-
-    @Override
-    public void onDragMove(DndDragMoveEvent event) {
-        Set<DiskResource> dropData = getDropData(event.getDragSource().getData());
-
-        if (!validateDropStatus(dropData, event.getStatusProxy())) {
-            event.setCancelled(true);
-        }
-    }
-
-    abstract protected boolean validateDropStatus(Set<DiskResource> dropData, StatusProxy status);
 
     @SuppressWarnings("unchecked")
     protected Set<DiskResource> getDropData(Object data) {
@@ -514,7 +435,84 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     }
 
     @Override
-    public HandlerRegistration addInvalidHandler(InvalidHandler handler) {
-        return input.addInvalidHandler(handler);
+    protected XElement getFocusEl() {
+        return input.getElement();
+    }
+
+    protected boolean isBrowseButtonEnabled() {
+        return browseButtonEnabled;
+    }
+
+    protected abstract void onBrowseSelected();
+
+    @Override
+    protected void onResize(int width, int height) {
+        int offset = button.getOffsetWidth() + buttonOffset;
+        if (errorHandler.isShowing()) {
+            offset += 16;
+        }
+        super.onResize(width, height);
+        input.setWidth(width - offset);
+    }
+
+    protected void setSelectedResource(R selectedResource) {
+        setValue(selectedResource);
+    }
+
+    abstract protected boolean validateDropStatus(Set<DiskResource> dropData, StatusProxy status);
+
+    private void doGetStat(final HasId value) {
+        final String diskResourceId = value.getId();
+        HasPaths diskResourcePaths = drServiceFacade.getDiskResourceFactory().pathsList().as();
+        diskResourcePaths.setPaths(Lists.newArrayList(diskResourceId));
+
+        permissionEditorError = null;
+        existsEditorError = null;
+        drServiceFacade.getStat(diskResourcePaths, new AsyncCallback<DiskResourceStatMap>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                final IplantErrorStrings errorStrings = I18N.ERROR;
+                SimpleServiceError serviceError = AutoBeanCodex.decode(drServiceFacade.getDiskResourceFactory(), SimpleServiceError.class, caught.getMessage()).as();
+                if (serviceError.getErrorCode().equals(ServiceErrorCode.ERR_DOES_NOT_EXIST.toString())) {
+                    existsEditorError = new DefaultEditorError(input, errorStrings.diskResourceDoesNotExist(diskResourceId), diskResourceId);
+                    errors.add(existsEditorError);
+                    setInfoErrorText(errorStrings.diskResourceDoesNotExist(diskResourceId));
+                    ValueChangeEvent.fire(AbstractDiskResourceSelector.this, value);
+                }
+            }
+
+            @Override
+            public void onSuccess(DiskResourceStatMap result) {
+                if (!validatePermissions) {
+                    setInfoErrorText("");
+                    return;
+                }
+                ValueChangeEvent.fire(AbstractDiskResourceSelector.this, value);
+                DiskResource diskResource = result.get(diskResourceId);
+                if (diskResource == null) {
+                    permissionEditorError = new DefaultEditorError(input, I18N.DISPLAY.permissionSelectErrorMessage(), diskResourceId);
+                    errors.add(permissionEditorError);
+                    input.showErrors(Lists.<EditorError> newArrayList(permissionEditorError));
+                    setInfoErrorText(I18N.DISPLAY.permissionSelectErrorMessage());
+                } else if (!(diskResource.getPermissions().isWritable() || diskResource.getPermissions().isOwner())) {
+                    permissionEditorError = new DefaultEditorError(input, I18N.DISPLAY.permissionSelectErrorMessage(), diskResourceId);
+                    errors.add(permissionEditorError);
+                    input.showErrors(Lists.<EditorError> newArrayList(permissionEditorError));
+                    setInfoErrorText(I18N.DISPLAY.permissionSelectErrorMessage());
+                } else if ((getInfoText() != null) && getInfoText().equalsIgnoreCase(I18N.DISPLAY.permissionSelectErrorMessage())) {
+                    setInfoErrorText("");
+                }
+            }
+        });
+
+    }
+
+    private void initDragAndDrop() {
+        DropTarget dataDrop = new DropTarget(this);
+        dataDrop.setOperation(Operation.COPY);
+        dataDrop.addDragEnterHandler(this);
+        dataDrop.addDragMoveHandler(this);
+        dataDrop.addDropHandler(this);
     }
 }

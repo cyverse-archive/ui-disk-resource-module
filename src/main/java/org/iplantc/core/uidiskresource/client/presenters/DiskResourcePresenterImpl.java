@@ -335,14 +335,14 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             addEventHandlerRegistration(handler, reg);
 
             // If a parent folder of folderToSelect already exists, then we need to load its children.
-            String parentPath = DiskResourceUtil.parseParent(folderToSelect.getId());
-            Folder parentFolder = view.getFolderByPath(parentPath);
-            while (validParentPath(parentPath) && parentFolder == null) {
-                parentPath = DiskResourceUtil.parseParent(parentPath);
-                parentFolder = view.getFolderByPath(parentPath);
+            String parentId = DiskResourceUtil.parseParent(folderToSelect.getId());
+            Folder parentFolder = view.getFolderById(parentId);
+            while (validParentPath(parentId) && parentFolder == null) {
+                parentId = DiskResourceUtil.parseParent(parentId);
+                parentFolder = view.getFolderById(parentId);
             }
 
-            if (validParentPath(parentPath) && parentFolder != null) {
+            if (validParentPath(parentId) && parentFolder != null) {
                 treeLoader.loadChildren(parentFolder);
             }
         }
@@ -582,6 +582,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     @Override
     public boolean canDragDataToTargetFolder(final Folder targetFolder,
             final Collection<DiskResource> dropData) {
+        if (targetFolder.isFilter()) {
+            return false;
+        }
+
         // Assuming that ownership is of no concern.
         for (DiskResource dr : dropData) {
             // if the resource is a direct child of target folder
@@ -590,6 +594,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             }
 
             if (dr instanceof Folder) {
+                if (targetFolder.getPath().equals(dr.getPath())) {
+                    return false;
+                }
+
                 // cannot drag an ancestor (parent, grandparent, etc) onto a child and/or descendant
                 if (DiskResourceUtil.isDescendantOfFolder((Folder)dr, targetFolder)) {
                     return false;
@@ -873,7 +881,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
                     @Override
                     public void onSuccess(String result) {
-                        doRefresh(view.getFolderByPath(UserInfo.getInstance().getTrashPath()));
+                        doRefresh(view.getFolderById(UserInfo.getInstance().getTrashPath()));
                         view.unmask();
                     }
 
