@@ -14,14 +14,10 @@ import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadataPropert
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
-import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multiset;
 import com.google.common.collect.Sets;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.editor.client.Editor;
-import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -36,8 +32,6 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
-import com.sencha.gxt.data.shared.Store;
-import com.sencha.gxt.data.shared.Store.Change;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.CompleteEditEvent;
@@ -49,8 +43,6 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.form.Validator;
-import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
@@ -99,13 +91,13 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
 
     private GridInlineEditing<DiskResourceMetadata> gridInlineEditing;
 
-    private AttributeCell attributeCell;
+    private MetadataCell metadataCell;
 
     public DiskResourceMetadataDialog(final DiskResource resource,
             final DiskResourceView.Presenter presenter) {
         super(true);
         this.resource = resource;
-        setSize("500", "300");
+        setSize("600", "400");
         setWidget(uiBinder.createAndBindUi(this));
         setHeadingText(I18N.DISPLAY.metadata() + ":" + resource.getId());
 
@@ -124,7 +116,7 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
         grid.getSelectionModel().addSelectionChangedHandler(
                 new MetadataSelectionChangedListener(deleteMetadataButton, grid.getSelectionModel(),
                         gridInlineEditing));
-
+        
         presenter.getDiskResourceMetadata(resource, new RetrieveMetadataCallback(listStore,
                 autoBeanFactory));
     }
@@ -145,7 +137,6 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
         field1.setAllowBlank(false);
         field2.setAllowBlank(false);
 
-        field1.addValidator(new DuplicateAttributeValidator(listStore));
         AttributeValidationHandler validationHandler = new AttributeValidationHandler(okButton);
         field1.addInvalidHandler(validationHandler);
         field1.addValidHandler(validationHandler);
@@ -222,8 +213,9 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
         ColumnConfig<DiskResourceMetadata, String> valueColumn = new ColumnConfig<DiskResourceMetadata, String>(
                 props.value(), 150, "Value");
 
-        attributeCell = new AttributeCell(listStore);
-        attributeColumn.setCell(attributeCell);
+        metadataCell = new MetadataCell();
+        attributeColumn.setCell(metadataCell);
+        valueColumn.setCell(metadataCell);
         columns.add(attributeColumn);
         columns.add(valueColumn);
 
@@ -239,47 +231,18 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
         return Sets.newHashSet(listStore.getAll());
     }
 
-    private final class AttributeCell extends AbstractCell<String> {
-        private final ListStore<DiskResourceMetadata> listStore;
-        private final DiskResourceMetadataProperties props = GWT
-                .create(DiskResourceMetadataProperties.class);
-
-        public AttributeCell(final ListStore<DiskResourceMetadata> listStore) {
-            this.listStore = listStore;
-        }
-
+    private final class MetadataCell extends AbstractCell<String> {
+    
         @Override
         public void render(Context context, String value, SafeHtmlBuilder sb) {
             if (value == null) {
                 return;
             }
 
-            Multiset<String> dupeSet = HashMultiset.create();
-
-            for (DiskResourceMetadata drmd : listStore.getAll()) {
-                Store<DiskResourceMetadata>.Record record = listStore.getRecord(drmd);
-
-                if (record.isDirty()) {
-                    Change<DiskResourceMetadata, String> change = record.getChange(props.attribute());
-                    if (change != null) {
-                        dupeSet.add(change.getValue());
-                    }
-                } else {
-                    String attribute = drmd.getAttribute();
-                    dupeSet.add(attribute);
-                }
-            }
-
-            // Ok Button only enabled if there are no duplicate attributes.
-            int count = dupeSet.count(value);
-            if (count == 1) {
-                sb.append(SafeHtmlUtils.fromString(value));
-            } else {
                 sb.append(SafeHtmlUtils
-                        .fromSafeConstant("<span qtip='duplicate attribute' style='color:red;'>"));
+                        .fromSafeConstant("<span title='" + value + "'>"));
                 sb.append(SafeHtmlUtils.fromString(value));
                 sb.append(SafeHtmlUtils.fromSafeConstant("</span>"));
-            }
         }
     }
 
@@ -320,9 +283,6 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
         public void onSuccess(String result) {
             AutoBean<DiskResourceMetadataList> bean = AutoBeanCodex.decode(autoBeanFactory,
                     DiskResourceMetadataList.class, result);
-            // for (DiskResourceMetadata md : bean.as().getMetadata()) {
-            // md.setId("mdId:" + bean.as().getMetadata().indexOf(md));
-            // }
             store.addAll(bean.as().getMetadata());
 
         }
@@ -351,39 +311,5 @@ public class DiskResourceMetadataDialog extends IPlantDialog {
         }
     }
 
-    private final class DuplicateAttributeValidator implements Validator<String> {
-
-        private final ListStore<DiskResourceMetadata> listStore;
-        private final DiskResourceMetadataProperties props = GWT
-                .create(DiskResourceMetadataProperties.class);
-
-        public DuplicateAttributeValidator(ListStore<DiskResourceMetadata> listStore) {
-            this.listStore = listStore;
-        }
-
-        @Override
-        public List<EditorError> validate(Editor<String> editor, String value) {
-            List<EditorError> errors = Lists.newArrayList();
-            Multiset<String> dupeSet = HashMultiset.create();
-            for (DiskResourceMetadata md : listStore.getAll()) {
-                Store<DiskResourceMetadata>.Record record = listStore.getRecord(md);
-
-                if (record.isDirty()) {
-                    Change<DiskResourceMetadata, String> change = record.getChange(props.attribute());
-                    if (change != null) {
-                        dupeSet.add(change.getValue());
-                    }
-                } else {
-                    String attribute = md.getAttribute();
-                    dupeSet.add(attribute);
-                }
-            }
-            // If there are duplicates AND the value is one of the dupes
-            if (dupeSet.count(value) > 1) {
-                // if ((dupeSet.size() != listStore.getAll().size()) && dupeSet.contains(value)) {
-                errors.add(new DefaultEditorError(editor, "Duplicate Attribute", value));
-            }
-            return errors;
-        }
-    }
+   
 }
