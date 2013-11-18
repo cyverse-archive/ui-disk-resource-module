@@ -12,10 +12,10 @@ import com.sencha.gxt.data.shared.event.StoreAddEvent;
 import com.sencha.gxt.data.shared.event.StoreAddEvent.StoreAddHandler;
 
 public final class SelectDiskResourceByIdStoreAddHandler implements StoreAddHandler<DiskResource> {
-    private final List<HasId> diskResourcesToSelect;
+    private final List<? extends HasId> diskResourcesToSelect;
     private final DiskResourceView.Presenter presenter;
 
-    public SelectDiskResourceByIdStoreAddHandler(List<HasId> diskResourcesToSelect, DiskResourceView.Presenter presenter) {
+    public SelectDiskResourceByIdStoreAddHandler(List<? extends HasId> diskResourcesToSelect, DiskResourceView.Presenter presenter) {
         this.diskResourcesToSelect = diskResourcesToSelect;
         this.presenter = presenter;
     }

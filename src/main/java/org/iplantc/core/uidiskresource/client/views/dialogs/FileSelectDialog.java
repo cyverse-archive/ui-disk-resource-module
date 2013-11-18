@@ -44,7 +44,7 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<Fi
     private final TextField selectedFileField = new TextField();
     private List<File> selectedFileIds;
 
-    public static FileSelectDialog singleSelect(List<HasId> diskResourcesToSelect) {
+    public static FileSelectDialog singleSelect(List<DiskResource> diskResourcesToSelect) {
         return new FileSelectDialog(diskResourcesToSelect, true);
     }
 
@@ -64,7 +64,7 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<Fi
         presenter.go(this, folderToSelect, null);
     }
 
-    protected FileSelectDialog(List<HasId> diskResourcesToSelect, boolean singleSelect) {
+    protected FileSelectDialog(List<DiskResource> diskResourcesToSelect, boolean singleSelect) {
 
         presenter = DiskResourceInjector.INSTANCE.getDiskResourceViewPresenter();
         init(singleSelect);

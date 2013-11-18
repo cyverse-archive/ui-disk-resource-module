@@ -548,7 +548,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     }
 
     @Override
-    public void setSelectedDiskResources(List<HasId> diskResourcesToSelect) {
+    public void setSelectedDiskResources(List<? extends HasId> diskResourcesToSelect) {
         List<DiskResource> resourcesToSelect = Lists.newArrayList();
         for (HasId hi : diskResourcesToSelect) {
             DiskResource findModelWithKey = listStore.findModelWithKey(hi.getId());
