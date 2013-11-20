@@ -55,7 +55,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
             Builder disableFilePreview();
         }
 
-        void go(HasOneWidget container, HasId folderToSelect, List<HasId> diskResourcesToSelect);
+        void go(HasOneWidget container, HasId folderToSelect, List<? extends HasId> diskResourcesToSelect);
         
         /**
          * Method to clean up all the events when it is no longer required.
@@ -163,7 +163,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
         void unMaskView(boolean clearRegisteredHandlers);
 
-        void setSelectedDiskResourcesById(List<HasId> selectedDiskResources);
+        void setSelectedDiskResourcesById(List<? extends HasId> selectedDiskResources);
         
         void OnInfoTypeClick(String id, String infoType);
 
@@ -229,7 +229,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
      */
     void setSelectedFolder(Folder folder);
 
-    void setSelectedDiskResources(List<HasId> diskResourcesToSelect);
+    void setSelectedDiskResources(List<? extends HasId> diskResourcesToSelect);
 
     void addFolder(Folder parent, Folder newChild);
 
@@ -303,4 +303,5 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
     void maskDetailsPanel();
 
     void setViewLoader(PagingLoader<FolderContentsLoadConfig, PagingLoadResult<DiskResource>> gridLoader);
+
 }

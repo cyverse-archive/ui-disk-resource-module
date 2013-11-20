@@ -9,12 +9,16 @@ import org.iplantc.core.uicommons.client.models.CommonModelUtils;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FolderSelectDialog;
 
+import com.google.common.base.Strings;
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.TakesValue;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.StatusProxy;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
@@ -51,7 +55,7 @@ public class FolderSelectorField extends AbstractDiskResourceSelector<Folder> {
     }
 
     @Override
-    public void setValue(HasId value) {
+    public void setValue(Folder value) {
         super.setValue(value);
     }
 
@@ -103,5 +107,15 @@ public class FolderSelectorField extends AbstractDiskResourceSelector<Folder> {
             setSelectedResource(selectedFolder);
             ValueChangeEvent.fire(this, selectedFolder);
         }
+    }
+
+    @Override
+    public void setValueFromStringId(String path) {
+        if (Strings.isNullOrEmpty(path)) {
+            setValue(null);
+          }
+        DiskResourceAutoBeanFactory factory = GWT.create(DiskResourceAutoBeanFactory.class);
+        setValue(AutoBeanCodex.decode(factory, Folder.class, "{\"path\":\"" + path + "\"}").as());
+        
     }
 }

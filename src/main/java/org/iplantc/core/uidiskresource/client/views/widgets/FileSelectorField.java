@@ -6,16 +6,19 @@ import java.util.Set;
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.events.UserSettingsUpdatedEvent;
-import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.UserSettings;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.diskresources.File;
 import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FileSelectDialog;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.TakesValue;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.StatusProxy;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
@@ -31,9 +34,9 @@ public class FileSelectorField extends AbstractDiskResourceSelector<File> {
 
     @Override
     protected void onBrowseSelected() {
-        List<HasId> selected = null;
+        List<DiskResource> selected = null;
 
-        HasId value = getValue();
+        DiskResource value = getValue();
         if (value != null) {
             selected = Lists.newArrayList();
             selected.add(value);
@@ -106,5 +109,15 @@ public class FileSelectorField extends AbstractDiskResourceSelector<File> {
             setSelectedResource(selectedFile);
             ValueChangeEvent.fire(this, selectedFile);
         }
+    }
+
+    @Override
+    public void setValueFromStringId(String path) {
+        if (Strings.isNullOrEmpty(path)) {
+            setValue(null);
+          }
+        DiskResourceAutoBeanFactory factory = GWT.create(DiskResourceAutoBeanFactory.class);
+        setValue(AutoBeanCodex.decode(factory, File.class, "{\"path\":\"" + path + "\"}").as());
+        
     }
 }

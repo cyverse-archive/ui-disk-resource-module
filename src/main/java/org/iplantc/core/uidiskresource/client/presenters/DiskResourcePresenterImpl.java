@@ -219,7 +219,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             @Override
             public void onSuccess(String result) {
                 JSONObject obj = JsonUtil.getObject(result);
-                UserInfo.getInstance().setTrashPath(JsonUtil.getString(obj, "trash"));
+                UserInfo.getInstance().setTrashPath(JsonUtil.getString(obj, "path"));
             }
         });
     }
@@ -296,7 +296,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     }
 
     @Override
-    public void go(HasOneWidget container, HasId folderToSelect, final List<HasId> diskResourcesToSelect) {
+    public void go(HasOneWidget container, HasId folderToSelect, final List<? extends HasId> diskResourcesToSelect) {
 
         if ((folderToSelect == null) || Strings.isNullOrEmpty(folderToSelect.getId())) {
             go(container);
@@ -308,7 +308,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     }
 
     @Override
-    public void setSelectedDiskResourcesById(final List<HasId> diskResourcesToSelect) {
+    public void setSelectedDiskResourcesById(final List<? extends HasId> diskResourcesToSelect) {
         SelectDiskResourceByIdStoreAddHandler diskResourceStoreAddHandler = new SelectDiskResourceByIdStoreAddHandler(
                 diskResourcesToSelect, this);
         HandlerRegistration diskResHandlerReg = view.getListStore().addStoreAddHandler(

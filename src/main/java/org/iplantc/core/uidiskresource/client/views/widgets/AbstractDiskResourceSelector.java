@@ -1,5 +1,20 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
+import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.resources.client.messages.IplantErrorStrings;
+import org.iplantc.core.uicommons.client.errorHandling.models.ServiceErrorCode;
+import org.iplantc.core.uicommons.client.errorHandling.models.SimpleServiceError;
+import org.iplantc.core.uicommons.client.gin.ServicesInjector;
+import org.iplantc.core.uicommons.client.models.HasPaths;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceStatMap;
+import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
+import org.iplantc.core.uicommons.client.widgets.IPlantSideErrorHandler;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.core.client.Scheduler;
@@ -26,7 +41,6 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
-
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.XDOM;
 import com.sencha.gxt.core.client.dom.XElement;
@@ -50,23 +64,6 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 
-import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.resources.client.messages.IplantErrorStrings;
-import org.iplantc.core.uicommons.client.errorHandling.models.ServiceErrorCode;
-import org.iplantc.core.uicommons.client.errorHandling.models.SimpleServiceError;
-import org.iplantc.core.uicommons.client.gin.ServicesInjector;
-import org.iplantc.core.uicommons.client.models.CommonModelUtils;
-import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uicommons.client.models.HasPaths;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceStatMap;
-import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
-import org.iplantc.core.uicommons.client.widgets.IPlantSideErrorHandler;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
 /**
  * Abstract class for single select DiskResource fields.
  * 
@@ -77,7 +74,7 @@ import java.util.Set;
  * 
  */
 public abstract class AbstractDiskResourceSelector<R extends DiskResource> extends Component implements
-        IsField<HasId>, ValueAwareEditor<HasId>, HasValueChangeHandlers<HasId>, HasEditorErrors<HasId>,
+        IsField<R>, ValueAwareEditor<R>, HasValueChangeHandlers<R>, HasEditorErrors<R>,
         DndDragEnterHandler, DndDragMoveHandler, DndDropHandler, HasInvalidHandlers, DiskResourceSelector, DiskResourceSelector.HasDisableBrowseButtons {
 
     public interface FileUploadTemplate extends XTemplates {
@@ -153,7 +150,7 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
 
     private String infoTextString;
     private final TextField input = new TextField();
-    private HasId model;
+    private R model;
 
     private DefaultEditorError permissionEditorError = null;
     private final Resources res = GWT.create(Resources.class);
@@ -215,7 +212,7 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     }
 
     @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<HasId> handler) {
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<R> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
@@ -255,8 +252,8 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     }
 
     @Override
-    public HasId getValue() {
-        return CommonModelUtils.createHasIdFromString(input.getCurrentValue());
+    public R getValue() {
+        return model;
     }
 
     @Override
@@ -309,7 +306,7 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     }
 
     @Override
-    public void setDelegate(EditorDelegate<HasId> delegate) {/* Do Nothing */}
+    public void setDelegate(EditorDelegate<R> delegate) {/* Do Nothing */}
 
     public void setEmptyText(String emptyText) {
         input.setEmptyText(emptyText);
@@ -356,15 +353,16 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     }
 
     @Override
-    public void setValue(HasId value) {
+    public void setValue(R value) {
         if ((value == model)) {
             // JDS If model is not changing
             return;
-        } else if ((model != null) && (value != null) && model.getId().equals(value.getId())) {
+        } else if ((model != null) && (value != null) && model.getPath().equals(value.getPath())) {
             return;
         }
         model = value;
-        input.setValue(value == null ? null : value.getId());
+        input.setValue(value == null ? null : value.getPath());
+        validate(false);
 
         doGetStat(value);
     }
@@ -372,11 +370,9 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
     /**
      * Convenience method which creates a HasId object from a given string id.
      * 
-     * @param id
+     * @param path
      */
-    public void setValueFromStringId(String id) {
-        setValue(CommonModelUtils.createHasIdFromString(id));
-    }
+    public abstract void setValueFromStringId(String path);
 
     @Override
     public void showErrors(List<EditorError> errors) {/* Do Nothing */}
@@ -461,8 +457,8 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
 
     abstract protected boolean validateDropStatus(Set<DiskResource> dropData, StatusProxy status);
 
-    private void doGetStat(final HasId value) {
-        final String diskResourceId = value.getId();
+    private void doGetStat(final R value) {
+        final String diskResourceId = value.getPath();
         HasPaths diskResourcePaths = drServiceFacade.getDiskResourceFactory().pathsList().as();
         diskResourcePaths.setPaths(Lists.newArrayList(diskResourceId));
 
