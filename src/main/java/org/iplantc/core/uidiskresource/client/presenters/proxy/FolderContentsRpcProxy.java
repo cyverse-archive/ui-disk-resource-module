@@ -34,6 +34,7 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
               List<DiskResource> list = new ArrayList<DiskResource>();
               list.addAll(result.getFolders());
               list.addAll(result.getFiles());
+                loadConfig.getFolder().setTotalFiltered(result.getTotalFiltered());
               callback.onSuccess(new PagingLoadResultBean<DiskResource>(list, result.getTotal(), loadConfig.getOffset()));
           } else {
               onFailure(null);

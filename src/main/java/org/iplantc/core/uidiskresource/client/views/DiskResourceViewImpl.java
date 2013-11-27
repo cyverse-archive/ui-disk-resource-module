@@ -169,8 +169,14 @@ public class DiskResourceViewImpl implements DiskResourceView {
             if (sm.isSelectAll()) {
                 sm.setSelection(listStore.getAll());
             }
+
+            int totalCount = event.getTotalCount();
+            Folder selectedFolder = getSelectedFolder();
+            if (selectedFolder != null) {
+                totalCount = totalCount - selectedFolder.getTotalFiltered();
+            }
+            sm.setTotal(totalCount);
             sm.setRowCount(event.getRowCount());
-            sm.setTotal(event.getTotalCount());
         }
     }
 
@@ -622,26 +628,8 @@ public class DiskResourceViewImpl implements DiskResourceView {
             return;
         }
 
-        // KLUDGE TreeStore#removeChildren doesn't actually remove the children from their parent's
-        // TreeModel wrapper, so remove the parent as well, then re-add it without children.
-        Folder parent = null;
-        int index = treeStore.getRootItems().indexOf(folder);
-        if (index < 0) {
-            parent = treeStore.getParent(folder);
-
-            if (parent != null) {
-                index = treeStore.indexOf(folder);
-            }
-        }
-
-        treeStore.remove(folder);
+        treeStore.removeChildren(folder);
         folder.setFolders(null);
-
-        if (parent == null) {
-            treeStore.insert(index, folder);
-        } else {
-            treeStore.insert(parent, index, folder);
-        }
     }
 
     @Override
