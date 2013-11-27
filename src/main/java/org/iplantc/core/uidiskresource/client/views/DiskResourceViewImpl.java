@@ -169,8 +169,14 @@ public class DiskResourceViewImpl implements DiskResourceView {
             if (sm.isSelectAll()) {
                 sm.setSelection(listStore.getAll());
             }
+
+            int totalCount = event.getTotalCount();
+            Folder selectedFolder = getSelectedFolder();
+            if (selectedFolder != null) {
+                totalCount = totalCount - selectedFolder.getTotalFiltered();
+            }
+            sm.setTotal(totalCount);
             sm.setRowCount(event.getRowCount());
-            sm.setTotal(event.getTotalCount());
         }
     }
 
