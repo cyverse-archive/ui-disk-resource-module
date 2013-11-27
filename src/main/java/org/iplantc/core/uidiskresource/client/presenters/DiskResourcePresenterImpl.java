@@ -31,6 +31,7 @@ import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.dataLink.presenter.DataLinkPresenter;
 import org.iplantc.core.uidiskresource.client.dataLink.view.DataLinkPanel;
+import org.iplantc.core.uidiskresource.client.events.CreateNewFileEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent;
@@ -251,6 +252,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private void initToolbar(DiskResourceViewToolbar toolbar) {
         // Disable all buttons, except for Uploads.
         toolbar.setNewFolderButtonEnabled(false);
+        toolbar.setNewFileButtonEnabled(false);
+        toolbar.setNewButtonEnabled(false);
         toolbar.setRefreshButtonEnabled(false);
         toolbar.setDownloadsEnabled(false);
         toolbar.setBulkDownloadButtonEnabled(false);
@@ -1008,6 +1011,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         FolderContentsLoadConfig config = gridLoader.getLastLoadConfig();
         config.setSortInfo(Arrays.asList(sortInfo));
         gridLoader.load();
+    }
+
+    @Override
+    public void onNewFile() {
+        CreateNewFileEvent event = new CreateNewFileEvent(getSelectedUploadFolder().getPath());
+        EventBus.getInstance().fireEvent(event);
     }
 
 }
