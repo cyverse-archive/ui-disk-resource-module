@@ -114,6 +114,18 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
                 presenter.doSearch(searchField.getCurrentValue());
             }
         });
+
+    }
+
+    @Override
+    public HandlerRegistration addSaveDiskResourceQueryTemplateEventHandler(SaveDiskResourceQueryEventHandler handler) {
+        return searchField.addSaveDiskResourceQueryTemplateEventHandler(handler);
+    }
+
+
+    @Override
+    public HandlerRegistration addSubmitDiskResourceQueryEventHandler(SubmitDiskResourceQueryEventHandler handler) {
+        return searchField.addSubmitDiskResourceQueryEventHandler(handler);
     }
 
     @Override
@@ -125,7 +137,7 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     public void setPresenter(DiskResourceViewToolbar.Presenter presenter) {
         this.presenter = presenter;
     }
-
+    
     @UiHandler("bulkUploadButton")
     void onBulkUploadClicked(SelectionEvent<Item> event) {
         presenter.doBulkUpload();

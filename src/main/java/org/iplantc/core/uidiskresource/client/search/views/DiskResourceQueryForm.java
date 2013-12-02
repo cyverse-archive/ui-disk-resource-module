@@ -24,8 +24,8 @@ import com.sencha.gxt.widget.core.client.menu.Menu;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uicommons.client.models.search.SearchAutoBeanFactory;
 import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
-import org.iplantc.core.uidiskresource.client.events.search.SaveDiskResourceQueryEvent;
-import org.iplantc.core.uidiskresource.client.events.search.SubmitDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
 
 import java.util.List;
 

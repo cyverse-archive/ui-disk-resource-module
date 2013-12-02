@@ -1,10 +1,10 @@
-package org.iplantc.core.uidiskresource.client.events.search;
+package org.iplantc.core.uidiskresource.client.search.events;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.core.uidiskresource.client.events.search.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
 
 public class SaveDiskResourceQueryEvent extends GwtEvent<SaveDiskResourceQueryEventHandler> {
 
