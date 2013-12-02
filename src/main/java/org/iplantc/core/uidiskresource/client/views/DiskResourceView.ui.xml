@@ -70,35 +70,29 @@
                      hidden="true"/>
    </ui:with>
 
-    <ui:with
-        type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData"
-        field="detailsLayoutDataTop">
-<!-- 
-        <ui:attributes
-            width="1"
-            height="0.45"/>
- -->
-        <ui:attributes
-            width="1"
-            height="1"/>
+    <ui:with field="detailsLayoutDataTop"
+             type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
+        <ui:attributes width="1"
+                       height="1"/>
     </ui:with>
-    <ui:with
-        type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData"
-        field="detailsLayoutDataBottom">
-        <ui:attributes
-            width="1"
-            height="0.55"/>
+    <ui:with field="detailsLayoutDataBottom"
+             type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
+        <ui:attributes width="1"
+                       height="0.55"/>
     </ui:with>
     
     <ui:with field="centerLayoutData"
-		type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
-		<ui:attributes height="1" width="1" margins="{centerMargins}" />
-
+		     type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
+		<ui:attributes height="1" 
+		               width="1" 
+		               margins="{centerMargins}" />
 	</ui:with>
-	 <ui:with field="centerBottomBarLayoutData"
-		type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
-		<ui:attributes height="25" width="1" margins="{centerMargins}" />
-
+	
+	<ui:with field="centerBottomBarLayoutData"
+		     type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
+		<ui:attributes height="25" 
+		               width="1" 
+		               margins="{centerMargins}" />
 	</ui:with>
 
    <container:BorderLayoutContainer ui:field="con"

@@ -1,28 +1,5 @@
 package org.iplantc.core.uidiskresource.client.views;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import org.iplantc.core.resources.client.DataCollapseStyle;
-import org.iplantc.core.resources.client.IplantResources;
-import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.uicommons.client.events.EventBus;
-import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceInfo;
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-import org.iplantc.core.uicommons.client.models.diskresources.Permissions;
-import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
-import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
-import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
-import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
-import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoadConfig;
-import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
-import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.cell.client.Cell;
@@ -51,6 +28,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
@@ -96,6 +74,29 @@ import com.sencha.gxt.widget.core.client.tree.Tree.TreeAppearance;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 import com.sencha.gxt.widget.core.client.tree.TreeView;
+
+import org.iplantc.core.resources.client.DataCollapseStyle;
+import org.iplantc.core.resources.client.IplantResources;
+import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceInfo;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uicommons.client.models.diskresources.Permissions;
+import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
+import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
+import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
+import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoadConfig;
+import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
+import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class DiskResourceViewImpl implements DiskResourceView {
 

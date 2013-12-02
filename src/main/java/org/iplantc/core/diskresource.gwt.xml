@@ -19,6 +19,9 @@
     <replace-with class="org.iplantc.core.uidiskresource.client.views.CheckBoxColumnDefaultAppearance">
        <when-type-is class="org.iplantc.core.uidiskresource.client.views.DiskResourceSelectionModel.CheckBoxColumnAppearance"/>
     </replace-with>
+    <replace-with class="org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchCellDefaultAppearance">
+        <when-type-is class="org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchCell.DiskResourceSearchCellAppearance"/>
+    </replace-with>
    
 	<source path="client"/>
     <source path="uidiskresource"/>
