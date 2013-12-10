@@ -3,14 +3,19 @@ package org.iplantc.core.uidiskresource.client.services.callbacks;
 import java.util.Set;
 
 import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.info.SuccessAnnouncementConfig;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.diskresources.RestoreResponse;
 import org.iplantc.core.uicommons.client.models.diskresources.RestoreResponse.RestoredResource;
+import org.iplantc.core.uidiskresource.client.services.errors.DiskResourceErrorAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.services.errors.ErrorDiskResourceMove;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
+import com.google.gwt.core.client.GWT;
+import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.Splittable;
 
@@ -44,9 +49,22 @@ public class DiskResourceRestoreCallback extends DiskResourceServiceCallback<Str
         super.onSuccess(result);
 
         checkForPartialRestore(result);
-        view.removeDiskResources(selectedResources);
+        if(view.isSelectAll()) {
+            view.refreshFolder(view.getSelectedFolder());
+        } else {
+            view.removeDiskResources(selectedResources);
+        }
     }
 
+    @Override
+    public void onFailure(Throwable caught) {
+        super.onFailure(caught);
+        DiskResourceErrorAutoBeanFactory factory = GWT.create(DiskResourceErrorAutoBeanFactory.class);
+        AutoBean<ErrorDiskResourceMove> errorBean = AutoBeanCodex.decode(factory, ErrorDiskResourceMove.class, caught.getMessage());
+
+        ErrorHandler.post(errorBean.as(), caught);
+    }
+    
     private void checkForPartialRestore(String result) {
         RestoreResponse response = AutoBeanCodex.decode(drFactory, RestoreResponse.class, result).as();
         Splittable restored = response.getRestored();

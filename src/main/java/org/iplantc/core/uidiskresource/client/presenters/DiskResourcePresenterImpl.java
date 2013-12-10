@@ -143,7 +143,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         this.DISPLAY = display;
         this.drFactory = factory;
         this.dataSearchFactory = dataSearchFactory;
-        
+
         builder = new MyBuilder(this);
 
         treeLoader = new TreeLoader<Folder>(this.proxy) {
@@ -174,7 +174,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         gridLoader.setReuseLoadConfig(true);
         view.setViewLoader(gridLoader);
     }
-    
+
     private void initDragAndDrop() {
 
     }
@@ -235,17 +235,22 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
         EventBus eventBus = EventBus.getInstance();
         DiskResourcesEventHandler diskResourcesEventHandler = new DiskResourcesEventHandler(this);
-        dreventHandlers.add(eventBus.addHandler(DiskResourceRefreshEvent.TYPE, diskResourcesEventHandler));
-        dreventHandlers.add(eventBus.addHandler(DiskResourcesDeletedEvent.TYPE, diskResourcesEventHandler));
+        dreventHandlers.add(eventBus
+                .addHandler(DiskResourceRefreshEvent.TYPE, diskResourcesEventHandler));
+        dreventHandlers.add(eventBus.addHandler(DiskResourcesDeletedEvent.TYPE,
+                diskResourcesEventHandler));
         dreventHandlers.add(eventBus.addHandler(FolderCreatedEvent.TYPE, diskResourcesEventHandler));
-        dreventHandlers.add(eventBus.addHandler(DiskResourceRenamedEvent.TYPE, diskResourcesEventHandler));
-        dreventHandlers.add(eventBus.addHandler(DiskResourceSelectedEvent.TYPE, diskResourcesEventHandler));
-        dreventHandlers.add(eventBus.addHandler(DiskResourcesMovedEvent.TYPE, diskResourcesEventHandler));
+        dreventHandlers.add(eventBus
+                .addHandler(DiskResourceRenamedEvent.TYPE, diskResourcesEventHandler));
+        dreventHandlers.add(eventBus.addHandler(DiskResourceSelectedEvent.TYPE,
+                diskResourcesEventHandler));
+        dreventHandlers
+                .add(eventBus.addHandler(DiskResourcesMovedEvent.TYPE, diskResourcesEventHandler));
 
-//        DataSearchHandler dataSearchHandler = new DataSearchHandler(this);
-//        eventBus.addHandler(DataSearchNameSelectedEvent.TYPE, dataSearchHandler);
-//        eventBus.addHandler(DataSearchPathSelectedEvent.TYPE, dataSearchHandler);
-//        eventBus.addHandler(DataSearchHistorySelectedEvent.TYPE, dataSearchHandler);
+        // DataSearchHandler dataSearchHandler = new DataSearchHandler(this);
+        // eventBus.addHandler(DataSearchNameSelectedEvent.TYPE, dataSearchHandler);
+        // eventBus.addHandler(DataSearchPathSelectedEvent.TYPE, dataSearchHandler);
+        // eventBus.addHandler(DataSearchHistorySelectedEvent.TYPE, dataSearchHandler);
     }
 
     private void initToolbar(DiskResourceViewToolbar toolbar) {
@@ -262,12 +267,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         toolbar.setEditEnabled(false);
         toolbar.setMoveButtonEnabled(false);
     }
-    
+
     @Override
     public void cleanUp() {
         EventBus eventBus = EventBus.getInstance();
         for (HandlerRegistration hr : dreventHandlers) {
-           eventBus.removeHandler(hr);
+            eventBus.removeHandler(hr);
         }
     }
 
@@ -296,7 +301,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     }
 
     @Override
-    public void go(HasOneWidget container, HasId folderToSelect, final List<? extends HasId> diskResourcesToSelect) {
+    public void go(HasOneWidget container, HasId folderToSelect,
+            final List<? extends HasId> diskResourcesToSelect) {
 
         if ((folderToSelect == null) || Strings.isNullOrEmpty(folderToSelect.getId())) {
             go(container);
@@ -368,7 +374,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         view.deSelectDiskResources();
         FolderContentsLoadConfig config = gridLoader.getLastLoadConfig();
         config.setFolder(folder);
-        gridLoader.load(0,200);
+        gridLoader.load(0, 200);
     }
 
     @Override
@@ -391,7 +397,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
                 drFactory));
 
     }
-
 
     @Override
     public void doBulkUpload() {
@@ -519,11 +524,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private void delete(Set<DiskResource> drSet, String announce) {
         view.mask(DISPLAY.loadingMask());
         Folder selectedFolder = getSelectedFolder();
-        final AsyncCallback<HasPaths> callback = new DiskResourceDeleteCallback(drSet, selectedFolder, view,announce);
-      
-        if(view.isSelectAll()) {
-            diskResourceService.deleteContents(selectedFolder.getId(),callback);
-            
+        final AsyncCallback<HasPaths> callback = new DiskResourceDeleteCallback(drSet, selectedFolder,
+                view, announce);
+
+        if (view.isSelectAll()) {
+            diskResourceService.deleteContents(selectedFolder.getId(), callback);
+
         } else {
             diskResourceService.deleteDiskResources(drSet, callback);
         }
@@ -618,12 +624,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     @Override
     public void doMoveDiskResources(Folder targetFolder, Set<DiskResource> resources) {
         Folder parent = getSelectedFolder();
-        if(view.isSelectAll()) {
-            diskResourceService.moveContents(parent.getPath(), targetFolder, new DiskResourceMoveCallback(
-                    view,true, parent,targetFolder, resources));
+        if (view.isSelectAll()) {
+            diskResourceService.moveContents(parent.getPath(), targetFolder,
+                    new DiskResourceMoveCallback(view, true, parent, targetFolder, resources));
         } else {
             diskResourceService.moveDiskResources(resources, targetFolder, new DiskResourceMoveCallback(
-                view,false, parent, targetFolder, resources));
+                    view, false, parent, targetFolder, resources));
         }
     }
 
@@ -915,12 +921,17 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             return;
         }
 
-        HasPaths request = drFactory.pathsList().as();
-        request.setPaths(DiskResourceUtil.asStringIdList(selectedResources));
-
         maskView();
-        diskResourceService.restoreDiskResource(request, new DiskResourceRestoreCallback(view,
-                drFactory, selectedResources));
+
+        if (view.isSelectAll()) {
+            diskResourceService.restoreAll(new DiskResourceRestoreCallback(view, drFactory,
+                    selectedResources));
+        } else {
+            HasPaths request = drFactory.pathsList().as();
+            request.setPaths(DiskResourceUtil.asStringIdList(selectedResources));
+            diskResourceService.restoreDiskResource(request, new DiskResourceRestoreCallback(view,
+                    drFactory, selectedResources));
+        }
     }
 
     @Override
