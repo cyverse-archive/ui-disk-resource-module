@@ -27,13 +27,15 @@ class DiskResourceViewDnDHandler implements DndDragStartHandler, DndDropHandler,
         DndDragEnterHandler {
 
     private final Presenter presenter;
+    private final DiskResourceView view;
 
     /**
      * Guard against rapid clicks triggering drag+drop events.
      */
     private boolean moved;
 
-    public DiskResourceViewDnDHandler(final DiskResourceView.Presenter presenter) {
+    public DiskResourceViewDnDHandler(final DiskResourceView view, final DiskResourceView.Presenter presenter) {
+        this.view = view;
         this.presenter = presenter;
     }
 
@@ -47,7 +49,11 @@ class DiskResourceViewDnDHandler implements DndDragStartHandler, DndDropHandler,
 
         // Reset status message
         status.setStatus(true);
-        status.update(I18N.DISPLAY.dataDragDropStatusText(dropData.size()));
+        if(view.isSelectAll()) {
+            status.update(I18N.DISPLAY.dataDragDropStatusText(view.getTotalSelectionCount()));
+        } else {
+            status.update(I18N.DISPLAY.dataDragDropStatusText(dropData.size()));
+        }
 
         // Verify we have a drop target.
         if (targetFolder == null) {
@@ -81,7 +87,11 @@ class DiskResourceViewDnDHandler implements DndDragStartHandler, DndDropHandler,
 
         if ((dragData != null) && !dragData.isEmpty() && (!containsFilteredItems(dragData))) {
             event.setData(dragData);
-            event.getStatusProxy().update(I18N.DISPLAY.dataDragDropStatusText(dragData.size()));
+            if(view.isSelectAll()) {
+                event.getStatusProxy().update(I18N.DISPLAY.dataDragDropStatusText(view.getTotalSelectionCount()));
+            } else {
+                event.getStatusProxy().update(I18N.DISPLAY.dataDragDropStatusText(dragData.size()));
+            }
             event.getStatusProxy().setStatus(true);
             event.setCancelled(false);
         } else {
@@ -114,8 +124,11 @@ class DiskResourceViewDnDHandler implements DndDragStartHandler, DndDropHandler,
             return;
         }
 
-        // Reset status message
-        event.getStatusProxy().update(I18N.DISPLAY.dataDragDropStatusText(dropData.size()));
+        if(view.isSelectAll()) {
+            event.getStatusProxy().update(I18N.DISPLAY.dataDragDropStatusText(view.getTotalSelectionCount()));
+        } else {
+            event.getStatusProxy().update(I18N.DISPLAY.dataDragDropStatusText(dropData.size()));
+        }
     }
 
     @Override

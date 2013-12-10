@@ -476,6 +476,7 @@ public class DiskResourcePresenterTest {
                 will(returnValue(true));
                 oneOf(file).getPath();
 
+                oneOf(view).isSelectAll();
                 oneOf(view).getSelectedFolder();
                 oneOf(display).deleteMsg();
                 oneOf(diskResourceService).deleteDiskResources(with(Sets.newHashSet(file)),
@@ -517,6 +518,7 @@ public class DiskResourcePresenterTest {
                 oneOf(file).getPath();
                 oneOf(folder).getPath();
 
+                allowing(view).isSelectAll();
                 oneOf(view).getSelectedFolder();
                 oneOf(display).deleteMsg();
                 oneOf(diskResourceService).deleteDiskResources(with(Sets.newHashSet(file, folder)),
@@ -550,6 +552,7 @@ public class DiskResourcePresenterTest {
                 will(returnValue(true));
                 oneOf(folder).getPath();
 
+                allowing(view).isSelectAll();
                 allowing(view).getSelectedFolder();
                 will(returnValue(folder));
                 oneOf(display).deleteMsg();
@@ -597,6 +600,7 @@ public class DiskResourcePresenterTest {
                 allowing(permissions).isWritable();
                 will(returnValue(false));
 
+                allowing(view).isSelectAll();
                 allowing(view).getSelectedFolder();
                 will(returnValue(parentFolder));
                 never(diskResourceService).deleteDiskResources(with(any(Set.class)),

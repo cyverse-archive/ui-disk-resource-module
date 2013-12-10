@@ -250,4 +250,11 @@ public interface DiskResourceServiceErrorStrings extends Messages {
      */
     String fileReadable(String fileNames);
 
+    /**
+     * Error message displayed when a data service call fails because too many items were selected to process
+     * 
+     * @return localized error string.
+     */
+    String tooManyItemsSelected(String threshold);
+
 }

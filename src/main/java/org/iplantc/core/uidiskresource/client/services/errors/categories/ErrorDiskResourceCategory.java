@@ -42,10 +42,18 @@ public class ErrorDiskResourceCategory {
             resourceNames = SafeHtmlUtils.fromString(resourceNames).asString();
         }
 
-        return SafeHtmlUtils.fromTrustedString(getErrorMessageString(code, resourceNames));
+        return SafeHtmlUtils.fromTrustedString(getErrorMessageString(code, resourceNames,""));
     }
 
-    private static String getErrorMessageString(DiskResourceErrorCode code, String resourceNames) {
+    protected static SafeHtml getThresholdErrorMessage(DiskResourceErrorCode code, int threshold) {
+        if (code == null) {
+            return null;
+        }
+        
+        return SafeHtmlUtils.fromTrustedString(getErrorMessageString(code, "", threshold + ""));
+    }
+    
+    private static String getErrorMessageString(DiskResourceErrorCode code, String resourceNames, String threshold) {
         switch (code) {
             case ERR_DOES_NOT_EXIST:
                 return errStrings.diskResourceDoesNotExist(resourceNames);
@@ -85,6 +93,8 @@ public class ErrorDiskResourceCategory {
                 return errStrings.diskResourceIncompleteRename();
             case ERR_NOT_OWNER:
                  return errStrings.dataErrorNotAuthorized();
+            case ERR_TOO_MANY_PATHS:
+                 return errStrings.tooManyItemsSelected(threshold);
             default:
                     return errStrings.diskResourceError();
         }
