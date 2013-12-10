@@ -11,8 +11,14 @@ public class ErrorDiskResourceMoveCategory {
     public static SafeHtml generateErrorMsg(AutoBean<ErrorDiskResourceMove> instance) {
         ErrorDiskResourceMove error = instance.as();
 
+        if(error.getLimit() > 0) {
+            return ErrorDiskResourceCategory.getThresholdErrorMessage(
+                    ErrorDiskResourceCategory.getDiskResourceErrorCode(error.getErrorCode()),error.getLimit());
+        } else {
+        
         return ErrorDiskResourceCategory.getErrorMessage(
                 ErrorDiskResourceCategory.getDiskResourceErrorCode(error.getErrorCode()),
                 DiskResourceUtil.asCommaSeperatedNameList(error.getPaths()));
+        }
     }
 }

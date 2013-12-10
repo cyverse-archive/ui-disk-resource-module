@@ -518,8 +518,15 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     private void delete(Set<DiskResource> drSet, String announce) {
         view.mask(DISPLAY.loadingMask());
-        final AsyncCallback<HasPaths> callback = new DiskResourceDeleteCallback(drSet, getSelectedFolder(), view, announce);
-        diskResourceService.deleteDiskResources(drSet, callback);
+        Folder selectedFolder = getSelectedFolder();
+        final AsyncCallback<HasPaths> callback = new DiskResourceDeleteCallback(drSet, selectedFolder, view,announce);
+      
+        if(view.isSelectAll()) {
+            diskResourceService.deleteContents(selectedFolder.getId(),callback);
+            
+        } else {
+            diskResourceService.deleteDiskResources(drSet, callback);
+        }
     }
 
     @Override
@@ -610,8 +617,14 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Override
     public void doMoveDiskResources(Folder targetFolder, Set<DiskResource> resources) {
-        diskResourceService.moveDiskResources(resources, targetFolder, new DiskResourceMoveCallback(
-                view, targetFolder, resources));
+        Folder parent = getSelectedFolder();
+        if(view.isSelectAll()) {
+            diskResourceService.moveContents(parent.getPath(), targetFolder, new DiskResourceMoveCallback(
+                    view,true, parent,targetFolder, resources));
+        } else {
+            diskResourceService.moveDiskResources(resources, targetFolder, new DiskResourceMoveCallback(
+                view,false, parent, targetFolder, resources));
+        }
     }
 
     @Override
@@ -985,6 +998,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
             @Override
             public void onSelect(SelectEvent event) {
+                view.mask(I18N.DISPLAY.loadingMask());
                 Folder targetFolder = fsd.getValue();
                 final Set<DiskResource> selectedResources = getSelectedDiskResources();
                 if (DiskResourceUtil.isMovable(targetFolder, selectedResources)) {
@@ -993,10 +1007,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
                     } else {
                         IplantAnnouncer.getInstance().schedule(
                                 new ErrorAnnouncementConfig(I18N.ERROR.diskResourceIncompleteMove()));
+                        view.unmask();
                     }
                 } else {
                     IplantAnnouncer.getInstance().schedule(
                             new ErrorAnnouncementConfig(I18N.ERROR.permissionErrorMessage()));
+                    view.unmask();
                 }
             }
         });

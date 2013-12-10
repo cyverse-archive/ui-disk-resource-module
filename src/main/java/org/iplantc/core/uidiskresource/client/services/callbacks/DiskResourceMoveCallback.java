@@ -21,11 +21,15 @@ public class DiskResourceMoveCallback extends DiskResourceServiceCallback<DiskRe
 
     private final Set<DiskResource> resourcesToMove;
     private final Folder destFolder;
+    private final boolean moveContents;
+    private final Folder sourceFolder;
 
-    public DiskResourceMoveCallback(final IsMaskable maskedCaller, final Folder destFolder, final Set<DiskResource> resourcesToMove) {
+    public DiskResourceMoveCallback(final IsMaskable maskedCaller, final boolean moveContents, final Folder srcFolder, final Folder destFolder, final Set<DiskResource> resourcesToMove) {
         super(maskedCaller);
         this.destFolder = destFolder;
         this.resourcesToMove = resourcesToMove;
+        this.moveContents = moveContents;
+        this.sourceFolder = srcFolder;
     }
 
     @Override
@@ -37,7 +41,7 @@ public class DiskResourceMoveCallback extends DiskResourceServiceCallback<DiskRe
          *
          * TODO JDS Verify returned keys to the objects we have already.
          */
-        EventBus.getInstance().fireEvent(new DiskResourcesMovedEvent(destFolder, resourcesToMove));
+        EventBus.getInstance().fireEvent(new DiskResourcesMovedEvent(sourceFolder, destFolder, resourcesToMove, moveContents));
     }
 
     @Override

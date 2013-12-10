@@ -419,7 +419,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     }
 
     private void initDragAndDrop() {
-        DiskResourceViewDnDHandler dndHandler = new DiskResourceViewDnDHandler(presenter);
+        DiskResourceViewDnDHandler dndHandler = new DiskResourceViewDnDHandler(this,presenter);
 
         DropTarget gridDropTarget = new DropTarget(grid);
         gridDropTarget.setAllowSelfAsSource(true);
@@ -1029,6 +1029,16 @@ public class DiskResourceViewImpl implements DiskResourceView {
             presenter.doShare();
 
         }
+    }
+
+    @Override
+    public boolean isSelectAll() {
+       return sm.isSelectAll();
+    }
+    
+    @Override
+    public int getTotalSelectionCount() {
+        return sm.getTotal();
     }
 
 }

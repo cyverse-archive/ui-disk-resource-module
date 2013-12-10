@@ -62,14 +62,20 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
         Set<DiskResource> resourcesToMove = event.getResourcesToMove();
         Folder destinationFolder = event.getDestinationFolder();
         Folder selectedFolder = presenter.getSelectedFolder();
-
-        if (resourcesToMove.contains(selectedFolder)) {
-            selectedFolderMovedFromNavTree(selectedFolder, destinationFolder);
+        // moved contents only not the folder itself
+        if (event.isMoveContents()) {
+            presenter.doRefresh(destinationFolder);
+            presenter.doRefresh(selectedFolder);
         } else {
-            diskResourcesMovedFromGrid(resourcesToMove, selectedFolder, destinationFolder);
+
+            if (resourcesToMove.contains(selectedFolder)) {
+                selectedFolderMovedFromNavTree(selectedFolder, destinationFolder);
+            } else {
+                diskResourcesMovedFromGrid(resourcesToMove, selectedFolder, destinationFolder);
+            }
         }
-        
-        IplantAnnouncer.getInstance().schedule(new SuccessAnnouncementConfig("Selected item(s) moved to " + destinationFolder.getId()));
+        IplantAnnouncer.getInstance().schedule(
+                new SuccessAnnouncementConfig("Selected item(s) moved to " + destinationFolder.getId()));
     }
 
     private void selectedFolderMovedFromNavTree(Folder selectedFolder, Folder destinationFolder) {
@@ -120,7 +126,7 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
     public void onRename(DiskResource originalDr, DiskResource newDr) {
         view.updateDiskResource(originalDr, newDr);
     }
-    
+
     @Override
     public void onFolderCreated(Folder parentFolder, Folder newFolder) {
         view.addFolder(parentFolder, newFolder);

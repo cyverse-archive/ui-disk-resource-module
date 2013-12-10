@@ -20,11 +20,15 @@ public class DiskResourcesMovedEvent extends GwtEvent<DiskResourcesMovedEventHan
     public static final GwtEvent.Type<DiskResourcesMovedEventHandler> TYPE = new GwtEvent.Type<DiskResourcesMovedEventHandler>();
     private final Folder destFolder;
     private final Set<DiskResource> resourcesToMove;
+    private final Folder srcFolder;
+    private final boolean moveContents;
 
 
-    public DiskResourcesMovedEvent(final Folder destFolder, final Set<DiskResource> resourcesToMove) {
+    public DiskResourcesMovedEvent(final Folder srcFolder, final Folder destFolder, final Set<DiskResource> resourcesToMove, final boolean moveContents) {
         this.destFolder = destFolder;
         this.resourcesToMove = resourcesToMove;
+        this.srcFolder = srcFolder;
+        this.moveContents = moveContents;
     }
 
     @Override
@@ -43,6 +47,20 @@ public class DiskResourcesMovedEvent extends GwtEvent<DiskResourcesMovedEventHan
     
     public Set<DiskResource> getResourcesToMove(){
         return resourcesToMove;
+    }
+
+    /**
+     * @return the moveContents
+     */
+    public boolean isMoveContents() {
+        return moveContents;
+    }
+
+    /**
+     * @return the srcFolder
+     */
+    public Folder getSrcFolder() {
+        return srcFolder;
     }
 
 }
