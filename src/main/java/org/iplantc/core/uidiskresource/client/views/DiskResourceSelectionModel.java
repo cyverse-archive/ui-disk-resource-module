@@ -310,6 +310,7 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
                 addToSelectedCache(model);
             } else {
                 removeFromSelectedCache(model);
+                setSelectAll(false);
             }
             updateHeaderCheckBox();
         }
