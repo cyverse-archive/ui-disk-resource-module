@@ -42,6 +42,22 @@ public interface FileEditorServiceFacade {
      * @param callback executes when RPC call is complete.
      */
     void getTreeUrl(String idFile, AsyncCallback<String> callback);
+    
+    /**
+     * Get genome VIZ URLs for the given  file ID.
+     * 
+     * @param idFile file ID (path) of the tree.
+     * @param callback executes when RPC call is complete.
+     */
+    void getGenomeVizUrl(String idFile, AsyncCallback<String> callback);
+    
+    /**
+     * Load genome in Coge
+     * 
+     * @param pathArray
+     * @param callback
+     */
+    void viewGenomes(JSONObject pathArray,AsyncCallback<String> callback);
 
     void uploadTextAsFile(String destination, String fileContents, AsyncCallback<String> callback);
 
