@@ -84,11 +84,14 @@ import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceInfo;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.diskresources.Permissions;
+import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
 import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
+import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoadConfig;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
@@ -198,7 +201,12 @@ public class DiskResourceViewImpl implements DiskResourceView {
             Folder selectedItem = event.getSelectedItem();
             if (DiskResourceViewImpl.this.widget.isAttached() && (selectedItem != null)) {
                 if (!selectedItem.isFilter()) {
-                    onFolderSelected(selectedItem);
+                    if (selectedItem instanceof DiskResourceQueryTemplate) {
+                        DiskResourceViewImpl.this.asWidget().fireEvent(new SubmitDiskResourceQueryEvent((DiskResourceQueryTemplate)selectedItem));
+                    } else {
+                        onFolderSelected(selectedItem);
+                        DiskResourceViewImpl.this.asWidget().fireEvent(new FolderSelectedEvent(selectedItem));
+                    }
                 } else {
                     tree.getSelectionModel().deselect(selectedItem);
                 }

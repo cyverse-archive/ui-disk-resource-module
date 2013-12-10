@@ -56,6 +56,7 @@ import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQu
 import org.iplantc.core.uidiskresource.client.search.models.DataSearch;
 import org.iplantc.core.uidiskresource.client.search.models.DataSearchAutoBeanFactory;
 import org.iplantc.core.uidiskresource.client.search.models.DataSearchResult;
+import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
 import org.iplantc.core.uidiskresource.client.services.callbacks.CreateFolderCallback;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceDeleteCallback;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
@@ -135,18 +136,20 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     @SuppressWarnings("rawtypes")
     private RpcProxy rpc_proxy;
     private PagingLoader<FolderContentsLoadConfig, PagingLoadResult<DiskResource>> gridLoader;
+    private DataSearchPresenter dataSearchPresenter;
 
     @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
             final DiskResourceServiceFacade diskResourceService, final IplantDisplayStrings display,
-            final DiskResourceAutoBeanFactory factory, final DataSearchAutoBeanFactory dataSearchFactory) {
+            final DiskResourceAutoBeanFactory factory, final DataSearchAutoBeanFactory dataSearchFactory, final DataSearchPresenter dataSearchPresenter) {
         this.view = view;
         this.proxy = proxy;
         this.diskResourceService = diskResourceService;
         this.DISPLAY = display;
         this.drFactory = factory;
         this.dataSearchFactory = dataSearchFactory;
-
+        this.dataSearchPresenter = dataSearchPresenter;
+        
         builder = new MyBuilder(this);
 
         treeLoader = new TreeLoader<Folder>(this.proxy) {

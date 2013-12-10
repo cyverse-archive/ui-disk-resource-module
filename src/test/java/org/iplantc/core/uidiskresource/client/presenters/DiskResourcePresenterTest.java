@@ -3,9 +3,14 @@
  */
 package org.iplantc.core.uidiskresource.client.presenters;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import com.sencha.gxt.data.shared.loader.PagingLoader;
+import com.sencha.gxt.data.shared.loader.TreeLoader;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 
 import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
 import org.iplantc.core.uicommons.client.models.UserInfo;
@@ -19,6 +24,7 @@ import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityGridHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityNavigationHandler;
 import org.iplantc.core.uidiskresource.client.search.models.DataSearchAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 import org.jmock.Expectations;
@@ -32,17 +38,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.sencha.gxt.data.shared.loader.PagingLoader;
-import com.sencha.gxt.data.shared.loader.TreeLoader;
-import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author jstroot
- *
+ * 
  */
 @RunWith(JMock.class)
 public class DiskResourcePresenterTest {
@@ -54,6 +56,7 @@ public class DiskResourcePresenterTest {
     private IplantDisplayStrings display;
     private DiskResourceAutoBeanFactory drFactory;
     private DataSearchAutoBeanFactory dataSearchFactory;
+    private DataSearchPresenter dsPresenter;
 
     /**
      * @throws java.lang.Exception
@@ -83,6 +86,7 @@ public class DiskResourcePresenterTest {
         display = context.mock(IplantDisplayStrings.class);
         drFactory = context.mock(DiskResourceAutoBeanFactory.class);
         dataSearchFactory = context.mock(DataSearchAutoBeanFactory.class);
+        dsPresenter = context.mock(DataSearchPresenter.class);
     }
 
     /**
@@ -114,7 +118,7 @@ public class DiskResourcePresenterTest {
                 // oneOf(diskResourceService).getDataSearchHistory(with(aNonNull(AsyncCallback.class)));
                 oneOf(diskResourceService).getUserTrashPath(with(aNonNull(String.class)),
                         with(aNonNull(AsyncCallback.class)));
-
+                
                 oneOf(toolbar).setNewButtonEnabled(with(false));
                 oneOf(toolbar).setNewFileButtonEnabled(with(false));
                 oneOf(toolbar).setNewFolderButtonEnabled(with(false));
@@ -142,7 +146,7 @@ public class DiskResourcePresenterTest {
 
         checkConstruction();
         final DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
-                diskResourceService, display, drFactory, dataSearchFactory);
+ diskResourceService, display, drFactory, dataSearchFactory, dsPresenter);
 
         final Folder folder = context.mock(Folder.class);
 
@@ -196,7 +200,7 @@ public class DiskResourcePresenterTest {
     // final Folder retFolder = context.mock(Folder.class, "retFolder");
     // checkConstruction();
     // DiskResourcePresenterImpl presenter = new DiskResourcePresenterImpl(view, proxy,
-    // diskResourceService, display, drFactory, dataSearchFactory);
+    // diskResourceService, display, drFactory, dataSearchFactory, dsPresenter);
     // context.checking(new Expectations() {
     // {
     // atLeast(1).of(view).getSelectedFolder();
@@ -221,7 +225,7 @@ public class DiskResourcePresenterTest {
     // final Set<DiskResource> folderChildren = Sets.newHashSet();
     // checkConstruction();
     // DiskResourcePresenterImpl presenter = new DiskResourcePresenterImpl(view, proxy,
-    // diskResourceService, display, drFactory, dataSearchFactory);
+    // diskResourceService, display, drFactory, dataSearchFactory, dsPresenter);
     // context.checking(new Expectations() {
     // {
     // atLeast(1).of(view).getSelectedFolder();
@@ -468,7 +472,7 @@ public class DiskResourcePresenterTest {
     public void testDoDelete_diskResourcesSelected_noFolders_isOwner() {
         checkConstruction();
         DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
-                diskResourceService, display, drFactory, dataSearchFactory);
+ diskResourceService, display, drFactory, dataSearchFactory, dsPresenter);
         final File file = context.mock(File.class);
         final Permissions permissions = context.mock(Permissions.class);
         context.checking(new Expectations() {
@@ -503,7 +507,7 @@ public class DiskResourcePresenterTest {
     public void testDoDelete_diskResourcesSelected_withFolders_isOwner() {
         checkConstruction();
         DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
-                diskResourceService, display, drFactory, dataSearchFactory);
+ diskResourceService, display, drFactory, dataSearchFactory, dsPresenter);
         final File file = context.mock(File.class);
         final Folder folder = context.mock(Folder.class);
         final Set<DiskResource> resSet = Sets.newHashSet();
@@ -545,7 +549,7 @@ public class DiskResourcePresenterTest {
     public void testDoDelete_folderSelected_noDiskResourcesSelected_isOwner() {
         checkConstruction();
         DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
-                diskResourceService, display, drFactory, dataSearchFactory);
+ diskResourceService, display, drFactory, dataSearchFactory, dsPresenter);
         final Folder folder = context.mock(Folder.class);
         final Permissions permissions = context.mock(Permissions.class);
         context.checking(new Expectations() {
@@ -580,7 +584,7 @@ public class DiskResourcePresenterTest {
     public void testDoDelete_diskResourcesSelected_oneNotOwner() {
         checkConstruction();
         DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
-                diskResourceService, display, drFactory, dataSearchFactory);
+ diskResourceService, display, drFactory, dataSearchFactory, dsPresenter);
         final File file = context.mock(File.class);
         final Folder folder = context.mock(Folder.class);
         final Folder parentFolder = context.mock(Folder.class, "ParentFolder");
@@ -630,7 +634,7 @@ public class DiskResourcePresenterTest {
     public void testDoRename() {
         checkConstruction();
         DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
-                diskResourceService, display, drFactory, dataSearchFactory);
+ diskResourceService, display, drFactory, dataSearchFactory, dsPresenter);
         final DiskResource resource = context.mock(DiskResource.class);
         final String newName = "new name";
         context.checking(new Expectations() {
@@ -650,7 +654,7 @@ public class DiskResourcePresenterTest {
     public void testDoFolderCreate() {
         checkConstruction();
         DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
-                diskResourceService, display, drFactory, dataSearchFactory);
+ diskResourceService, display, drFactory, dataSearchFactory, dsPresenter);
         final Folder parentFolder = context.mock(Folder.class);
         final String newFolderName = "new folder name";
         context.checking(new Expectations() {
@@ -664,4 +668,49 @@ public class DiskResourcePresenterTest {
 
         presenter.doCreateNewFolder(parentFolder, newFolderName);
     }
+
+    /**
+     * This test simply verifies that the proper disk resource service method is invoked.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testGetMetadata() {
+        checkConstruction();
+        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
+ diskResourceService, display, drFactory, dataSearchFactory, dsPresenter);
+
+        final DiskResource resource = context.mock(DiskResource.class);
+        context.checking(new Expectations() {
+            {
+                oneOf(diskResourceService).getDiskResourceMetaData(with(resource),
+                        with(any(AsyncCallback.class)));
+            }
+        });
+
+        presenter.getDiskResourceMetadata(resource, null);
+    }
+
+    /**
+     * This test simply verifies that the proper disk resource service method is invoked.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testSetMetadata() {
+        checkConstruction();
+        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
+ diskResourceService, display, drFactory, dataSearchFactory, dsPresenter);
+
+        final Set<DiskResourceMetadata> metadataToDelete = Sets.newHashSet();
+        final Set<DiskResourceMetadata> metadataToAdd = Sets.newHashSet();
+        final DiskResource resource = context.mock(DiskResource.class);
+        context.checking(new Expectations() {
+            {
+                oneOf(diskResourceService).setDiskResourceMetaData(with(resource), with(metadataToAdd),
+                        with(metadataToDelete), with(any(AsyncCallback.class)));
+            }
+        });
+
+        presenter.setDiskResourceMetaData(resource, metadataToAdd, metadataToDelete, null);
+    }
+
 }

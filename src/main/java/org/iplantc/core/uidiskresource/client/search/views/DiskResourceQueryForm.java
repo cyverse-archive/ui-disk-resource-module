@@ -1,7 +1,13 @@
 package org.iplantc.core.uidiskresource.client.search.views;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Style.FontWeight;
+import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -10,10 +16,22 @@ import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 
+import com.sencha.gxt.core.client.Style.Direction;
+import com.sencha.gxt.core.client.dom.XDOM;
 import com.sencha.gxt.data.shared.StringLabelProvider;
+import com.sencha.gxt.fx.client.FxElement;
+import com.sencha.gxt.fx.client.animation.Fx;
+import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
+import com.sencha.gxt.widget.core.client.box.PromptMessageBox;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.event.HideEvent;
+import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
@@ -61,6 +79,14 @@ public class DiskResourceQueryForm extends Menu implements Editor<DiskResourceQu
 
     // TODO Any ignored field needs to be handled
 
+    @Ignore
+    @UiField
+    VerticalLayoutContainer con;
+
+    @Ignore
+    @UiField
+    ContentPanel cp;
+
     @UiField
     TextField createdBy;
 
@@ -106,6 +132,19 @@ public class DiskResourceQueryForm extends Menu implements Editor<DiskResourceQu
     @UiField
     IPlantAnchor createFilterLink;
 
+    @Ignore
+    @UiField
+    Label saveLabel;
+
+    @Ignore
+    @UiField
+    TextButton saveFilterBtn;
+
+    @Ignore
+    @UiField
+    TextButton cancelSaveFilterBtn;
+
+
     private final SearchFormEditorDriver editorDriver = GWT.create(SearchFormEditorDriver.class);
 
     private final List<String> fileSizeUnits = Lists.newArrayList("KB", "MB");
@@ -132,8 +171,13 @@ public class DiskResourceQueryForm extends Menu implements Editor<DiskResourceQu
     public DiskResourceQueryForm(final DiskResourceQueryTemplate filter) {
         super(new DiskResourceQueryFormMenuAppearance());
         initProvidedUiFields();
-        setSize("400", "800");
+        setSize("330", "800");
         Widget createAndBindUi = uiBinder.createAndBindUi(this);
+        cp.getElement().getStyle().setPosition(Position.ABSOLUTE);
+        cp.setWidth(330);
+        cp.getElement().getStyle().setTop(435, Unit.PX);
+        saveLabel.getElement().getStyle().setFontWeight(FontWeight.BOLD);
+        saveLabel.getElement().getStyle().setMarginLeft(10, Unit.PX);
         add(createAndBindUi);
         plain = true;
         showSeparator = false;
@@ -148,6 +192,20 @@ public class DiskResourceQueryForm extends Menu implements Editor<DiskResourceQu
         return anchor;
     }
 
+    @UiHandler("cancelSaveFilterBtn")
+    void onCancelSaveFilter(SelectEvent event) {
+
+        cp.getElement().<FxElement> cast().slideOut(Direction.DOWN);
+        // cp.getElement().<FxElement> cast().fadeToggle(new Fx(500));
+    }
+
+    @UiHandler("saveFilterBtn")
+    void onSaveFilterSelected(SelectEvent event) {
+        cp.getElement().<FxElement> cast().slideOut(Direction.DOWN);
+        // cp.getElement().<FxElement> cast().fadeToggle(new Fx(500));
+
+    }
+
     @UiHandler("searchButton")
     void onSearchBtnSelected(@SuppressWarnings("unused") SelectEvent event) {
         // Flush to perform local validations
@@ -157,7 +215,8 @@ public class DiskResourceQueryForm extends Menu implements Editor<DiskResourceQu
         }
         // Fire event and pass flushed query
         fireEvent(new SubmitDiskResourceQueryEvent(flushedQueryTemplate));
-        hide();
+        getElement().<FxElement> cast().fadeToggle(new Fx(500));
+        // hide();
 
         // Transform into query
         // String query = new DataSearchQueryBuilder(flushedQueryTemplate).buildFullQuery();
@@ -166,13 +225,47 @@ public class DiskResourceQueryForm extends Menu implements Editor<DiskResourceQu
     @UiHandler("createFilterLink")
     void onCreateQueryTemplateClicked(@SuppressWarnings("unused") ClickEvent event) {
         // Flush to perform local validations
-        DiskResourceQueryTemplate flushedQueryTemplate = editorDriver.flush();
+        final DiskResourceQueryTemplate flushedQueryTemplate = editorDriver.flush();
         if (editorDriver.hasErrors()) {
             return;
         }
-        // Fire event and pass flushed query
-        fireEvent(new SaveDiskResourceQueryEvent(flushedQueryTemplate));
-        hide();
+
+        if (cp.getElement().getZIndex() < XDOM.getTopZIndex()) {
+            cp.getElement().updateZIndex(1);
+        }
+
+        if (!cp.isVisible()) {
+            // cp.setVisible(true);
+            cp.getElement().<FxElement> cast().fadeToggle(new Fx(500));
+            // cp.getElement().<FxElement> cast().slideIn(Direction.UP, new Fx(300));
+        }
+        cp.forceLayout();
+
+        final PromptMessageBox filterNamePrompt = new PromptMessageBox("Save Filter", "Filter name");
+        filterNamePrompt.setHideOnButtonClick(false);
+        filterNamePrompt.addHideHandler(new HideHandler() {
+            @Override
+            public void onHide(HideEvent event) {
+                if (filterNamePrompt.getHideButton() == filterNamePrompt.getButtonById(PredefinedButton.OK.name())) {
+                    // perform OK action
+
+                    TextField textField = filterNamePrompt.getTextField();
+                    // If there are no errors
+                    if (textField.getErrors().isEmpty() && !Strings.isNullOrEmpty(textField.getCurrentValue())) {
+                        flushedQueryTemplate.setName(textField.getCurrentValue());
+
+                        // Fire event and pass flushed query
+                        DiskResourceQueryForm.this.fireEvent(new SaveDiskResourceQueryEvent(flushedQueryTemplate));
+                        filterNamePrompt.hide();
+                        DiskResourceQueryForm.this.hide();
+                    }
+                } else if (filterNamePrompt.getHideButton() == filterNamePrompt.getButtonById(PredefinedButton.CANCEL.name())) {
+                    // perform CANCEL action
+                    filterNamePrompt.hide();
+                }
+            }
+        });
+        // filterNamePrompt.show();
     }
 
     private void initProvidedUiFields() {
@@ -203,6 +296,19 @@ public class DiskResourceQueryForm extends Menu implements Editor<DiskResourceQu
     public void focus() {
         super.focus();
         getChildren().get(0).getElement().focus();
+    }
+
+    @Override
+    protected void onShow() {
+        super.onShow();
+        Scheduler.get().scheduleFinally(new ScheduledCommand() {
+
+            @Override
+            public void execute() {
+                // cp.setVisible(false);
+                cp.getElement().<FxElement> cast().fadeToggle(new Fx(500));
+            }
+        });
     }
 
 }
