@@ -220,7 +220,7 @@
 		      <container:child layoutData="{verticalLayoutData}">
 				  <form:FieldLabel text="Filter Name">
 				      <form:widget>
-				          <form:TextField />
+				          <form:TextField ui:field="name"/>
 				      </form:widget>
 				  </form:FieldLabel>
 			  </container:child>

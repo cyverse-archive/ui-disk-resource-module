@@ -19,7 +19,8 @@ public class DiskResourceSearchCellDefaultAppearance extends TriggerFieldDefault
     public interface DiskResourceSearchCellResources extends TriggerFieldResources {
 
         @Override
-        @Source({"com/sencha/gxt/theme/base/client/field/ValueBaseField.css", "com/sencha/gxt/theme/base/client/field/TextField.css", "com/sencha/gxt/theme/base/client/field/TriggerField.css"})
+        @Source({"DiskResourceSearchField.css", "com/sencha/gxt/theme/base/client/field/ValueBaseField.css", "com/sencha/gxt/theme/base/client/field/TextField.css",
+                "com/sencha/gxt/theme/base/client/field/TriggerField.css"})
         DiskResourceSearchCellStyle css();
         
         @Override
@@ -30,21 +31,29 @@ public class DiskResourceSearchCellDefaultAppearance extends TriggerFieldDefault
         @Source("funnel-icon.png")
         ImageResource triggerArrowOver();
 
+        /*
+         * @Override
+         * 
+         * @ImageOptions(repeatStyle = RepeatStyle.Horizontal)
+         * ImageResource textBackground();
+         */
+
         // TODO Override images
-        /*@ImageOptions(repeatStyle = RepeatStyle.Horizontal)
-        ImageResource textBackground();
-
-
-
-        @Source("dateArrowClick.png")
+        @Override
+        @Source("funnel-icon.png")
         ImageResource triggerArrowClick();
 
-        @Source("dateArrowFocus.png")
+        @Override
+        @Source("funnel-icon.png")
         ImageResource triggerArrowFocus();
 
+        @Override
+        @Source("funnel-icon.png")
         ImageResource triggerArrowFocusOver();
 
-        ImageResource triggerArrowFocusClick();*/
+        @Override
+        @Source("funnel-icon.png")
+        ImageResource triggerArrowFocusClick();
     }
 
     public interface DiskResourceSearchCellStyle extends TriggerFieldStyle {

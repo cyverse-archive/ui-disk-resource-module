@@ -168,6 +168,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         // loadSearchHistory();
         loadUserTrashPath();
         initFolderContentRpc();
+        this.dataSearchPresenter.searchInit(getView());
     }
 
     @SuppressWarnings("unchecked")

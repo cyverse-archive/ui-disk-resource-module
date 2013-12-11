@@ -4,11 +4,16 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
+import com.google.web.bindery.autobean.shared.Splittable;
 
 import com.sencha.gxt.data.shared.TreeStore;
 
+import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
@@ -36,6 +41,9 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
     @Override
     public void doSaveDiskResourceQueryTemplate(SaveDiskResourceQueryEvent event) {
+        Splittable split = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(event.getQueryTemplate()));
+        String payload = JsonUtil.prettyPrint(split);
+        GWT.log("DataSearchPresenterImpl.doSaveDiskResourceQueryTemplate()\n" + payload);
         // User clicked to save a disk resource query
         // This event should not have been fired unless the template is valid.
 
@@ -62,6 +70,9 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
     @Override
     public void doSubmitDiskResourceQuery(SubmitDiskResourceQueryEvent event) {
+        Splittable split = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(event.getQueryTemplate()));
+        String payload = JsonUtil.prettyPrint(split);
+        GWT.log("DataSearchPresenterImpl.doSubmitDiskResourceQuery()\n" + payload);
         // TODO Auto-generated method stub
         // Performing a search has the effect of setting the given query as the current active query.
 
@@ -116,8 +127,12 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
     @Override
     public void searchInit(final DiskResourceView view) {
+        view.getToolbar().addSaveDiskResourceQueryTemplateEventHandler(this);
+        view.getToolbar().addSubmitDiskResourceQueryEventHandler(this);
+        
+        
         // Retrieve any saved searches.
-        searchService.getSavedQueryTemplates(new AsyncCallback<List<DiskResourceQueryTemplate>>() {
+        /*searchService.getSavedQueryTemplates(new AsyncCallback<List<DiskResourceQueryTemplate>>() {
 
             @Override
             public void onSuccess(List<DiskResourceQueryTemplate> result) {
@@ -133,7 +148,7 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
             public void onFailure(Throwable caught) {
                 ErrorHandler.post(I18N.ERROR.retrieveSavedQueryTemplatesFailed(), caught);
             }
-        });
+        });*/
 
     }
 
