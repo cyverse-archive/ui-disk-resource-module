@@ -114,7 +114,9 @@ public class DiskResourcePresenterTest {
                 // oneOf(diskResourceService).getDataSearchHistory(with(aNonNull(AsyncCallback.class)));
                 oneOf(diskResourceService).getUserTrashPath(with(aNonNull(String.class)),
                         with(aNonNull(AsyncCallback.class)));
-
+                
+                oneOf(toolbar).setNewButtonEnabled(with(false));
+                oneOf(toolbar).setNewFileButtonEnabled(with(false));
                 oneOf(toolbar).setNewFolderButtonEnabled(with(false));
                 oneOf(toolbar).setRefreshButtonEnabled(with(false));
                 oneOf(toolbar).setDownloadsEnabled(with(false));
@@ -252,6 +254,8 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setBulkUploadEnabled(with(true));
                 oneOf(toolbar).setSimpleUploadEnabled(with(true));
                 oneOf(toolbar).setImportButtonEnabled(with(true));
+                oneOf(toolbar).setNewButtonEnabled(with(true));
+                oneOf(toolbar).setNewFileButtonEnabled(with(true));
                 oneOf(toolbar).setNewFolderButtonEnabled(with(true));
                 oneOf(toolbar).setRefreshButtonEnabled(with(true));
                 oneOf(toolbar).setSimpleDowloadButtonEnabled(with(false));
@@ -306,6 +310,8 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setBulkUploadEnabled(with(false));
                 oneOf(toolbar).setSimpleUploadEnabled(with(false));
                 oneOf(toolbar).setImportButtonEnabled(with(false));
+                oneOf(toolbar).setNewButtonEnabled(with(false));
+                oneOf(toolbar).setNewFileButtonEnabled(with(false));
                 oneOf(toolbar).setNewFolderButtonEnabled(with(false));
                 oneOf(toolbar).setRefreshButtonEnabled(with(true));
                 oneOf(toolbar).setSimpleDowloadButtonEnabled(with(false));
@@ -358,6 +364,8 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setBulkUploadEnabled(with(true));
                 oneOf(toolbar).setSimpleUploadEnabled(with(true));
                 oneOf(toolbar).setImportButtonEnabled(with(true));
+                oneOf(toolbar).setNewButtonEnabled(with(true));
+                oneOf(toolbar).setNewFileButtonEnabled(with(true));
                 oneOf(toolbar).setNewFolderButtonEnabled(with(true));
                 oneOf(toolbar).setRefreshButtonEnabled(with(true));
                 oneOf(toolbar).setSimpleDowloadButtonEnabled(with(false));
@@ -417,6 +425,8 @@ public class DiskResourcePresenterTest {
                 oneOf(toolbar).setBulkUploadEnabled(with(false));
                 oneOf(toolbar).setSimpleUploadEnabled(with(false));
                 oneOf(toolbar).setImportButtonEnabled(with(false));
+                oneOf(toolbar).setNewButtonEnabled(with(false));
+                oneOf(toolbar).setNewFileButtonEnabled(with(false));
                 oneOf(toolbar).setNewFolderButtonEnabled(with(false));
                 oneOf(toolbar).setRefreshButtonEnabled(with(true));
                 oneOf(toolbar).setSimpleDowloadButtonEnabled(with(false));

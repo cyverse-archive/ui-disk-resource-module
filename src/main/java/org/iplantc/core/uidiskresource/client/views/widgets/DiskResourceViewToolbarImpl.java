@@ -51,7 +51,7 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     MenuItem importButton;
 
     @UiField
-    TextButton newFolderButton;
+    MenuItem newFolderButton;
 
     @UiField
     TextButton refreshButton;
@@ -73,6 +73,9 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
 
     @UiField
     MenuItem deleteButton;
+    
+    @UiField
+    MenuItem newFileButton;
 
     @UiField
     MenuItem metadataButton;
@@ -97,6 +100,9 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
 
     @UiField
     TextButton edit;
+    
+    @UiField
+    TextButton newButton;
 
     public DiskResourceViewToolbarImpl() {
         widget = BINDER.createAndBindUi(this);
@@ -136,7 +142,7 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     }
 
     @UiHandler("newFolderButton")
-    void onNewFolderClicked(SelectEvent event) {
+    void onNewFolderClicked(SelectionEvent<Item> event) {
         CreateFolderDialog dlg = new CreateFolderDialog(presenter.getSelectedFolder(), presenter);
         dlg.show();
     }
@@ -179,6 +185,11 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
             RenameFolderDialog dlg = new RenameFolderDialog(presenter.getSelectedFolder(), presenter);
             dlg.show();
         }
+    }
+    
+    @UiHandler("newFileButton")
+    void onNewFileClicked(SelectionEvent<Item> event) {
+        presenter.onNewFile();
     }
     
     @UiHandler("moveButton")
@@ -243,6 +254,16 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     @Override
     public void setImportButtonEnabled(boolean enabled) {
         importButton.setEnabled(enabled);
+    }
+    
+    @Override
+    public void setNewButtonEnabled(boolean enabled) {
+        newButton.setEnabled(enabled);
+    }
+    
+    @Override
+    public void setNewFileButtonEnabled(boolean enabled) {
+        newFileButton.setEnabled(enabled);
     }
 
     @Override
