@@ -15,6 +15,10 @@
 			 type="com.sencha.gxt.core.client.util.Margins">
 		<ui:attributes top="0" right="5" bottom="0" left="0" />
 	</ui:with>
+	<ui:with field="margins0505"
+			 type="com.sencha.gxt.core.client.util.Margins">
+		<ui:attributes top="0" right="5" bottom="0" left="5" />
+	</ui:with>
 	<ui:with field="margins5000"
 			 type="com.sencha.gxt.core.client.util.Margins">
 		<ui:attributes top="15" right="0" bottom="0" left="0" />
@@ -30,12 +34,12 @@
 
 	<ui:with field="verticalLayoutData"
 			 type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
-		<ui:attributes width="1" height="-1" />
+		<ui:attributes width="1" height="-1" margins="{margins0505}"/>
 	</ui:with>
-	<ui:with field="verticalLayoutDataWithHeight"
+	<!-- <ui:with field="verticalLayoutDataWithHeight"
 			 type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
 		<ui:attributes width="1" height="30" />
-	</ui:with>
+	</ui:with> -->
 	
 	<ui:with field="verticalLayoutDataWithTopMargins"
              type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
@@ -46,201 +50,161 @@
         <ui:attributes width="1" height="-1" margins="{margins0050}"/>
     </ui:with>
 
-
-	<ui:with field="boxLayoutDataMargins0500"
+	<ui:with field="boxLayoutDataMargins0505"
 			 type="com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData">
-		<ui:attributes margins="{margins0500}" />
+		<ui:attributes margins="{margins0505}" />
 	</ui:with>
-	<ui:with field="boxLayoutDataMargins0500Flex1"
+	<!-- <ui:with field="boxLayoutDataMargins0500Flex1"
 			 type="com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData">
 		<ui:attributes margins="{margins0500}" flex="1" />
-	</ui:with>
-	<ui:with field="boxLayoutDataMargins0"
-			 type="com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData">
-		<ui:attributes margins="{margins0000}"/>
-	</ui:with>
+	</ui:with> -->
 
-    <g:VerticalPanel>
-		<container:VerticalLayoutContainer ui:field="con">
-	
-			<container:child layoutData="{verticalLayoutData}">
-				<form:FieldLabel text="Filename has the words"
-								 labelAlign="TOP">
-					<form:widget>
-	                    <form:TextField ui:field="fileQuery" 
-	                                    allowBlank="false"
-	                                    emptyText="Enter values..." />
-					</form:widget>
-				</form:FieldLabel>
-			</container:child>
-	
-			<container:child layoutData="{verticalLayoutData}">
-				<form:FieldLabel text="Filename doesn't have"
-								 labelAlign="TOP">
-					<form:widget>
-						<form:TextField ui:field="negatedFileQuery"/>
-					</form:widget>
-				</form:FieldLabel>
-			</container:child>
-	
-			
-			<container:child layoutData="{verticalLayoutDataWithTopMargins}">
-						<form:FieldLabel text="Created within">
-							<form:widget>
-								<form:SimpleComboBox ui:field="createdWithinCombo" 
-											   forceSelection="true" 
-											   triggerAction="ALL"
-											   width="75"/>
-							</form:widget>
-						</form:FieldLabel>
-			</container:child>
-			
-			<container:child layoutData="{verticalLayoutDataWithBottomMargins}">
-						<form:FieldLabel text="Modified within">
-							<form:widget>
-								<form:SimpleComboBox ui:field="modifiedWithinCombo" 
-											   forceSelection="true" 
-											   triggerAction="ALL" 
-											   width="75"/>
-							</form:widget>
-						</form:FieldLabel>
-			</container:child>
-			
-			
-			<container:child layoutData="{verticalLayoutData}">
-				<form:FieldLabel text="Metadata has the words"
-								 labelAlign="TOP">
-					<form:widget>
-						<form:TextField ui:field="metadataQuery"
-						                emptyText="Enter keyword(s) separated by commas"/>
-					</form:widget>
-				</form:FieldLabel>
-			</container:child>
-			
-			
-			<container:child layoutData="{verticalLayoutData}">
-				<form:FieldLabel text="Metadata doesn't have"
-								 labelAlign="TOP">
-					<form:widget>
-						<form:TextField ui:field="negatedMetadataQuery"
-						               emptyText="Enter keyword(s) separated by commas"/>
-					</form:widget>
-				</form:FieldLabel>
-			</container:child>
-			
-	
-			<container:child layoutData="{verticalLayoutData}">
-				<form:FieldLabel text="Created by"
-								 labelAlign="TOP">
-					<form:widget>
-						<form:TextField ui:field="createdBy"/>
-					</form:widget>
-				</form:FieldLabel>
-			</container:child>
-			
-			
-			<container:child layoutData="{verticalLayoutData}">
-				<form:FieldLabel text="Shared with"
-								 labelAlign="TOP">
-					<form:widget>
-						<form:TextField ui:field="sharedWith"/>
-					</form:widget>
-				</form:FieldLabel>
-			</container:child>
-			
-	
-			<container:child layoutData="{verticalLayoutData}">
-				<form:FieldLabel text="File size is bigger than">
-					<form:widget>
-						<container:HBoxLayoutContainer padding="{padding5}" hBoxLayoutAlign="TOP">
-							<container:child layoutData="{boxLayoutDataMargins0500}">
-								<form:NumberField ui:field="fileSizeGreaterThan"/>
-							</container:child>
-		
-							<container:child layoutData="{boxLayoutDataMargins0500}">
-								<form:SimpleComboBox ui:field="greaterThanComboBox"
-													 width="50"
-													 triggerAction="ALL"
-													 forceSelection="true"/>
-							</container:child>
-						</container:HBoxLayoutContainer>
-					</form:widget>
-				</form:FieldLabel>
-			</container:child>
-	
-			<container:child layoutData="{verticalLayoutData}">
-				<form:FieldLabel text="File size is smaller than">
-					<form:widget>
-						<container:HBoxLayoutContainer padding="{padding5}" hBoxLayoutAlign="TOP">
-							<container:child layoutData="{boxLayoutDataMargins0500}">
-								<form:NumberField ui:field="fileSizeLessThan"/>
-							</container:child>
-		
-							<container:child layoutData="{boxLayoutDataMargins0500}">
-								<form:SimpleComboBox ui:field="lessThanComboBox"
-													 width="50"
-													 triggerAction="ALL"
-													 forceSelection="true"/>
-							</container:child>
-						</container:HBoxLayoutContainer>
-					</form:widget>
-				</form:FieldLabel>
-			</container:child>
-			
-			
-			<container:child layoutData="{verticalLayoutData}">
-			  <container:HBoxLayoutContainer hBoxLayoutAlign="TOP" pack="END">
-		          <container:child layoutData="{boxLayoutDataMargins0500}">
-		              <button:TextButton ui:field="searchButton"
-		                                 text="Search"/>
-		          </container:child>
-	          </container:HBoxLayoutContainer>
-			</container:child>
-			
-			
-			<container:child layoutData="{verticalLayoutData}">
-			  <container:HBoxLayoutContainer hBoxLayoutAlign="TOP" pack="END">
-		          <container:child layoutData="{boxLayoutDataMargins0500}">
-		               <widgets:IPlantAnchor ui:field="createFilterLink" />
-		          </container:child>
-	          </container:HBoxLayoutContainer>
-			</container:child>
-			
-		</container:VerticalLayoutContainer>
-		
-		<c:ContentPanel ui:field="cp"
-		                headerVisible="false"
-		                visible="true">
-		  <container:VerticalLayoutContainer>
-		      <container:child layoutData="{verticalLayoutData}">
-		          <g:Label ui:field="saveLabel"
-		                   text="Save Filter"/>
-		      </container:child>
-		      
-		      <container:child layoutData="{verticalLayoutData}">
-				  <form:FieldLabel text="Filter Name">
-				      <form:widget>
-				          <form:TextField ui:field="name"/>
-				      </form:widget>
-				  </form:FieldLabel>
-			  </container:child>
-			  
-		      <container:child layoutData="{verticalLayoutData}">
-				  <container:HBoxLayoutContainer hBoxLayoutAlign="TOP" pack="END">
-	                  <container:child layoutData="{boxLayoutDataMargins0500}">
-	                      <button:TextButton ui:field="saveFilterBtn"
-	                                         text="Save"/>
-	                  </container:child>
-	                  <container:child layoutData="{boxLayoutDataMargins0500}">
-	                      <button:TextButton ui:field="cancelSaveFilterBtn"
-	                                         text="Cancel"/>
-	                  </container:child>
-	              </container:HBoxLayoutContainer>
-			  </container:child>
-			  
-		  </container:VerticalLayoutContainer>
-		</c:ContentPanel>
-		
-	</g:VerticalPanel>
+	<container:VerticalLayoutContainer ui:field="con">
 
+		<container:child layoutData="{verticalLayoutData}">
+			<form:FieldLabel text="Filename has the words"
+							 labelAlign="TOP">
+				<form:widget>
+                    <form:TextField ui:field="fileQuery" 
+                                    allowBlank="false"
+                                    emptyText="Enter values..." />
+				</form:widget>
+			</form:FieldLabel>
+		</container:child>
+
+		<container:child layoutData="{verticalLayoutData}">
+			<form:FieldLabel text="Filename doesn't have"
+							 labelAlign="TOP">
+				<form:widget>
+					<form:TextField ui:field="negatedFileQuery"/>
+				</form:widget>
+			</form:FieldLabel>
+		</container:child>
+
+		
+		<container:child layoutData="{verticalLayoutDataWithTopMargins}">
+					<form:FieldLabel text="Created within">
+						<form:widget>
+							<form:SimpleComboBox ui:field="createdWithinCombo" 
+										   forceSelection="true" 
+										   triggerAction="ALL"
+										   width="75"/>
+						</form:widget>
+					</form:FieldLabel>
+		</container:child>
+		
+		<container:child layoutData="{verticalLayoutDataWithBottomMargins}">
+					<form:FieldLabel text="Modified within">
+						<form:widget>
+							<form:SimpleComboBox ui:field="modifiedWithinCombo" 
+										   forceSelection="true" 
+										   triggerAction="ALL" 
+										   width="75"/>
+						</form:widget>
+					</form:FieldLabel>
+		</container:child>
+		
+		
+		<container:child layoutData="{verticalLayoutData}">
+			<form:FieldLabel text="Metadata has the words"
+							 labelAlign="TOP">
+				<form:widget>
+					<form:TextField ui:field="metadataQuery"
+					                emptyText="Enter keyword(s) separated by commas"/>
+				</form:widget>
+			</form:FieldLabel>
+		</container:child>
+		
+		
+		<container:child layoutData="{verticalLayoutData}">
+			<form:FieldLabel text="Metadata doesn't have"
+							 labelAlign="TOP">
+				<form:widget>
+					<form:TextField ui:field="negatedMetadataQuery"
+					               emptyText="Enter keyword(s) separated by commas"/>
+				</form:widget>
+			</form:FieldLabel>
+		</container:child>
+		
+
+		<container:child layoutData="{verticalLayoutData}">
+			<form:FieldLabel text="Created by"
+							 labelAlign="TOP">
+				<form:widget>
+					<form:TextField ui:field="createdBy"/>
+				</form:widget>
+			</form:FieldLabel>
+		</container:child>
+		
+		
+		<container:child layoutData="{verticalLayoutData}">
+			<form:FieldLabel text="Shared with"
+							 labelAlign="TOP">
+				<form:widget>
+					<form:TextField ui:field="sharedWith"/>
+				</form:widget>
+			</form:FieldLabel>
+		</container:child>
+		
+
+		<container:child layoutData="{verticalLayoutData}">
+			<form:FieldLabel text="File size is bigger than"
+			                 labelAlign="TOP">
+				<form:widget>
+					<container:HBoxLayoutContainer padding="{padding5}" hBoxLayoutAlign="TOP">
+						<container:child layoutData="{boxLayoutDataMargins0505}">
+							<form:NumberField ui:field="fileSizeGreaterThan"/>
+						</container:child>
+	
+						<container:child layoutData="{boxLayoutDataMargins0505}">
+							<form:SimpleComboBox ui:field="greaterThanComboBox"
+												 width="50"
+												 triggerAction="ALL"
+												 forceSelection="true"/>
+						</container:child>
+					</container:HBoxLayoutContainer>
+				</form:widget>
+			</form:FieldLabel>
+		</container:child>
+
+		<container:child layoutData="{verticalLayoutData}">
+			<form:FieldLabel text="File size is smaller than"
+			                 labelAlign="TOP">
+				<form:widget>
+					<container:HBoxLayoutContainer padding="{padding5}" hBoxLayoutAlign="TOP">
+						<container:child layoutData="{boxLayoutDataMargins0505}">
+							<form:NumberField ui:field="fileSizeLessThan"/>
+						</container:child>
+	
+						<container:child layoutData="{boxLayoutDataMargins0505}">
+							<form:SimpleComboBox ui:field="lessThanComboBox"
+												 width="50"
+												 triggerAction="ALL"
+												 forceSelection="true"/>
+						</container:child>
+					</container:HBoxLayoutContainer>
+				</form:widget>
+			</form:FieldLabel>
+		</container:child>
+		
+		
+		<container:child layoutData="{verticalLayoutData}">
+		  <container:HBoxLayoutContainer hBoxLayoutAlign="TOP" pack="END">
+	          <container:child layoutData="{boxLayoutDataMargins0505}">
+	              <button:TextButton ui:field="searchButton"
+	                                 text="Search"/>
+	          </container:child>
+          </container:HBoxLayoutContainer>
+		</container:child>
+		
+		
+		<container:child layoutData="{verticalLayoutData}">
+		  <container:HBoxLayoutContainer hBoxLayoutAlign="TOP" pack="END">
+	          <container:child layoutData="{boxLayoutDataMargins0505}">
+	               <widgets:IPlantAnchor ui:field="createFilterLink" />
+	          </container:child>
+          </container:HBoxLayoutContainer>
+		</container:child>
+		
+	</container:VerticalLayoutContainer>
 </ui:UiBinder>

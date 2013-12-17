@@ -14,8 +14,6 @@ import com.google.web.bindery.autobean.shared.Splittable;
 import com.sencha.gxt.data.shared.TreeStore;
 
 import org.iplantc.core.jsonutil.JsonUtil;
-import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
@@ -33,6 +31,7 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
     private final SearchServiceFacade searchService;
     private final List<DiskResourceQueryTemplate> queryTemplates = Lists.newArrayList();
+    private DiskResourceView view;
 
     @Inject
     public DataSearchPresenterImpl(final SearchServiceFacade searchService) {
@@ -73,8 +72,10 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
         Splittable split = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(event.getQueryTemplate()));
         String payload = JsonUtil.prettyPrint(split);
         GWT.log("DataSearchPresenterImpl.doSubmitDiskResourceQuery()\n" + payload);
+        queryTemplates.add(event.getQueryTemplate());
         // TODO Auto-generated method stub
         // Performing a search has the effect of setting the given query as the current active query.
+        updateDataNavigationWindow(queryTemplates, view.getTreeStore());
 
     }
 
@@ -127,6 +128,7 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
     @Override
     public void searchInit(final DiskResourceView view) {
+        this.view = view;
         view.getToolbar().addSaveDiskResourceQueryTemplateEventHandler(this);
         view.getToolbar().addSubmitDiskResourceQueryEventHandler(this);
         

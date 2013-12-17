@@ -2,37 +2,36 @@ package org.iplantc.core.uidiskresource.client.search.views;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.Style.FontWeight;
-import com.google.gwt.dom.client.Style.Position;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 
-import com.sencha.gxt.core.client.Style.Direction;
-import com.sencha.gxt.core.client.dom.XDOM;
+import com.sencha.gxt.core.client.Style.Anchor;
+import com.sencha.gxt.core.client.Style.AnchorAlignment;
+import com.sencha.gxt.core.client.dom.XElement;
+import com.sencha.gxt.core.client.util.BaseEventPreview;
 import com.sencha.gxt.data.shared.StringLabelProvider;
-import com.sencha.gxt.fx.client.FxElement;
-import com.sencha.gxt.fx.client.animation.Fx;
-import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.ShowEvent;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.menu.Menu;
 
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uicommons.client.models.search.SearchAutoBeanFactory;
@@ -81,7 +80,7 @@ import java.util.List;
  * @author jstroot
  * 
  */
-public class DiskResourceQueryForm extends Menu implements Editor<DiskResourceQueryTemplate> {
+public class DiskResourceQueryForm extends Composite implements Editor<DiskResourceQueryTemplate> {
 
     @UiTemplate("DiskResourceQueryForm.ui.xml")
     interface DiskResourceQueryFormUiBinder extends UiBinder<Widget, DiskResourceQueryForm> {}
@@ -102,17 +101,11 @@ public class DiskResourceQueryForm extends Menu implements Editor<DiskResourceQu
 
     // TODO Any ignored field needs to be handled
 
-    @Ignore
-    @UiField
-    TextButton cancelSaveFilterBtn;
+    protected BaseEventPreview eventPreview;
 
     @Ignore
     @UiField
     VerticalLayoutContainer con;
-
-    @Ignore
-    @UiField
-    ContentPanel cp;
 
     @UiField
     TextField createdBy;
@@ -134,7 +127,7 @@ public class DiskResourceQueryForm extends Menu implements Editor<DiskResourceQu
     @Path("fileSizeRange.max")
     @UiField(provided = true)
     NumberField<Double> fileSizeLessThan;
-    
+
     @Ignore
     @UiField(provided = true)
     SimpleComboBox<String> greaterThanComboBox;
@@ -150,8 +143,9 @@ public class DiskResourceQueryForm extends Menu implements Editor<DiskResourceQu
     @UiField(provided = true)
     SimpleComboBox<String> modifiedWithinCombo;
 
-    @UiField
-    TextField name;
+    @Ignore
+    DiskResourceQueryFormNamePrompt namePrompt;
+
 
     @UiField
     TextField negatedFileQuery;
@@ -159,21 +153,15 @@ public class DiskResourceQueryForm extends Menu implements Editor<DiskResourceQu
     @UiField
     TextField negatedMetadataQuery;
 
-    @Ignore
-    @UiField
-    TextButton saveFilterBtn;
-
-    @Ignore
-    @UiField
-    Label saveLabel;
 
     @UiField 
     TextField sharedWith;
 
-
     private final SearchFormEditorDriver editorDriver = GWT.create(SearchFormEditorDriver.class);
 
     private final List<String> fileSizeUnits = Lists.newArrayList("KB", "MB");
+
+    private boolean showing;
 
     private final List<String> timeIntervals = Lists.newArrayList("---", "1 day", "3 days", "1 week", "2 weeks", "1 month", "2 months", "6 months", "1 year");
 
@@ -187,33 +175,72 @@ public class DiskResourceQueryForm extends Menu implements Editor<DiskResourceQu
     }
 
     /**
-     * Creates the form populated with the given filter.
-     * 
-     * @param searchService
      * @param filter
      */
     public DiskResourceQueryForm(final DiskResourceQueryTemplate filter) {
-        super(new DiskResourceQueryFormMenuAppearance());
+        namePrompt = new DiskResourceQueryFormNamePrompt();
         initProvidedUiFields();
-        setSize("330", "800");
         Widget createAndBindUi = uiBinder.createAndBindUi(this);
-        cp.getElement().getStyle().setPosition(Position.ABSOLUTE);
-        cp.setWidth(330);
-        cp.getElement().getStyle().setTop(435, Unit.PX);
-        saveLabel.getElement().getStyle().setFontWeight(FontWeight.BOLD);
-        saveLabel.getElement().getStyle().setMarginLeft(10, Unit.PX);
-        add(createAndBindUi);
-        plain = true;
-        showSeparator = false;
-        setEnableScrolling(false);
+
+        initWidget(createAndBindUi);
+        getElement().getStyle().setBackgroundColor("white");
+        setSize("330", "-1");
         editorDriver.initialize(this);
         editorDriver.edit(filter);
+
+        eventPreview = new BaseEventPreview() {
+
+            @Override
+            protected boolean onPreview(NativePreviewEvent pe) {
+                DiskResourceQueryForm.this.onPreviewEvent(pe);
+                return super.onPreview(pe);
+            }
+
+            @Override
+            protected void onPreviewKeyPress(NativePreviewEvent pe) {
+                super.onPreviewKeyPress(pe);
+                onEscape(pe);
+            }
+
+        };
+        eventPreview.getIgnoreList().add(getElement());
+        eventPreview.setAutoHide(false);
+        addStyleName("x-ignore");
     }
 
     @Override
-    public void focus() {
-        super.focus();
-        getChildren().get(0).getElement().focus();
+    public void hide() {
+        if (showing) {
+            onHide();
+            RootPanel.get().remove(this);
+            eventPreview.remove();
+            showing = false;
+            hidden = true;
+            fireEvent(new HideEvent());
+        }
+    }
+
+    public void show(Element parent, AnchorAlignment anchorAlignment) {
+        getElement().makePositionable(true);
+        RootPanel.get().add(this);
+        onShow();
+        getElement().updateZIndex(0);
+
+        showing = true;
+        // doAutoSize();
+
+        // getElement().setWidth(parent.getOffsetWidth());
+        getElement().alignTo(parent, anchorAlignment, new int[] {0, 0});
+        // if (enableScrolling) {
+        // constrainScroll(getElement().getY());
+        // }
+
+        getElement().show();
+        eventPreview.add();
+
+        focus();
+        fireEvent(new ShowEvent());
+
     }
 
     /*
@@ -221,36 +248,39 @@ public class DiskResourceQueryForm extends Menu implements Editor<DiskResourceQu
      * 
      * @see com.sencha.gxt.widget.core.client.menu.Menu#onHide()
      * 
-     * When this container becomes hidden, ensure that save filter container is hidden as well. This is
-     * to ensure that when this container is shown again, the save filter container is hidden by default.
+     * When this container becomes hidden, ensure that save filter container is hidden as well.
      * 
      * Additionally, this will perform any desired animations when this form is hidden.
      */
     @Override
     protected void onHide() {
-        // Ensure that save filter container is hidden
-        // hideSaveFilterContainer();
-
-        // Perform hide animations.
-        getElement().<FxElement> cast().fadeToggle(new Fx(300));
+        namePrompt.hide();
         super.onHide();
     }
 
-    @Override
-    protected void onShow() {
-        super.onShow();
-        Scheduler.get().scheduleFinally(new ScheduledCommand() {
+    protected void onPreviewEvent(NativePreviewEvent pe) {
 
-            @Override
-            public void execute() {
-                if (cp.isVisible()) {
-                    // Ensure that save filter container is hidden on initial show.
-                    hideSaveFilterContainerFast();
-                    // cp.getElement().<FxElement> cast().fadeToggle(new Fx(300));
-                    // cp.setVisible(false);
+        int type = pe.getTypeInt();
+        switch (type) {
+            case Event.ONMOUSEDOWN:
+            case Event.ONMOUSEWHEEL:
+            case Event.ONSCROLL:
+            case Event.ONKEYPRESS:
+                XElement target = pe.getNativeEvent().getEventTarget().cast();
+
+                // ignore targets within a parent with x-ignore, such as the listview in
+                // a combo
+                if (target.findParent(".x-ignore", 10) != null) {
+                    return;
                 }
-            }
-        });
+
+                if (!getElement().isOrHasChild(target) && !namePrompt.getElement().isOrHasChild(target)) {
+                    hide();
+                    return;
+                }
+        }
+        return;
+
     }
 
     @UiFactory
@@ -259,80 +289,32 @@ public class DiskResourceQueryForm extends Menu implements Editor<DiskResourceQu
         return anchor;
     }
 
-    @UiHandler("cancelSaveFilterBtn")
-    void onCancelSaveFilter(@SuppressWarnings("unused") SelectEvent event) {
-        // Hide the filter name panel
-        hideSaveFilterContainer();
-
-        // Set the filter name field to allow blank values when hidden.
-        // TODO JDS Verify that this is necessary. Validations may not be performed on hidden fields.
-        name.setAllowBlank(true);
-    }
-
     @UiHandler("createFilterLink")
     void onCreateQueryTemplateClicked(@SuppressWarnings("unused") ClickEvent event) {
-        /*
-         * Name field cannot be blank, add empty validator. This validator must be removed when the
-         * filter name panel is hidden
-         */
-
-        name.setAllowBlank(true);
         // Flush to perform local validations
-        editorDriver.flush();
+        DiskResourceQueryTemplate flushedFilter = editorDriver.flush();
         if (editorDriver.hasErrors()) {
             return;
         }
-        name.setAllowBlank(false);
-
-        if (cp.getElement().getZIndex() < XDOM.getTopZIndex()) {
-            cp.getElement().updateZIndex(1);
-        }
-
-        if (!cp.isVisible()) {
-            // cp.setVisible(true);
-            // cp.getElement().<FxElement> cast().slideIn(Direction.UP);
-            cp.getElement().<FxElement> cast().fadeToggle(new Fx(500));
-        }
-        cp.forceLayout();
-
+        showNamePrompt(flushedFilter);
     }
 
-    @UiHandler("saveFilterBtn")
-    void onSaveFilterSelected(@SuppressWarnings("unused") SelectEvent event) {
-        final DiskResourceQueryTemplate flushedQueryTemplate = editorDriver.flush();
-        if (editorDriver.hasErrors()) {
-            return;
-        }
-
-        // Set the filter name field to allow blank values when hidden.
-        // TODO JDS Verify that this is necessary. Validations may not be performed on hidden fields.
-        name.setAllowBlank(true);
-
-        fireEvent(new SaveDiskResourceQueryEvent(flushedQueryTemplate));
-        hide();
-
-    }
 
     @UiHandler("searchButton")
     void onSearchBtnSelected(@SuppressWarnings("unused") SelectEvent event) {
-        name.setAllowBlank(true);
         // Flush to perform local validations
         DiskResourceQueryTemplate flushedQueryTemplate = editorDriver.flush();
         if (editorDriver.hasErrors()) {
             return;
         }
         // Fire event and pass flushed query
+        fireEvent(new SubmitDiskResourceQueryEvent(flushedQueryTemplate));
         hide();
 
-        fireEvent(new SubmitDiskResourceQueryEvent(flushedQueryTemplate));
     }
 
-    private void hideSaveFilterContainer() {
-        cp.getElement().<FxElement> cast().slideOut(Direction.DOWN);
-    }
-
-    private void hideSaveFilterContainerFast() {
-        cp.getElement().<FxElement> cast().slideOut(Direction.DOWN, new Fx(10));
+    void showNamePrompt(DiskResourceQueryTemplate filter) {
+        namePrompt.show(filter, getElement(), new AnchorAlignment(Anchor.BOTTOM_LEFT, Anchor.BOTTOM_LEFT, true));
     }
 
     private void initProvidedUiFields() {
@@ -357,6 +339,14 @@ public class DiskResourceQueryForm extends Menu implements Editor<DiskResourceQu
         lessThanComboBox.add(fileSizeUnits);
         greaterThanComboBox.setValue(fileSizeUnits.get(0));
         lessThanComboBox.setValue(fileSizeUnits.get(0));
+    }
+
+    private void onEscape(NativePreviewEvent pe) {
+        if (pe.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE) {
+            pe.getNativeEvent().preventDefault();
+            pe.getNativeEvent().stopPropagation();
+            hide();
+        }
     }
 
 }
