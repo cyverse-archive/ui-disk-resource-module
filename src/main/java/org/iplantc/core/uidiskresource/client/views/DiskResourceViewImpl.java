@@ -929,9 +929,8 @@ public class DiskResourceViewImpl implements DiskResourceView {
             Iterator<DiskResource> it = selection.iterator();
             DiskResource next = it.next();
             if (next.getId().equals(path)) {
-                detailsPanel
-                        .add(getDateLabel(I18N.DISPLAY.lastModified(), new Date(info.getModified())));
-                detailsPanel.add(getDateLabel(I18N.DISPLAY.createdDate(), new Date(info.getCreated())));
+                detailsPanel.add(getDateLabel(I18N.DISPLAY.lastModified(), info.getModified()));
+                detailsPanel.add(getDateLabel(I18N.DISPLAY.createdDate(), info.getCreated()));
                 detailsPanel.add(getPermissionsLabel(I18N.DISPLAY.permissions(), info.getPermissions()));
                 if (!DiskResourceUtil.inTrash(next)) {
                     detailsPanel.add(getSharingLabel(I18N.DISPLAY.share(), info.getShareCount(),
