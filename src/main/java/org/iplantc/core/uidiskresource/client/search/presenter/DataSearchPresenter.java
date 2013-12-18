@@ -111,4 +111,13 @@ public interface DataSearchPresenter extends SaveDiskResourceQueryEventHandler, 
      */
     void searchInit(DiskResourceView view);
 
+    /**
+     * Returns the view associated with this presenter.
+     * 
+     * This is typically set via {@link #searchInit(DiskResourceView)}.
+     * 
+     * @return the view associated with this presenter.
+     */
+    DiskResourceView getView();
+
 }

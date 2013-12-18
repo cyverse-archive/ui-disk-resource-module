@@ -4,16 +4,11 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
-import com.google.web.bindery.autobean.shared.AutoBeanCodex;
-import com.google.web.bindery.autobean.shared.AutoBeanUtils;
-import com.google.web.bindery.autobean.shared.Splittable;
 
 import com.sencha.gxt.data.shared.TreeStore;
 
-import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
@@ -31,7 +26,7 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
     private final SearchServiceFacade searchService;
     private final List<DiskResourceQueryTemplate> queryTemplates = Lists.newArrayList();
-    private DiskResourceView view;
+    DiskResourceView view;
 
     @Inject
     public DataSearchPresenterImpl(final SearchServiceFacade searchService) {
@@ -40,9 +35,6 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
     @Override
     public void doSaveDiskResourceQueryTemplate(SaveDiskResourceQueryEvent event) {
-        Splittable split = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(event.getQueryTemplate()));
-        String payload = JsonUtil.prettyPrint(split);
-        GWT.log("DataSearchPresenterImpl.doSaveDiskResourceQueryTemplate()\n" + payload);
         // User clicked to save a disk resource query
         // This event should not have been fired unless the template is valid.
 
@@ -69,11 +61,7 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
     @Override
     public void doSubmitDiskResourceQuery(SubmitDiskResourceQueryEvent event) {
-        Splittable split = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(event.getQueryTemplate()));
-        String payload = JsonUtil.prettyPrint(split);
-        GWT.log("DataSearchPresenterImpl.doSubmitDiskResourceQuery()\n" + payload);
         queryTemplates.add(event.getQueryTemplate());
-        // TODO Auto-generated method stub
         // Performing a search has the effect of setting the given query as the current active query.
         updateDataNavigationWindow(queryTemplates, view.getTreeStore());
 
@@ -152,6 +140,11 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
             }
         });*/
 
+    }
+
+    @Override
+    public DiskResourceView getView() {
+        return view;
     }
 
 }

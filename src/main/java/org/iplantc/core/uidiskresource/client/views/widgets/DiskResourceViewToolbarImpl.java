@@ -1,8 +1,11 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
+import com.google.gwt.event.shared.HandlerRegistration;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.File;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.views.dialogs.CreateFolderDialog;
 import org.iplantc.core.uidiskresource.client.views.dialogs.RenameFileDialog;
 import org.iplantc.core.uidiskresource.client.views.dialogs.RenameFolderDialog;
@@ -118,13 +121,13 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     }
 
     @Override
-    public HandlerRegistration addSaveDiskResourceQueryTemplateEventHandler(SaveDiskResourceQueryEventHandler handler) {
+    public HandlerRegistration addSaveDiskResourceQueryTemplateEventHandler(SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler handler) {
         return searchField.addSaveDiskResourceQueryTemplateEventHandler(handler);
     }
 
 
     @Override
-    public HandlerRegistration addSubmitDiskResourceQueryEventHandler(SubmitDiskResourceQueryEventHandler handler) {
+    public HandlerRegistration addSubmitDiskResourceQueryEventHandler(SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler handler) {
         return searchField.addSubmitDiskResourceQueryEventHandler(handler);
     }
 

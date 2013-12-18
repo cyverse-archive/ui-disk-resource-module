@@ -87,7 +87,7 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
 
     interface SearchFormEditorDriver extends SimpleBeanEditorDriver<DiskResourceQueryTemplate, DiskResourceQueryForm> {}
 
-    private static DiskResourceQueryFormUiBinder uiBinder = GWT.create(DiskResourceQueryFormUiBinder.class);
+    private final DiskResourceQueryFormUiBinder uiBinder = GWT.create(DiskResourceQueryFormUiBinder.class);
 
     private static DiskResourceQueryTemplate createDefaultFilter() {
         SearchAutoBeanFactory factory = SearchAutoBeanFactory.INSTANCE;
@@ -157,7 +157,7 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     @UiField 
     TextField sharedWith;
 
-    private final SearchFormEditorDriver editorDriver = GWT.create(SearchFormEditorDriver.class);
+    final SearchFormEditorDriver editorDriver = GWT.create(SearchFormEditorDriver.class);
 
     private final List<String> fileSizeUnits = Lists.newArrayList("KB", "MB");
 
