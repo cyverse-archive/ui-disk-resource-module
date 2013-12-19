@@ -199,7 +199,8 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
             if (value.isFilter()) {
                 initPopup();
                 linkPopup.add(new HTML(I18N.DISPLAY.diskResourceNotAvailable()));
-                linkPopup.showAt(eventTarget.getAbsoluteLeft() + 25, eventTarget.getAbsoluteTop() - 15);
+                linkPopup.setSize("300px", "200px");
+                schedulePopupTimer(eventTarget);
             }
             return;
         }
@@ -210,6 +211,11 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         } else {
             buildFolderLink(value);
         }
+        schedulePopupTimer(eventTarget);
+        eventTarget.getStyle().setTextDecoration(TextDecoration.UNDERLINE);
+    }
+
+    private void schedulePopupTimer(final Element eventTarget) {
         Timer t = new Timer() {
 
             @Override
@@ -222,7 +228,6 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
             }
         };
         t.schedule(1500);
-        eventTarget.getStyle().setTextDecoration(TextDecoration.UNDERLINE);
     }
 
     private void buildFolderLink(final DiskResource value) {
