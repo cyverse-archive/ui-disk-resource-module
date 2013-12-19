@@ -1,6 +1,8 @@
 package org.iplantc.core.uidiskresource.client.search.presenter.impl;
 
 import com.google.common.base.Predicate;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
@@ -9,6 +11,7 @@ import com.google.inject.Inject;
 
 import com.sencha.gxt.data.shared.TreeStore;
 
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
@@ -27,23 +30,46 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
     private final SearchServiceFacade searchService;
     private final List<DiskResourceQueryTemplate> queryTemplates = Lists.newArrayList();
     DiskResourceView view;
+    private final DiskResourceAutoBeanFactory drFactory;
 
     @Inject
-    public DataSearchPresenterImpl(final SearchServiceFacade searchService) {
+    public DataSearchPresenterImpl(final SearchServiceFacade searchService, final DiskResourceAutoBeanFactory drFactory) {
         this.searchService = searchService;
+        this.drFactory = drFactory;
     }
 
+    /**
+     * This handler is responsible for saving or updating a {@code SaveDiskResourceQueryEvent}.
+     * 
+     * This method will ensure that renaming of queries will not result in replacing the original query.
+     * This method will apply a unique id to the given query template if it doesn't have one.
+     * 
+     * After the query has been successfully saved, a search with the given querytemplate will be
+     * performed.
+     * 
+     */
     @Override
     public void doSaveDiskResourceQueryTemplate(SaveDiskResourceQueryEvent event) {
-        // User clicked to save a disk resource query
-        // This event should not have been fired unless the template is valid.
-
         // Assume that once the filter is saved, a search should be performed.
         // Get query template
         final DiskResourceQueryTemplate queryTemplate = event.getQueryTemplate();
 
+        String currId = queryTemplate.getId();
+        if (Strings.isNullOrEmpty(currId)) {
+            queryTemplate.setId(searchService.getUniqueId());
+        }
+        // If the given query template is already in the list, remove it.
+        for (DiskResourceQueryTemplate hasId : ImmutableList.copyOf(queryTemplates)) {
+            String inListId = hasId.getId();
+            if (currId.equalsIgnoreCase(inListId)) {
+                queryTemplates.remove(hasId);
+                break;
+            }
+        }
+        queryTemplates.add(queryTemplate);
+
         // Call service to save template
-        searchService.saveQueryTemplate(queryTemplate, new AsyncCallback<String>() {
+        searchService.saveQueryTemplates(queryTemplates, new AsyncCallback<String>() {
 
             @Override
             public void onSuccess(String result) {
@@ -61,7 +87,6 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
     @Override
     public void doSubmitDiskResourceQuery(SubmitDiskResourceQueryEvent event) {
-        queryTemplates.add(event.getQueryTemplate());
         // Performing a search has the effect of setting the given query as the current active query.
         updateDataNavigationWindow(queryTemplates, view.getTreeStore());
 

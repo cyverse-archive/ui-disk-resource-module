@@ -12,9 +12,10 @@ import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
  * <h2><u>Terms and Concepts</u></h2>
  * <dl>
  * <dt>Query Template</dt>
- * <dd>A template which is used to generate a query to be submitted to the search endpoints.</dd>
+ * <dd>a template which is used to generate a query to be submitted to the search endpoints.</dd>
+ * <dd>acts as a "smart folder" which is accessed from the data navigation window.</dd>
  * <dt>Active Query</dt>
- * <dd>The current query template whose generated search query results are displayed in the view's center
+ * <dd>the current query template whose generated search query results are displayed in the view's center
  * panel.</dd>
  * <dd>
  * </dl>
@@ -29,7 +30,8 @@ import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
  * </li>
  * 
  * <li>Maintaining a list of saved query templates.</li>
- * <li>Saving query templates when the user requests.</li>
+ * <li>Saving query templates when the user requests.<br/>
+ * This includes ensuring that the user has full permissions to the query template.</li>
  * <li>Retrieving saved query templates
  * <ul>
  * <li>Displaying the saved filters as selectable root items in the Navigation panel</li>

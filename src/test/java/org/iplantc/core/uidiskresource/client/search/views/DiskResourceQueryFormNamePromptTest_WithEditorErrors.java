@@ -3,6 +3,7 @@ package org.iplantc.core.uidiskresource.client.search.views;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwtmockito.GwtMockito;
+import com.google.gwtmockito.GxtMockitoTestRunner;
 import com.google.gwtmockito.fakes.FakeSimpleBeanEditorDriverProvider;
 
 import com.sencha.gxt.widget.core.client.event.SelectEvent;

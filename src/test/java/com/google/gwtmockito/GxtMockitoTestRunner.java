@@ -1,4 +1,4 @@
-package org.iplantc.core.uidiskresource.client.search.views;
+package com.google.gwtmockito;
 
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwtmockito.GwtMockitoTestRunner;

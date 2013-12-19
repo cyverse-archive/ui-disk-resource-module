@@ -5,6 +5,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.Element;
 import com.google.gwtmockito.GwtMockito;
+import com.google.gwtmockito.GxtMockitoTestRunner;
 import com.google.gwtmockito.fakes.FakeSimpleBeanEditorDriverProvider;
 
 import com.sencha.gxt.core.client.Style.AnchorAlignment;

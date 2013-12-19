@@ -16,7 +16,9 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.google.web.bindery.autobean.shared.Splittable;
+import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
 import com.sencha.gxt.core.client.Style.Anchor;
 import com.sencha.gxt.core.client.Style.AnchorAlignment;
@@ -91,12 +93,20 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
 
     private static DiskResourceQueryTemplate createDefaultFilter() {
         SearchAutoBeanFactory factory = SearchAutoBeanFactory.INSTANCE;
-        AutoBean<DiskResourceQueryTemplate> dataSearchFilter = factory.dataSearchFilter();
-        dataSearchFilter.as().setCreatedWithin(factory.dateInterval().as());
-        dataSearchFilter.as().setModifiedWithin(factory.dateInterval().as());
-        dataSearchFilter.as().setFileSizeRange(factory.fileSizeRange().as());
+        Splittable defFilter = StringQuoter.createSplittable();
+        // Need to create full permissions by default in order to function as a "smart folder"
+        Splittable permissions = StringQuoter.createSplittable();
+        StringQuoter.create(true).assign(permissions, "own");
+        StringQuoter.create(true).assign(permissions, "read");
+        StringQuoter.create(true).assign(permissions, "write");
+        permissions.assign(defFilter, "permissions");
 
-        return dataSearchFilter.as();
+        DiskResourceQueryTemplate dataSearchFilter = AutoBeanCodex.decode(factory, DiskResourceQueryTemplate.class, defFilter).as();
+        dataSearchFilter.setCreatedWithin(factory.dateInterval().as());
+        dataSearchFilter.setModifiedWithin(factory.dateInterval().as());
+        dataSearchFilter.setFileSizeRange(factory.fileSizeRange().as());
+
+        return dataSearchFilter;
     }
 
     // TODO Any ignored field needs to be handled
