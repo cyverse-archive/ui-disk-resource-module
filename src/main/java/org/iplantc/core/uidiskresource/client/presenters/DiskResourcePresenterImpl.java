@@ -468,7 +468,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     @Override
     public void doBulkDownload() {
         EventBus.getInstance().fireEvent(
-                new RequestBulkDownloadEvent(this, getSelectedDiskResources(), getSelectedFolder()));
+                new RequestBulkDownloadEvent(this,view.isSelectAll(), getSelectedDiskResources(), getSelectedFolder()));
     }
 
     @Override
