@@ -127,10 +127,6 @@
         <toolbar:child layoutData="{flexBoxData}">
             <search:DiskResourceSearchField ui:field="searchField"
                                             debugId="idSearchTxt"/>
-            <form:TextField
-                debugId="idSearchTxt"
-                ui:field="searchField"
-                emptyText="{display.searchData}" />
         </toolbar:child>
 		<toolbar:child>
 			<button:TextButton debugId="idTrashBtn" ui:field="trash"

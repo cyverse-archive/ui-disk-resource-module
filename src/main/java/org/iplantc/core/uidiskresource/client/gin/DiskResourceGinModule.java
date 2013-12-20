@@ -14,6 +14,7 @@ import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
 import org.iplantc.core.uidiskresource.client.presenters.DiskResourcePresenterImpl;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsRpcProxy;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderRpcProxy;
 import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
 import org.iplantc.core.uidiskresource.client.search.presenter.impl.DataSearchPresenterImpl;
@@ -29,6 +30,7 @@ public class DiskResourceGinModule extends AbstractGinModule {
         bind(DiskResourceView.class).to(DiskResourceViewImpl.class);
         bind(DiskResourceView.Presenter.class).to(DiskResourcePresenterImpl.class);
         bind(DiskResourceView.Proxy.class).to(FolderRpcProxy.class);
+        bind(FolderContentsRpcProxy.class);
         bind(DiskResourceServiceFacade.class).toProvider(DiskResourceServiceFacadeProvider.class);
 
         bind(DataSearchPresenter.class).to(DataSearchPresenterImpl.class);

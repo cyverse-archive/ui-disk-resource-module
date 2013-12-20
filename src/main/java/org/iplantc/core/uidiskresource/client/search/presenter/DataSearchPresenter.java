@@ -89,6 +89,8 @@ public interface DataSearchPresenter extends SaveDiskResourceQueryEventHandler, 
 
     /**
      * Initializes this presenter and its corresponding view for search operations.
+     *
+     * This method assumes that no DiskResourceQueryTemplate has been added to the view's treeStore.
      * 
      * Retrieve any saved query templates, adds itself as a listener for
      * {@code SubmitDiskResourceQueryEvent} and {@code SaveDiskResourceQueryEvent}s on the given view's

@@ -1,78 +1,5 @@
 package org.iplantc.core.uidiskresource.client.presenters;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.iplantc.core.jsonutil.JsonUtil;
-import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
-import org.iplantc.core.uicommons.client.ErrorHandler;
-import org.iplantc.core.uicommons.client.events.EventBus;
-import org.iplantc.core.uicommons.client.events.diskresources.DiskResourceRefreshEvent;
-import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
-import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
-import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uicommons.client.models.HasPaths;
-import org.iplantc.core.uicommons.client.models.UserInfo;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uicommons.client.models.diskresources.File;
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
-import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
-import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
-import org.iplantc.core.uidiskresource.client.dataLink.presenter.DataLinkPresenter;
-import org.iplantc.core.uidiskresource.client.dataLink.view.DataLinkPanel;
-import org.iplantc.core.uidiskresource.client.events.CreateNewFileEvent;
-import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
-import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
-import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent;
-import org.iplantc.core.uidiskresource.client.events.DiskResourcesMovedEvent;
-import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent;
-import org.iplantc.core.uidiskresource.client.events.RequestBulkDownloadEvent;
-import org.iplantc.core.uidiskresource.client.events.RequestBulkUploadEvent;
-import org.iplantc.core.uidiskresource.client.events.RequestImportFromUrlEvent;
-import org.iplantc.core.uidiskresource.client.events.RequestSimpleDownloadEvent;
-import org.iplantc.core.uidiskresource.client.events.RequestSimpleUploadEvent;
-import org.iplantc.core.uidiskresource.client.events.ShowFilePreviewEvent;
-import org.iplantc.core.uidiskresource.client.metadata.presenter.MetadataPresenter;
-import org.iplantc.core.uidiskresource.client.metadata.view.DiskResourceMetadataView;
-import org.iplantc.core.uidiskresource.client.presenters.handlers.DiskResourcesEventHandler;
-import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityGridHandler;
-import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityNavigationHandler;
-import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoadConfig;
-import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsRpcProxy;
-import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectDiskResourceByIdStoreAddHandler;
-import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectFolderByIdLoadHandler;
-import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
-import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
-import org.iplantc.core.uidiskresource.client.search.models.DataSearch;
-import org.iplantc.core.uidiskresource.client.search.models.DataSearchAutoBeanFactory;
-import org.iplantc.core.uidiskresource.client.search.models.DataSearchResult;
-import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
-import org.iplantc.core.uidiskresource.client.services.callbacks.CreateFolderCallback;
-import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceDeleteCallback;
-import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
-import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMoveCallback;
-import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceRestoreCallback;
-import org.iplantc.core.uidiskresource.client.services.callbacks.GetDiskResourceDetailsCallback;
-import org.iplantc.core.uidiskresource.client.services.callbacks.RenameDiskResourceCallback;
-import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
-import org.iplantc.core.uidiskresource.client.views.DiskResourceSearchView;
-import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
-import org.iplantc.core.uidiskresource.client.views.HasHandlerRegistrationMgmt;
-import org.iplantc.core.uidiskresource.client.views.dialogs.FolderSelectDialog;
-import org.iplantc.core.uidiskresource.client.views.dialogs.InfoTypeEditorDialog;
-import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
-import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -97,11 +24,7 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.SortInfo;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
-import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
-import com.sencha.gxt.data.shared.loader.LoadHandler;
-import com.sencha.gxt.data.shared.loader.PagingLoadResult;
-import com.sencha.gxt.data.shared.loader.PagingLoader;
-import com.sencha.gxt.data.shared.loader.TreeLoader;
+import com.sencha.gxt.data.shared.loader.*;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
 import com.sencha.gxt.widget.core.client.box.MessageBox;
@@ -112,6 +35,73 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
+import org.iplantc.core.jsonutil.JsonUtil;
+import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
+import org.iplantc.core.uicommons.client.ErrorHandler;
+import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.events.diskresources.DiskResourceRefreshEvent;
+import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
+import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
+import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.core.uicommons.client.models.HasPaths;
+import org.iplantc.core.uicommons.client.models.UserInfo;
+<<<<<<< HEAD
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
+import org.iplantc.core.uicommons.client.models.diskresources.File;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+=======
+import org.iplantc.core.uicommons.client.models.diskresources.*;
+>>>>>>> CORE-4876: Unit tests for DataSearchPresenter have 100% coverage
+import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
+import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
+import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
+import org.iplantc.core.uidiskresource.client.dataLink.presenter.DataLinkPresenter;
+import org.iplantc.core.uidiskresource.client.dataLink.view.DataLinkPanel;
+<<<<<<< HEAD
+import org.iplantc.core.uidiskresource.client.events.CreateNewFileEvent;
+import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
+import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
+import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent;
+import org.iplantc.core.uidiskresource.client.events.DiskResourcesMovedEvent;
+import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent;
+import org.iplantc.core.uidiskresource.client.events.RequestBulkDownloadEvent;
+import org.iplantc.core.uidiskresource.client.events.RequestBulkUploadEvent;
+import org.iplantc.core.uidiskresource.client.events.RequestImportFromUrlEvent;
+import org.iplantc.core.uidiskresource.client.events.RequestSimpleDownloadEvent;
+import org.iplantc.core.uidiskresource.client.events.RequestSimpleUploadEvent;
+import org.iplantc.core.uidiskresource.client.events.ShowFilePreviewEvent;
+import org.iplantc.core.uidiskresource.client.metadata.presenter.MetadataPresenter;
+import org.iplantc.core.uidiskresource.client.metadata.view.DiskResourceMetadataView;
+=======
+import org.iplantc.core.uidiskresource.client.events.*;
+>>>>>>> CORE-4876: Unit tests for DataSearchPresenter have 100% coverage
+import org.iplantc.core.uidiskresource.client.presenters.handlers.DiskResourcesEventHandler;
+import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityGridHandler;
+import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityNavigationHandler;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoadConfig;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsRpcProxy;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectDiskResourceByIdStoreAddHandler;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectFolderByIdLoadHandler;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.models.DataSearch;
+import org.iplantc.core.uidiskresource.client.search.models.DataSearchAutoBeanFactory;
+import org.iplantc.core.uidiskresource.client.search.models.DataSearchResult;
+import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
+import org.iplantc.core.uidiskresource.client.services.callbacks.*;
+import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
+import org.iplantc.core.uidiskresource.client.views.DiskResourceSearchView;
+import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
+import org.iplantc.core.uidiskresource.client.views.HasHandlerRegistrationMgmt;
+import org.iplantc.core.uidiskresource.client.views.dialogs.FolderSelectDialog;
+import org.iplantc.core.uidiskresource.client.views.dialogs.InfoTypeEditorDialog;
+import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
+import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  *
@@ -140,10 +130,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
     @Inject
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
-            final DiskResourceServiceFacade diskResourceService, final IplantDisplayStrings display,
-            final DiskResourceAutoBeanFactory factory, final DataSearchAutoBeanFactory dataSearchFactory, final DataSearchPresenter dataSearchPresenter) {
+            final FolderContentsRpcProxy folderRpcProxy, final DiskResourceServiceFacade diskResourceService,
+            final IplantDisplayStrings display, final DiskResourceAutoBeanFactory factory,
+            final DataSearchAutoBeanFactory dataSearchFactory, final DataSearchPresenter dataSearchPresenter) {
         this.view = view;
         this.proxy = proxy;
+        this.rpc_proxy = folderRpcProxy;
         this.diskResourceService = diskResourceService;
         this.DISPLAY = display;
         this.drFactory = factory;
@@ -171,13 +163,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         this.dataSearchPresenter.searchInit(getView());
     }
 
-    @SuppressWarnings("unchecked")
+//    @SuppressWarnings("unchecked")
     private void initFolderContentRpc() {
-        rpc_proxy = new FolderContentsRpcProxy(diskResourceService);
+//        rpc_proxy = new FolderContentsRpcProxy(diskResourceService);
         gridLoader = new PagingLoader<FolderContentsLoadConfig, PagingLoadResult<DiskResource>>(
                 rpc_proxy);
-        FolderContentsLoadConfig config = new FolderContentsLoadConfig();
-        gridLoader.useLoadConfig(config);
+        gridLoader.useLoadConfig(new FolderContentsLoadConfig());
         gridLoader.setReuseLoadConfig(true);
         view.setViewLoader(gridLoader);
     }

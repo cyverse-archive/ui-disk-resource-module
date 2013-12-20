@@ -12,6 +12,7 @@ import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQuer
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
+import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,12 +40,14 @@ public class DataSearchPresenterImplTest {
     private DataSearchPresenterImpl dsPresenter;
 
     @Mock DiskResourceView drView;
+    @Mock DiskResourceViewToolbar drToolbar;
     @Mock TreeStore<Folder> viewTreeStore;
     @Mock SearchServiceFacade searchService;
     @Mock IplantAnnouncer announcer;
 
     @Captor ArgumentCaptor<List<DiskResourceQueryTemplate>> drqtListCaptor;
     @Captor ArgumentCaptor<AsyncCallback<String>> stringAsyncCbCaptor;
+    @Captor ArgumentCaptor<AsyncCallback<List<DiskResourceQueryTemplate>>> drqtListAsyncCaptor;
 
     @Before public void setUp() {
         dsPresenter = new DataSearchPresenterImpl(searchService, announcer);
@@ -250,15 +253,7 @@ public class DataSearchPresenterImplTest {
         dsPresenter.getQueryTemplates().add(mockedTemplate);
 
         // Set up Folder root tree store items
-        Folder root1 = mock(Folder.class);
-        Folder root2 = mock(Folder.class);
-        Folder root3 = mock(Folder.class);
-        Folder root4 = mock(Folder.class);
-        when(root1.getId()).thenReturn("root1Id");
-        when(root2.getId()).thenReturn("root2Id");
-        when(root3.getId()).thenReturn("root3Id");
-        when(root4.getId()).thenReturn("root4Id");
-        List<Folder> toReturn = Lists.newArrayList(root1, root2, root3, root4);
+        List<Folder> toReturn = createTreeStoreRootFolderList();
         when(viewTreeStore.getRootItems()).thenReturn(toReturn);
 
         // Save template
@@ -305,15 +300,8 @@ public class DataSearchPresenterImplTest {
         dsPresenter.getQueryTemplates().add(mockedTemplate);
 
         // Set up Folder root tree store items
-        Folder root1 = mock(Folder.class);
-        Folder root2 = mock(Folder.class);
-        Folder root3 = mock(Folder.class);
-        Folder root4 = mock(Folder.class);
-        when(root1.getId()).thenReturn("root1Id");
-        when(root2.getId()).thenReturn("root2Id");
-        when(root3.getId()).thenReturn("root3Id");
-        when(root4.getId()).thenReturn("root4Id");
-        List<Folder> toReturn = Lists.newArrayList(root1, root2, root3, root4, mockedTemplate);
+        List<Folder> toReturn = createTreeStoreRootFolderList();
+        toReturn.add(mockedTemplate);
         when(viewTreeStore.getRootItems()).thenReturn(toReturn);
 
         InOrder inOrder = inOrder(viewTreeStore);
@@ -337,15 +325,101 @@ public class DataSearchPresenterImplTest {
         assertTrue(dsPresenter.getActiveQuery() == null);
     }
 
+    /**
+     * Verify #searchInit functionality when the call to retrieve saved templates is successful and returns queries.
+     *
+     * @see org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter#searchInit(org.iplantc.core.uidiskresource.client.views.DiskResourceView)
+     */
     @Test public void testSearchInit_Case1() {
+        when(drView.getToolbar()).thenReturn(drToolbar);
+        dsPresenter.searchInit(drView);
+
+        /* Verify that view is saved */
+        assertEquals(drView, dsPresenter.getView());
+
+        /* Verify that presenter registers itself to SaveDiskResourceQueryEvent and SubmitDiskResourceQueryEvents on
+         * the view toolbar. */
+        ArgumentCaptor<SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler> saveEventHandlerCaptor
+                = ArgumentCaptor.forClass(SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler.class);
+        ArgumentCaptor<SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler> submitEventHandlerCaptor
+                = ArgumentCaptor.forClass(SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler.class);
+        verify(drToolbar).addSaveDiskResourceQueryTemplateEventHandler(saveEventHandlerCaptor.capture());
+        verify(drToolbar).addSubmitDiskResourceQueryEventHandler(submitEventHandlerCaptor.capture());
+        assertEquals(saveEventHandlerCaptor.getValue(), dsPresenter);
+        assertEquals(submitEventHandlerCaptor.getValue(), dsPresenter);
+
+        /* Verify that presenter calls service to retrieve saved query templates */
+        verify(searchService).getSavedQueryTemplates(drqtListAsyncCaptor.capture());
+
+        List<Folder> rootItems = createTreeStoreRootFolderList();
+        when(viewTreeStore.getRootItems()).thenReturn(rootItems);
+        DiskResourceQueryTemplate retrieved1 = mock(DiskResourceQueryTemplate.class);
+        DiskResourceQueryTemplate retrieved2 = mock(DiskResourceQueryTemplate.class);
+        DiskResourceQueryTemplate retrieved3 = mock(DiskResourceQueryTemplate.class);
+        List<DiskResourceQueryTemplate> retrievedTemplates = Lists.newArrayList(retrieved1, retrieved2, retrieved3);
+        drqtListAsyncCaptor.getValue().onSuccess(retrievedTemplates);
+
+        /* Verify that the retrieved list is added to the presenters list */
+        assertTrue(dsPresenter.getQueryTemplates().containsAll(retrievedTemplates));
+        assertEquals(retrievedTemplates.size(), dsPresenter.getQueryTemplates().size());
+
+        ArgumentCaptor<Folder> folderArgumentCaptor = ArgumentCaptor.forClass(Folder.class);
+        /* Verify that the tree store is updated, and all retrieved templates are added */
+        verify(viewTreeStore, times(retrievedTemplates.size())).add(folderArgumentCaptor.capture());
+        assertTrue(retrievedTemplates.containsAll(folderArgumentCaptor.getAllValues()));
+
+    }
+
+    /**
+     * Verify #searchInit functionality when the call to retrieve saved templates fails
+     *
+     * @see org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter#searchInit(org.iplantc.core.uidiskresource.client.views.DiskResourceView)
+     */
+    @Test public void testSearchInit_Case2() {
+        when(drView.getToolbar()).thenReturn(drToolbar);
+        /* Verify size of presenter query template list prior to calling method under test */
+        assertTrue(dsPresenter.getQueryTemplates().isEmpty());
 
         dsPresenter.searchInit(drView);
-        // Verify that view is saved
-        // verify that presenter registers for SaveDiskResourceQueryEvents from the view toolbar
-        // verify that presenter registers for SubmitDiskResourceQueryEvents from the view toolbar
-        // Verify that presenter calls service to retrieve saved query templates
 
+        /* Verify that view is saved */
+        assertEquals(drView, dsPresenter.getView());
 
+        /* Verify that presenter registers itself to SaveDiskResourceQueryEvent and SubmitDiskResourceQueryEvents on
+         * the view toolbar. */
+        ArgumentCaptor<SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler> saveEventHandlerCaptor
+                = ArgumentCaptor.forClass(SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler.class);
+        ArgumentCaptor<SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler> submitEventHandlerCaptor
+                = ArgumentCaptor.forClass(SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler.class);
+        verify(drToolbar).addSaveDiskResourceQueryTemplateEventHandler(saveEventHandlerCaptor.capture());
+        verify(drToolbar).addSubmitDiskResourceQueryEventHandler(submitEventHandlerCaptor.capture());
+        assertEquals(saveEventHandlerCaptor.getValue(), dsPresenter);
+        assertEquals(submitEventHandlerCaptor.getValue(), dsPresenter);
+
+        /* Verify that presenter calls service to retrieve saved query templates */
+        verify(searchService).getSavedQueryTemplates(drqtListAsyncCaptor.capture());
+
+        drqtListAsyncCaptor.getValue().onFailure(null);
+
+        /* Verify that nothing has been added to the presenters query template list and there have been no interactions
+           with the view's tree store */
+        assertTrue(dsPresenter.getQueryTemplates().isEmpty());
+        verify(viewTreeStore, never()).add(any(Folder.class));
+        verify(viewTreeStore, never()).remove(any(Folder.class));
+    }
+
+    List<Folder> createTreeStoreRootFolderList(){
+        // Set up Folder root tree store items
+        Folder root1 = mock(Folder.class);
+        Folder root2 = mock(Folder.class);
+        Folder root3 = mock(Folder.class);
+        Folder root4 = mock(Folder.class);
+        when(root1.getId()).thenReturn("root1Id");
+        when(root2.getId()).thenReturn("root2Id");
+        when(root3.getId()).thenReturn("root3Id");
+        when(root4.getId()).thenReturn("root4Id");
+        List<Folder> toReturn = Lists.newArrayList(root1, root2, root3, root4);
+        return toReturn;
     }
 
 }
