@@ -695,7 +695,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
         if (listStoreModel != null) {
             listStore.remove(listStoreModel);
-            listStore.update();
             listStore.add(newDr);
         }
 
@@ -786,8 +785,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
     /**
      * Parses a timestamp string into a formatted date string and adds it to this panel.
      * 
-     * @param label
-     * @param value
      */
     private HorizontalPanel getDateLabel(String label, Date date) {
         String value = ""; //$NON-NLS-1$

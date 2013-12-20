@@ -10,11 +10,7 @@ import com.google.common.collect.Sets.SetView;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
-
 import com.sencha.gxt.data.shared.TreeStore;
-
-import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
@@ -152,7 +148,7 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
             @Override
             public void onFailure(Throwable caught) {
-                ErrorHandler.post(I18N.ERROR.retrieveSavedQueryTemplatesFailed(), caught);
+                announcer.schedule(new ErrorAnnouncementConfig(SafeHtmlUtils.fromString("Failed to retrieve saved filters"), true));
             }
 
             @Override

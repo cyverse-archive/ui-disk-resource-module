@@ -337,7 +337,14 @@ public class DataSearchPresenterImplTest {
         assertTrue(dsPresenter.getActiveQuery() == null);
     }
 
-    @Test public void testGetActiveQuery() {
+    @Test public void testSearchInit_Case1() {
+
+        dsPresenter.searchInit(drView);
+        // Verify that view is saved
+        // verify that presenter registers for SaveDiskResourceQueryEvents from the view toolbar
+        // verify that presenter registers for SubmitDiskResourceQueryEvents from the view toolbar
+        // Verify that presenter calls service to retrieve saved query templates
+
 
     }
 
