@@ -30,6 +30,8 @@ public class ToolbarButtonVisibilityNavigationHandler extends
         toolbar.setSimpleUploadEnabled(canUpload);
         toolbar.setImportButtonEnabled(canUpload);
 
+        toolbar.setNewButtonEnabled(newFolderEnabled);
+        toolbar.setNewFileButtonEnabled(newFolderEnabled);
         toolbar.setNewFolderButtonEnabled(newFolderEnabled);
         toolbar.setRefreshButtonEnabled(oneSelected);
     }

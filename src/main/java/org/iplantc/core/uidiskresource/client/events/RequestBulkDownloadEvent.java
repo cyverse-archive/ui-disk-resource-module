@@ -18,9 +18,11 @@ public class RequestBulkDownloadEvent extends GwtEvent<RequestBulkDownloadEventH
     public static final GwtEvent.Type<RequestBulkDownloadEventHandler> TYPE = new GwtEvent.Type<RequestBulkDownloadEventHandler>();
     private final Set<DiskResource> requestedResources;
     private final Folder currentFolder;
+    private boolean selectAll;
 
-    public RequestBulkDownloadEvent(Object source, final Set<DiskResource> requestedResources, final Folder currentFolder) {
+    public RequestBulkDownloadEvent(Object source,boolean selectAll, final Set<DiskResource> requestedResources, final Folder currentFolder) {
         setSource(source);
+        this.setSelectAll(selectAll);
         this.requestedResources = requestedResources;
         this.currentFolder = currentFolder;
     }
@@ -41,6 +43,20 @@ public class RequestBulkDownloadEvent extends GwtEvent<RequestBulkDownloadEventH
 
     public Folder getCurrentFolder() {
         return currentFolder;
+    }
+
+    /**
+     * @return the selectAll
+     */
+    public boolean isSelectAll() {
+        return selectAll;
+    }
+
+    /**
+     * @param selectAll the selectAll to set
+     */
+    public void setSelectAll(boolean selectAll) {
+        this.selectAll = selectAll;
     }
 
 }

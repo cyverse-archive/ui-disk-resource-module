@@ -43,6 +43,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.web.bindery.autobean.shared.AutoBean;
@@ -196,7 +197,10 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         }
         if (!isValidClickTarget(eventTarget, value)) {
             if (value.isFilter()) {
-                eventTarget.setTitle(I18N.DISPLAY.diskResourceNotAvailable());
+                initPopup();
+                linkPopup.add(new HTML(I18N.DISPLAY.diskResourceNotAvailable()));
+                linkPopup.setSize("300px", "200px");
+                schedulePopupTimer(eventTarget);
             }
             return;
         }
@@ -207,18 +211,23 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         } else {
             buildFolderLink(value);
         }
+        schedulePopupTimer(eventTarget);
+        eventTarget.getStyle().setTextDecoration(TextDecoration.UNDERLINE);
+    }
+
+    private void schedulePopupTimer(final Element eventTarget) {
         Timer t = new Timer() {
-            
+
             @Override
             public void run() {
-                if(linkPopup !=null) {
-                    linkPopup.showAt(eventTarget.getAbsoluteLeft() + 25, eventTarget.getAbsoluteTop() - 15);
+                if (linkPopup != null) {
+                    linkPopup.showAt(eventTarget.getAbsoluteLeft() + 25,
+                            eventTarget.getAbsoluteTop() - 15);
                 }
-                
+
             }
         };
         t.schedule(1500);
-        eventTarget.getStyle().setTextDecoration(TextDecoration.UNDERLINE);
     }
 
     private void buildFolderLink(final DiskResource value) {

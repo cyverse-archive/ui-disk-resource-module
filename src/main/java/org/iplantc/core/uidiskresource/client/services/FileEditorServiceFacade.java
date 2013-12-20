@@ -39,9 +39,10 @@ public interface FileEditorServiceFacade {
      * Get Tree URLs for the given tree's file ID.
      * 
      * @param idFile file ID (path) of the tree.
+     * @param refresh discard existing tree and create new one
      * @param callback executes when RPC call is complete.
      */
-    void getTreeUrl(String idFile, AsyncCallback<String> callback);
+    void getTreeUrl(String idFile, boolean refresh, AsyncCallback<String> callback);
     
     /**
      * Get genome VIZ URLs for the given  file ID.
@@ -59,6 +60,6 @@ public interface FileEditorServiceFacade {
      */
     void viewGenomes(JSONObject pathArray,AsyncCallback<String> callback);
 
-    void uploadTextAsFile(String destination, String fileContents, AsyncCallback<String> callback);
+    void uploadTextAsFile(String destination, String fileContents, boolean newFile, AsyncCallback<String> callback);
 
 }

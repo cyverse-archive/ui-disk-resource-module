@@ -25,6 +25,8 @@ import org.iplantc.core.uidiskresource.client.sharing.models.DataSharingProperti
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingView.Presenter;
 
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.json.client.JSONBoolean;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.safecss.shared.SafeStyles;
@@ -38,25 +40,23 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.sencha.gxt.cell.core.client.TextButtonCell;
+import com.sencha.gxt.cell.core.client.form.ComboBoxCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
+import com.sencha.gxt.core.client.resources.CommonStyles;
 import com.sencha.gxt.core.shared.FastMap;
 import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.StringLabelProvider;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.event.CompleteEditEvent;
-import com.sencha.gxt.widget.core.client.event.CompleteEditEvent.CompleteEditHandler;
+import com.sencha.gxt.widget.core.client.event.CellSelectionEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
-import com.sencha.gxt.widget.core.client.grid.CellSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
-import com.sencha.gxt.widget.core.client.grid.editing.GridEditing;
-import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
 import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.LabelToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
@@ -85,10 +85,7 @@ public class DataSharingPermissionsPanel implements IsWidget {
     private FastMap<List<DataSharing>> originalList;
     private final FastMap<DiskResource> resources;
     private final Presenter presenter;
-    private GridEditing<DataSharing> gridEditing;
-
-    private static final String ID_PERM_GROUP = "idPermGroup";
-    private SimpleComboBox<Object> permCombo;
+    private ComboBoxCell<String> permCombo;
     private FastMap<List<DataSharing>> sharingMap;
     private HorizontalPanel explainPanel;
 
@@ -105,7 +102,7 @@ public class DataSharingPermissionsPanel implements IsWidget {
         init();
         widget = uiBinder.createAndBindUi(this);
         initToolbar();
-        initGrid();
+    //    initGrid();
     }
 
     @Override
@@ -116,7 +113,6 @@ public class DataSharingPermissionsPanel implements IsWidget {
     private void init() {
         listStore = new ListStore<DataSharing>(new DataSharingKeyProvider());
         cm = buildColumnModel();
-        buildPermissionsCombo();
         EventBus.getInstance().addHandler(UserSearchResultSelected.TYPE,
                 new UserSearchResultSelected.UserSearchResultSelectedEventHandler() {
 
@@ -130,24 +126,6 @@ public class DataSharingPermissionsPanel implements IsWidget {
 
                     }
                 });
-    }
-
-    private void initGrid() {
-        grid.setSelectionModel(new CellSelectionModel<DataSharing>());
-        gridEditing = new GridInlineEditing<DataSharing>(grid);
-        gridEditing.addEditor(cm.getColumn(1), permCombo);
-        gridEditing.addCompleteEditHandler(new CompleteEditHandler<DataSharing>() {
-
-            @Override
-            public void onCompleteEdit(CompleteEditEvent<DataSharing> event) {
-                Object value = permCombo.getCurrentValue();
-                updatePermissions(value.toString(), grid.getSelectionModel().getSelectedItem()
-                        .getUserName());
-            }
-        });
-        grid.getView().setAutoExpandColumn(cm.getColumn(0));
-        grid.getView().setEmptyText(I18N.DISPLAY.sharePrompt());
-
     }
 
     private void initToolbar() {
@@ -188,16 +166,32 @@ public class DataSharingPermissionsPanel implements IsWidget {
         return button;
     }
 
-    private SimpleComboBox<Object> buildPermissionsCombo() {
-        permCombo = new SimpleComboBox<Object>(new StringLabelProvider<Object>());
-        permCombo.setId(ID_PERM_GROUP);
+    private ComboBoxCell<String> buildPermissionsCombo() {
+        ListStore<String> perms = new ListStore<String>(new ModelKeyProvider<String>() {
+
+            @Override
+            public String getKey(String item) {
+                return item;
+            }
+        });
+        perms.add(DataSharing.READ);
+        perms.add(DataSharing.WRITE);
+        perms.add(DataSharing.OWN);
+    
+        permCombo = new ComboBoxCell<String>(perms,new StringLabelProvider<Object>());
         permCombo.setForceSelection(true);
-        permCombo.add(DataSharing.READ);
-        permCombo.add(DataSharing.WRITE);
-        permCombo.add(DataSharing.OWN);
-        permCombo.setEditable(false);
 
         permCombo.setTriggerAction(TriggerAction.ALL);
+        permCombo.addSelectionHandler(new SelectionHandler<String>() {
+            
+            @Override
+            public void onSelection(SelectionEvent<String> event) {
+                CellSelectionEvent<String> sel = (CellSelectionEvent<String>) event;
+                DataSharing ds = listStore.get(sel.getContext().getIndex());
+                updatePermissions(event.getSelectedItem(), ds.getUserName());
+                
+            }
+        });
         return permCombo;
     }
 
@@ -302,16 +296,17 @@ public class DataSharingPermissionsPanel implements IsWidget {
                props.name());
 
         name.setHeader(I18N.DISPLAY.name());
-        name.setWidth(220);
+        name.setWidth(200);
         ColumnConfig<DataSharing, String> permission = new ColumnConfig<DataSharing, String>(
                 props.displayPermission());
 
         permission.setHeader(I18N.DISPLAY.permissions());
-        permission.setWidth(150);
-        SafeStyles permTextStyles = SafeStylesUtils.fromTrustedString("color:#0098AA;cursor:pointer;");
+        permission.setWidth(170);
+        SafeStyles permTextStyles = SafeStylesUtils.fromTrustedString("padding: 2px 3px;color:#0098AA;cursor:pointer;");
         permission.setColumnTextStyle(permTextStyles);
         permission.setSortable(false);
         permission.setFixed(true);
+        permission.setCell(buildPermissionsCombo());
         ColumnConfig<DataSharing, String> remove = buildRemoveColumn();
         configs.add(name);
         configs.add(permission);
@@ -340,9 +335,10 @@ public class DataSharingPermissionsPanel implements IsWidget {
                     }
                 });
 
+        remove.setColumnTextClassName(CommonStyles.get().inlineBlock());
         remove.setSortable(false);
         remove.setFixed(true);
-        SafeStyles textStyles = SafeStylesUtils.fromTrustedString("padding-left: 10px;cursor:pointer;");
+        SafeStyles textStyles = SafeStylesUtils.fromTrustedString("padding: 1px 3px;cursor:pointer;");
         remove.setColumnStyle(textStyles);
         remove.setWidth(50);
         remove.setToolTip(I18N.DISPLAY.unshare());

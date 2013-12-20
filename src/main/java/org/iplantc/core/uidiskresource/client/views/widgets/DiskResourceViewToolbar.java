@@ -66,6 +66,8 @@ public interface DiskResourceViewToolbar extends IsWidget {
         void doDataLinks();
 
         void onMove();
+        
+        void onNewFile();
 
     }
 
@@ -112,4 +114,8 @@ public interface DiskResourceViewToolbar extends IsWidget {
     void setEditEnabled(boolean canEdit);
 
     void setMoveButtonEnabled(boolean enabled);
+
+    void setNewFileButtonEnabled(boolean enabled);
+
+    void setNewButtonEnabled(boolean enabled);
 }
