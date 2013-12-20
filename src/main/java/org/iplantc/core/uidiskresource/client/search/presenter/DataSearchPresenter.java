@@ -1,5 +1,7 @@
 package org.iplantc.core.uidiskresource.client.search.presenter;
 
+import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
@@ -39,18 +41,9 @@ import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
  * </li>
  * 
  * <li>Using and/or applying the <em>active query</em> template to submit searches to the
- * <code><a href="https://github.com/iPlantCollaborativeOpenSource/Donkey/blob/dev/doc/endpoints/filesystem/search.md#endpoints">GET /secured/filesystem/index</a></code>
- * endpoint.<br/>
+ * {@link SearchServiceFacade#submitSearchFromQueryTemplate()} method.<br/>
  * &nbsp; This can occur as a result of the user selecting a query in the view.</li>
  * <li>Ensure the results of the constructed query are displayed to the user in the view.</li>
- * </ul>
- * 
- * <h2>What does this presenter need at construction-time?</h2>
- * <ul>
- * <li>The search box</li>
- * <li>Navigation panel</li>
- * <li>Center panel<br/>
- * <i>For displaying results</i></li>
  * </ul>
  * 
  * <h2>What initialization-time tasks does this presenter perform?</h2>
@@ -87,17 +80,7 @@ import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
  * its duties. That, or give this sub-presenter a reference to the primary presenter, which will provide
  * the necessary references.<br/>
  * &nbsp; Is there any other way? Is this proposal sufficient?</li>
- * <li>When a "magic folder" is selected, who rethrows the {@link SubmitDiskResourceQueryEvent}?</li>
  * </ul>
- * 
- * <h3>Crazy questions</h3>
- * <ul>
- * <li>What if we treated every folder selection as a "search" request?</li>
- * </ul>
- * 
- * TODO CORE-4876 May have to have the QueryTemplate extend Folder
- * 
- * TODO CORE-4876 Assuming that all search-related events will be fired from {@link DiskResourceView}
  * 
  * @author jstroot
  * 
@@ -107,7 +90,9 @@ public interface DataSearchPresenter extends SaveDiskResourceQueryEventHandler, 
     /**
      * Initializes this presenter and its corresponding view for search operations.
      * 
-     * Retrieve any saved query templates.
+     * Retrieve any saved query templates, adds itself as a listener for
+     * {@code SubmitDiskResourceQueryEvent} and {@code SaveDiskResourceQueryEvent}s on the given view's
+     * toolbar, and {@code SubmitDiskResourceQueryEvent}s on the view itself.
      * 
      * @param view
      */
@@ -121,5 +106,11 @@ public interface DataSearchPresenter extends SaveDiskResourceQueryEventHandler, 
      * @return the view associated with this presenter.
      */
     DiskResourceView getView();
+
+    /**
+     *
+     * @return the current active query, or null if there is not active query.
+     */
+    DiskResourceQueryTemplate getActiveQuery();
 
 }

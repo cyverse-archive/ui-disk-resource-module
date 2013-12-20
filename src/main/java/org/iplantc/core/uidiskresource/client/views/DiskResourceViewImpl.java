@@ -676,6 +676,32 @@ public class DiskResourceViewImpl implements DiskResourceView {
     }
 
     @Override
+    public void updateDiskResource(DiskResource originalDr, DiskResource newDr) {
+        // Check each store for for existence of original disk resource
+        Folder treeStoreModel = treeStore.findModelWithKey(originalDr.getId());
+        if (treeStoreModel != null) {
+
+            // Grab original disk resource's parent, then remove original from
+            // tree store
+            Folder parentFolder = treeStore.getParent(treeStoreModel);
+            treeStore.remove(treeStoreModel);
+
+            treeStoreModel.setId(newDr.getId());
+            treeStoreModel.setName(newDr.getName());
+            treeStore.add(parentFolder, treeStoreModel);
+        }
+
+        DiskResource listStoreModel = listStore.findModelWithKey(originalDr.getId());
+
+        if (listStoreModel != null) {
+            listStore.remove(listStoreModel);
+            listStore.update();
+            listStore.add(newDr);
+        }
+
+    }
+
+    @Override
     public boolean isViewTree(IsWidget widget) {
         return widget.asWidget() == tree;
     }

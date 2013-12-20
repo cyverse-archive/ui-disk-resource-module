@@ -9,6 +9,7 @@ import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 
 import org.iplantc.core.uicommons.client.gin.ServicesInjector;
+import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
@@ -37,5 +38,11 @@ public class DiskResourceGinModule extends AbstractGinModule {
     @Singleton
     public SearchServiceFacade createSearchServiceFacade() {
         return ServicesInjector.INSTANCE.getSearchServiceFacade();
+    }
+
+    @Provides
+    @Singleton
+    public IplantAnnouncer createIplantAnnouncer() {
+        return IplantAnnouncer.getInstance();
     }
 }
