@@ -121,4 +121,8 @@ public interface DiskResourceViewToolbar extends IsWidget {
     void setNewFileButtonEnabled(boolean enabled);
 
     void setNewButtonEnabled(boolean enabled);
+
+    HandlerRegistration addSaveDiskResourceQueryTemplateEventHandler(SaveDiskResourceQueryEventHandler handler);
+
+    HandlerRegistration addSubmitDiskResourceQueryEventHandler(SubmitDiskResourceQueryEventHandler handler);
 }

@@ -1,9 +1,11 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:toolbar="urn:import:com.sencha.gxt.widget.core.client.toolbar"
-	xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button"
-	xmlns:menu="urn:import:com.sencha.gxt.widget.core.client.menu"
-	xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form">
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:toolbar="urn:import:com.sencha.gxt.widget.core.client.toolbar"
+             xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button"
+             xmlns:menu="urn:import:com.sencha.gxt.widget.core.client.menu"
+             xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
+             xmlns:search="urn:import:org.iplantc.core.uidiskresource.client.search.views">
 
    <ui:with field="res"
             type="org.iplantc.core.resources.client.IplantResources"/>
@@ -123,6 +125,8 @@
 
         <!-- Data Search box -->
         <toolbar:child layoutData="{flexBoxData}">
+            <search:DiskResourceSearchField ui:field="searchField"
+                                            debugId="idSearchTxt"/>
             <form:TextField
                 debugId="idSearchTxt"
                 ui:field="searchField"

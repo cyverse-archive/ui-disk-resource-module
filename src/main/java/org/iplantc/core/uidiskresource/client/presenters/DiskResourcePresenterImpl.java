@@ -720,6 +720,16 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         return builder;
     }
 
+    @Override
+    public void doSaveDiskResourceQueryTemplate(SaveDiskResourceQueryEvent event) {
+
+    }
+
+    @Override
+    public void doSubmitDiskResourceQuery(SubmitDiskResourceQueryEvent event) {
+
+    }
+
     private class MyBuilder implements Builder {
 
         private final DiskResourceView.Presenter presenter;

@@ -6,6 +6,7 @@ import org.iplantc.core.uicommons.client.models.diskresources.File;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchField;
 import org.iplantc.core.uidiskresource.client.views.dialogs.CreateFolderDialog;
 import org.iplantc.core.uidiskresource.client.views.dialogs.RenameFileDialog;
 import org.iplantc.core.uidiskresource.client.views.dialogs.RenameFolderDialog;
@@ -25,7 +26,6 @@ import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.menu.Item;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
@@ -87,7 +87,7 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     TextButton shareButton;
 
     @UiField
-    TextField searchField;
+    DiskResourceSearchField searchField;
 
     @UiField
     MenuItem emptyTrash;
