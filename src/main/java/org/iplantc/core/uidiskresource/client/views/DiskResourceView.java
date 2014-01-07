@@ -254,8 +254,6 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
      */
     <D extends DiskResource> void removeDiskResources(Collection<D> resources);
 
-    void updateDiskResource(DiskResource originalDr, DiskResource newDr);
-
     /**
      * Determines if the given widget is this view's <code>Tree</code> object.
      * 

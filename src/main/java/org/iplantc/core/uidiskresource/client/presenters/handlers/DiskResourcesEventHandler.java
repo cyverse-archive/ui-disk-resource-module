@@ -124,7 +124,10 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
 
     @Override
     public void onRename(DiskResource originalDr, DiskResource newDr) {
-        view.updateDiskResource(originalDr, newDr);
+        Folder parent = view.getFolderById(DiskResourceUtil.parseParent(newDr.getPath()));
+        if (parent != null) {
+            presenter.doRefresh(parent);
+        }
     }
 
     @Override
