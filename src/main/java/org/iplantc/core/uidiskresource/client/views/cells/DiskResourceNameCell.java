@@ -22,7 +22,6 @@ import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.dataLink.models.DataLink;
 import org.iplantc.core.uidiskresource.client.dataLink.models.DataLinkFactory;
 import org.iplantc.core.uidiskresource.client.dataLink.models.DataLinkList;
-import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -110,7 +109,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
     }
 
     public static enum CALLER_TAG {
-        DATA, SEARCH, SHARING;
+        DATA, SHARING;
     }
 
     /**
@@ -262,8 +261,6 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
 
         if (tag.equals(CALLER_TAG.DATA)) {
             EventBus.getInstance().fireEvent(new DiskResourceSelectedEvent(caller, value));
-        } else if (tag.equals(CALLER_TAG.SEARCH)) {
-            EventBus.getInstance().fireEvent(new DataSearchNameSelectedEvent(value));
         }
     }
 

@@ -1,6 +1,5 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
-import com.google.gwt.event.shared.HandlerRegistration;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.File;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
@@ -12,9 +11,8 @@ import org.iplantc.core.uidiskresource.client.views.dialogs.RenameFileDialog;
 import org.iplantc.core.uidiskresource.client.views.dialogs.RenameFolderDialog;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -109,15 +107,6 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
 
     public DiskResourceViewToolbarImpl() {
         widget = BINDER.createAndBindUi(this);
-
-        searchField.addKeyUpHandler(new KeyUpHandler() {
-
-            @Override
-            public void onKeyUp(KeyUpEvent event) {
-                presenter.doSearch(searchField.getCurrentValue());
-            }
-        });
-
     }
 
     @Override
@@ -334,17 +323,6 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     @Override
     public void setDataLinkMenuItemEnabled(boolean enabled) {
         dataLink.setEnabled(enabled);
-    }
-
-    @Override
-    public void setSearchTerm(String searchTerm) {
-        searchField.setValue(searchTerm, true);
-
-    }
-
-    @Override
-    public void clearSearchTerm() {
-        searchField.clear();
     }
 
     @Override

@@ -1,5 +1,23 @@
 package org.iplantc.core.uidiskresource.client.search.presenter.impl;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
+import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
+import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
+import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent;
+import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
+import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
+
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -7,25 +25,13 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import com.sencha.gxt.data.shared.TreeStore;
-import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
-import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
-import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
-import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
-import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
-import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
-import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class DataSearchPresenterImpl implements DataSearchPresenter {
 
@@ -34,6 +40,7 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
     private final SearchServiceFacade searchService;
     private final IplantAnnouncer announcer;
     private DiskResourceQueryTemplate activeQuery = null;
+    private HandlerManager handlerManager;
 
     @Inject
     public DataSearchPresenterImpl(final SearchServiceFacade searchService, final IplantAnnouncer announcer) {
@@ -105,7 +112,10 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
     public void doSubmitDiskResourceQuery(final SubmitDiskResourceQueryEvent event) {
         // Performing a search has the effect of setting the given query as the current active query.
         updateDataNavigationWindow(getQueryTemplates(), view.getTreeStore());
-        searchService.submitSearchFromQueryTemplate(event.getQueryTemplate(), new AsyncCallback<String>() {
+
+        activeQuery = event.getQueryTemplate();
+        fireEvent(new FolderSelectedEvent(activeQuery));
+        /*searchService.submitSearchFromQueryTemplate(event.getQueryTemplate(), new AsyncCallback<String>() {
 
             @Override
             public void onFailure(Throwable caught) {
@@ -120,11 +130,27 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
                 // TODO CORE-4876: Ensure that the current folder is selected?
             }
 
-        });
+        });*/
 
     }
 
+    void fireEvent(GwtEvent<?> event) {
+        if (handlerManager != null) {
+            handlerManager.fireEvent(event);
+        }
+    }
 
+    HandlerManager ensureHandlers() {
+        return handlerManager == null ? handlerManager = createHandlerManager() : handlerManager;
+    }
+
+    HandlerManager getHandlerManager() {
+        return handlerManager;
+    }
+
+    HandlerManager createHandlerManager() {
+        return new HandlerManager(this);
+    }
 
     @Override
     public DiskResourceView getView() {
@@ -214,6 +240,11 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
             }
         }
 
+    }
+
+    @Override
+    public HandlerRegistration addFolderSelectedEventHandler(FolderSelectedEventHandler handler) {
+        return ensureHandlers().addHandler(FolderSelectedEvent.TYPE, handler);
     }
 
 }

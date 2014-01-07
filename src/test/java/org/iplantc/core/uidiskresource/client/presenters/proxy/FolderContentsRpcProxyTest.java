@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
@@ -47,6 +48,7 @@ public class FolderContentsRpcProxyTest {
 
     @Mock DiskResourceServiceFacade diskResourceService;
     @Mock SearchServiceFacade searchService;
+    @Mock IplantAnnouncer announcer;
 
     @Mock AsyncCallback<PagingLoadResult<DiskResource>> pagingAsyncMock;
 
@@ -56,7 +58,7 @@ public class FolderContentsRpcProxyTest {
     private FolderContentsRpcProxy folderContentsRpcProxy;
 
     @Before public void setUp() {
-        folderContentsRpcProxy = new FolderContentsRpcProxy(diskResourceService, searchService);
+        folderContentsRpcProxy = new FolderContentsRpcProxy(diskResourceService, searchService, announcer);
     }
 
     /**

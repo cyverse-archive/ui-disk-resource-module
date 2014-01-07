@@ -1,15 +1,15 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.IsWidget;
+import java.util.List;
+import java.util.Set;
 
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
 
-import java.util.List;
-import java.util.Set;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DiskResourceViewToolbar extends IsWidget {
 
@@ -60,8 +60,6 @@ public interface DiskResourceViewToolbar extends IsWidget {
 
         void doCreateNewFolder(Folder parentFolder, String folderName);
 
-        void doSearch(String val);
-        
         void emptyTrash();
 
         void restore();
@@ -105,10 +103,6 @@ public interface DiskResourceViewToolbar extends IsWidget {
     void setShareMenuItemEnabled(boolean enabled);
 
     void setDataLinkMenuItemEnabled(boolean enabled);
-
-    void setSearchTerm(String searchTerm);
-
-    void clearSearchTerm();
 
     void setRestoreMenuItemEnabled(boolean b);
 

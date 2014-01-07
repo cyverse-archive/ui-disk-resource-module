@@ -1,13 +1,25 @@
 package org.iplantc.core.uidiskresource.client.search.presenter.impl;
 
-import com.google.common.collect.Lists;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwtmockito.GxtMockitoTestRunner;
-import com.sencha.gxt.data.shared.TreeStore;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
+import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
@@ -21,11 +33,10 @@ import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 
-import java.util.List;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import com.google.common.collect.Lists;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwtmockito.GxtMockitoTestRunner;
+import com.sencha.gxt.data.shared.TreeStore;
 
 /**
  * TODO Test presenter initialization and fetching of previously persisted templates.
@@ -246,34 +257,33 @@ public class DataSearchPresenterImplTest {
      * @see org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter#doSubmitDiskResourceQuery(org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent)
      */
     @Test public void testDoSubmitDiskResourceQuery_Case1() {
+        DataSearchPresenterImpl spy = spy(dsPresenter);
         DiskResourceQueryTemplate mockedTemplate = mock(DiskResourceQueryTemplate.class);
         when(mockedTemplate.getId()).thenReturn("mockedTemplateId");
         SubmitDiskResourceQueryEvent mockEvent = mock(SubmitDiskResourceQueryEvent.class);
         when(mockEvent.getQueryTemplate()).thenReturn(mockedTemplate);
-        dsPresenter.getQueryTemplates().add(mockedTemplate);
+        spy.getQueryTemplates().add(mockedTemplate);
 
         // Set up Folder root tree store items
         List<Folder> toReturn = createTreeStoreRootFolderList();
         when(viewTreeStore.getRootItems()).thenReturn(toReturn);
 
         // Save template
-        dsPresenter.doSubmitDiskResourceQuery(mockEvent);
+        spy.doSubmitDiskResourceQuery(mockEvent);
 
         /* Verify that the template is added to the store, but no call to remove ever happens */
         verify(viewTreeStore, never()).remove(any(Folder.class));
         verify(viewTreeStore).add(eq(mockedTemplate));
 
-        /* Verify that a search is submitted with the templated passed with given event */
-        verify(searchService).submitSearchFromQueryTemplate(eq(mockedTemplate), stringAsyncCbCaptor.capture());
-
-        /* Verify that the active query is still null after the search was requested, but before the search returns
-         * successfully
+        /*
+         * Verify that the active query has been set
          */
-        assertTrue(dsPresenter.getActiveQuery() == null);
+        assertEquals(mockedTemplate, spy.getActiveQuery());
 
-        /* Verify that the active query is set after successful search submission */
-        stringAsyncCbCaptor.getValue().onSuccess("");
-        assertEquals(dsPresenter.getActiveQuery(), mockedTemplate);
+        /*
+         * Verify that a folder selected event has been fired
+         */
+        verify(spy).fireEvent(any(FolderSelectedEvent.class));
     }
 
     /**
@@ -293,11 +303,12 @@ public class DataSearchPresenterImplTest {
      * </ol>
      */
     @Test public void testDoSubmitDiskResourceQuery_Case2() {
+        DataSearchPresenterImpl spy = spy(dsPresenter);
         DiskResourceQueryTemplate mockedTemplate = mock(DiskResourceQueryTemplate.class);
         when(mockedTemplate.getId()).thenReturn("mockedTemplateId");
         SubmitDiskResourceQueryEvent mockEvent = mock(SubmitDiskResourceQueryEvent.class);
         when(mockEvent.getQueryTemplate()).thenReturn(mockedTemplate);
-        dsPresenter.getQueryTemplates().add(mockedTemplate);
+        spy.getQueryTemplates().add(mockedTemplate);
 
         // Set up Folder root tree store items
         List<Folder> toReturn = createTreeStoreRootFolderList();
@@ -306,23 +317,21 @@ public class DataSearchPresenterImplTest {
 
         InOrder inOrder = inOrder(viewTreeStore);
         // Save template
-        dsPresenter.doSubmitDiskResourceQuery(mockEvent);
+        spy.doSubmitDiskResourceQuery(mockEvent);
 
         /* Verify that the template is removed and re-added to the store */
         inOrder.verify(viewTreeStore).remove(eq(mockedTemplate));
         inOrder.verify(viewTreeStore).add(eq(mockedTemplate));
 
-        /* Verify that a search is submitted with the templated passed with given event */
-        verify(searchService).submitSearchFromQueryTemplate(eq(mockedTemplate), stringAsyncCbCaptor.capture());
-
-        /* Verify that the active query is still null after the search was requested, but before the search returns
-         * successfully
+        /*
+         * Verify that the active query has been set
          */
-        assertTrue(dsPresenter.getActiveQuery() == null);
+        assertEquals(mockedTemplate, spy.getActiveQuery());
 
-        /* Verify that the active query is still null after failed search */
-        stringAsyncCbCaptor.getValue().onFailure(any(Throwable.class));
-        assertTrue(dsPresenter.getActiveQuery() == null);
+        /*
+         * Verify that a folder selected event has been fired
+         */
+        verify(spy).fireEvent(any(FolderSelectedEvent.class));
     }
 
     /**

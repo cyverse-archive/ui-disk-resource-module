@@ -2,6 +2,8 @@ package org.iplantc.core.uidiskresource.client.presenters.proxy;
 
 import java.util.List;
 
+import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
+import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
@@ -10,6 +12,7 @@ import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import com.sencha.gxt.data.client.loader.RpcProxy;
@@ -31,9 +34,11 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
 	class FolderContentsCallback implements AsyncCallback<Folder> {
         private final FolderContentsLoadConfig loadConfig;
         private final AsyncCallback<PagingLoadResult<DiskResource>> callback;
+        private final IplantAnnouncer announcer;
 
-        private FolderContentsCallback(FolderContentsLoadConfig loadConfig,
+        private FolderContentsCallback(IplantAnnouncer announcer, FolderContentsLoadConfig loadConfig,
                 AsyncCallback<PagingLoadResult<DiskResource>> callback) {
+            this.announcer = announcer;
             this.loadConfig = loadConfig;
             this.callback = callback;
         }
@@ -54,6 +59,9 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
 
         @Override
         public void onFailure(Throwable caught) {
+            if (loadConfig.getFolder() instanceof DiskResourceQueryTemplate) {
+                announcer.schedule(new ErrorAnnouncementConfig(SafeHtmlUtils.fromString("Submission of search failed"), true));
+            }
             callback.onFailure(caught);
         }
 
@@ -69,11 +77,13 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
 
     private final DiskResourceServiceFacade drService;
     private final SearchServiceFacade searchService;
+    private final IplantAnnouncer announcer;
 
     @Inject
-    public FolderContentsRpcProxy(final DiskResourceServiceFacade drService, final SearchServiceFacade searchService) {
+    public FolderContentsRpcProxy(final DiskResourceServiceFacade drService, final SearchServiceFacade searchService, final IplantAnnouncer announcer) {
         this.drService = drService;
         this.searchService = searchService;
+        this.announcer = announcer;
     }
     
     @Override
@@ -89,12 +99,12 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
         	return;
         } else if(folder instanceof DiskResourceQueryTemplate){
         	
-        	searchService.submitSearchFromQueryTemplate((DiskResourceQueryTemplate)folder, loadConfig, 
-        			new FolderContentsCallback(loadConfig, callback));
+        	searchService.submitSearchFromQueryTemplate((DiskResourceQueryTemplate)folder, loadConfig,
+ new FolderContentsCallback(announcer, loadConfig, callback));
         } else {
 
 			drService.getFolderContents(folder, loadConfig,
-					new FolderContentsCallback(loadConfig, callback));       	
+ new FolderContentsCallback(announcer, loadConfig, callback));
         }
 
     }

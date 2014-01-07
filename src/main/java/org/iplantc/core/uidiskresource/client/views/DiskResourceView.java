@@ -124,8 +124,6 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
         void deSelectDiskResources();
 
-        void loadSearchHistory();
-
         void loadUserTrashPath();
 
         void addToSearchHistory(String searchTerm);
@@ -134,7 +132,6 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
         void saveSearchHistory();
 
-
         String getCurrentSearchTerm();
 
         void setCurrentSearchTerm(String searchTerm);
@@ -142,8 +139,6 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
         void maskView();
 
         void unMaskView();
-
-        void handleSearchEvent(DiskResource resource);
 
         void unMaskView(boolean clearRegisteredHandlers);
 
@@ -268,13 +263,9 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
     void showDataListingWidget();
 
-    void showSearchResultWidget(IsWidget w);
-
     void updateDetails(String path, DiskResourceInfo info);
 
     void resetDetailsPanel();
-
-    void renderSearchHistory(List<String> history);
 
     void deSelectNavigationFolder();
 
