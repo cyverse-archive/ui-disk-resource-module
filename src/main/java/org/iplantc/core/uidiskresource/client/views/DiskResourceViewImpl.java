@@ -675,7 +675,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
         gridView.setEmptyText(I18N.DISPLAY.noItemsToDisplay());
     }
 
-    @Override
     public void updateDiskResource(DiskResource originalDr, DiskResource newDr) {
         // Check each store for for existence of original disk resource
         Folder treeStoreModel = treeStore.findModelWithKey(originalDr.getId());
