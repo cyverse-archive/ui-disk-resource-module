@@ -48,9 +48,6 @@ final class DataLinkPanelCell<M extends DiskResource> extends AbstractCell<M> {
         this.presenter = presenter;
         dataLinkCss = IplantResources.RESOURCES.getDataLinkCss();
         dataLinkCss.ensureInjected();
-
-        // Fetch the configured URL prefix for the DataLink URL.
-        dataLinkUrlPrefix = presenter.getDataLinkUrlPrefix();
     }
 
     @Override

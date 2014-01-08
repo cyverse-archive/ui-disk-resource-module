@@ -3,7 +3,6 @@ package org.iplantc.core.uidiskresource.client.dataLink.presenter;
 import java.util.List;
 
 import org.iplantc.core.uicommons.client.gin.ServicesInjector;
-import org.iplantc.core.uicommons.client.models.DEProperties;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
@@ -29,7 +28,7 @@ public class DataLinkPresenter<M extends DiskResource> implements DataLinkPanel.
     public DataLinkPresenter(List<M> resources) {
         view = new DataLinkPanel<M>(resources);
         view.setPresenter(this);
-        
+
         // Remove Folders
         List<M> allowedResources = Lists.newArrayList();
         for(M m : resources){
@@ -40,7 +39,7 @@ public class DataLinkPresenter<M extends DiskResource> implements DataLinkPanel.
         // Retrieve tickets for root nodes
         getExistingDataLinks(allowedResources);
     }
-    
+
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void getExistingDataLinks(List<M> resources) {
         view.addRoots(resources);
@@ -56,7 +55,7 @@ public class DataLinkPresenter<M extends DiskResource> implements DataLinkPanel.
         drService.deleteDataLinks(Lists.newArrayList(value.getId()),
                 new DeleteDataLinksCallback(view));
     }
-    
+
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public void deleteDataLinks(List<DataLink> dataLinks){
@@ -81,19 +80,14 @@ public class DataLinkPresenter<M extends DiskResource> implements DataLinkPanel.
         view.mask();
         drService.createDataLinks(drResourceIds, new CreateDataLinkCallback(dlFactory, view));
     }
-    
+
     @Override
     public String getSelectedDataLinkText() {
         M model = view.getTree().getSelectionModel().getSelectedItem();
         if(model instanceof DataLink){
-            return getDataLinkUrlPrefix() + model.getId();
+            return model.getId();
         }
         return null;
-    }
-
-    @Override
-    public String getDataLinkUrlPrefix() {
-        return DEProperties.getInstance().getKifShareTicketBaseUrl();
     }
 
     @Override

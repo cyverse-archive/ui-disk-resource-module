@@ -44,8 +44,6 @@ public class DataLinkPanel<M extends DiskResource> implements IsWidget {
 
         String getSelectedDataLinkText();
 
-        String getDataLinkUrlPrefix();
-
     }
 
     @UiTemplate("DataLinkPanel.ui.xml")
@@ -159,11 +157,11 @@ public class DataLinkPanel<M extends DiskResource> implements IsWidget {
     public Widget asWidget() {
         return widget;
     }
-    
+
     public void mask() {
         tree.mask(I18N.DISPLAY.loadingMask());
     }
-    
+
     public void unmask() {
         tree.unmask();
     }
@@ -171,9 +169,9 @@ public class DataLinkPanel<M extends DiskResource> implements IsWidget {
 
     /**
      * A handler who controls this widgets button visibility based on tree check selection.
-     * 
+     *
      * @author jstroot
-     * 
+     *
      */
     private final class TreeSelectionHandler implements SelectionHandler<M> {
 
