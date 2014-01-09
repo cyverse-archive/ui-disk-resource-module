@@ -20,6 +20,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
+
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.SortInfo;
 import com.sencha.gxt.data.shared.TreeStore;
@@ -30,6 +31,25 @@ import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 
+import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceInfo;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceMetadata;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
+import org.iplantc.core.uicommons.client.views.IsMaskable;
+import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoadConfig;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectFolderByIdLoadHandler;
+import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
+import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
+import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
 /**
  * @author jstroot
  *
@@ -37,7 +57,7 @@ import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRoot {
 
     public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter,
- DiskResourceViewToolbarImpl.Presenter, HasHandlerRegistrationMgmt {
+ DiskResourceViewToolbarImpl.Presenter, HasHandlerRegistrationMgmt, FolderSelectedEventHandler {
         interface Builder extends org.iplantc.core.uicommons.client.presenter.Presenter {
             Builder hideNorth();
 

@@ -1,14 +1,38 @@
 package org.iplantc.core.uidiskresource.client.presenters;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasOneWidget;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.inject.Inject;
+
+import com.sencha.gxt.data.client.loader.RpcProxy;
+import com.sencha.gxt.data.shared.SortInfo;
+import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
+import com.sencha.gxt.data.shared.loader.LoadHandler;
+import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+import com.sencha.gxt.data.shared.loader.PagingLoader;
+import com.sencha.gxt.data.shared.loader.TreeLoader;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
+import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
+import com.sencha.gxt.widget.core.client.box.MessageBox;
+import com.sencha.gxt.widget.core.client.event.HideEvent;
+import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.info.Info;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
+import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 
 import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.resources.client.messages.I18N;
@@ -51,6 +75,7 @@ import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesDeletedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesMovedEvent;
 import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent;
+import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestBulkDownloadEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestBulkUploadEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestImportFromUrlEvent;
@@ -90,38 +115,15 @@ import org.iplantc.core.uidiskresource.client.views.dialogs.InfoTypeEditorDialog
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONString;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasOneWidget;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.inject.Inject;
-import com.sencha.gxt.data.client.loader.RpcProxy;
-import com.sencha.gxt.data.shared.SortInfo;
-import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
-import com.sencha.gxt.data.shared.loader.LoadHandler;
-import com.sencha.gxt.data.shared.loader.PagingLoadResult;
-import com.sencha.gxt.data.shared.loader.PagingLoader;
-import com.sencha.gxt.data.shared.loader.TreeLoader;
-import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
-import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
-import com.sencha.gxt.widget.core.client.box.MessageBox;
-import com.sencha.gxt.widget.core.client.event.HideEvent;
-import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.info.Info;
-import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
-import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  *
@@ -149,7 +151,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     public DiskResourcePresenterImpl(final DiskResourceView view, final DiskResourceView.Proxy proxy,
             final FolderContentsRpcProxy folderRpcProxy, final DiskResourceServiceFacade diskResourceService,
             final IplantDisplayStrings display, final DiskResourceAutoBeanFactory factory,
- final DataSearchPresenter dataSearchPresenter) {
+            final DataSearchPresenter dataSearchPresenter) {
         this.view = view;
         this.proxy = proxy;
         this.rpc_proxy = folderRpcProxy;
@@ -175,6 +177,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         initDragAndDrop();
         loadUserTrashPath();
         initFolderContentRpc();
+        this.dataSearchPresenter.addFolderSelectedEventHandler(this);
         this.dataSearchPresenter.searchInit(getView());
     }
 
@@ -345,6 +348,11 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         FolderContentsLoadConfig config = gridLoader.getLastLoadConfig();
         config.setFolder(folder);
         gridLoader.load(0, 200);
+    }
+
+    @Override
+    public void onFolderSelected(FolderSelectedEvent event) {
+        onFolderSelected(event.getSelectedFolder());
     }
 
     @Override
