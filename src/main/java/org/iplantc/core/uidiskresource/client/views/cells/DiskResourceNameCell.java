@@ -13,7 +13,6 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.gin.ServicesInjector;
-import org.iplantc.core.uicommons.client.models.DEProperties;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.File;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
@@ -98,8 +97,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
                     AutoBean<DataLinkList> tickets = AutoBeanCodex.decode(dlFactory, DataLinkList.class,
                             result);
                     List<DataLink> dlList = tickets.as().getTickets();
-                    showShareLink(DEProperties.getInstance().getKifShareTicketBaseUrl()
-                            + dlList.get(0).getId());
+                    showShareLink(dlList.get(0).getDownloadUrl());
                 }
 
                 @Override

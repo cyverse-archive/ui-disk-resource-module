@@ -3,11 +3,11 @@ package org.iplantc.core.uidiskresource.client.dataLink.presenter;
 import java.util.List;
 
 import org.iplantc.core.uicommons.client.gin.ServicesInjector;
-import org.iplantc.core.uicommons.client.models.DEProperties;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
+import org.iplantc.core.uicommons.client.util.WindowUtil;
 import org.iplantc.core.uidiskresource.client.dataLink.models.DataLink;
 import org.iplantc.core.uidiskresource.client.dataLink.models.DataLinkFactory;
 import org.iplantc.core.uidiskresource.client.dataLink.view.DataLinkPanel;
@@ -83,22 +83,34 @@ public class DataLinkPresenter<M extends DiskResource> implements DataLinkPanel.
     }
     
     @Override
-    public String getSelectedDataLinkText() {
+    public String getSelectedDataLinkDownloadPage() {
         M model = view.getTree().getSelectionModel().getSelectedItem();
         if(model instanceof DataLink){
-            return getDataLinkUrlPrefix() + model.getId();
+            return ((DataLink)model).getDownloadPageUrl();
         }
         return null;
     }
 
     @Override
-    public String getDataLinkUrlPrefix() {
-        return DEProperties.getInstance().getKifShareTicketBaseUrl();
+    public String getSelectedDataLinkDownloadUrl() {
+        M model = view.getTree().getSelectionModel().getSelectedItem();
+        if (model instanceof DataLink) {
+            return ((DataLink)model).getDownloadUrl();
+        }
+        return null;
+    }
+
+    @Override
+    public void openSelectedDataLinkDownloadPage() {
+        M model = view.getTree().getSelectionModel().getSelectedItem();
+        if (model instanceof DataLink) {
+            String url = ((DataLink)model).getDownloadPageUrl();
+            WindowUtil.open(url);
+        }
     }
 
     @Override
     public void go(HasOneWidget container) {
         container.setWidget(view.asWidget());
     }
-
 }

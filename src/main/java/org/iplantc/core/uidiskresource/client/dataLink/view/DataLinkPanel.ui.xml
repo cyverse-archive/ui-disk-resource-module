@@ -49,8 +49,12 @@
                                text="{display.collapseAll}"
                                icon="{res.treeCollapse}"/>
             <button:TextButton ui:field="copyDataLinkButton"
-                               text="{display.copy}"
+                               text="{display.copyLink}"
                                icon="{res.paste}"
+                               enabled="false"/>
+            <button:TextButton ui:field="advancedDataLinkButton"
+                               text="{display.advancedSharing}"
+                               icon="{res.info}"
                                enabled="false"/>
             <toolBar:FillToolItem/>
          </toolBar:ToolBar>
