@@ -1,4 +1,4 @@
-package org.iplantc.core.uidiskresource.client.search.views;
+package org.iplantc.core.uidiskresource.client.search.views.cells;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ImageResource;
@@ -6,7 +6,7 @@ import com.google.gwt.resources.client.ImageResource;
 import com.sencha.gxt.theme.base.client.field.DateCellDefaultAppearance;
 import com.sencha.gxt.theme.base.client.field.TriggerFieldDefaultAppearance;
 
-import org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchCell.DiskResourceSearchCellAppearance;
+import org.iplantc.core.uidiskresource.client.search.views.cells.DiskResourceSearchCell.DiskResourceSearchCellAppearance;
 
 /**
  * This class is a clone-and-own of {@link DateCellDefaultAppearance}.

@@ -39,6 +39,7 @@ import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.views.IsMaskable;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
+import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.HasFolderSelectedEventHandlers;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoadConfig;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectFolderByIdLoadHandler;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
@@ -54,7 +55,7 @@ import java.util.Set;
  * @author jstroot
  *
  */
-public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRoot {
+public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRoot, HasFolderSelectedEventHandlers {
 
     public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter,
  DiskResourceViewToolbarImpl.Presenter, HasHandlerRegistrationMgmt, FolderSelectedEventHandler {

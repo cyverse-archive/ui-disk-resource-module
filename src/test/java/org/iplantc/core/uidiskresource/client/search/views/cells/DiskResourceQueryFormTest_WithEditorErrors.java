@@ -1,4 +1,4 @@
-package org.iplantc.core.uidiskresource.client.search.views;
+package org.iplantc.core.uidiskresource.client.search.views.cells;
 
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -18,6 +18,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.core.uidiskresource.client.search.views.cells.DiskResourceQueryForm;
+import org.iplantc.core.uidiskresource.client.search.views.cells.DiskResourceQueryFormNamePrompt;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

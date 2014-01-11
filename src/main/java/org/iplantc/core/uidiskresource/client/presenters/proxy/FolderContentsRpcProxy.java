@@ -1,6 +1,14 @@
 package org.iplantc.core.uidiskresource.client.presenters.proxy;
 
-import java.util.List;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.inject.Inject;
+
+import com.sencha.gxt.data.client.loader.RpcProxy;
+import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+import com.sencha.gxt.data.shared.loader.PagingLoadResultBean;
 
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
@@ -10,14 +18,7 @@ import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.inject.Inject;
-import com.sencha.gxt.data.client.loader.RpcProxy;
-import com.sencha.gxt.data.shared.loader.PagingLoadResult;
-import com.sencha.gxt.data.shared.loader.PagingLoadResultBean;
+import java.util.List;
 
 /**
  * This proxy is responsible for retrieving directory listings and search requests from the server.
@@ -99,12 +100,10 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
         	return;
         } else if(folder instanceof DiskResourceQueryTemplate){
         	
-        	searchService.submitSearchFromQueryTemplate((DiskResourceQueryTemplate)folder, loadConfig,
- new FolderContentsCallback(announcer, loadConfig, callback));
+            searchService.submitSearchFromQueryTemplate((DiskResourceQueryTemplate)folder, loadConfig, new FolderContentsCallback(announcer, loadConfig, callback));
         } else {
 
-			drService.getFolderContents(folder, loadConfig,
- new FolderContentsCallback(announcer, loadConfig, callback));
+            drService.getFolderContents(folder, loadConfig, new FolderContentsCallback(announcer, loadConfig, callback));
         }
 
     }

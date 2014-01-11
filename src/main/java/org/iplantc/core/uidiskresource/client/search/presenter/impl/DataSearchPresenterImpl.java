@@ -23,9 +23,11 @@ import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate
 import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
+import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.HasFolderSelectedEventHandlers;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
+import org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchField;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
 import java.util.Collections;
@@ -33,12 +35,13 @@ import java.util.List;
 
 public class DataSearchPresenterImpl implements DataSearchPresenter {
 
-    DiskResourceView view;
+    TreeStore<Folder> treeStore;
+    DiskResourceSearchField view;
     private DiskResourceQueryTemplate activeQuery = null;
     private final IplantAnnouncer announcer;
+    private List<DiskResourceQueryTemplate> cleanCopyQueryTemplates;
     private HandlerManager handlerManager;
     private final List<DiskResourceQueryTemplate> queryTemplates = Lists.newArrayList();
-    private List<DiskResourceQueryTemplate> cleanCopyQueryTemplates;
     private final SearchServiceFacade searchService;
 
     @Inject
@@ -146,29 +149,10 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
         }
 
         // Performing a search has the effect of setting the given query as the current active query.
-        updateDataNavigationWindow(toUpdate, view.getTreeStore());
+        updateDataNavigationWindow(toUpdate, treeStore);
 
-        activeQuery = event.getQueryTemplate();
+        activeQuery = toSubmit;
         fireEvent(new FolderSelectedEvent(activeQuery));
-    }
-
-    private boolean templateHasChanged(DiskResourceQueryTemplate template, List<DiskResourceQueryTemplate> controlList) {
-        for (DiskResourceQueryTemplate qt : controlList) {
-            if (qt.getId().equalsIgnoreCase(template.getId()) && !areTemplatesEqual(qt, template)) {
-                // Given template has been changed
-                return true;
-            }
-        }
-        return false;
-    }
-
-    boolean areTemplatesEqual(DiskResourceQueryTemplate lhs, DiskResourceQueryTemplate rhs) {
-        Splittable lhsSplittable = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(lhs));
-        Splittable rhsSplittable = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(rhs));
-
-        String payloadLHS = lhsSplittable.getPayload();
-        String payloadRHS = rhsSplittable.getPayload();
-        return payloadLHS.equals(payloadRHS);
     }
 
     @Override
@@ -177,16 +161,25 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
     }
 
     @Override
-    public DiskResourceView getView() {
-        return view;
+    public void onFolderSelected(FolderSelectedEvent event) {
+        if (event.getSelectedFolder() instanceof DiskResourceQueryTemplate) {
+            view.edit((DiskResourceQueryTemplate)event.getSelectedFolder());
+        } else {
+            // Clear search form
+            view.clearSearch();
+        }
     }
 
     @Override
-    public void searchInit(final DiskResourceView view) {
+    public void searchInit(final HasFolderSelectedEventHandlers hasFolderSelectedHandlers, final FolderSelectedEventHandler folderSelectedHandler, final TreeStore<Folder> treeStore,
+            final DiskResourceSearchField view) {
+        hasFolderSelectedHandlers.addFolderSelectedEventHandler(this);
+        // Add handler which will listen to our FolderSelectedEvents
+        addFolderSelectedEventHandler(folderSelectedHandler);
+        this.treeStore = treeStore;
         this.view = view;
-        view.getToolbar().addSaveDiskResourceQueryTemplateEventHandler(this);
-        view.getToolbar().addSubmitDiskResourceQueryEventHandler(this);
-
+        view.addSaveDiskResourceQueryEventHandler(this);
+        view.addSubmitDiskResourceQueryEventHandler(this);
 
         // Retrieve any saved searches.
         searchService.getSavedQueryTemplates(new AsyncCallback<List<DiskResourceQueryTemplate>>() {
@@ -207,10 +200,19 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
                 setCleanCopyQueryTemplates(searchService.createFrozenList(getQueryTemplates()));
 
                 // Update navigation window
-                updateDataNavigationWindow(queryTemplates, view.getTreeStore());
+                updateDataNavigationWindow(queryTemplates, treeStore);
             }
         });
 
+    }
+
+    boolean areTemplatesEqual(DiskResourceQueryTemplate lhs, DiskResourceQueryTemplate rhs) {
+        Splittable lhsSplittable = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(lhs));
+        Splittable rhsSplittable = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(rhs));
+
+        String payloadLHS = lhsSplittable.getPayload();
+        String payloadRHS = rhsSplittable.getPayload();
+        return payloadLHS.equals(payloadRHS);
     }
 
     HandlerManager createHandlerManager() {
@@ -227,14 +229,22 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
         }
     }
 
+    List<DiskResourceQueryTemplate> getCleanCopyQueryTemplates() {
+        return cleanCopyQueryTemplates;
+    }
+
     HandlerManager getHandlerManager() {
         return handlerManager;
     }
+
 
     List<DiskResourceQueryTemplate> getQueryTemplates() {
         return queryTemplates;
     }
 
+    void setCleanCopyQueryTemplates(List<DiskResourceQueryTemplate> cleanCopyQueryTemplates) {
+        this.cleanCopyQueryTemplates = cleanCopyQueryTemplates;
+    }
 
     /**
      * Ensures that the navigation window shows the given templates.
@@ -264,12 +274,14 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
         }
     }
 
-    List<DiskResourceQueryTemplate> getCleanCopyQueryTemplates() {
-        return cleanCopyQueryTemplates;
-    }
-
-    void setCleanCopyQueryTemplates(List<DiskResourceQueryTemplate> cleanCopyQueryTemplates) {
-        this.cleanCopyQueryTemplates = cleanCopyQueryTemplates;
+    private boolean templateHasChanged(DiskResourceQueryTemplate template, List<DiskResourceQueryTemplate> controlList) {
+        for (DiskResourceQueryTemplate qt : controlList) {
+            if (qt.getId().equalsIgnoreCase(template.getId()) && !areTemplatesEqual(qt, template)) {
+                // Given template has been changed
+                return true;
+            }
+        }
+        return false;
     }
 
 }

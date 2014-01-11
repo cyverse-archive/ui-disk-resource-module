@@ -16,7 +16,6 @@ import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 
-import com.sencha.gxt.data.client.loader.RpcProxy;
 import com.sencha.gxt.data.shared.SortInfo;
 import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
 import com.sencha.gxt.data.shared.loader.LoadHandler;
@@ -109,11 +108,9 @@ import org.iplantc.core.uidiskresource.client.services.callbacks.GetDiskResource
 import org.iplantc.core.uidiskresource.client.services.callbacks.RenameDiskResourceCallback;
 import org.iplantc.core.uidiskresource.client.sharing.views.DataSharingDialog;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
-import org.iplantc.core.uidiskresource.client.views.HasHandlerRegistrationMgmt;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FolderSelectDialog;
 import org.iplantc.core.uidiskresource.client.views.dialogs.InfoTypeEditorDialog;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
-import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -130,8 +127,7 @@ import java.util.Set;
  * @author jstroot
  *
  */
-public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
-        DiskResourceViewToolbarImpl.Presenter, HasHandlerRegistrationMgmt {
+public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
 
     final DiskResourceView view;
     private final DiskResourceView.Proxy proxy;
@@ -142,8 +138,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     private final IplantDisplayStrings DISPLAY;
     private final DiskResourceAutoBeanFactory drFactory;
     private final Builder builder;
-    @SuppressWarnings("rawtypes")
-    private RpcProxy rpc_proxy;
+    private FolderContentsRpcProxy rpc_proxy;
     private PagingLoader<FolderContentsLoadConfig, PagingLoadResult<DiskResource>> gridLoader;
     private DataSearchPresenter dataSearchPresenter;
 
@@ -171,14 +166,14 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
 
         this.view.setTreeLoader(treeLoader);
         this.view.setPresenter(this);
+        this.view.addFolderSelectedEventHandler(this);
         this.proxy.setPresenter(this);
 
         initHandlers();
         initDragAndDrop();
         loadUserTrashPath();
         initFolderContentRpc();
-        this.dataSearchPresenter.addFolderSelectedEventHandler(this);
-        this.dataSearchPresenter.searchInit(getView());
+        this.dataSearchPresenter.searchInit(getView(), this, getView().getTreeStore(), getView().getToolbar().getSearchField());
     }
 
     private void initFolderContentRpc() {

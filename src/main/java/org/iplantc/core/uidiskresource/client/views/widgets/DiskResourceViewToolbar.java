@@ -1,15 +1,15 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
-import java.util.List;
-import java.util.Set;
+import com.google.gwt.user.client.ui.IsWidget;
 
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
+import org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchField;
 
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.IsWidget;
+import java.util.List;
+import java.util.Set;
 
 public interface DiskResourceViewToolbar extends IsWidget {
 
@@ -116,7 +116,5 @@ public interface DiskResourceViewToolbar extends IsWidget {
 
     void setNewButtonEnabled(boolean enabled);
 
-    HandlerRegistration addSaveDiskResourceQueryTemplateEventHandler(SaveDiskResourceQueryEventHandler handler);
-
-    HandlerRegistration addSubmitDiskResourceQueryEventHandler(SubmitDiskResourceQueryEventHandler handler);
+    DiskResourceSearchField getSearchField();
 }

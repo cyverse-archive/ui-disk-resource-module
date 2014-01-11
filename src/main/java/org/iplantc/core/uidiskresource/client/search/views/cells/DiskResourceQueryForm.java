@@ -1,4 +1,4 @@
-package org.iplantc.core.uidiskresource.client.search.views;
+package org.iplantc.core.uidiskresource.client.search.views.cells;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
@@ -6,6 +6,7 @@ import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
@@ -39,7 +40,11 @@ import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate
 import org.iplantc.core.uicommons.client.models.search.SearchAutoBeanFactory;
 import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.HasSaveDiskResourceQueryEventHandlers;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.HasSubmitDiskResourceQueryEventHandlers;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
 
 import java.util.List;
 
@@ -82,14 +87,12 @@ import java.util.List;
  * @author jstroot
  * 
  */
-public class DiskResourceQueryForm extends Composite implements Editor<DiskResourceQueryTemplate> {
+public class DiskResourceQueryForm extends Composite implements Editor<DiskResourceQueryTemplate>, HasSaveDiskResourceQueryEventHandlers, HasSubmitDiskResourceQueryEventHandlers, SaveDiskResourceQueryEventHandler {
 
     @UiTemplate("DiskResourceQueryForm.ui.xml")
     interface DiskResourceQueryFormUiBinder extends UiBinder<Widget, DiskResourceQueryForm> {}
 
     interface SearchFormEditorDriver extends SimpleBeanEditorDriver<DiskResourceQueryTemplate, DiskResourceQueryForm> {}
-
-    private final DiskResourceQueryFormUiBinder uiBinder = GWT.create(DiskResourceQueryFormUiBinder.class);
 
     private static DiskResourceQueryTemplate createDefaultFilter() {
         SearchAutoBeanFactory factory = SearchAutoBeanFactory.INSTANCE;
@@ -100,18 +103,21 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         StringQuoter.create(true).assign(permissions, "read");
         StringQuoter.create(true).assign(permissions, "write");
         permissions.assign(defFilter, "permissions");
+        StringQuoter.create("/savedFilters/").assign(defFilter, "path");
+        ;
 
         DiskResourceQueryTemplate dataSearchFilter = AutoBeanCodex.decode(factory, DiskResourceQueryTemplate.class, defFilter).as();
         dataSearchFilter.setCreatedWithin(factory.dateInterval().as());
         dataSearchFilter.setModifiedWithin(factory.dateInterval().as());
         dataSearchFilter.setFileSizeRange(factory.fileSizeRange().as());
 
+
         return dataSearchFilter;
     }
 
-    // TODO Any ignored field needs to be handled
-
     protected BaseEventPreview eventPreview;
+
+    // TODO Any ignored field needs to be handled
 
     @Ignore
     @UiField
@@ -126,6 +132,8 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
 
     @UiField
     IPlantAnchor createFilterLink;
+
+    final SearchFormEditorDriver editorDriver = GWT.create(SearchFormEditorDriver.class);
 
     @UiField
     TextField fileQuery;
@@ -167,13 +175,13 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     @UiField 
     TextField sharedWith;
 
-    final SearchFormEditorDriver editorDriver = GWT.create(SearchFormEditorDriver.class);
-
     private final List<String> fileSizeUnits = Lists.newArrayList("KB", "MB");
 
     private boolean showing;
 
     private final List<String> timeIntervals = Lists.newArrayList("---", "1 day", "3 days", "1 week", "2 weeks", "1 month", "2 months", "6 months", "1 year");
+
+    private final DiskResourceQueryFormUiBinder uiBinder = GWT.create(DiskResourceQueryFormUiBinder.class);
 
     /**
      * Creates the form with a new filter.
@@ -188,8 +196,7 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
      * @param filter
      */
     public DiskResourceQueryForm(final DiskResourceQueryTemplate filter) {
-        namePrompt = new DiskResourceQueryFormNamePrompt();
-        initProvidedUiFields();
+        init(new DiskResourceQueryFormNamePrompt());
         Widget createAndBindUi = uiBinder.createAndBindUi(this);
 
         initWidget(createAndBindUi);
@@ -219,6 +226,33 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     }
 
     @Override
+    public HandlerRegistration addSaveDiskResourceQueryEventHandler(SaveDiskResourceQueryEventHandler handler) {
+        return addHandler(handler, SaveDiskResourceQueryEvent.TYPE);
+    }
+
+    @Override
+    public HandlerRegistration addSubmitDiskResourceQueryEventHandler(SubmitDiskResourceQueryEventHandler handler) {
+        return addHandler(handler, SubmitDiskResourceQueryEvent.TYPE);
+    }
+
+    /**
+     * Clears search form by binding it to a new default query template
+     */
+    public void clearSearch() {
+        editorDriver.edit(createDefaultFilter());
+    }
+
+    @Override
+    public void doSaveDiskResourceQueryTemplate(SaveDiskResourceQueryEvent event) {
+        // Re-fire event
+        fireEvent(event);
+    }
+
+    public void edit(DiskResourceQueryTemplate queryTemplate) {
+        editorDriver.edit(queryTemplate);
+    }
+
+    @Override
     public void hide() {
         if (showing) {
             onHide();
@@ -229,6 +263,7 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
             fireEvent(new HideEvent());
         }
     }
+
 
     public void show(Element parent, AnchorAlignment anchorAlignment) {
         getElement().makePositionable(true);
@@ -299,6 +334,15 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         return anchor;
     }
 
+    void init(DiskResourceQueryFormNamePrompt namePrompt) {
+        this.namePrompt = namePrompt;
+        this.namePrompt.addSaveDiskResourceQueryEventHandler(this);
+        StringLabelProvider<String> stringLabelProvider = new StringLabelProvider<String>();
+        initDateRangeCombos(stringLabelProvider);
+        initFileSizeNumberFields();
+        initFileSizeComboBoxes(stringLabelProvider);
+    }
+
     @UiHandler("createFilterLink")
     void onCreateQueryTemplateClicked(@SuppressWarnings("unused") ClickEvent event) {
         // Flush to perform local validations
@@ -308,7 +352,6 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         }
         showNamePrompt(flushedFilter);
     }
-
 
     @UiHandler("searchButton")
     void onSearchBtnSelected(@SuppressWarnings("unused") SelectEvent event) {
@@ -327,9 +370,8 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         namePrompt.show(filter, getElement(), new AnchorAlignment(Anchor.BOTTOM_LEFT, Anchor.BOTTOM_LEFT, true));
     }
 
-    private void initProvidedUiFields() {
+    private void initDateRangeCombos(StringLabelProvider<String> stringLabelProvider) {
         // Data range combos
-        StringLabelProvider<String> stringLabelProvider = new StringLabelProvider<String>();
         createdWithinCombo = new SimpleComboBox<String>(stringLabelProvider);
         modifiedWithinCombo = new SimpleComboBox<String>(stringLabelProvider);
         createdWithinCombo.add(timeIntervals);
@@ -337,11 +379,9 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         createdWithinCombo.setValue(timeIntervals.get(0));
         modifiedWithinCombo.setValue(timeIntervals.get(0));
         
-        // File Size Number fields
-        NumberPropertyEditor.DoublePropertyEditor doublePropertyEditor = new NumberPropertyEditor.DoublePropertyEditor();
-        fileSizeGreaterThan = new NumberField<Double>(doublePropertyEditor);
-        fileSizeLessThan = new NumberField<Double>(doublePropertyEditor);
+    }
 
+    private void initFileSizeComboBoxes(StringLabelProvider<String> stringLabelProvider) {
         // File Size ComboBoxes
         greaterThanComboBox = new SimpleComboBox<String>(stringLabelProvider);
         lessThanComboBox = new SimpleComboBox<String>(stringLabelProvider);
@@ -349,6 +389,15 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         lessThanComboBox.add(fileSizeUnits);
         greaterThanComboBox.setValue(fileSizeUnits.get(0));
         lessThanComboBox.setValue(fileSizeUnits.get(0));
+
+    }
+
+    private void initFileSizeNumberFields() {
+        // File Size Number fields
+        NumberPropertyEditor.DoublePropertyEditor doublePropertyEditor = new NumberPropertyEditor.DoublePropertyEditor();
+        fileSizeGreaterThan = new NumberField<Double>(doublePropertyEditor);
+        fileSizeLessThan = new NumberField<Double>(doublePropertyEditor);
+
     }
 
     private void onEscape(NativePreviewEvent pe) {

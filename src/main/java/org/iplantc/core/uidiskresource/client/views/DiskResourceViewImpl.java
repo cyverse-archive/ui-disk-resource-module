@@ -1,29 +1,5 @@
 package org.iplantc.core.uidiskresource.client.views;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import org.iplantc.core.resources.client.DataCollapseStyle;
-import org.iplantc.core.resources.client.IplantResources;
-import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceInfo;
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-import org.iplantc.core.uicommons.client.models.diskresources.Permissions;
-import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
-import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
-import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent;
-import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
-import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoadConfig;
-import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
-import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
-import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.cell.client.Cell;
@@ -35,6 +11,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -46,6 +23,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
@@ -91,6 +69,30 @@ import com.sencha.gxt.widget.core.client.tree.Tree.TreeAppearance;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 import com.sencha.gxt.widget.core.client.tree.TreeView;
+
+import org.iplantc.core.resources.client.DataCollapseStyle;
+import org.iplantc.core.resources.client.IplantResources;
+import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceInfo;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uicommons.client.models.diskresources.Permissions;
+import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
+import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
+import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent;
+import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
+import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoadConfig;
+import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
+import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class DiskResourceViewImpl implements DiskResourceView {
 
@@ -193,11 +195,14 @@ public class DiskResourceViewImpl implements DiskResourceView {
             if (DiskResourceViewImpl.this.widget.isAttached() && (selectedItem != null)) {
                 if (!selectedItem.isFilter()) {
                     if (selectedItem instanceof DiskResourceQueryTemplate) {
-                        DiskResourceViewImpl.this.asWidget().fireEvent(new SubmitDiskResourceQueryEvent((DiskResourceQueryTemplate)selectedItem));
+                        // DiskResourceViewImpl.this.asWidget().fireEvent(new
+                        // SubmitDiskResourceQueryEvent((DiskResourceQueryTemplate)selectedItem));
                     } else {
-                        onFolderSelected(selectedItem);
-                        DiskResourceViewImpl.this.asWidget().fireEvent(new FolderSelectedEvent(selectedItem));
+                        // onFolderSelected(selectedItem);
+                        // DiskResourceViewImpl.this.asWidget().fireEvent(new
+                        // FolderSelectedEvent(selectedItem));
                     }
+                        DiskResourceViewImpl.this.asWidget().fireEvent(new FolderSelectedEvent(selectedItem));
                 } else {
                     tree.getSelectionModel().deselect(selectedItem);
                 }
@@ -952,6 +957,11 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @Override
     public int getTotalSelectionCount() {
         return sm.getTotal();
+    }
+
+    @Override
+    public HandlerRegistration addFolderSelectedEventHandler(FolderSelectedEventHandler handler) {
+        return asWidget().addHandler(handler, FolderSelectedEvent.TYPE);
     }
 
 }

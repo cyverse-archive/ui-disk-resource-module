@@ -1,12 +1,17 @@
 package org.iplantc.core.uidiskresource.client.search.presenter;
 
+import com.sencha.gxt.data.shared.TreeStore;
+
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
+import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.HasFolderSelectedEventHandlers;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
+import org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchField;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
 /**
@@ -83,13 +88,18 @@ import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
  * &nbsp; Is there any other way? Is this proposal sufficient?</li>
  * </ul>
  * 
+ * When a folder selection is detected, if it is a DiskResourceQueryTemplate, it will be bound with this
+ * presenter's view.
+ * 
+ * FIXME JDS Clean up this documentation
+ * 
  * @author jstroot
  * 
  */
-public interface DataSearchPresenter extends SaveDiskResourceQueryEventHandler, SubmitDiskResourceQueryEventHandler, HasFolderSelectedEventHandlers {
+public interface DataSearchPresenter extends SaveDiskResourceQueryEventHandler, SubmitDiskResourceQueryEventHandler, HasFolderSelectedEventHandlers, FolderSelectedEventHandler {
 
     /**
-     * Initializes this presenter and its corresponding view for search operations.
+     * Initializes this presenter's contract with the given input parameters.
      * 
      * This method assumes that no DiskResourceQueryTemplate has been added to the view's treeStore.
      * 
@@ -99,18 +109,12 @@ public interface DataSearchPresenter extends SaveDiskResourceQueryEventHandler, 
      * 
      * This class will also add unique ids to the retrieved templates.
      * 
+     * @param hasFolderSelectedHandlers
+     * @param folderSelectedHandler
+     * @param treeStore
      * @param view
      */
-    void searchInit(DiskResourceView view);
-
-    /**
-     * Returns the view associated with this presenter.
-     * 
-     * This is typically set via {@link #searchInit(DiskResourceView)}.
-     * 
-     * @return the view associated with this presenter.
-     */
-    DiskResourceView getView();
+    void searchInit(HasFolderSelectedEventHandlers hasFolderSelectedHandlers, FolderSelectedEventHandler folderSelectedHandler, TreeStore<Folder> treeStore, DiskResourceSearchField view);
 
     /**
      *

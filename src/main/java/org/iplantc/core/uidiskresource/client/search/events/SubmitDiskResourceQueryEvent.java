@@ -2,6 +2,7 @@ package org.iplantc.core.uidiskresource.client.search.events;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
@@ -10,6 +11,10 @@ public class SubmitDiskResourceQueryEvent extends GwtEvent<SubmitDiskResourceQue
 
     public interface SubmitDiskResourceQueryEventHandler extends EventHandler {
         void doSubmitDiskResourceQuery(SubmitDiskResourceQueryEvent event);
+    }
+
+    public static interface HasSubmitDiskResourceQueryEventHandlers {
+        HandlerRegistration addSubmitDiskResourceQueryEventHandler(SubmitDiskResourceQueryEventHandler handler);
     }
 
     public static final GwtEvent.Type<SubmitDiskResourceQueryEventHandler> TYPE = new GwtEvent.Type<SubmitDiskResourceQueryEventHandler>();

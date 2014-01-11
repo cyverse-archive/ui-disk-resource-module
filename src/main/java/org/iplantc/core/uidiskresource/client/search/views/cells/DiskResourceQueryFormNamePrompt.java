@@ -1,10 +1,11 @@
-package org.iplantc.core.uidiskresource.client.search.views;
+package org.iplantc.core.uidiskresource.client.search.views.cells;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -22,14 +23,18 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.HasSaveDiskResourceQueryEventHandlers;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
 
-public class DiskResourceQueryFormNamePrompt extends Composite implements Editor<DiskResourceQueryTemplate> {
+public class DiskResourceQueryFormNamePrompt extends Composite implements Editor<DiskResourceQueryTemplate>, HasSaveDiskResourceQueryEventHandlers {
 
     interface DiskResourceQueryFormNamePromptUiBinder extends UiBinder<Widget, DiskResourceQueryFormNamePrompt> {}
 
     interface QueryFormNamePromptEditorDriver extends SimpleBeanEditorDriver<DiskResourceQueryTemplate, DiskResourceQueryFormNamePrompt> {}
 
     private static DiskResourceQueryFormNamePromptUiBinder uiBinder = GWT.create(DiskResourceQueryFormNamePromptUiBinder.class);
+
+    protected BaseEventPreview eventPreview;
 
     @UiField
     TextField name;
@@ -43,9 +48,7 @@ public class DiskResourceQueryFormNamePrompt extends Composite implements Editor
     Label saveLabel;
 
     private final QueryFormNamePromptEditorDriver editorDriver = GWT.create(QueryFormNamePromptEditorDriver.class);
-
     private boolean showing;
-    protected BaseEventPreview eventPreview;
 
     public DiskResourceQueryFormNamePrompt() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -59,6 +62,11 @@ public class DiskResourceQueryFormNamePrompt extends Composite implements Editor
     }
 
     @Override
+    public HandlerRegistration addSaveDiskResourceQueryEventHandler(SaveDiskResourceQueryEventHandler handler) {
+        return addHandler(handler, SaveDiskResourceQueryEvent.TYPE);
+    }
+
+    @Override
     public void hide() {
         if (showing) {
             editorDriver.flush();
@@ -69,6 +77,10 @@ public class DiskResourceQueryFormNamePrompt extends Composite implements Editor
             hidden = true;
             // fireEvent(new HideEvent());
         }
+    }
+
+    public boolean isShowing() {
+        return showing;
     }
 
     public void show(DiskResourceQueryTemplate filter, Element element, AnchorAlignment alignment) {
@@ -115,10 +127,6 @@ public class DiskResourceQueryFormNamePrompt extends Composite implements Editor
         // Set the filter name field to allow blank values when hidden.
         fireEvent(new SaveDiskResourceQueryEvent(flushedQueryTemplate));
         hide();
-    }
-
-    public boolean isShowing() {
-        return showing;
     }
 
 }

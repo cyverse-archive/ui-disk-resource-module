@@ -1,23 +1,13 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
-import org.iplantc.core.uicommons.client.models.diskresources.File;
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
-import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
-import org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchField;
-import org.iplantc.core.uidiskresource.client.views.dialogs.CreateFolderDialog;
-import org.iplantc.core.uidiskresource.client.views.dialogs.RenameFileDialog;
-import org.iplantc.core.uidiskresource.client.views.dialogs.RenameFolderDialog;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Widget;
+
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
 import com.sencha.gxt.widget.core.client.button.TextButton;
@@ -26,6 +16,14 @@ import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.menu.Item;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
+
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.File;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchField;
+import org.iplantc.core.uidiskresource.client.views.dialogs.CreateFolderDialog;
+import org.iplantc.core.uidiskresource.client.views.dialogs.RenameFileDialog;
+import org.iplantc.core.uidiskresource.client.views.dialogs.RenameFolderDialog;
 
 public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
 
@@ -107,17 +105,6 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
 
     public DiskResourceViewToolbarImpl() {
         widget = BINDER.createAndBindUi(this);
-    }
-
-    @Override
-    public HandlerRegistration addSaveDiskResourceQueryTemplateEventHandler(SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler handler) {
-        return searchField.addSaveDiskResourceQueryTemplateEventHandler(handler);
-    }
-
-
-    @Override
-    public HandlerRegistration addSubmitDiskResourceQueryEventHandler(SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler handler) {
-        return searchField.addSubmitDiskResourceQueryEventHandler(handler);
     }
 
     @Override
@@ -338,5 +325,10 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
     @Override
     public void setEditEnabled(boolean canEdit) {
         edit.setEnabled(canEdit);
+    }
+
+    @Override
+    public DiskResourceSearchField getSearchField() {
+        return searchField;
     }
 }
