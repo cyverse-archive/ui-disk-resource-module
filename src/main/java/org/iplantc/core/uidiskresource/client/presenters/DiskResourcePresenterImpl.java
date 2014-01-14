@@ -23,7 +23,6 @@ import org.iplantc.core.uicommons.client.models.HasPaths;
 import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceMetadata;
 import org.iplantc.core.uicommons.client.models.diskresources.File;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
@@ -43,6 +42,8 @@ import org.iplantc.core.uidiskresource.client.events.RequestImportFromUrlEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestSimpleDownloadEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestSimpleUploadEvent;
 import org.iplantc.core.uidiskresource.client.events.ShowFilePreviewEvent;
+import org.iplantc.core.uidiskresource.client.metadata.presenter.MetadataPresenter;
+import org.iplantc.core.uidiskresource.client.metadata.view.DiskResourceMetadataView;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.DiskResourcesEventHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityGridHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityNavigationHandler;
@@ -66,7 +67,6 @@ import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.HasHandlerRegistrationMgmt;
 import org.iplantc.core.uidiskresource.client.views.dialogs.FolderSelectDialog;
 import org.iplantc.core.uidiskresource.client.views.dialogs.InfoTypeEditorDialog;
-import org.iplantc.core.uidiskresource.client.views.metadata.DiskResourceMetadataDialog;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
 
@@ -111,9 +111,9 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 
 /**
- * 
+ *
  * @author jstroot
- * 
+ *
  */
 public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         DiskResourceViewToolbarImpl.Presenter, HasHandlerRegistrationMgmt {
@@ -541,9 +541,29 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
     @Override
     public void doMetadata() {
         if (getSelectedDiskResources().size() == 1) {
-            DiskResourceMetadataDialog dlg = new DiskResourceMetadataDialog(getSelectedDiskResources()
-                    .iterator().next(), this);
-            dlg.show();
+        	DiskResource selected = getSelectedDiskResources().iterator().next();
+        	final DiskResourceMetadataView mview = new DiskResourceMetadataView(selected);
+			final DiskResourceMetadataView.Presenter p = new MetadataPresenter(selected,mview);
+        	IPlantDialog ipd = new IPlantDialog(true);
+        	ipd.setSize("600", "400");
+
+            ipd.setHeadingText(I18N.DISPLAY.metadata() + ":" + selected.getId());
+            ipd.addHelp(new HTML(I18N.HELP.metadataHelp()));
+            p.go(ipd);
+            ipd.addOkButtonSelectHandler(new SelectHandler() {
+
+                @Override
+                public void onSelect(SelectEvent event) {
+                	if(mview.isValid()) {
+                    p.setDiskResourceMetaData(mview.getMetadataToAdd(), mview.getMetadataToDelete(),
+                            new DiskResourceMetadataUpdateCallback());
+                	} else {
+                		IplantAnnouncer.getInstance().schedule(new ErrorAnnouncementConfig("Please fix all errors before saving!!!"));
+                	}
+                }
+            });
+
+            ipd.show();
         }
 
     }
@@ -582,18 +602,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
         registeredHandlers.put(handler, reg);
     }
 
-    @Override
-    public void getDiskResourceMetadata(DiskResource resource, AsyncCallback<String> callback) {
-        diskResourceService.getDiskResourceMetaData(resource, callback);
-    }
-
-    @Override
-    public void setDiskResourceMetaData(DiskResource resource, Set<DiskResourceMetadata> metadataToAdd,
-            Set<DiskResourceMetadata> metadataToDelete,
-            DiskResourceMetadataUpdateCallback diskResourceMetadataUpdateCallback) {
-        diskResourceService.setDiskResourceMetaData(resource, metadataToAdd, metadataToDelete,
-                diskResourceMetadataUpdateCallback);
-    }
 
     @Override
     public boolean canDragDataToTargetFolder(final Folder targetFolder,
