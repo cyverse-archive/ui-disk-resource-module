@@ -42,7 +42,7 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 
 /**
  * @author jstroot
- * 
+ *
  */
 @RunWith(JMock.class)
 public class DiskResourcePresenterTest {
@@ -114,7 +114,7 @@ public class DiskResourcePresenterTest {
                 // oneOf(diskResourceService).getDataSearchHistory(with(aNonNull(AsyncCallback.class)));
                 oneOf(diskResourceService).getUserTrashPath(with(aNonNull(String.class)),
                         with(aNonNull(AsyncCallback.class)));
-                
+
                 oneOf(toolbar).setNewButtonEnabled(with(false));
                 oneOf(toolbar).setNewFileButtonEnabled(with(false));
                 oneOf(toolbar).setNewFolderButtonEnabled(with(false));
@@ -664,49 +664,4 @@ public class DiskResourcePresenterTest {
 
         presenter.doCreateNewFolder(parentFolder, newFolderName);
     }
-
-    /**
-     * This test simply verifies that the proper disk resource service method is invoked.
-     */
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testGetMetadata() {
-        checkConstruction();
-        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
-                diskResourceService, display, drFactory, dataSearchFactory);
-
-        final DiskResource resource = context.mock(DiskResource.class);
-        context.checking(new Expectations() {
-            {
-                oneOf(diskResourceService).getDiskResourceMetaData(with(resource),
-                        with(any(AsyncCallback.class)));
-            }
-        });
-
-        presenter.getDiskResourceMetadata(resource, null);
-    }
-
-    /**
-     * This test simply verifies that the proper disk resource service method is invoked.
-     */
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testSetMetadata() {
-        checkConstruction();
-        DiskResourceView.Presenter presenter = new DiskResourcePresenterImpl(view, proxy,
-                diskResourceService, display, drFactory, dataSearchFactory);
-
-        final Set<DiskResourceMetadata> metadataToDelete = Sets.newHashSet();
-        final Set<DiskResourceMetadata> metadataToAdd = Sets.newHashSet();
-        final DiskResource resource = context.mock(DiskResource.class);
-        context.checking(new Expectations() {
-            {
-                oneOf(diskResourceService).setDiskResourceMetaData(with(resource), with(metadataToAdd),
-                        with(metadataToDelete), with(any(AsyncCallback.class)));
-            }
-        });
-
-        presenter.setDiskResourceMetaData(resource, metadataToAdd, metadataToDelete, null);
-    }
-
 }
