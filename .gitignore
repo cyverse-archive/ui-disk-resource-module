@@ -14,3 +14,4 @@ target
 war
 # ignore directories related to GWT Unit Tests
 tomcat
+.gwt
