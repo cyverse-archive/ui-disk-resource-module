@@ -1,5 +1,15 @@
 package org.iplantc.core.uidiskresource.client.presenters.proxy;
 
+import com.google.common.collect.Lists;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwtmockito.GxtMockitoTestRunner;
+
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.SortInfoBean;
+import com.sencha.gxt.data.shared.loader.FilterPagingLoadConfigBean;
+import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+import com.sencha.gxt.data.shared.loader.PagingLoadResultBean;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -10,14 +20,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
-
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
+import org.iplantc.core.uicommons.client.services.SearchServiceFacade.SearchType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,14 +34,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 
-import com.google.common.collect.Lists;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwtmockito.GxtMockitoTestRunner;
-import com.sencha.gxt.data.shared.SortDir;
-import com.sencha.gxt.data.shared.SortInfoBean;
-import com.sencha.gxt.data.shared.loader.FilterPagingLoadConfigBean;
-import com.sencha.gxt.data.shared.loader.PagingLoadResult;
-import com.sencha.gxt.data.shared.loader.PagingLoadResultBean;
+import java.util.List;
 
 /**
  * Performs tests on the {@link FolderContentsRpcProxy} and its underlying classes.
@@ -83,7 +85,7 @@ public class FolderContentsRpcProxyTest {
         ArgumentCaptor<FolderContentsRpcProxy.FolderContentsCallback> callBackCaptor
                 = ArgumentCaptor.forClass(FolderContentsRpcProxy.FolderContentsCallback.class);
         verify(diskResourceService).getFolderContents(eq(mockFolder), eq(loadConfigMock), callBackCaptor.capture());
-        verify(searchService, never()).submitSearchFromQueryTemplate(any(DiskResourceQueryTemplate.class), any(FilterPagingLoadConfigBean.class), any(AsyncCallback.class));
+        verify(searchService, never()).submitSearchFromQueryTemplate(any(DiskResourceQueryTemplate.class), any(FilterPagingLoadConfigBean.class), any(SearchType.class), any(AsyncCallback.class));
 
         assertEquals(loadConfigMock, callBackCaptor.getValue().getLoadConfig());
         assertEquals(pagingAsyncMock, callBackCaptor.getValue().getCallback());
@@ -108,7 +110,7 @@ public class FolderContentsRpcProxyTest {
         assertTrue(pagingLoadResultArgumentCaptor.getValue().getData().isEmpty());
 
         verify(diskResourceService, never()).getFolderContents(any(Folder.class), any(FolderContentsLoadConfig.class), any(AsyncCallback.class));
-        verify(searchService, never()).submitSearchFromQueryTemplate(any(DiskResourceQueryTemplate.class), any(FilterPagingLoadConfigBean.class), any(AsyncCallback.class));
+        verify(searchService, never()).submitSearchFromQueryTemplate(any(DiskResourceQueryTemplate.class), any(FilterPagingLoadConfigBean.class), any(SearchType.class), any(AsyncCallback.class));
     }
     
     /**
@@ -125,7 +127,7 @@ public class FolderContentsRpcProxyTest {
         verify(diskResourceService, never()).getFolderContents(any(Folder.class), any(FolderContentsLoadConfig.class), any(AsyncCallback.class));
         ArgumentCaptor<FolderContentsRpcProxy.FolderContentsCallback> callBackCaptor
                 = ArgumentCaptor.forClass(FolderContentsRpcProxy.FolderContentsCallback.class);
-        verify(searchService).submitSearchFromQueryTemplate(eq(mockQueryTemplate), eq(loadConfigMock), callBackCaptor.capture());
+        verify(searchService).submitSearchFromQueryTemplate(eq(mockQueryTemplate), eq(loadConfigMock), any(SearchType.class), callBackCaptor.capture());
 
         assertEquals(loadConfigMock, callBackCaptor.getValue().getLoadConfig());
         assertEquals(pagingAsyncMock, callBackCaptor.getValue().getCallback());

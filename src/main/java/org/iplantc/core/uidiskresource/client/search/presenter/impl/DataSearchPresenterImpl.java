@@ -86,21 +86,23 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
         final ImmutableList<DiskResourceQueryTemplate> toBeSaved = ImmutableList.copyOf(Iterables.concat(queryTemplates, Collections.singletonList(queryTemplate)));
         // Call service to save template
-        searchService.saveQueryTemplates(toBeSaved, new AsyncCallback<List<DiskResourceQueryTemplate>>() {
+        searchService.saveQueryTemplates(toBeSaved, new AsyncCallback<Boolean>() {
 
             @Override
             public void onFailure(Throwable caught) {
                 announcer.schedule(new ErrorAnnouncementConfig("Failed to save query template."));
             }
 
+            // @Override
+            // public void onSuccess(List<DiskResourceQueryTemplate> result) {
             @Override
-            public void onSuccess(List<DiskResourceQueryTemplate> result) {
+            public void onSuccess(Boolean result) {
                 // Clear list of saved query templates and re-add result.
                 getQueryTemplates().clear();
-                getQueryTemplates().addAll(result);
+                getQueryTemplates().addAll(toBeSaved);
 
                 // Create immutable copy of saved templates
-                setCleanCopyQueryTemplates(searchService.createFrozenList(result));
+                setCleanCopyQueryTemplates(searchService.createFrozenList(toBeSaved));
 
                 // Call our method to perform search with saved template
                 doSubmitDiskResourceQuery(new SubmitDiskResourceQueryEvent(queryTemplate));

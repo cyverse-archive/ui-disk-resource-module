@@ -100,7 +100,7 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
         	return;
         } else if(folder instanceof DiskResourceQueryTemplate){
         	
-            searchService.submitSearchFromQueryTemplate((DiskResourceQueryTemplate)folder, loadConfig, new FolderContentsCallback(announcer, loadConfig, callback));
+            searchService.submitSearchFromQueryTemplate((DiskResourceQueryTemplate)folder, loadConfig, null, new FolderContentsCallback(announcer, loadConfig, callback));
         } else {
 
             drService.getFolderContents(folder, loadConfig, new FolderContentsCallback(announcer, loadConfig, callback));
