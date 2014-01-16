@@ -352,7 +352,12 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter,
             }
 
             if (validParentPath(parentId) && parentFolder != null) {
-                treeLoader.loadChildren(parentFolder);
+                // treeLoader.loadChildren(parentFolder);
+                // KLUDGE The TreeStore models somehow become out of sync between the TreeLoader and the
+                // TreeView's SelectionModel when calling TreeLoader#loadChildren.
+                // We'll refresh the parentFolder here, since this folder may already have been loaded
+                // and we need to reload in case the listing is out of sync with the backend.
+                view.refreshFolder(parentFolder);
             }
         }
     }
