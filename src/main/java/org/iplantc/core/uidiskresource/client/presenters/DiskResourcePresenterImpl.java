@@ -167,7 +167,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
         this.view.setTreeLoader(treeLoader);
         this.view.setPresenter(this);
         this.view.addFolderSelectedEventHandler(this);
-        this.proxy.setPresenter(this);
+        this.proxy.init(dataSearchPresenter, this);
 
         initHandlers();
         initDragAndDrop();
@@ -540,9 +540,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
 
     @Override
     public void doDataQuota() {
-        // TODO Auto-generated method stub
         Info.display("You clicked something!", "doDataQuota");
-
     }
 
     @Override
@@ -554,11 +552,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
     public void addFolderSelectionHandler(SelectionHandler<Folder> selectionHandler) {
         view.addFolderSelectionHandler(selectionHandler);
     }
-
-    // @Override
-    // public void setSelectedDiskResourcesById(Set<String> diskResourceIdList) {
-    //
-    // }
 
     @Override
     public void unregisterHandler(EventHandler handler) {
@@ -774,7 +767,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
             return;
         }
 
-        maskView();
+        mask("");
 
         if (view.isSelectAll()) {
             diskResourceService.restoreAll(new DiskResourceRestoreCallback(view, drFactory,
@@ -785,33 +778,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
             diskResourceService.restoreDiskResource(request, new DiskResourceRestoreCallback(view,
                     drFactory, selectedResources));
         }
-    }
-
-    @Override
-    public void maskView() {
-        view.mask(DISPLAY.loadingMask());
-    }
-
-    @Override
-    public void unMaskView() {
-        boolean hasLoadHandlers = false;
-        for (Entry<EventHandler, HandlerRegistration> entry : registeredHandlers.entrySet()) {
-            if (entry.getKey() instanceof LoadHandler<?, ?>) {
-                hasLoadHandlers = true;
-            }
-
-        }
-        if (!hasLoadHandlers) {
-            view.unmask();
-        }
-    }
-
-    @Override
-    public void unMaskView(boolean clearRegisteredHandlers) {
-        if (clearRegisteredHandlers) {
-            registeredHandlers.clear();
-        }
-        unMaskView();
     }
 
     @Override
@@ -894,6 +860,26 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
     public void onNewFile() {
         CreateNewFileEvent event = new CreateNewFileEvent(getSelectedUploadFolder().getPath());
         EventBus.getInstance().fireEvent(event);
+    }
+
+    @Override
+    public void mask(String loadingMask) {
+        view.mask((Strings.isNullOrEmpty(loadingMask)) ? DISPLAY.loadingMask() : loadingMask);
+    }
+
+    @Override
+    public void unmask() {
+        boolean hasLoadHandlers = false;
+        for (Entry<EventHandler, HandlerRegistration> entry : registeredHandlers.entrySet()) {
+            if (entry.getKey() instanceof LoadHandler<?, ?>) {
+                hasLoadHandlers = true;
+            }
+
+        }
+        if (!hasLoadHandlers) {
+            view.unmask();
+        }
+
     }
 
 }

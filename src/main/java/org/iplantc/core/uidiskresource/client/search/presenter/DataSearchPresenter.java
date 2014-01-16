@@ -14,6 +14,8 @@ import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQu
 import org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchField;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
+import java.util.List;
+
 /**
  * An interface definition for the "search" sub-system.
  * 
@@ -114,12 +116,15 @@ public interface DataSearchPresenter extends SaveDiskResourceQueryEventHandler, 
      * @param treeStore
      * @param view
      */
-    void searchInit(HasFolderSelectedEventHandlers hasFolderSelectedHandlers, FolderSelectedEventHandler folderSelectedHandler, TreeStore<Folder> treeStore, DiskResourceSearchField view);
+    void searchInit(HasFolderSelectedEventHandlers hasFolderSelectedHandlers, FolderSelectedEventHandler folderSelectedHandler, TreeStore<Folder> treeStore,
+            DiskResourceSearchField view);
 
     /**
      *
      * @return the current active query, or null if there is not active query.
      */
     DiskResourceQueryTemplate getActiveQuery();
+
+    void loadSavedQueries(List<DiskResourceQueryTemplate> savedQueries);
 
 }

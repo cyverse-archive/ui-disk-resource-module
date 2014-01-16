@@ -85,7 +85,8 @@ public class DataSearchPresenterImplTest {
 
         /* Verify that the service was called to save the template, and only one template was saved */
         verify(searchService).saveQueryTemplates(drqtListCaptor.capture(), booleanAsyncCaptor.capture());
-        // TODO JDS UPDATE_TEST
+        assertEquals(1, drqtListCaptor.getValue().size());
+        assertTrue(drqtListCaptor.getValue().contains(mockTemplate));
     }
 
     /**
@@ -140,10 +141,8 @@ public class DataSearchPresenterImplTest {
         verify(searchService).saveQueryTemplates(drqtListCaptor.capture(), booleanAsyncCaptor.capture());
         assertEquals(1, drqtListCaptor.getValue().size());
         assertTrue(drqtListCaptor.getValue().contains(mockTemplate));
-        // Mock expected behavior from service success, and return list with saved template
-        // stringAsyncCbCaptor.getValue().onSuccess(drqtListCaptor.getValue());
+        // Mock expected behavior from service success
         booleanAsyncCaptor.getValue().onSuccess(true);
-        // TODO JDS UPDATE_TEST
 
 
         /* ================ Save second template =================== */
@@ -164,10 +163,8 @@ public class DataSearchPresenterImplTest {
         assertEquals(2, drqtListCaptor.getValue().size());
         assertTrue(drqtListCaptor.getValue().contains(mockTemplate));
         assertTrue(drqtListCaptor.getValue().contains(mockTemplate_2));
-        // Mock expected behavior from service success, and return list with saved template
-        // stringAsyncCbCaptor.getValue().onSuccess(drqtListCaptor.getValue());
+        // Mock expected behavior from service success
         booleanAsyncCaptor.getValue().onSuccess(true);
-        // TODO JDS UPDATE_TEST
 
 
         /* ================ Save third template =================== */
@@ -208,8 +205,6 @@ public class DataSearchPresenterImplTest {
         assertEquals(0, spy.getQueryTemplates().size());
 
         /* Verify that a search is requested after a successful persist. */
-        // Mock expected behavior from service success, and return list with saved template
-        // stringAsyncCbCaptor.getValue().onSuccess(drqtListCaptor.getValue());
         booleanAsyncCaptor.getValue().onSuccess(true);
         ArgumentCaptor<SubmitDiskResourceQueryEvent> submitEventCaptor = ArgumentCaptor.forClass(SubmitDiskResourceQueryEvent.class);
         verify(spy).doSubmitDiskResourceQuery(submitEventCaptor.capture());
@@ -237,7 +232,6 @@ public class DataSearchPresenterImplTest {
         assertEquals(0, spy.getQueryTemplates().size());
 
         /* Verify that a search is not requested after failure to persist */
-        // stringAsyncCbCaptor.getValue().onFailure(null);
         booleanAsyncCaptor.getValue().onFailure(null);
         verify(spy, never()).doSubmitDiskResourceQuery(any(SubmitDiskResourceQueryEvent.class));
 

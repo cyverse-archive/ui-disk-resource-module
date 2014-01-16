@@ -1,8 +1,13 @@
 package org.iplantc.core.uidiskresource.client.presenters.proxy;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Stack;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+
+import com.sencha.gxt.data.shared.loader.LoadEvent;
+import com.sencha.gxt.data.shared.loader.LoadHandler;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
@@ -12,13 +17,9 @@ import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.HasHandlerRegistrationMgmt;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.sencha.gxt.data.shared.loader.LoadEvent;
-import com.sencha.gxt.data.shared.loader.LoadHandler;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Stack;
 
 /**
  * A <code>LoadHandler</code> which is used to lazily load, expand, and select a desired folder.
@@ -41,7 +42,7 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
 
     public SelectFolderByIdLoadHandler(final HasId folderToSelect,
             final DiskResourceView.Presenter presenter) {
-        presenter.maskView();
+        presenter.mask("");
         this.folderToSelect = folderToSelect;
         this.presenter = presenter;
         this.regMgr = presenter;
@@ -124,6 +125,6 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
 
     private void unmaskView() {
         regMgr.unregisterHandler(this);
-        presenter.unMaskView();
+        presenter.unmask();
     }
 }

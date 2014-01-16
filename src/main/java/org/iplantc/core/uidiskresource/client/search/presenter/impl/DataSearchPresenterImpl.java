@@ -15,6 +15,8 @@ import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 
 import com.sencha.gxt.data.shared.TreeStore;
+import com.sencha.gxt.widget.core.client.event.ShowEvent;
+import com.sencha.gxt.widget.core.client.event.ShowEvent.ShowHandler;
 
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
@@ -34,6 +36,27 @@ import java.util.Collections;
 import java.util.List;
 
 public class DataSearchPresenterImpl implements DataSearchPresenter {
+
+    public final class InitShowHandler implements ShowHandler {
+        private final TreeStore<Folder> handlerTreeStore;
+        private HandlerRegistration hr;
+
+        public InitShowHandler(TreeStore<Folder> treeStore) {
+            this.handlerTreeStore = treeStore;
+        }
+
+        @Override
+        public void onShow(ShowEvent event) {
+            updateDataNavigationWindow(queryTemplates, handlerTreeStore);
+            if (hr != null) {
+                hr.removeHandler();
+            }
+        }
+
+        public void setHandlerRegistration(HandlerRegistration hr) {
+            this.hr = hr;
+        }
+    }
 
     TreeStore<Folder> treeStore;
     DiskResourceSearchField view;
@@ -71,7 +94,7 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
         // Get query template
         final DiskResourceQueryTemplate queryTemplate = event.getQueryTemplate();
 
-        String currId = queryTemplate.getId();
+        String currId = Strings.nullToEmpty(queryTemplate.getId());
         if (Strings.isNullOrEmpty(currId)) {
             queryTemplate.setId(searchService.getUniqueId());
         }
@@ -173,7 +196,8 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
     }
 
     @Override
-    public void searchInit(final HasFolderSelectedEventHandlers hasFolderSelectedHandlers, final FolderSelectedEventHandler folderSelectedHandler, final TreeStore<Folder> treeStore,
+    public void searchInit(final HasFolderSelectedEventHandlers hasFolderSelectedHandlers, final FolderSelectedEventHandler folderSelectedHandler,
+            final TreeStore<Folder> treeStore,
             final DiskResourceSearchField view) {
         hasFolderSelectedHandlers.addFolderSelectedEventHandler(this);
         // Add handler which will listen to our FolderSelectedEvents
@@ -284,6 +308,20 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
             }
         }
         return false;
+    }
+
+    @Override
+    public void loadSavedQueries(List<DiskResourceQueryTemplate> savedQueries) {
+        // Save result
+        getQueryTemplates().clear();
+        for (DiskResourceQueryTemplate qt : savedQueries) {
+            qt.setId(searchService.getUniqueId());
+            getQueryTemplates().add(qt);
+        }
+        setCleanCopyQueryTemplates(searchService.createFrozenList(getQueryTemplates()));
+
+        // Update navigation window
+        updateDataNavigationWindow(queryTemplates, treeStore);
     }
 
 }
