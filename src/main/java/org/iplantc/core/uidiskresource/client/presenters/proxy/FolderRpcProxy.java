@@ -133,7 +133,7 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
             return;
 
         } else {
-            drService.getSubFolders(parentFolder.getPath(), new SubFoldersCallback(callback));
+            drService.getSubFolders(parentFolder, new SubFoldersCallback(callback));
         }
     }
 

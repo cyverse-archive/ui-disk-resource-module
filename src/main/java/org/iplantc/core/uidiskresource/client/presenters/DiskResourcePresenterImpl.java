@@ -44,30 +44,14 @@ import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.HasPaths;
 import org.iplantc.core.uicommons.client.models.UserInfo;
-<<<<<<< HEAD
-<<<<<<< HEAD
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uicommons.client.models.diskresources.File;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-=======
-import org.iplantc.core.uicommons.client.models.diskresources.*;
->>>>>>> CORE-4876: Unit tests for DataSearchPresenter have 100% coverage
-=======
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceMetadata;
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
->>>>>>> CORE-4876: Removed data search history impl
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.dataLink.presenter.DataLinkPresenter;
 import org.iplantc.core.uidiskresource.client.dataLink.view.DataLinkPanel;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> CORE-4876: Removed data search history impl
 import org.iplantc.core.uidiskresource.client.events.CreateNewFileEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceRenamedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
@@ -80,15 +64,8 @@ import org.iplantc.core.uidiskresource.client.events.RequestBulkUploadEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestImportFromUrlEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestSimpleDownloadEvent;
 import org.iplantc.core.uidiskresource.client.events.RequestSimpleUploadEvent;
-<<<<<<< HEAD
-import org.iplantc.core.uidiskresource.client.events.ShowFilePreviewEvent;
 import org.iplantc.core.uidiskresource.client.metadata.presenter.MetadataPresenter;
 import org.iplantc.core.uidiskresource.client.metadata.view.DiskResourceMetadataView;
-=======
-import org.iplantc.core.uidiskresource.client.events.*;
->>>>>>> CORE-4876: Unit tests for DataSearchPresenter have 100% coverage
-=======
->>>>>>> CORE-4876: Removed data search history impl
 import org.iplantc.core.uidiskresource.client.presenters.handlers.DiskResourcesEventHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityGridHandler;
 import org.iplantc.core.uidiskresource.client.presenters.handlers.ToolbarButtonVisibilityNavigationHandler;

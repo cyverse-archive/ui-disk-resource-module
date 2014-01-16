@@ -136,9 +136,7 @@ public class FolderRpcProxyTest {
         verify(parentFolderMock).isFilter();
 
         ArgumentCaptor<SubFoldersCallback> subFoldersCallbackCaptor = ArgumentCaptor.forClass(SubFoldersCallback.class);
-        verify(drServiceMock).getSubFolders(eq(stubPath), subFoldersCallbackCaptor.capture());
-
-        verify(parentFolderMock).getPath();
+        verify(drServiceMock).getSubFolders(eq(parentFolderMock), subFoldersCallbackCaptor.capture());
 
         /* Verify that callback was created with intended properties */
         assertEquals(folderCallbackMock, subFoldersCallbackCaptor.getValue().callback);
