@@ -29,7 +29,7 @@ public class DataLinkPresenter<M extends DiskResource> implements DataLinkPanel.
     public DataLinkPresenter(List<M> resources) {
         view = new DataLinkPanel<M>(resources);
         view.setPresenter(this);
-        
+
         // Remove Folders
         List<M> allowedResources = Lists.newArrayList();
         for(M m : resources){
@@ -40,7 +40,7 @@ public class DataLinkPresenter<M extends DiskResource> implements DataLinkPanel.
         // Retrieve tickets for root nodes
         getExistingDataLinks(allowedResources);
     }
-    
+
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void getExistingDataLinks(List<M> resources) {
         view.addRoots(resources);
@@ -56,7 +56,7 @@ public class DataLinkPresenter<M extends DiskResource> implements DataLinkPanel.
         drService.deleteDataLinks(Lists.newArrayList(value.getId()),
                 new DeleteDataLinksCallback(view));
     }
-    
+
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public void deleteDataLinks(List<DataLink> dataLinks){
@@ -81,7 +81,7 @@ public class DataLinkPresenter<M extends DiskResource> implements DataLinkPanel.
         view.mask();
         drService.createDataLinks(drResourceIds, new CreateDataLinkCallback(dlFactory, view));
     }
-    
+
     @Override
     public String getSelectedDataLinkDownloadPage() {
         M model = view.getTree().getSelectionModel().getSelectedItem();
