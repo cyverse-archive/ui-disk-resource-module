@@ -13,7 +13,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
-import org.iplantc.core.uidiskresource.client.search.views.cells.DiskResourceQueryFormNamePrompt;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,11 +29,6 @@ public class DiskResourceQueryFormNamePromptTest_NoEditorErrors {
 
     /**
      * Verify the following when {@link DiskResourceQueryFormNamePrompt#cancelSaveFilterBtn} is clicked;<br/>
-     * 
-     * <ol>
-     * <li>the {@link DiskResourceQueryFormNamePrompt#name} field is reset to its original value</li>
-     * <li>the form is hidden</li>
-     * </ol>
      */
     @Test public void testOnCancelSaveFilter_noErrors() {
         DiskResourceQueryFormNamePrompt spy = spy(namePrompt);
@@ -49,12 +43,6 @@ public class DiskResourceQueryFormNamePromptTest_NoEditorErrors {
 
     /**
      * Verify the following when {@link DiskResourceQueryFormNamePrompt#saveFilterBtn} is clicked;<br/>
-     * 
-     * <ol>
-     * <li>the editor driver is flushed</li>
-     * <li>a {@link SubmitDiskResourceQueryEvent} is fired with the flushed template</li>
-     * <li>the form is hidden</li>
-     * </ol>
      */
     @Test public void testOnSaveFilterSelected_noErrors() {
         DiskResourceQueryFormNamePrompt spy = spy(namePrompt);

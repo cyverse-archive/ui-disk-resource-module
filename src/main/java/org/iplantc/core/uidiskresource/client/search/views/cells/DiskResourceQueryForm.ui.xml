@@ -36,10 +36,6 @@
 			 type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
 		<ui:attributes width="1" height="-1" margins="{margins0505}"/>
 	</ui:with>
-	<!-- <ui:with field="verticalLayoutDataWithHeight"
-			 type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
-		<ui:attributes width="1" height="30" />
-	</ui:with> -->
 	
 	<ui:with field="verticalLayoutDataWithTopMargins"
              type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
@@ -54,10 +50,6 @@
 			 type="com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData">
 		<ui:attributes margins="{margins0505}" />
 	</ui:with>
-	<!-- <ui:with field="boxLayoutDataMargins0500Flex1"
-			 type="com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData">
-		<ui:attributes margins="{margins0500}" flex="1" />
-	</ui:with> -->
 
 	<container:VerticalLayoutContainer ui:field="con">
 

@@ -4,15 +4,11 @@ import com.sencha.gxt.data.shared.TreeStore;
 
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.HasFolderSelectedEventHandlers;
-import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
-import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchField;
-import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
 import java.util.List;
 
@@ -48,52 +44,8 @@ import java.util.List;
  * </ul>
  * </li>
  * 
- * <li>Using and/or applying the <em>active query</em> template to submit searches to the
- * {@link SearchServiceFacade#submitSearchFromQueryTemplate()} method.<br/>
- * &nbsp; This can occur as a result of the user selecting a query in the view.</li>
- * <li>Ensure the results of the constructed query are displayed to the user in the view.</li>
  * </ul>
  * 
- * <h2>What initialization-time tasks does this presenter perform?</h2>
- * <ul>
- * <li>Fetching a user's saved 'filters' and putting them into the Navigation panel</li>
- * </ul>
- * 
- * <h2>What user interactions does this presenter react to?</h2>
- * <ul>
- * <li>{@link SaveDiskResourceQueryEvent}</li>
- * <li>{@link SubmitDiskResourceQueryEvent}</li>
- * 
- * <li>Selection events from the "Navigation Panel", when the "Magic Folders" are clicked. These
- * selection events are synonymous with {@link SubmitDiskResourceQueryEvent} for the selected query
- * template.
- * <ul>
- * <li>When a "magic folder" is selected, the search box should be updated</li>
- * </ul>
- * </li>
- * 
- * </ul>
- * 
- * <h3>Design Questions</h3>
- * <ul>
- * <li>Do we need to track the currently selected filter?<br/>
- * <i>A selected filter <u><b>IS</b></u> the active filter</i><br/>
- * &nbsp;<i><b>IF</b> we find a way to conveniently display non-saved filters, active filter can be
- * easily communicated to the user.</i></li>
- * 
- * <li>Who is responsible for <em>"styling"</em> the "magic folders"? Presenter or view?</li>
- * <li>How do we actually compose these different presenters?<br/>
- * &nbsp; this could be done by injecting the sub-presenters into the {@link DiskResourceView.Presenter}
- * at construction. We would still have to give this presenter reference to the items it needs to perform
- * its duties. That, or give this sub-presenter a reference to the primary presenter, which will provide
- * the necessary references.<br/>
- * &nbsp; Is there any other way? Is this proposal sufficient?</li>
- * </ul>
- * 
- * When a folder selection is detected, if it is a DiskResourceQueryTemplate, it will be bound with this
- * presenter's view.
- * 
- * FIXME JDS Clean up this documentation
  * 
  * @author jstroot
  * 
@@ -103,13 +55,9 @@ public interface DataSearchPresenter extends SaveDiskResourceQueryEventHandler, 
     /**
      * Initializes this presenter's contract with the given input parameters.
      * 
-     * This method assumes that no DiskResourceQueryTemplate has been added to the view's treeStore.
-     * 
-     * Retrieve any saved query templates, adds itself as a listener for
-     * {@code SubmitDiskResourceQueryEvent} and {@code SaveDiskResourceQueryEvent}s on the given view's
-     * toolbar, and {@code SubmitDiskResourceQueryEvent}s on the view itself.
-     * 
-     * This class will also add unique ids to the retrieved templates.
+     * Adds itself as a listener for {@code SubmitDiskResourceQueryEvent} and
+     * {@code SaveDiskResourceQueryEvent}s on the given view's toolbar, and
+     * {@code SubmitDiskResourceQueryEvent}s on the view itself.
      * 
      * @param hasFolderSelectedHandlers
      * @param folderSelectedHandler

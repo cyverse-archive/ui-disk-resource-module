@@ -55,28 +55,6 @@ public class DiskResourceSearchField extends TriggerField<String> implements Has
         setPropertyEditor(new QueryStringPropertyEditor());
     }
 
-    /**
-     * Creates a new iPlant Search field.
-     * 
-     * @param cell the search cell
-     */
-    // public DiskResourceSearchField(DiskResourceSearchCell cell) {
-    // super(cell);
-    // }
-
-    /**
-     * Creates a new iPlant Search field.
-     * 
-     * @param cell the search cell
-     * @param propertyEditor the property editor
-     */
-    // public DiskResourceSearchField(DiskResourceSearchCell cell, PropertyEditor<String> propertyEditor)
-    // {
-    // super(cell);
-    // setPropertyEditor(propertyEditor);
-    // redraw();
-    // }
-
     @Override
     public HandlerRegistration addCollapseHandler(CollapseHandler handler) {
         return getCell().addCollapseHandler(handler);
@@ -120,19 +98,15 @@ public class DiskResourceSearchField extends TriggerField<String> implements Has
     @Override
     protected void onCellParseError(ParseErrorEvent event) {
         super.onCellParseError(event);
-        if (event.getException().getMessage().equals("Simulated parse error")) {
-            forceInvalid("This is a simulated error message. You string sucks: " + event.getErrorValue().replaceFirst("throw", ""));
-        } else {
-            /*
-             * String value = event.getException().getMessage();
-             * String f = getPropertyEditor().getFormat().getPattern();
-             * String msg = DefaultMessages.getMessages().dateField_invalidText(value, f);
-             * parseError = msg;
-             */
-            // TODO Update parse error message
-            String msg = "Default message";
-            forceInvalid(msg);
-        }
+        /*
+         * String value = event.getException().getMessage();
+         * String f = getPropertyEditor().getFormat().getPattern();
+         * String msg = DefaultMessages.getMessages().dateField_invalidText(value, f);
+         * parseError = msg;
+         */
+        // TODO Update parse error message
+        String msg = "Default message";
+        forceInvalid(msg);
     }
 
 }

@@ -75,7 +75,6 @@ public class DiskResourceQueryFormNamePrompt extends Composite implements Editor
             eventPreview.remove();
             showing = false;
             hidden = true;
-            // fireEvent(new HideEvent());
         }
     }
 
@@ -106,8 +105,6 @@ public class DiskResourceQueryFormNamePrompt extends Composite implements Editor
         eventPreview.add();
 
         focus();
-        // fireEvent(new ShowEvent());
-
     }
 
     @UiHandler("cancelSaveFilterBtn")

@@ -27,6 +27,7 @@ import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderRpcProxy.Ro
 import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderRpcProxy.SubFoldersCallback;
 import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -48,7 +49,6 @@ public class FolderRpcProxyTest {
 
     @Mock AsyncCallback<List<Folder>> folderCallbackMock;
     
-
     @Captor ArgumentCaptor<List<Folder>> folderListCaptor;
 
     @Before public void setUp() {
@@ -220,13 +220,15 @@ public class FolderRpcProxyTest {
     /**
      * onFailure callback !null
      */
+    @Ignore
     @Test public void testRootFolderCallbackOnFailure_Case1() {
         // TODO Complete test case 
-        
     }
+
     /**
      * onFailure callback null
      */
+    @Ignore
     @Test public void testRootFolderCallbackOnFailure_Case2() {
        // TODO Complete test case 
     }
@@ -234,6 +236,7 @@ public class FolderRpcProxyTest {
     /**
      * callback !null
      */
+    @Ignore
     @Test public void testSubFoldersCallbackOnSuccess_Case1() {
        // TODO Complete test case 
     }
@@ -241,6 +244,7 @@ public class FolderRpcProxyTest {
     /**
      * callback null
      */
+    @Ignore
     @Test public void testSubFoldersCallbackOnSuccess_Case2() {
        // TODO Complete test case 
     }
@@ -248,6 +252,7 @@ public class FolderRpcProxyTest {
     /**
      * callback !null
      */
+    @Ignore
     @Test public void testSubFoldersCallbackOnFailure_Case1() {
        // TODO Complete test case 
     }
@@ -255,6 +260,7 @@ public class FolderRpcProxyTest {
     /**
      * callback null
      */
+    @Ignore
     @Test public void testSubFoldersCallbackOnFailure_Case2() {
        // TODO Complete test case 
     }

@@ -104,20 +104,16 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         StringQuoter.create(true).assign(permissions, "write");
         permissions.assign(defFilter, "permissions");
         StringQuoter.create("/savedFilters/").assign(defFilter, "path");
-        ;
 
         DiskResourceQueryTemplate dataSearchFilter = AutoBeanCodex.decode(factory, DiskResourceQueryTemplate.class, defFilter).as();
         dataSearchFilter.setCreatedWithin(factory.dateInterval().as());
         dataSearchFilter.setModifiedWithin(factory.dateInterval().as());
         dataSearchFilter.setFileSizeRange(factory.fileSizeRange().as());
 
-
         return dataSearchFilter;
     }
 
     protected BaseEventPreview eventPreview;
-
-    // TODO Any ignored field needs to be handled
 
     @Ignore
     @UiField
@@ -164,13 +160,11 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     @Ignore
     DiskResourceQueryFormNamePrompt namePrompt;
 
-
     @UiField
     TextField negatedFileQuery;
 
     @UiField
     TextField negatedMetadataQuery;
-
 
     @UiField 
     TextField sharedWith;
@@ -272,20 +266,14 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         getElement().updateZIndex(0);
 
         showing = true;
-        // doAutoSize();
 
-        // getElement().setWidth(parent.getOffsetWidth());
         getElement().alignTo(parent, anchorAlignment, new int[] {0, 0});
-        // if (enableScrolling) {
-        // constrainScroll(getElement().getY());
-        // }
 
         getElement().show();
         eventPreview.add();
 
         focus();
         fireEvent(new ShowEvent());
-
     }
 
     /*
@@ -304,7 +292,6 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     }
 
     protected void onPreviewEvent(NativePreviewEvent pe) {
-
         int type = pe.getTypeInt();
         switch (type) {
             case Event.ONMOUSEDOWN:
@@ -325,7 +312,6 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
                 }
         }
         return;
-
     }
 
     @UiFactory
@@ -363,7 +349,6 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         // Fire event and pass flushed query
         fireEvent(new SubmitDiskResourceQueryEvent(flushedQueryTemplate));
         hide();
-
     }
 
     void showNamePrompt(DiskResourceQueryTemplate filter) {
@@ -378,7 +363,6 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         modifiedWithinCombo.add(timeIntervals);
         createdWithinCombo.setValue(timeIntervals.get(0));
         modifiedWithinCombo.setValue(timeIntervals.get(0));
-        
     }
 
     private void initFileSizeComboBoxes(StringLabelProvider<String> stringLabelProvider) {
@@ -389,7 +373,6 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         lessThanComboBox.add(fileSizeUnits);
         greaterThanComboBox.setValue(fileSizeUnits.get(0));
         lessThanComboBox.setValue(fileSizeUnits.get(0));
-
     }
 
     private void initFileSizeNumberFields() {
@@ -397,7 +380,6 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         NumberPropertyEditor.DoublePropertyEditor doublePropertyEditor = new NumberPropertyEditor.DoublePropertyEditor();
         fileSizeGreaterThan = new NumberField<Double>(doublePropertyEditor);
         fileSizeLessThan = new NumberField<Double>(doublePropertyEditor);
-
     }
 
     private void onEscape(NativePreviewEvent pe) {

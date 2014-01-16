@@ -15,8 +15,6 @@ import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 
 import com.sencha.gxt.data.shared.TreeStore;
-import com.sencha.gxt.widget.core.client.event.ShowEvent;
-import com.sencha.gxt.widget.core.client.event.ShowEvent.ShowHandler;
 
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
@@ -36,27 +34,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class DataSearchPresenterImpl implements DataSearchPresenter {
-
-    public final class InitShowHandler implements ShowHandler {
-        private final TreeStore<Folder> handlerTreeStore;
-        private HandlerRegistration hr;
-
-        public InitShowHandler(TreeStore<Folder> treeStore) {
-            this.handlerTreeStore = treeStore;
-        }
-
-        @Override
-        public void onShow(ShowEvent event) {
-            updateDataNavigationWindow(queryTemplates, handlerTreeStore);
-            if (hr != null) {
-                hr.removeHandler();
-            }
-        }
-
-        public void setHandlerRegistration(HandlerRegistration hr) {
-            this.hr = hr;
-        }
-    }
 
     TreeStore<Folder> treeStore;
     DiskResourceSearchField view;
@@ -116,8 +93,6 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
                 announcer.schedule(new ErrorAnnouncementConfig("Failed to save query template."));
             }
 
-            // @Override
-            // public void onSuccess(List<DiskResourceQueryTemplate> result) {
             @Override
             public void onSuccess(Boolean result) {
                 // Clear list of saved query templates and re-add result.

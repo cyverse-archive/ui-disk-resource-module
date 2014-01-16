@@ -46,8 +46,6 @@ import java.util.List;
 @RunWith(GxtMockitoTestRunner.class)
 public class DataSearchPresenterImplTest {
 
-    private DataSearchPresenterImpl dsPresenter;
-
     @Mock DiskResourceSearchField viewMock;
     @Mock TreeStore<Folder> treeStoreMock;
     @Mock SearchServiceFacade searchService;
@@ -57,6 +55,8 @@ public class DataSearchPresenterImplTest {
     @Captor ArgumentCaptor<AsyncCallback<List<DiskResourceQueryTemplate>>> stringAsyncCbCaptor;
     @Captor ArgumentCaptor<AsyncCallback<List<DiskResourceQueryTemplate>>> drqtListAsyncCaptor;
     @Captor ArgumentCaptor<AsyncCallback<Boolean>> booleanAsyncCaptor;
+
+    private DataSearchPresenterImpl dsPresenter;
 
     @Before public void setUp() {
         dsPresenter = new DataSearchPresenterImpl(searchService, announcer);

@@ -18,8 +18,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.core.uidiskresource.client.search.views.cells.DiskResourceQueryForm;
-import org.iplantc.core.uidiskresource.client.search.views.cells.DiskResourceQueryFormNamePrompt;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,11 +47,6 @@ public class DiskResourceQueryFormTest_WithEditorErrors {
 
     /**
      * Verify the following when {@link DiskResourceQueryForm#createFilterLink} is selected;<br/>
-     * <ol>
-     * <li>the editor driver is flushed</li>
-     * <li>the {@link DiskResourceQueryForm#namePrompt} is not shown when</li>
-     * </ol>
-     * 
      */
     @Test public void testOnCreateQueryTemplateClicked_withErrors() {
         form.onCreateQueryTemplateClicked(mock(ClickEvent.class));
@@ -64,12 +57,6 @@ public class DiskResourceQueryFormTest_WithEditorErrors {
 
     /**
      * Verify the following when {@link DiskResourceQueryForm#searchButton} is clicked;<br/>
-     * <ol>
-     * <li>the editor driver is flushed</li>
-     * <li>no events are fired</li>
-     * <li>the form is not hidden</li>
-     * </ol>
-     * 
      */
     @Test public void testOnSearchBtnSelected_withErrors() {
         DiskResourceQueryForm spy = spy(form);

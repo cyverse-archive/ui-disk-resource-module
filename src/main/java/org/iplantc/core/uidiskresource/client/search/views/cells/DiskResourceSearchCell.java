@@ -129,20 +129,17 @@ public class DiskResourceSearchCell extends TriggerFieldCell<String> implements 
         }*/
 
         // TODO JDS we want to take the text they have typed in and put it in the searchForm
-        // picker.setValue(d, false);
 
         // handle case when down arrow is opening menu
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 
             @Override
             public void execute() {
-                // menu.getDatePicker().focus();
                 getSearchForm().show(parent, new AnchorAlignment(Anchor.TOP_LEFT, Anchor.BOTTOM_LEFT, true));
 
                 fireEvent(context, new ExpandEvent(context));
             }
         });
-
     }
 
     public DiskResourceQueryForm getSearchForm() {
