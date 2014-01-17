@@ -1,6 +1,8 @@
 package org.iplantc.core.uidiskresource.client.metadata.view;
 
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -37,6 +39,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.resources.ThemeStyles;
+import com.sencha.gxt.core.shared.FastMap;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -57,6 +60,7 @@ import com.sencha.gxt.widget.core.client.event.ValidEvent;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.form.Field;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
 import com.sencha.gxt.widget.core.client.form.NumberField;
@@ -155,13 +159,15 @@ public class DiskResourceMetadataView implements IsWidget {
 
 	private ListStore<MetadataTemplateInfo> templateStore;
 
-	private AccordionLayoutContainer alc;
+	private final AccordionLayoutContainer alc;
 
-	private AccordionLayoutAppearance appearance;
+	private final AccordionLayoutAppearance appearance;
 
 	private ContentPanel userMetadataPanel;
 
-	private VerticalLayoutContainer centerPanel;
+	private final VerticalLayoutContainer centerPanel;
+
+    private final FastMap<Field<?>> templateAttrFieldMap = new FastMap<Field<?>>();
 
 	public DiskResourceMetadataView(DiskResource dr) {
 		widget = uiBinder.createAndBindUi(this);
@@ -210,23 +216,25 @@ public class DiskResourceMetadataView implements IsWidget {
 				MetadataTemplateInfo mti = arg0.getSelectedItem();
 				presenter.onTemplateSelected(mti.getId());
 				buildTemplateContainer();
-
+                alc.mask();
 			}
 		});
 		return templateCombo;
 	}
 
-	public void loadTemplateAttributes(
-			List<MetadataTemplateAttribute> attributes) {
-		alc.mask();
+    public void loadTemplateAttributes(List<MetadataTemplateAttribute> attributes) {
+        templateAttrFieldMap.clear();
 		TextButton rmvBtn = buildRemoveTemplateButton();
 		templateContainer.add(rmvBtn,new VerticalLayoutData(1, -1));
 		for (MetadataTemplateAttribute attribute : attributes) {
-			IsWidget widget = getAttributeValueWidget(attribute.getType(),
-					!attribute.isRequired());
-			if (widget != null) {
+            Field<?> field = getAttributeValueWidget(attribute.getType(), !attribute.isRequired());
+            if (field != null) {
+                AttributeValidationHandler validationHandler = new AttributeValidationHandler();
+                field.addValidHandler(validationHandler);
+                field.addInvalidHandler(validationHandler);
+                templateAttrFieldMap.put(attribute.getName(), field);
 				templateContainer.add(
-						buildFieldLabel(widget, attribute.getName(),attribute.getDescription(),
+                        buildFieldLabel(field, attribute.getName(), attribute.getDescription(),
 								!attribute.isRequired()),
 						new VerticalLayoutData(1, -1));
 			}
@@ -296,32 +304,28 @@ public class DiskResourceMetadataView implements IsWidget {
 		return tf;
 	}
 
-	private TextField buildDateField(boolean allowBlank) {
-		final TextField tf = buildTextField(allowBlank);
-		tf.setEmptyText(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM
-				.toString());
-		tf.addValidator(new Validator<String>() {
+    private TextField buildDateField(boolean allowBlank) {
+        final DateTimeFormat format = DateTimeFormat
+                .getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM);
+        final TextField tf = buildTextField(allowBlank);
+        tf.setEmptyText(format.format(new Date()));
+        tf.addValidator(new Validator<String>() {
 
-			@Override
-			public List<EditorError> validate(Editor<String> editor,
-					String value) {
-				try {
-					tf.clearInvalid();
-					DateTimeFormat.getFormat(
-							DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM)
-							.parse(value);
-					return null;
-				} catch (Exception e) {
-					EditorError dee = new DefaultEditorError(
-							editor,
-							"Invalid date / time. Please use "
-									+ DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM
-											.toString(), value);
-					return Arrays.asList(dee);
-				}
+            @Override
+            public List<EditorError> validate(Editor<String> editor, String value) {
+                try {
+                    tf.clearInvalid();
+                    format.parse(value);
+                    return null;
+                } catch (Exception e) {
+                    GWT.log(value, e);
+                    EditorError dee = new DefaultEditorError(editor, "Invalid date / time. Please use: "
+                            + format.getPattern(), value);
+                    return Arrays.asList(dee);
+                }
 
-			}
-		});
+            }
+        });
 		return tf;
 	}
 
@@ -333,7 +337,7 @@ public class DiskResourceMetadataView implements IsWidget {
 	 * @param label
 	 * @return
 	 */
-	private IsWidget getAttributeValueWidget(String type, boolean allowBlank) {
+    private Field<?> getAttributeValueWidget(String type, boolean allowBlank) {
 		if (type.equalsIgnoreCase("timestamp")) {
 			return buildDateField(allowBlank);
 		} else if (type.equalsIgnoreCase("boolean")) {
@@ -491,7 +495,18 @@ public class DiskResourceMetadataView implements IsWidget {
 	}
 
 	public Set<DiskResourceMetadata> getMetadataToAdd() {
-		return Sets.newHashSet(listStore.getAll());
+		HashSet<DiskResourceMetadata> metaDataToAdd = Sets.newHashSet(listStore.getAll());
+        for (String attr : templateAttrFieldMap.keySet()) {
+            Field<?> field = templateAttrFieldMap.get(attr);
+            if (field.isValid() && field.getValue() != null && !field.getValue().toString().isEmpty()) {
+                DiskResourceMetadata avu = autoBeanFactory.metadata().as();
+                avu.setAttribute(attr);
+                avu.setValue(field.getValue().toString());
+                avu.setUnit(""); //$NON-NLS-1$
+                metaDataToAdd.add(avu);
+            }
+        }
+        return metaDataToAdd;
 	}
 
 	private final class MetadataCell extends AbstractCell<String> {
@@ -573,7 +588,7 @@ public class DiskResourceMetadataView implements IsWidget {
 		userMetadataPanel.add(grid);
 		alc.add(templateForm);
 		alc.add(userMetadataPanel);
-		alc.setActiveWidget(userMetadataPanel);
+        alc.setActiveWidget(templateForm);
 		centerPanel.add(alc);
 
 	}
