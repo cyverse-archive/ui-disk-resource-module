@@ -50,6 +50,8 @@ public class DiskResourceQueryFormNamePrompt extends Composite implements Editor
     private final QueryFormNamePromptEditorDriver editorDriver = GWT.create(QueryFormNamePromptEditorDriver.class);
     private boolean showing;
 
+    String originalName;
+
     public DiskResourceQueryFormNamePrompt() {
         initWidget(uiBinder.createAndBindUi(this));
         saveLabel.getElement().getStyle().setFontWeight(FontWeight.BOLD);
@@ -84,6 +86,7 @@ public class DiskResourceQueryFormNamePrompt extends Composite implements Editor
 
     public void show(DiskResourceQueryTemplate filter, Element element, AnchorAlignment alignment) {
         editorDriver.edit(filter);
+        originalName = filter.getName();
         show(element, alignment);
     }
 
@@ -109,8 +112,8 @@ public class DiskResourceQueryFormNamePrompt extends Composite implements Editor
 
     @UiHandler("cancelSaveFilterBtn")
     void onCancelSaveFilter(@SuppressWarnings("unused") SelectEvent event) {
-        // Do not change name of filter
-        name.reset();
+        // Reset name of filter
+        name.setValue(originalName);
         hide();
     }
 
@@ -122,7 +125,7 @@ public class DiskResourceQueryFormNamePrompt extends Composite implements Editor
         }
 
         // Set the filter name field to allow blank values when hidden.
-        fireEvent(new SaveDiskResourceQueryEvent(flushedQueryTemplate));
+        fireEvent(new SaveDiskResourceQueryEvent(flushedQueryTemplate, originalName));
         hide();
     }
 

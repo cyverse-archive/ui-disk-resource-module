@@ -12,9 +12,8 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasName;
 import com.google.inject.Inject;
-import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
-import com.google.web.bindery.autobean.shared.Splittable;
 
 import com.sencha.gxt.data.shared.TreeStore;
 
@@ -39,13 +38,13 @@ import java.util.Set;
 
 public class DataSearchPresenterImpl implements DataSearchPresenter {
 
+    List<DiskResourceQueryTemplate> cleanCopyQueryTemplates = Lists.newArrayList();
+    final List<DiskResourceQueryTemplate> queryTemplates = Lists.newArrayList();
     TreeStore<Folder> treeStore;
     DiskResourceSearchField view;
     private DiskResourceQueryTemplate activeQuery = null;
     private final IplantAnnouncer announcer;
-    private List<DiskResourceQueryTemplate> cleanCopyQueryTemplates;
     private HandlerManager handlerManager;
-    private final List<DiskResourceQueryTemplate> queryTemplates = Lists.newArrayList();
     private final SearchServiceFacade searchService;
 
     @Inject
@@ -63,20 +62,19 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
      * This handler is responsible for saving or updating the {@link DiskResourceQueryTemplate} contained
      * in the given {@link SaveDiskResourceQueryEvent}.
      * <p/>
-     * This method will ensure that renaming of queries will not result in replacing the original query.
-     * This method will apply a unique id to the given query template if it doesn't have one.
-     * <p/>
      * After the query has been successfully saved, a search with the given querytemplate will be
      * performed.
      */
     @Override
-    public void doSaveDiskResourceQueryTemplate(SaveDiskResourceQueryEvent event) {
+    public void doSaveDiskResourceQueryTemplate(final SaveDiskResourceQueryEvent event) {
         // Assume that once the filter is saved, a search should be performed.
         final DiskResourceQueryTemplate queryTemplate = event.getQueryTemplate();
 
         if (Strings.isNullOrEmpty(queryTemplate.getName())) {
             // Given query template has no name, ripple error back to view
-            GWT.log("Given query has no name, cannot save");
+
+            // TODO Ripple error back to view
+            GWT.log("TODO: User tried to save query with no name, cannot save. Ripple error back to view");
             return;
         } else {
             // Check for name uniqueness
@@ -92,6 +90,7 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
                         String inListName = hasId.getName();
                         if (queryTemplate.getName().equalsIgnoreCase(inListName)) {
                             getQueryTemplates().remove(hasId);
+
                             break;
                         }
                     }
@@ -105,15 +104,24 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
             @Override
             public void onFailure(Throwable caught) {
-                announcer.schedule(new ErrorAnnouncementConfig("Failed to save query template."));
+                announcer.schedule(new ErrorAnnouncementConfig("Failed to save search."));
             }
 
             @Override
             public void onSuccess(Boolean result) {
                 // Clear list of saved query templates and re-add result.
-                getQueryTemplates().clear();
-                getQueryTemplates().addAll(toBeSaved);
+                queryTemplates.clear();
+                queryTemplates.addAll(toBeSaved);
 
+                /*
+                 * Determine if there has been a name change, if so, remove the original from the
+                 * treestore.
+                 */
+                for (DiskResourceQueryTemplate qt : cleanCopyQueryTemplates) {
+                    if (qt.getName().equals(event.getOriginalName())) {
+                        treeStore.remove(qt);
+                    }
+                }
                 // Create immutable copy of saved templates
                 setCleanCopyQueryTemplates(searchService.createFrozenList(toBeSaved));
 
@@ -122,21 +130,6 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
             }
         });
 
-    }
-
-    Set<String> getUniqueNames(List<DiskResourceQueryTemplate> hasNames) {
-        final HashSet<String> queryNameSet = Sets.newHashSet();
-        for (HasName hasName : hasNames) {
-            if (queryNameSet.contains(hasName.getName())) {
-                // We have a dupe name!!
-                GWT.log("Duplicate QueryTemplate name found: " + hasName.getName());
-                // TODO Determine what to do when dupe name is found. Currently it is ommitted silently.
-            } else {
-                queryNameSet.add(hasName.getName());
-            }
-        }
-
-        return queryNameSet;
     }
 
     /**
@@ -155,11 +148,10 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
         final boolean isNewQuery = Strings.isNullOrEmpty(toSubmit.getName());
         if (isNewQuery) {
             toUpdate = Lists.newArrayList(getQueryTemplates());
-            // toUpdate.add(toSubmit);
         } else {
             toUpdate = Lists.newArrayList();
             // If it is an existing query, determine if it is dirty. If so, set dirty flag
-            if (templateHasChanged(toSubmit, getCleanCopyQueryTemplates())) {
+            if (templateHasChanged(toSubmit, cleanCopyQueryTemplates)) {
                 toSubmit.setDirty(true);
                 // Replace existing object in current template list
                 for (DiskResourceQueryTemplate qt : getQueryTemplates()) {
@@ -189,6 +181,17 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
     }
 
     @Override
+    public void loadSavedQueries(List<DiskResourceQueryTemplate> savedQueries) {
+        setCleanCopyQueryTemplates(searchService.createFrozenList(savedQueries));
+
+        queryTemplates.clear();
+        queryTemplates.addAll(savedQueries);
+
+        // Update navigation window
+        updateDataNavigationWindow(queryTemplates, treeStore);
+    }
+
+    @Override
     public void onFolderSelected(FolderSelectedEvent event) {
         if (event.getSelectedFolder() instanceof DiskResourceQueryTemplate) {
             view.edit((DiskResourceQueryTemplate)event.getSelectedFolder());
@@ -212,12 +215,11 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
     }
 
     boolean areTemplatesEqual(DiskResourceQueryTemplate lhs, DiskResourceQueryTemplate rhs) {
-        Splittable lhsSplittable = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(lhs));
-        Splittable rhsSplittable = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(rhs));
+        final AutoBean<DiskResourceQueryTemplate> lhsAb = AutoBeanUtils.getAutoBean(lhs);
+        final AutoBean<DiskResourceQueryTemplate> rhsAb = AutoBeanUtils.getAutoBean(rhs);
 
-        String payloadLHS = lhsSplittable.getPayload();
-        String payloadRHS = rhsSplittable.getPayload();
-        return payloadLHS.equals(payloadRHS);
+        final boolean deepEquals = AutoBeanUtils.deepEquals(lhsAb, rhsAb);
+        return deepEquals;
     }
 
     HandlerManager createHandlerManager() {
@@ -234,10 +236,6 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
         }
     }
 
-    List<DiskResourceQueryTemplate> getCleanCopyQueryTemplates() {
-        return cleanCopyQueryTemplates;
-    }
-
     HandlerManager getHandlerManager() {
         return handlerManager;
     }
@@ -245,6 +243,21 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
     List<DiskResourceQueryTemplate> getQueryTemplates() {
         return queryTemplates;
+    }
+
+    Set<String> getUniqueNames(List<DiskResourceQueryTemplate> hasNames) {
+        final HashSet<String> queryNameSet = Sets.newHashSet();
+        for (HasName hasName : hasNames) {
+            if (queryNameSet.contains(hasName.getName())) {
+                // We have a dupe name!!
+                GWT.log("Duplicate QueryTemplate name found: " + hasName.getName());
+                // TODO Determine what to do when dupe name is found. Currently it is ommitted silently.
+            } else {
+                queryNameSet.add(hasName.getName());
+            }
+        }
+
+        return queryNameSet;
     }
 
     void setCleanCopyQueryTemplates(List<DiskResourceQueryTemplate> cleanCopyQueryTemplates) {
@@ -287,17 +300,6 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
             }
         }
         return false;
-    }
-
-    @Override
-    public void loadSavedQueries(List<DiskResourceQueryTemplate> savedQueries) {
-        setCleanCopyQueryTemplates(searchService.createFrozenList(savedQueries));
-
-        queryTemplates.clear();
-        queryTemplates.addAll(savedQueries);
-
-        // Update navigation window
-        updateDataNavigationWindow(queryTemplates, treeStore);
     }
 
 }

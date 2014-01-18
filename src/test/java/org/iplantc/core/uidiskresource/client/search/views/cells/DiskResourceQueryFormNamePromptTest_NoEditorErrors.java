@@ -7,6 +7,7 @@ import com.google.gwtmockito.fakes.FakeSimpleBeanEditorDriverProvider;
 
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -16,6 +17,7 @@ import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQu
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 
 @RunWith(GxtMockitoTestRunner.class)
 public class DiskResourceQueryFormNamePromptTest_NoEditorErrors {
@@ -31,11 +33,14 @@ public class DiskResourceQueryFormNamePromptTest_NoEditorErrors {
      * Verify the following when {@link DiskResourceQueryFormNamePrompt#cancelSaveFilterBtn} is clicked;<br/>
      */
     @Test public void testOnCancelSaveFilter_noErrors() {
+        final String originalName = "originalName";
+        namePrompt.originalName = originalName;
         DiskResourceQueryFormNamePrompt spy = spy(namePrompt);
         spy.onCancelSaveFilter(mock(SelectEvent.class));
 
-        // Verify that the name field is reset
-        verify(spy.name).reset();
+        final ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
+        verify(spy.name).setValue(stringCaptor.capture());
+        assertEquals("Verify that the name field is reset", originalName, stringCaptor.getValue());
 
         // Verify that the form is hidden
         verify(spy).hide();

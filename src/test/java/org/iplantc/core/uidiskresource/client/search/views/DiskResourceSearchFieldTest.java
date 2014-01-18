@@ -28,5 +28,14 @@ public class DiskResourceSearchFieldTest {
     @Test public void testExpand() {
         // TODO create test
     }
+    
+    /**
+     * Verifies functionality when a user enters text into the textField
+     */
+    @Ignore
+    @Test public void testUserEnteredQuery() {
+        // TODO create test
+        // Verify that a search event is fired when a user successfully enters a query
+    }
 
 }

@@ -19,9 +19,11 @@ public class SaveDiskResourceQueryEvent extends GwtEvent<SaveDiskResourceQueryEv
 
     public static final GwtEvent.Type<SaveDiskResourceQueryEventHandler> TYPE = new GwtEvent.Type<SaveDiskResourceQueryEventHandler>();
     private final DiskResourceQueryTemplate queryTemplate;
+    private final String originalName;
 
-    public SaveDiskResourceQueryEvent(DiskResourceQueryTemplate queryTemplate) {
+    public SaveDiskResourceQueryEvent(final DiskResourceQueryTemplate queryTemplate, final String originalName) {
         this.queryTemplate = queryTemplate;
+        this.originalName = originalName;
     }
 
     @Override
@@ -36,6 +38,10 @@ public class SaveDiskResourceQueryEvent extends GwtEvent<SaveDiskResourceQueryEv
     @Override
     protected void dispatch(SaveDiskResourceQueryEventHandler handler) {
         handler.doSaveDiskResourceQueryTemplate(this);
+    }
+
+    public String getOriginalName() {
+        return originalName;
     }
 
 }

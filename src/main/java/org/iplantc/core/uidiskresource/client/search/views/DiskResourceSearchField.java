@@ -12,9 +12,11 @@ import com.sencha.gxt.widget.core.client.form.PropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TriggerField;
 
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.core.uicommons.client.services.impl.DataSearchQueryBuilder;
 import org.iplantc.core.uicommons.client.services.impl.DiskResourceQueryTemplateBuilder;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.HasSaveDiskResourceQueryEventHandlers;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.HasSubmitDiskResourceQueryEventHandlers;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.views.cells.DiskResourceSearchCell;
@@ -27,16 +29,17 @@ import java.text.ParseException;
  * @author jstroot
  * 
  */
-public class DiskResourceSearchField extends TriggerField<String> implements HasExpandHandlers, HasCollapseHandlers, HasSaveDiskResourceQueryEventHandlers, HasSubmitDiskResourceQueryEventHandlers {
+public class DiskResourceSearchField extends TriggerField<String> implements HasExpandHandlers, HasCollapseHandlers, HasSaveDiskResourceQueryEventHandlers, HasSubmitDiskResourceQueryEventHandlers,
+        SubmitDiskResourceQueryEventHandler {
 
     public final class QueryStringPropertyEditor extends PropertyEditor<String> {
         @Override
         public String parse(CharSequence text) throws ParseException {
             DiskResourceQueryTemplate parsedTemplate = new DiskResourceQueryTemplateBuilder(text.toString()).build();
             edit(parsedTemplate);
-
             clearInvalid();
 
+            getCell().fireEvent(new SubmitDiskResourceQueryEvent(parsedTemplate));
             return text.toString();
         }
 
@@ -53,6 +56,7 @@ public class DiskResourceSearchField extends TriggerField<String> implements Has
         super(new DiskResourceSearchCell());
 
         setPropertyEditor(new QueryStringPropertyEditor());
+        getCell().addSubmitDiskResourceQueryEventHandler(this);
     }
 
     @Override
@@ -84,6 +88,7 @@ public class DiskResourceSearchField extends TriggerField<String> implements Has
     public void edit(DiskResourceQueryTemplate queryTemplate) {
         // Forward edit call to searchForm
         getCell().getSearchForm().edit(queryTemplate);
+        clear();
     }
 
     @Override
@@ -107,6 +112,13 @@ public class DiskResourceSearchField extends TriggerField<String> implements Has
         // TODO Update parse error message
         String msg = "Default message";
         forceInvalid(msg);
+    }
+
+    @Override
+    public void doSubmitDiskResourceQuery(SubmitDiskResourceQueryEvent event) {
+        DataSearchQueryBuilder builder = new DataSearchQueryBuilder(event.getQueryTemplate());
+        final String buildFullQuery = builder.buildFullQuery();
+        setValue(buildFullQuery);
     }
 
 }

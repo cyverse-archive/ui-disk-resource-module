@@ -49,6 +49,10 @@ import java.util.List;
  * @author jstroot
  * 
  */
+/**
+ * @author jstroot
+ *
+ */
 @RunWith(GxtMockitoTestRunner.class)
 public class DataSearchPresenterImplTest {
 
@@ -180,7 +184,7 @@ public class DataSearchPresenterImplTest {
      *
      * @see org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter#doSaveDiskResourceQueryTemplate(org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent)
      */
-    @Test public void testDoSaveDiskResourceQueryTemplate_Case4() {
+    @Test public void testDoSaveDiskResourceQueryTemplateOnSuccess_Case1() {
         DataSearchPresenterImpl spy = spy(dsPresenter);
         SaveDiskResourceQueryEvent mockEvent = mock(SaveDiskResourceQueryEvent.class);
         DiskResourceQueryTemplate mockTemplate = mock(DiskResourceQueryTemplate.class);
@@ -199,9 +203,43 @@ public class DataSearchPresenterImplTest {
         verify(spy).doSubmitDiskResourceQuery(submitEventCaptor.capture());
         assertEquals("Verify that a search is requested after a successful persist. ", mockTemplate, submitEventCaptor.getValue().getQueryTemplate());
 
-        assertEquals("Verify that the query has been added to the presenter's list after successful persist", 1, spy.getQueryTemplates().size());
+        verify(searchService).createFrozenList(drqtListCaptor.capture());
+        assertEquals("Verify that list passed to createFrozenList is expected size", 1, drqtListCaptor.getValue().size());
+        assertEquals("Verify that list passed to createFrozenList contains intended template", mockTemplate, drqtListCaptor.getValue().get(0));
+
+        verify(spy).setCleanCopyQueryTemplates(anyListOf(DiskResourceQueryTemplate.class));
+
+        assertEquals("Verify that the query has been added to the presenter's list after successful persist", 1, spy.queryTemplates.size());
+        verifyNoMoreInteractions(searchService);
     }
 
+    /**
+     * Verifies that a query will be removed from the treestore when a name change is detected.
+     */
+    @Test public void testDoSaveDiskResourceQueryTemplateOnSuccess_Case2() {
+        final String originalName = "originalMockName";
+        DataSearchPresenterImpl spy = spy(dsPresenter);
+        SaveDiskResourceQueryEvent mockEvent = mock(SaveDiskResourceQueryEvent.class);
+        DiskResourceQueryTemplate mockTemplate = mock(DiskResourceQueryTemplate.class);
+        DiskResourceQueryTemplate cleanMockTemplate = mock(DiskResourceQueryTemplate.class);
+
+        when(mockTemplate.getName()).thenReturn("mock1");
+        when(cleanMockTemplate.getName()).thenReturn(originalName);
+        when(mockEvent.getQueryTemplate()).thenReturn(mockTemplate);
+        when(mockEvent.getOriginalName()).thenReturn(originalName);
+
+        spy.cleanCopyQueryTemplates = Lists.newArrayList(cleanMockTemplate);
+        spy.doSaveDiskResourceQueryTemplate(mockEvent);
+        verify(searchService).saveQueryTemplates(drqtListCaptor.capture(), booleanAsyncCaptor.capture());
+        
+        // Force service success
+        booleanAsyncCaptor.getValue().onSuccess(true);
+
+        ArgumentCaptor<Folder> folderCaptor = ArgumentCaptor.forClass(Folder.class);
+        verify(treeStoreMock).remove(folderCaptor.capture());
+        assertEquals("Verify that the intended template was passed to remove method", cleanMockTemplate, folderCaptor.getValue());
+    }
+    
     /**
      * Verifies that a search will not be requested after a failure to persist a query.
      *

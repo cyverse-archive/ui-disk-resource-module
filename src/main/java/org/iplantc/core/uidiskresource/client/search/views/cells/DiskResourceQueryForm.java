@@ -17,9 +17,6 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.autobean.shared.AutoBeanCodex;
-import com.google.web.bindery.autobean.shared.Splittable;
-import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
 import com.sencha.gxt.core.client.Style.Anchor;
 import com.sencha.gxt.core.client.Style.AnchorAlignment;
@@ -37,7 +34,7 @@ import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.core.uicommons.client.models.search.SearchAutoBeanFactory;
+import org.iplantc.core.uicommons.client.services.impl.DiskResourceQueryTemplateBuilder;
 import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.HasSaveDiskResourceQueryEventHandlers;
@@ -93,25 +90,6 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     interface DiskResourceQueryFormUiBinder extends UiBinder<Widget, DiskResourceQueryForm> {}
 
     interface SearchFormEditorDriver extends SimpleBeanEditorDriver<DiskResourceQueryTemplate, DiskResourceQueryForm> {}
-
-    private static DiskResourceQueryTemplate createDefaultFilter() {
-        SearchAutoBeanFactory factory = SearchAutoBeanFactory.INSTANCE;
-        Splittable defFilter = StringQuoter.createSplittable();
-        // Need to create full permissions by default in order to function as a "smart folder"
-        Splittable permissions = StringQuoter.createSplittable();
-        StringQuoter.create(true).assign(permissions, "own");
-        StringQuoter.create(true).assign(permissions, "read");
-        StringQuoter.create(true).assign(permissions, "write");
-        permissions.assign(defFilter, "permissions");
-        StringQuoter.create("/savedFilters/").assign(defFilter, "path");
-
-        DiskResourceQueryTemplate dataSearchFilter = AutoBeanCodex.decode(factory, DiskResourceQueryTemplate.class, defFilter).as();
-        dataSearchFilter.setCreatedWithin(factory.dateInterval().as());
-        dataSearchFilter.setModifiedWithin(factory.dateInterval().as());
-        dataSearchFilter.setFileSizeRange(factory.fileSizeRange().as());
-
-        return dataSearchFilter;
-    }
 
     protected BaseEventPreview eventPreview;
 
@@ -183,7 +161,7 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
      * @param searchService
      */
     public DiskResourceQueryForm() {
-        this(createDefaultFilter());
+        this(DiskResourceQueryTemplateBuilder.createDefaultFilter());
     }
 
     /**
@@ -233,7 +211,7 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
      * Clears search form by binding it to a new default query template
      */
     public void clearSearch() {
-        editorDriver.edit(createDefaultFilter());
+        editorDriver.edit(DiskResourceQueryTemplateBuilder.createDefaultFilter());
     }
 
     @Override
