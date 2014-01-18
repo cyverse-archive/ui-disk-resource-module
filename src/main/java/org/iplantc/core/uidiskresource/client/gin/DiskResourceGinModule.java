@@ -26,7 +26,7 @@ public class DiskResourceGinModule extends AbstractGinModule {
     @Override
     protected void configure() {
         bind(new TypeLiteral<TreeStore<Folder>>() {}).toProvider(DiskResourceTreeStoreProvider.class);
-        bind(new TypeLiteral<Tree<Folder, String>>() {}).toProvider(DiskResourceTreeProvider.class);
+        bind(new TypeLiteral<Tree<Folder, Folder>>() {}).toProvider(DiskResourceTreeProvider.class);
         bind(DiskResourceView.class).to(DiskResourceViewImpl.class);
         bind(DiskResourceView.Presenter.class).to(DiskResourcePresenterImpl.class);
         bind(DiskResourceView.Proxy.class).to(FolderRpcProxy.class);

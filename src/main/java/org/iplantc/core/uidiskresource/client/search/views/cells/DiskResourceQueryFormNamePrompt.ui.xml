@@ -30,7 +30,8 @@
 			<container:child layoutData="{verticalLayoutData}">
 				<form:FieldLabel text="Filter Name">
 					<form:widget>
-						<form:TextField ui:field="name" />
+						<form:TextField ui:field="name"
+						                allowBlank="false" />
 					</form:widget>
 				</form:FieldLabel>
 			</container:child>

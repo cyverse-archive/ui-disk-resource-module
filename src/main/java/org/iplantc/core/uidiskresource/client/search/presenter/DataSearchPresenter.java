@@ -73,6 +73,16 @@ public interface DataSearchPresenter extends SaveDiskResourceQueryEventHandler, 
      */
     DiskResourceQueryTemplate getActiveQuery();
 
+    /**
+     * Loads the list of given queries.
+     * 
+     * Checks that the given query templates have unique name.
+     * 
+     * This method should only be called from the proxy which loads the root folders into the data window
+     * navigation pane.
+     * 
+     * @param savedQueries
+     */
     void loadSavedQueries(List<DiskResourceQueryTemplate> savedQueries);
 
 }

@@ -4,11 +4,13 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HasName;
 import com.google.inject.Inject;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
@@ -31,7 +33,9 @@ import org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchFie
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DataSearchPresenterImpl implements DataSearchPresenter {
 
@@ -68,19 +72,30 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
     @Override
     public void doSaveDiskResourceQueryTemplate(SaveDiskResourceQueryEvent event) {
         // Assume that once the filter is saved, a search should be performed.
-        // Get query template
         final DiskResourceQueryTemplate queryTemplate = event.getQueryTemplate();
 
-        String currId = Strings.nullToEmpty(queryTemplate.getId());
-        if (Strings.isNullOrEmpty(currId)) {
-            queryTemplate.setId(searchService.getUniqueId());
-        }
-        // If the given query template is already in the list, remove it.
-        for (DiskResourceQueryTemplate hasId : ImmutableList.copyOf(getQueryTemplates())) {
-            String inListId = hasId.getId();
-            if (currId.equalsIgnoreCase(inListId)) {
-                getQueryTemplates().remove(hasId);
-                break;
+        if (Strings.isNullOrEmpty(queryTemplate.getName())) {
+            // Given query template has no name, ripple error back to view
+            GWT.log("Given query has no name, cannot save");
+            return;
+        } else {
+            // Check for name uniqueness
+            final Set<String> uniqueNames = getUniqueNames(getQueryTemplates());
+            if (uniqueNames.size() == getQueryTemplates().size()) {
+                // Sanity check: There were no dupes in the current list
+                if (uniqueNames.contains(queryTemplate.getName())) {
+                    /*
+                     * The given query template is already in the list, remove it. The new one will be
+                     * added to the list submitted to the service.
+                     */
+                    for (DiskResourceQueryTemplate hasId : ImmutableList.copyOf(getQueryTemplates())) {
+                        String inListName = hasId.getName();
+                        if (queryTemplate.getName().equalsIgnoreCase(inListName)) {
+                            getQueryTemplates().remove(hasId);
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -109,6 +124,21 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
     }
 
+    Set<String> getUniqueNames(List<DiskResourceQueryTemplate> hasNames) {
+        final HashSet<String> queryNameSet = Sets.newHashSet();
+        for (HasName hasName : hasNames) {
+            if (queryNameSet.contains(hasName.getName())) {
+                // We have a dupe name!!
+                GWT.log("Duplicate QueryTemplate name found: " + hasName.getName());
+                // TODO Determine what to do when dupe name is found. Currently it is ommitted silently.
+            } else {
+                queryNameSet.add(hasName.getName());
+            }
+        }
+
+        return queryNameSet;
+    }
+
     /**
      * This handler is responsible for submitting a search with the {@link DiskResourceQueryTemplate}
      * contained in the given {@link SubmitDiskResourceQueryEvent}.
@@ -122,12 +152,10 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
         List<DiskResourceQueryTemplate> toUpdate;
         // If we don't have the query in our collection
-        final boolean isNewQuery = Strings.isNullOrEmpty(toSubmit.getId());
+        final boolean isNewQuery = Strings.isNullOrEmpty(toSubmit.getName());
         if (isNewQuery) {
-            // Give the new query an id.
-            toSubmit.setId(searchService.getUniqueId());
             toUpdate = Lists.newArrayList(getQueryTemplates());
-            toUpdate.add(toSubmit);
+            // toUpdate.add(toSubmit);
         } else {
             toUpdate = Lists.newArrayList();
             // If it is an existing query, determine if it is dirty. If so, set dirty flag
@@ -135,7 +163,7 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
                 toSubmit.setDirty(true);
                 // Replace existing object in current template list
                 for (DiskResourceQueryTemplate qt : getQueryTemplates()) {
-                    if (qt.getId().equalsIgnoreCase(toSubmit.getId())) {
+                    if (qt.getName().equalsIgnoreCase(toSubmit.getName())) {
                         toUpdate.add(toSubmit);
                     } else {
                         toUpdate.add(qt);
@@ -181,30 +209,6 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
         this.view = view;
         view.addSaveDiskResourceQueryEventHandler(this);
         view.addSubmitDiskResourceQueryEventHandler(this);
-
-        // Retrieve any saved searches.
-        searchService.getSavedQueryTemplates(new AsyncCallback<List<DiskResourceQueryTemplate>>() {
-
-            @Override
-            public void onFailure(Throwable caught) {
-                announcer.schedule(new ErrorAnnouncementConfig(SafeHtmlUtils.fromString("Failed to retrieve saved filters"), true));
-            }
-
-            @Override
-            public void onSuccess(List<DiskResourceQueryTemplate> result) {
-                // Save result
-                getQueryTemplates().clear();
-                for (DiskResourceQueryTemplate qt : result) {
-                    qt.setId(searchService.getUniqueId());
-                    getQueryTemplates().add(qt);
-                }
-                setCleanCopyQueryTemplates(searchService.createFrozenList(getQueryTemplates()));
-
-                // Update navigation window
-                updateDataNavigationWindow(queryTemplates, treeStore);
-            }
-        });
-
     }
 
     boolean areTemplatesEqual(DiskResourceQueryTemplate lhs, DiskResourceQueryTemplate rhs) {
@@ -277,7 +281,7 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
     private boolean templateHasChanged(DiskResourceQueryTemplate template, List<DiskResourceQueryTemplate> controlList) {
         for (DiskResourceQueryTemplate qt : controlList) {
-            if (qt.getId().equalsIgnoreCase(template.getId()) && !areTemplatesEqual(qt, template)) {
+            if (qt.getName().equalsIgnoreCase(template.getName()) && !areTemplatesEqual(qt, template)) {
                 // Given template has been changed
                 return true;
             }
@@ -287,13 +291,10 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
     @Override
     public void loadSavedQueries(List<DiskResourceQueryTemplate> savedQueries) {
-        // Save result
-        getQueryTemplates().clear();
-        for (DiskResourceQueryTemplate qt : savedQueries) {
-            qt.setId(searchService.getUniqueId());
-            getQueryTemplates().add(qt);
-        }
-        setCleanCopyQueryTemplates(searchService.createFrozenList(getQueryTemplates()));
+        setCleanCopyQueryTemplates(searchService.createFrozenList(savedQueries));
+
+        queryTemplates.clear();
+        queryTemplates.addAll(savedQueries);
 
         // Update navigation window
         updateDataNavigationWindow(queryTemplates, treeStore);

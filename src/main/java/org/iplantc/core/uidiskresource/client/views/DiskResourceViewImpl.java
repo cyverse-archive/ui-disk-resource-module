@@ -65,9 +65,7 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 import com.sencha.gxt.widget.core.client.tree.Tree;
-import com.sencha.gxt.widget.core.client.tree.Tree.TreeAppearance;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
-import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 import com.sencha.gxt.widget.core.client.tree.TreeView;
 
 import org.iplantc.core.resources.client.DataCollapseStyle;
@@ -97,9 +95,9 @@ import java.util.Set;
 public class DiskResourceViewImpl implements DiskResourceView {
 
     private final class TreeStoreDataChangeHandlerImpl implements StoreDataChangeHandler<Folder> {
-        private final Tree<Folder, String> tree;
+        private final Tree<Folder, Folder> tree;
 
-        private TreeStoreDataChangeHandlerImpl(Tree<Folder, String> tree) {
+        private TreeStoreDataChangeHandlerImpl(Tree<Folder, Folder> tree) {
             this.tree = tree;
         }
 
@@ -228,7 +226,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     ContentPanel westPanel;
 
     @UiField(provided = true)
-    Tree<Folder, String> tree;
+    Tree<Folder, Folder> tree;
 
     @UiField(provided = true)
     final TreeStore<Folder> treeStore;
@@ -277,7 +275,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     private Status selectionStatus;
 
     @Inject
-    public DiskResourceViewImpl(final Tree<Folder, String> tree) {
+    public DiskResourceViewImpl(final Tree<Folder, Folder> tree) {
         this.tree = tree;
         this.treeStore = tree.getStore();
         tree.setView(new CustomTreeView());
@@ -290,7 +288,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
         grid.setSelectionModel(sm);
 
-        setLeafIcon(tree);
+        // setLeafIcon(tree);
         tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         tree.getSelectionModel().addSelectionHandler(new TreeSelectionHandler());
 
@@ -309,12 +307,14 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     }
 
-    private void setLeafIcon(final Tree<Folder, String> tree) {
-        // Set Leaf icon to a folder
-        TreeStyle treeStyle = tree.getStyle();
-        TreeAppearance appearance = tree.getAppearance();
-        treeStyle.setLeafIcon(appearance.closeNodeIcon());
-    }
+    /*
+     * private void setLeafIcon(final Tree<Folder, String> tree) {
+     * // Set Leaf icon to a folder
+     * TreeStyle treeStyle = tree.getStyle();
+     * TreeAppearance appearance = tree.getAppearance();
+     * // treeStyle.setLeafIcon(appearance.closeNodeIcon());
+     * }
+     */
 
     private void initLiveView() {
         gridView.setRowHeight(25);
