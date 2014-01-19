@@ -79,6 +79,7 @@ import com.sencha.gxt.widget.core.client.grid.editing.ClicksToEdit;
 import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
+import com.sencha.gxt.widget.core.client.tips.QuickTip;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 public class DiskResourceMetadataView implements IsWidget {
@@ -210,6 +211,8 @@ public class DiskResourceMetadataView implements IsWidget {
 						return item.getName();
 					}
 				});
+		templateCombo.setEditable(false);
+		templateCombo.setWidth(175);
 		templateCombo.setEmptyText("Select a template...");
 		templateCombo.setTypeAhead(true);
 		templateCombo.addSelectionHandler(new SelectionHandler<MetadataTemplateInfo>() {
@@ -230,8 +233,8 @@ public class DiskResourceMetadataView implements IsWidget {
 
     public void loadTemplateAttributes(List<MetadataTemplateAttribute> attributes) {
         templateAttrFieldMap.clear();
-		TextButton rmvBtn = buildRemoveTemplateButton();
-		templateContainer.add(rmvBtn,new VerticalLayoutData(1, -1));
+        TextButton rmvBtn = buildRemoveTemplateButton();
+		templateContainer.add(rmvBtn,new VerticalLayoutData(.90, -1));
 		for (MetadataTemplateAttribute attribute : attributes) {
             Field<?> field = getAttributeValueWidget(attribute);
             if (field != null) {
@@ -242,7 +245,7 @@ public class DiskResourceMetadataView implements IsWidget {
 				templateContainer.add(
                         buildFieldLabel(field, attribute.getName(), attribute.getDescription(),
 								!attribute.isRequired()),
-						new VerticalLayoutData(1, -1));
+						new VerticalLayoutData(.90, -1));
 			}
 		}
 		alc.forceLayout();
@@ -250,7 +253,7 @@ public class DiskResourceMetadataView implements IsWidget {
 	}
 
 	private TextButton buildRemoveTemplateButton() {
-		TextButton removeBtn = new TextButton(I18N.DISPLAY.remove(),IplantResources.RESOURCES.deleteIcon());
+		TextButton removeBtn = new TextButton(I18N.DISPLAY.remove() + " Template",IplantResources.RESOURCES.deleteIcon());
 
 		return removeBtn;
 	}
@@ -304,6 +307,7 @@ public class DiskResourceMetadataView implements IsWidget {
 		} else {
 			fl.setHTML(buildLabelWithDescription(lbl, description));
 		}
+		new QuickTip(fl);
 		fl.setLabelAlign(LabelAlign.TOP);
 		return fl;
 	}
@@ -395,7 +399,7 @@ public class DiskResourceMetadataView implements IsWidget {
     }
 
 	private String buildLabelWithDescription(final String label, final String description) {
-		return "<span title='" + description + "' style='pointer:cursor;'>" + label + "</span>";
+		return "<span qtip='" + description + "' style='cursor:pointer;color:#0098AA;'>" + label + "</span>";
 	}
 
 	private String buildRequiredFieldLabel(final String label) {
@@ -416,7 +420,7 @@ public class DiskResourceMetadataView implements IsWidget {
 		grid = new Grid<DiskResourceMetadata>(createListStore(),
 				createColumnModel());
 		userMetadataPanel.add(grid);
-		centerPanel.add(userMetadataPanel);
+		centerPanel.add(userMetadataPanel, new VerticalLayoutData(1,-1));
 
 		gridInlineEditing = new GridInlineEditing<DiskResourceMetadata>(grid);
 		gridInlineEditing.setClicksToEdit(ClicksToEdit.TWO);
@@ -454,7 +458,7 @@ public class DiskResourceMetadataView implements IsWidget {
 
 	private void buildUserMetadataPanel() {
 		userMetadataPanel = new ContentPanel(appearance);
-		userMetadataPanel.setSize("575","370");
+		userMetadataPanel.setSize("575","350");
 		userMetadataPanel.setCollapsible(true);
 		userMetadataPanel.getHeader().addStyleName(ThemeStyles.getStyle().borderTop());
 
@@ -649,13 +653,14 @@ public class DiskResourceMetadataView implements IsWidget {
 		alc.add(templateForm);
 		alc.add(userMetadataPanel);
         alc.setActiveWidget(templateForm);
-		centerPanel.add(alc);
+		centerPanel.add(alc, new VerticalLayoutData(1, -1));
 
 	}
 
 	private void buildTemplatePanel() {
 		templateForm = new ContentPanel(appearance);
-		templateForm.setSize("575","370");
+		templateForm.setBodyStyle("background-color: #fff; padding: 5px");
+		templateForm.setSize("575","275");
 		templateForm.setHeadingText(templateCombo.getCurrentValue().getName());
 		templateForm.getHeader().addStyleName(ThemeStyles.getStyle().borderTop());
 		templateContainer = new VerticalLayoutContainer();
