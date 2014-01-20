@@ -74,7 +74,6 @@ import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.Grid.GridCell;
-import com.sencha.gxt.widget.core.client.grid.GridSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.editing.ClicksToEdit;
 import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
@@ -83,6 +82,32 @@ import com.sencha.gxt.widget.core.client.tips.QuickTip;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 public class DiskResourceMetadataView implements IsWidget {
+
+	private final class TemplateInfoSelectionHandler implements
+			SelectionHandler<MetadataTemplateInfo> {
+		@Override
+		public void onSelection(
+				SelectionEvent<MetadataTemplateInfo> event) {
+			selectedTemplate = event.getSelectedItem();
+			onTemplateSelected(selectedTemplate);
+		}
+	}
+
+	private final class TemplateInfoLabelProvider implements
+			LabelProvider<MetadataTemplateInfo> {
+		@Override
+		public String getLabel(MetadataTemplateInfo item) {
+			return item.getName();
+		}
+	}
+
+	private final class TemplateInfoModelKeyProvider implements
+			ModelKeyProvider<MetadataTemplateInfo> {
+		@Override
+		public String getKey(MetadataTemplateInfo item) {
+			return item.getId();
+		}
+	}
 
 	public interface Presenter extends
 			org.iplantc.core.uicommons.client.presenter.Presenter {
@@ -108,8 +133,8 @@ public class DiskResourceMetadataView implements IsWidget {
 
 	}
 
-    private static final String IPC_METADATA_TEMPLATE_ATTR = "ipc-metadata-template"; //$NON-NLS-1$
-    private static final String USER_UNIT_TAG = "ipc_user_unit_tag"; //$NON-NLS-1$
+	private static final String IPC_METADATA_TEMPLATE_ATTR = "ipc-metadata-template"; //$NON-NLS-1$
+	private static final String USER_UNIT_TAG = "ipc_user_unit_tag"; //$NON-NLS-1$
 
 	@UiTemplate("DiskResourceMetadataEditorPanel.ui.xml")
 	interface DiskResourceMetadataEditorPanelUiBinder extends
@@ -142,8 +167,6 @@ public class DiskResourceMetadataView implements IsWidget {
 
 	private ContentPanel templateForm;
 
-	private int attrib_counter;
-
 	private final Widget widget;
 
 	private final Set<DiskResourceMetadata> toBeDeleted = Sets.newHashSet();
@@ -169,23 +192,25 @@ public class DiskResourceMetadataView implements IsWidget {
 
 	private final VerticalLayoutContainer centerPanel;
 
-    private final FastMap<Field<?>> templateAttrFieldMap = new FastMap<Field<?>>();
+	private final FastMap<Field<?>> templateAttrFieldMap = new FastMap<Field<?>>();
 
-    private final FastMap<DiskResourceMetadata> attrAvuMap = new FastMap<DiskResourceMetadata>();
+	private final FastMap<DiskResourceMetadata> attrAvuMap = new FastMap<DiskResourceMetadata>();
+
+	private MetadataTemplateInfo selectedTemplate;
+
+	private DiskResource selectedResource;
 
 	public DiskResourceMetadataView(DiskResource dr) {
 		widget = uiBinder.createAndBindUi(this);
+		selectedResource = dr;
 		alc = new AccordionLayoutContainer();
 		centerPanel = new VerticalLayoutContainer();
 		con.setCenterWidget(centerPanel);
 		appearance = GWT
 				.<AccordionLayoutAppearance> create(AccordionLayoutAppearance.class);
-		initGridEditing();
-		grid.getSelectionModel().addSelectionChangedHandler(
-				new MetadataSelectionChangedListener(deleteMetadataButton, grid
-						.getSelectionModel(), gridInlineEditing));
-		addMetadataButton.setEnabled(dr.getPermissions().isWritable());
-		deleteMetadataButton.setEnabled(dr.getPermissions().isWritable());
+		initGrid();
+		addMetadataButton.setEnabled(selectedResource.getPermissions().isWritable());
+		deleteMetadataButton.disable();
 	}
 
 	public void setPresenter(Presenter p) {
@@ -195,55 +220,40 @@ public class DiskResourceMetadataView implements IsWidget {
 	@UiFactory
 	ComboBox<MetadataTemplateInfo> buildTemplateCombo() {
 		templateStore = new ListStore<MetadataTemplateInfo>(
-				new ModelKeyProvider<MetadataTemplateInfo>() {
-
-					@Override
-					public String getKey(MetadataTemplateInfo item) {
-						return item.getId();
-					}
-				});
+				new TemplateInfoModelKeyProvider());
 
 		templateCombo = new ComboBox<MetadataTemplateInfo>(templateStore,
-				new LabelProvider<MetadataTemplateInfo>() {
-
-					@Override
-					public String getLabel(MetadataTemplateInfo item) {
-						return item.getName();
-					}
-				});
+				new TemplateInfoLabelProvider());
 		templateCombo.setEditable(false);
 		templateCombo.setWidth(175);
 		templateCombo.setEmptyText("Select a template...");
 		templateCombo.setTypeAhead(true);
-		templateCombo.addSelectionHandler(new SelectionHandler<MetadataTemplateInfo>() {
-
-			@Override
-			public void onSelection(SelectionEvent<MetadataTemplateInfo> event) {
-				onTemplateSelected(event.getSelectedItem());
-			}
-		});
+		templateCombo
+				.addSelectionHandler(new TemplateInfoSelectionHandler());
 		return templateCombo;
 	}
 
-    private void onTemplateSelected(MetadataTemplateInfo templateInfo) {
-        presenter.onTemplateSelected(templateInfo.getId());
-        buildTemplateContainer();
-        alc.mask();
-    }
+	private void onTemplateSelected(MetadataTemplateInfo templateInfo) {
+		presenter.onTemplateSelected(templateInfo.getId());
+		buildTemplateContainer();
+		alc.mask();
+	}
 
-    public void loadTemplateAttributes(List<MetadataTemplateAttribute> attributes) {
-        templateAttrFieldMap.clear();
-        TextButton rmvBtn = buildRemoveTemplateButton();
-		templateContainer.add(rmvBtn,new VerticalLayoutData(.90, -1));
+	public void loadTemplateAttributes(
+			List<MetadataTemplateAttribute> attributes) {
+		templateAttrFieldMap.clear();
+		TextButton rmvBtn = buildRemoveTemplateButton();
+		templateContainer.add(rmvBtn, new VerticalLayoutData(.90, -1));
 		for (MetadataTemplateAttribute attribute : attributes) {
-            Field<?> field = getAttributeValueWidget(attribute);
-            if (field != null) {
-                AttributeValidationHandler validationHandler = new AttributeValidationHandler();
-                field.addValidHandler(validationHandler);
-                field.addInvalidHandler(validationHandler);
-                templateAttrFieldMap.put(attribute.getName(), field);
+			Field<?> field = getAttributeValueWidget(attribute);
+			if (field != null) {
+				AttributeValidationHandler validationHandler = new AttributeValidationHandler();
+				field.addValidHandler(validationHandler);
+				field.addInvalidHandler(validationHandler);
+				templateAttrFieldMap.put(attribute.getName(), field);
 				templateContainer.add(
-                        buildFieldLabel(field, attribute.getName(), attribute.getDescription(),
+						buildFieldLabel(field, attribute.getName(),
+								attribute.getDescription(),
 								!attribute.isRequired()),
 						new VerticalLayoutData(.90, -1));
 			}
@@ -253,57 +263,63 @@ public class DiskResourceMetadataView implements IsWidget {
 	}
 
 	private TextButton buildRemoveTemplateButton() {
-		TextButton removeBtn = new TextButton(I18N.DISPLAY.remove() + " Template",IplantResources.RESOURCES.deleteIcon());
+		TextButton removeBtn = new TextButton(I18N.DISPLAY.remove()
+				+ " Template", IplantResources.RESOURCES.deleteIcon());
 
 		return removeBtn;
 	}
 
-    private TextField buildTextField(MetadataTemplateAttribute attribute) {
+	private TextField buildTextField(MetadataTemplateAttribute attribute) {
 		TextField fld = new TextField();
-        fld.setAllowBlank(!attribute.isRequired());
+		fld.setAllowBlank(!attribute.isRequired());
 
-        DiskResourceMetadata avu = attrAvuMap.get(attribute.getName());
-        if (avu != null) {
-            fld.setValue(avu.getValue());
-        }
+		DiskResourceMetadata avu = attrAvuMap.get(attribute.getName());
+		if (avu != null) {
+			fld.setValue(avu.getValue());
+		}
 
-        return fld;
+		return fld;
 	}
 
-	private NumberField<Integer> buildIntegerField(MetadataTemplateAttribute attribute) {
-        NumberField<Integer> nf = new NumberField<Integer>(new IntegerPropertyEditor());
-        nf.setAllowBlank(!attribute.isRequired());
+	private NumberField<Integer> buildIntegerField(
+			MetadataTemplateAttribute attribute) {
+		NumberField<Integer> nf = new NumberField<Integer>(
+				new IntegerPropertyEditor());
+		nf.setAllowBlank(!attribute.isRequired());
 		nf.setAllowDecimals(false);
 		nf.setAllowNegative(true);
 
-        DiskResourceMetadata avu = attrAvuMap.get(attribute.getName());
-        if (avu != null) {
-            nf.setValue(new Integer(avu.getValue()));
-        }
-
-        return nf;
-	}
-
-    private NumberField<Double> buildNumberField(MetadataTemplateAttribute attribute) {
-        NumberField<Double> nf = new NumberField<Double>(new DoublePropertyEditor());
-        nf.setAllowBlank(!attribute.isRequired());
-		nf.setAllowDecimals(true);
-		nf.setAllowNegative(true);
-
-        DiskResourceMetadata avu = attrAvuMap.get(attribute.getName());
-        if (avu != null) {
-            nf.setValue(new Double(avu.getValue()));
-        }
+		DiskResourceMetadata avu = attrAvuMap.get(attribute.getName());
+		if (avu != null) {
+			nf.setValue(new Integer(avu.getValue()));
+		}
 
 		return nf;
 	}
 
-	private FieldLabel buildFieldLabel(IsWidget widget, String lbl, String description,
-			boolean allowBlank) {
+	private NumberField<Double> buildNumberField(
+			MetadataTemplateAttribute attribute) {
+		NumberField<Double> nf = new NumberField<Double>(
+				new DoublePropertyEditor());
+		nf.setAllowBlank(!attribute.isRequired());
+		nf.setAllowDecimals(true);
+		nf.setAllowNegative(true);
+
+		DiskResourceMetadata avu = attrAvuMap.get(attribute.getName());
+		if (avu != null) {
+			nf.setValue(new Double(avu.getValue()));
+		}
+
+		return nf;
+	}
+
+	private FieldLabel buildFieldLabel(IsWidget widget, String lbl,
+			String description, boolean allowBlank) {
 		FieldLabel fl = new FieldLabel(widget);
 
 		if (!allowBlank) {
-			fl.setHTML(buildRequiredFieldLabel(buildLabelWithDescription(lbl, description)));
+			fl.setHTML(buildRequiredFieldLabel(buildLabelWithDescription(lbl,
+					description)));
 		} else {
 			fl.setHTML(buildLabelWithDescription(lbl, description));
 		}
@@ -312,94 +328,99 @@ public class DiskResourceMetadataView implements IsWidget {
 		return fl;
 	}
 
-    private TextArea buildTextArea(MetadataTemplateAttribute attribute) {
+	private TextArea buildTextArea(MetadataTemplateAttribute attribute) {
 		TextArea area = new TextArea();
-        area.setAllowBlank(!attribute.isRequired());
+		area.setAllowBlank(!attribute.isRequired());
 		area.setHeight(200);
 
-        DiskResourceMetadata avu = attrAvuMap.get(attribute.getName());
-        if (avu != null) {
-            area.setValue(avu.getValue());
-        }
+		DiskResourceMetadata avu = attrAvuMap.get(attribute.getName());
+		if (avu != null) {
+			area.setValue(avu.getValue());
+		}
 
 		return area;
 	}
 
-    private CheckBox buildBooleanField(MetadataTemplateAttribute attribute) {
+	private CheckBox buildBooleanField(MetadataTemplateAttribute attribute) {
 		CheckBox cb = new CheckBox();
 
-        DiskResourceMetadata avu = attrAvuMap.get(attribute.getName());
-        if (avu != null) {
-            cb.setValue(new Boolean(avu.getValue()));
-        }
+		DiskResourceMetadata avu = attrAvuMap.get(attribute.getName());
+		if (avu != null) {
+			cb.setValue(new Boolean(avu.getValue()));
+		}
 
 		return cb;
 	}
 
-    private TextField buildURLField(MetadataTemplateAttribute attribute) {
-        TextField tf = buildTextField(attribute);
+	private TextField buildURLField(MetadataTemplateAttribute attribute) {
+		TextField tf = buildTextField(attribute);
 		tf.addValidator(new UrlValidator());
 		return tf;
 	}
 
-    private TextField buildDateField(MetadataTemplateAttribute attribute) {
-        final DateTimeFormat format = DateTimeFormat
-                .getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_SHORT);
-        final TextField tf = buildTextField(attribute);
-        tf.setEmptyText(format.format(new Date()));
-        tf.addValidator(new Validator<String>() {
+	private TextField buildDateField(MetadataTemplateAttribute attribute) {
+		final DateTimeFormat format = DateTimeFormat
+				.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_SHORT);
+		final TextField tf = buildTextField(attribute);
+		tf.setEmptyText(format.format(new Date()));
+		tf.addValidator(new Validator<String>() {
 
-            @Override
-            public List<EditorError> validate(Editor<String> editor, String value) {
-                try {
-                    tf.clearInvalid();
-                    format.parse(value);
-                    return null;
-                } catch (Exception e) {
-                    GWT.log(value, e);
-                    EditorError dee = new DefaultEditorError(editor, "Invalid date / time. Please use: "
-                            + format.getPattern(), value);
-                    return Arrays.asList(dee);
-                }
+			@Override
+			public List<EditorError> validate(Editor<String> editor,
+					String value) {
+				try {
+					tf.clearInvalid();
+					format.parse(value);
+					return null;
+				} catch (Exception e) {
+					GWT.log(value, e);
+					EditorError dee = new DefaultEditorError(editor,
+							"Invalid date / time. Please use: "
+									+ format.getPattern(), value);
+					return Arrays.asList(dee);
+				}
 
-            }
-        });
+			}
+		});
 
-        DiskResourceMetadata avu = attrAvuMap.get(attribute.getName());
-        if (avu != null) {
-            tf.setValue(avu.getValue());
-        }
+		DiskResourceMetadata avu = attrAvuMap.get(attribute.getName());
+		if (avu != null) {
+			tf.setValue(avu.getValue());
+		}
 
 		return tf;
 	}
 
-    /**
-     * @param attribute
-     * @return Field based on MetadataTemplateAttribute type.
-     */
-    private Field<?> getAttributeValueWidget(MetadataTemplateAttribute attribute) {
-        String type = attribute.getType();
-        if (type.equalsIgnoreCase("timestamp")) { //$NON-NLS-1$
-            return buildDateField(attribute);
-        } else if (type.equalsIgnoreCase("boolean")) { //$NON-NLS-1$
-            return buildBooleanField(attribute);
-        } else if (type.equalsIgnoreCase("number")) { //$NON-NLS-1$
-            return buildNumberField(attribute);
-        } else if (type.equalsIgnoreCase("integer")) { //$NON-NLS-1$
-            return buildIntegerField(attribute);
-        } else if (type.equalsIgnoreCase("string")) { //$NON-NLS-1$
-            return buildTextField(attribute);
-        } else if (type.equalsIgnoreCase("multiline text")) { //$NON-NLS-1$
-            return buildTextArea(attribute);
-        } else if (type.equalsIgnoreCase("URL/URI")) { //$NON-NLS-1$
-            return buildURLField(attribute);
-        } else {
-            return null;
-        }
-    }
+	/**
+	 * @param attribute
+	 * @return Field based on MetadataTemplateAttribute type.
+	 */
+	private Field<?> getAttributeValueWidget(MetadataTemplateAttribute attribute) {
+		String type = attribute.getType();
+		if (type.equalsIgnoreCase("timestamp")) { //$NON-NLS-1$
+			return buildDateField(attribute);
+		} else if (type.equalsIgnoreCase("boolean")) { //$NON-NLS-1$
+			return buildBooleanField(attribute);
+		} else if (type.equalsIgnoreCase("number")) { //$NON-NLS-1$
+			return buildNumberField(attribute);
+		} else if (type.equalsIgnoreCase("integer")) { //$NON-NLS-1$
+			return buildIntegerField(attribute);
+		} else if (type.equalsIgnoreCase("string")) { //$NON-NLS-1$
+			return buildTextField(attribute);
+		} else if (type.equalsIgnoreCase("multiline text")) { //$NON-NLS-1$
+			return buildTextArea(attribute);
+		} else if (type.equalsIgnoreCase("URL/URI")) { //$NON-NLS-1$
+			return buildURLField(attribute);
+		} else {
+			return null;
+		}
+	}
 
-	private String buildLabelWithDescription(final String label, final String description) {
-		return "<span qtip='" + description + "' style='cursor:pointer;color:#0098AA;'>" + label + "</span>";
+	private String buildLabelWithDescription(final String label,
+			final String description) {
+		return "<span qtip='" + description
+				+ "' style='cursor:pointer;color:#0098AA;'>" + label
+				+ "</span>";
 	}
 
 	private String buildRequiredFieldLabel(final String label) {
@@ -415,13 +436,22 @@ public class DiskResourceMetadataView implements IsWidget {
 		templateStore.addAll(templates);
 	}
 
-	private void initGridEditing() {
+	private void initGrid() {
 		buildUserMetadataPanel();
 		grid = new Grid<DiskResourceMetadata>(createListStore(),
 				createColumnModel());
 		userMetadataPanel.add(grid);
-		centerPanel.add(userMetadataPanel, new VerticalLayoutData(1,-1));
+		centerPanel.add(userMetadataPanel, new VerticalLayoutData(1, -1));
 
+		if(selectedResource.getPermissions().isWritable()) {
+			initEditor();
+		}
+		grid.getSelectionModel().addSelectionChangedHandler(
+				new MetadataSelectionChangedListener());
+
+	}
+
+	private void initEditor() {
 		gridInlineEditing = new GridInlineEditing<DiskResourceMetadata>(grid);
 		gridInlineEditing.setClicksToEdit(ClicksToEdit.TWO);
 		ColumnConfig<DiskResourceMetadata, String> column1 = grid
@@ -453,14 +483,14 @@ public class DiskResourceMetadataView implements IsWidget {
 						listStore.commitChanges();
 					}
 				});
-
 	}
 
 	private void buildUserMetadataPanel() {
 		userMetadataPanel = new ContentPanel(appearance);
-		userMetadataPanel.setSize("575","350");
+		userMetadataPanel.setSize("575", "350");
 		userMetadataPanel.setCollapsible(true);
-		userMetadataPanel.getHeader().addStyleName(ThemeStyles.getStyle().borderTop());
+		userMetadataPanel.getHeader().addStyleName(
+				ThemeStyles.getStyle().borderTop());
 
 		userMetadataPanel.setHeadingText("User Metadata");
 	}
@@ -481,6 +511,7 @@ public class DiskResourceMetadataView implements IsWidget {
 
 	@UiHandler("deleteMetadataButton")
 	void onDeleteMetadataSelected(SelectEvent event) {
+		expandUserMetadataPanel();
 		for (DiskResourceMetadata md : grid.getSelectionModel()
 				.getSelectedItems()) {
 			toBeDeleted.add(md);
@@ -488,16 +519,33 @@ public class DiskResourceMetadataView implements IsWidget {
 		}
 	}
 
+	private void expandUserMetadataPanel() {
+		if (userMetadataPanel.isCollapsed()) {
+			userMetadataPanel.expand();
+		}
+	}
+
 	@UiHandler("addMetadataButton")
 	void onAddMetadataSelected(SelectEvent event) {
+		expandUserMetadataPanel();
 		DiskResourceMetadata md = autoBeanFactory.metadata().as();
-		md.setAttribute("New Attribute " + attrib_counter++);
+		md.setAttribute(getUniqeAttrName("New Attribute ",0));
 		md.setValue("New Value");
 		md.setUnit(USER_UNIT_TAG);
 		listStore.add(0, md);
 		gridInlineEditing.startEditing(new GridCell(0, 0));
 		gridInlineEditing.getEditor(grid.getColumnModel().getColumn(0))
 				.validate();
+	}
+
+	private String getUniqeAttrName(String attrName, int i) {
+		String retName = i > 0 ? attrName + "_(" + i + ")" : attrName;
+		for (DiskResourceMetadata md : listStore.getAll()) {
+			if (md.getAttribute().equals(retName)) {
+				return getUniqeAttrName(attrName + "", ++i);
+			}
+		}
+		return retName;
 	}
 
 	ColumnModel<MetadataTemplateAttribute> createTemplateColumnModel() {
@@ -535,24 +583,25 @@ public class DiskResourceMetadataView implements IsWidget {
 	}
 
 	public Set<DiskResourceMetadata> getMetadataToAdd() {
-        HashSet<DiskResourceMetadata> metaDataToAdd = Sets.newHashSet();
+		HashSet<DiskResourceMetadata> metaDataToAdd = Sets.newHashSet();
 
-        for (String attr : templateAttrFieldMap.keySet()) {
-            Field<?> field = templateAttrFieldMap.get(attr);
-            if (field.isValid() && field.getValue() != null && !field.getValue().toString().isEmpty()) {
-                DiskResourceMetadata avu = autoBeanFactory.metadata().as();
-                avu.setAttribute(attr);
-                avu.setValue(field.getValue().toString());
-                avu.setUnit(""); //$NON-NLS-1$
+		for (String attr : templateAttrFieldMap.keySet()) {
+			Field<?> field = templateAttrFieldMap.get(attr);
+			if (field.isValid() && field.getValue() != null
+					&& !field.getValue().toString().isEmpty()) {
+				DiskResourceMetadata avu = autoBeanFactory.metadata().as();
+				avu.setAttribute(attr);
+				avu.setValue(field.getValue().toString());
+				avu.setUnit(""); //$NON-NLS-1$
 
-                metaDataToAdd.add(avu);
-                listStore.remove(attrAvuMap.get(attr));
-            }
-        }
+				metaDataToAdd.add(avu);
+				listStore.remove(attrAvuMap.get(attr));
+			}
+		}
 
-        metaDataToAdd.addAll(listStore.getAll());
+		metaDataToAdd.addAll(listStore.getAll());
 
-        return metaDataToAdd;
+		return metaDataToAdd;
 	}
 
 	private final class MetadataCell extends AbstractCell<String> {
@@ -573,23 +622,15 @@ public class DiskResourceMetadataView implements IsWidget {
 	private final class MetadataSelectionChangedListener implements
 			SelectionChangedHandler<DiskResourceMetadata> {
 
-		private final TextButton deleteButton;
-		private final GridSelectionModel<DiskResourceMetadata> sm;
-		private final GridInlineEditing<DiskResourceMetadata> editing;
-
-		public MetadataSelectionChangedListener(final TextButton deleteButton,
-				final GridSelectionModel<DiskResourceMetadata> sm,
-				final GridInlineEditing<DiskResourceMetadata> editing) {
-			this.deleteButton = deleteButton;
-			this.sm = sm;
-			this.editing = editing;
-		}
-
 		@Override
 		public void onSelectionChanged(
 				SelectionChangedEvent<DiskResourceMetadata> event) {
-			deleteButton.setEnabled(!sm.getSelectedItems().isEmpty());
-			editing.completeEditing();
+			deleteMetadataButton.setEnabled(event.getSelection()
+					.size() > 0 && selectedResource.getPermissions().isWritable());
+			if(gridInlineEditing!=null) {
+				gridInlineEditing.completeEditing();
+			}
+
 		}
 	}
 
@@ -616,26 +657,27 @@ public class DiskResourceMetadataView implements IsWidget {
 	}
 
 	public void loadMetadata(DiskResourceMetadataList metadataList) {
-        List<DiskResourceMetadata> metadata = metadataList.getMetadata();
+		List<DiskResourceMetadata> metadata = metadataList.getMetadata();
 
-        listStore.clear();
-        listStore.addAll(metadata);
+		listStore.clear();
+		listStore.addAll(metadata);
 
-        MetadataTemplateInfo selectedTemplateInfo = null;
-        attrAvuMap.clear();
-        for (DiskResourceMetadata avu : metadata) {
-            String attribute = avu.getAttribute();
-            attrAvuMap.put(attribute, avu);
+		MetadataTemplateInfo selectedTemplateInfo = null;
+		attrAvuMap.clear();
+		for (DiskResourceMetadata avu : metadata) {
+			String attribute = avu.getAttribute();
+			attrAvuMap.put(attribute, avu);
 
-            if (attribute.equalsIgnoreCase(IPC_METADATA_TEMPLATE_ATTR)) {
-                selectedTemplateInfo = templateStore.findModelWithKey(avu.getValue());
-            }
-        }
+			if (attribute.equalsIgnoreCase(IPC_METADATA_TEMPLATE_ATTR)) {
+				selectedTemplateInfo = templateStore.findModelWithKey(avu
+						.getValue());
+			}
+		}
 
-        if (selectedTemplateInfo != null) {
-            templateCombo.setValue(selectedTemplateInfo);
-            onTemplateSelected(selectedTemplateInfo);
-        }
+		if (selectedTemplateInfo != null) {
+			templateCombo.setValue(selectedTemplateInfo);
+			onTemplateSelected(selectedTemplateInfo);
+		}
 	}
 
 	public boolean isValid() {
@@ -648,11 +690,11 @@ public class DiskResourceMetadataView implements IsWidget {
 		alc.setExpandMode(ExpandMode.SINGLE);
 		buildTemplatePanel();
 		buildUserMetadataPanel();
-		//must re add the grid
+		// must re add the grid
 		userMetadataPanel.add(grid);
 		alc.add(templateForm);
 		alc.add(userMetadataPanel);
-        alc.setActiveWidget(templateForm);
+		alc.setActiveWidget(templateForm);
 		centerPanel.add(alc, new VerticalLayoutData(1, -1));
 
 	}
@@ -660,15 +702,16 @@ public class DiskResourceMetadataView implements IsWidget {
 	private void buildTemplatePanel() {
 		templateForm = new ContentPanel(appearance);
 		templateForm.setBodyStyle("background-color: #fff; padding: 5px");
-		templateForm.setSize("575","275");
+		templateForm.setSize("575", "275");
 		templateForm.setHeadingText(templateCombo.getCurrentValue().getName());
-		templateForm.getHeader().addStyleName(ThemeStyles.getStyle().borderTop());
+		templateForm.getHeader().addStyleName(
+				ThemeStyles.getStyle().borderTop());
 		templateContainer = new VerticalLayoutContainer();
 		templateContainer.setScrollMode(ScrollMode.AUTOY);
 		templateForm.add(templateContainer);
-		//need this to be set manually to avoid renderer assertion error
+		// need this to be set manually to avoid renderer assertion error
 		templateForm.setCollapsible(true);
-		//end temp fix
+		// end temp fix
 	}
 
 }
