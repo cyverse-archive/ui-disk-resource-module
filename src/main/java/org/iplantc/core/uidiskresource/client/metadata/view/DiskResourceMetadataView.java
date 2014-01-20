@@ -63,6 +63,8 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.Field;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
+import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
+import com.sencha.gxt.widget.core.client.form.IsField;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor.DoublePropertyEditor;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor.IntegerPropertyEditor;
@@ -86,8 +88,7 @@ public class DiskResourceMetadataView implements IsWidget {
 	private final class TemplateInfoSelectionHandler implements
 			SelectionHandler<MetadataTemplateInfo> {
 		@Override
-		public void onSelection(
-				SelectionEvent<MetadataTemplateInfo> event) {
+		public void onSelection(SelectionEvent<MetadataTemplateInfo> event) {
 			selectedTemplate = event.getSelectedItem();
 			onTemplateSelected(selectedTemplate);
 		}
@@ -209,7 +210,8 @@ public class DiskResourceMetadataView implements IsWidget {
 		appearance = GWT
 				.<AccordionLayoutAppearance> create(AccordionLayoutAppearance.class);
 		initGrid();
-		addMetadataButton.setEnabled(selectedResource.getPermissions().isWritable());
+		addMetadataButton.setEnabled(selectedResource.getPermissions()
+				.isWritable());
 		deleteMetadataButton.disable();
 	}
 
@@ -228,8 +230,7 @@ public class DiskResourceMetadataView implements IsWidget {
 		templateCombo.setWidth(175);
 		templateCombo.setEmptyText("Select a template...");
 		templateCombo.setTypeAhead(true);
-		templateCombo
-				.addSelectionHandler(new TemplateInfoSelectionHandler());
+		templateCombo.addSelectionHandler(new TemplateInfoSelectionHandler());
 		return templateCombo;
 	}
 
@@ -443,7 +444,7 @@ public class DiskResourceMetadataView implements IsWidget {
 		userMetadataPanel.add(grid);
 		centerPanel.add(userMetadataPanel, new VerticalLayoutData(1, -1));
 
-		if(selectedResource.getPermissions().isWritable()) {
+		if (selectedResource.getPermissions().isWritable()) {
 			initEditor();
 		}
 		grid.getSelectionModel().addSelectionChangedHandler(
@@ -529,7 +530,7 @@ public class DiskResourceMetadataView implements IsWidget {
 	void onAddMetadataSelected(SelectEvent event) {
 		expandUserMetadataPanel();
 		DiskResourceMetadata md = autoBeanFactory.metadata().as();
-		md.setAttribute(getUniqeAttrName("New Attribute ",0));
+		md.setAttribute(getUniqeAttrName("New Attribute ", 0));
 		md.setValue("New Value");
 		md.setUnit(USER_UNIT_TAG);
 		listStore.add(0, md);
@@ -625,9 +626,9 @@ public class DiskResourceMetadataView implements IsWidget {
 		@Override
 		public void onSelectionChanged(
 				SelectionChangedEvent<DiskResourceMetadata> event) {
-			deleteMetadataButton.setEnabled(event.getSelection()
-					.size() > 0 && selectedResource.getPermissions().isWritable());
-			if(gridInlineEditing!=null) {
+			deleteMetadataButton.setEnabled(event.getSelection().size() > 0
+					&& selectedResource.getPermissions().isWritable());
+			if (gridInlineEditing != null) {
 				gridInlineEditing.completeEditing();
 			}
 
@@ -681,6 +682,14 @@ public class DiskResourceMetadataView implements IsWidget {
 	}
 
 	public boolean isValid() {
+		if (selectedTemplate != null && templateForm != null) {
+			List<IsField<?>> fields = FormPanelHelper.getFields(templateForm);
+			for (IsField<?> f : fields) {
+				if (f.isValid(false)) {
+					valid = false;
+				}
+			}
+		}
 		return valid;
 	}
 
