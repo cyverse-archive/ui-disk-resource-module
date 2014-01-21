@@ -44,6 +44,8 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.Dialog;
+import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.AccordionLayoutAppearance;
@@ -53,9 +55,12 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.CompleteEditEvent;
 import com.sencha.gxt.widget.core.client.event.CompleteEditEvent.CompleteEditHandler;
+import com.sencha.gxt.widget.core.client.event.HideEvent;
+import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
@@ -213,6 +218,7 @@ public class DiskResourceMetadataView implements IsWidget {
 		addMetadataButton.setEnabled(selectedResource.getPermissions()
 				.isWritable());
 		deleteMetadataButton.disable();
+		valid = true;
 	}
 
 	public void setPresenter(Presenter p) {
@@ -227,7 +233,7 @@ public class DiskResourceMetadataView implements IsWidget {
 		templateCombo = new ComboBox<MetadataTemplateInfo>(templateStore,
 				new TemplateInfoLabelProvider());
 		templateCombo.setEditable(false);
-		templateCombo.setWidth(175);
+		templateCombo.setWidth(250);
 		templateCombo.setEmptyText("Select a template...");
 		templateCombo.setTypeAhead(true);
 		templateCombo.addSelectionHandler(new TemplateInfoSelectionHandler());
@@ -266,6 +272,23 @@ public class DiskResourceMetadataView implements IsWidget {
 	private TextButton buildRemoveTemplateButton() {
 		TextButton removeBtn = new TextButton(I18N.DISPLAY.remove()
 				+ " Template", IplantResources.RESOURCES.deleteIcon());
+		removeBtn.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				ConfirmMessageBox cmb  = new ConfirmMessageBox(I18N.DISPLAY.confirmAction(), "Are you sure you want to remove this template ?");
+				cmb.addHideHandler(new HideHandler() {
+
+					@Override
+					public void onHide(HideEvent event) {
+						Dialog d = (Dialog) event.getSource();
+						if(d.getHideButton().getText().equalsIgnoreCase("yes")) {
+							alc.remove(templateForm);
+						}
+					}
+				});
+			}
+		});
 
 		return removeBtn;
 	}
@@ -503,7 +526,7 @@ public class DiskResourceMetadataView implements IsWidget {
 					@Override
 					public String getKey(DiskResourceMetadata item) {
 						return item.getAttribute() + "-" + item.getValue()
-								+ "-" + item.getUnit();
+								+ "-" + item.getUnit() == null ? "" : item.getUnit();
 					}
 				});
 
@@ -596,7 +619,6 @@ public class DiskResourceMetadataView implements IsWidget {
 				avu.setUnit(""); //$NON-NLS-1$
 
 				metaDataToAdd.add(avu);
-				listStore.remove(attrAvuMap.get(attr));
 			}
 		}
 
@@ -685,7 +707,7 @@ public class DiskResourceMetadataView implements IsWidget {
 		if (selectedTemplate != null && templateForm != null) {
 			List<IsField<?>> fields = FormPanelHelper.getFields(templateForm);
 			for (IsField<?> f : fields) {
-				if (f.isValid(false)) {
+				if (!f.isValid(false)) {
 					valid = false;
 				}
 			}
