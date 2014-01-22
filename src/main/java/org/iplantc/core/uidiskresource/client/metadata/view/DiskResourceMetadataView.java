@@ -17,6 +17,7 @@ import org.iplantc.core.uicommons.client.validators.UrlValidator;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadataProperties;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.cell.client.AbstractCell;
@@ -24,8 +25,11 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.safehtml.client.SafeHtmlTemplates;
+import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
@@ -227,6 +231,23 @@ public class DiskResourceMetadataView implements IsWidget {
 
     private final DateTimeFormat timestampFormat = DateTimeFormat
             .getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_SHORT);
+
+    interface MetadataHtmlTemplates extends SafeHtmlTemplates {
+
+        @SafeHtmlTemplates.Template("<span qtip=\"{0}\">{0}</span>")
+        SafeHtml cell(String value);
+
+        @SafeHtmlTemplates.Template("<img style='cursor:pointer;' qtip=\"{1}\" src=\"{0}\"/>")
+        SafeHtml labelInfo(SafeUri img, String toolTip);
+
+        @SafeHtmlTemplates.Template("<span style='color:red; top:-5px;'>*</span>")
+        SafeHtml required();
+
+        @SafeHtmlTemplates.Template("<span> {0}&nbsp;{2}&nbsp;{1}</span>")
+        SafeHtml labelHtml(SafeHtml info, String label, SafeHtml required);
+    }
+
+    MetadataHtmlTemplates htmlTemplates = GWT.create(MetadataHtmlTemplates.class);
 
     public DiskResourceMetadataView(DiskResource dr) {
         widget = uiBinder.createAndBindUi(this);
@@ -434,17 +455,12 @@ public class DiskResourceMetadataView implements IsWidget {
         if (label == null) {
             return null;
         }
-        if (allowBlank) {
-            return "<span style='cursor:pointer;color:#0098AA;'> <img src=/images/information.png qtip='"
-                    + description + "'></img>&nbsp;&nbsp;" + label + "</span>";
-        } else {
-            return "<span style='cursor:pointer;color:#0098AA;'> <img src=/images/information.png qtip='"
-                    + description
-                    + "'></img>&nbsp;&nbsp;"
-                    + "<span style='color:red; top:-5px;' >*</span> "
-                    + label
-                    + "</span>";
-        }
+        SafeUri infoUri = IplantResources.RESOURCES.info().getSafeUri();
+        SafeHtml infoImg = Strings.isNullOrEmpty(description) ? SafeHtmlUtils.fromString("") //$NON-NLS-1$
+                : htmlTemplates.labelInfo(infoUri, description);
+        SafeHtml required = allowBlank ? SafeHtmlUtils.fromString("") : htmlTemplates.required(); //$NON-NLS-1$
+
+        return htmlTemplates.labelHtml(infoImg, label, required).asString();
     }
 
     public void populateTemplates(List<MetadataTemplateInfo> templates) {
@@ -620,15 +636,9 @@ public class DiskResourceMetadataView implements IsWidget {
 
         @Override
         public void render(Context context, String value, SafeHtmlBuilder sb) {
-            if (value == null) {
-                return;
+            if (!Strings.isNullOrEmpty(value)) {
+                sb.append(htmlTemplates.cell(value));
             }
-
-            sb.append(SafeHtmlUtils.fromTrustedString("<span qtip='"));
-            sb.append(SafeHtmlUtils.fromSafeConstant(SafeHtmlUtils.htmlEscape(value)));
-            sb.append(SafeHtmlUtils.fromSafeConstant("'>"));
-            sb.append(SafeHtmlUtils.fromString(value));
-            sb.append(SafeHtmlUtils.fromSafeConstant("</span>"));
         }
     }
 
