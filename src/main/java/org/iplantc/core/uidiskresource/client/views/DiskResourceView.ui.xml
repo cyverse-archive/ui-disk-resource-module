@@ -112,18 +112,21 @@
 
       <!-- Main Panel -->
       <container:center layoutData="{centerData}">
-         <container:VerticalLayoutContainer ui:field="centerPanel">
-          <container:child layoutData="{centerLayoutData}">
-                  <grid:Grid ui:field="grid"
-                             cm="{cm}"
-                             store="{listStore}"
-                             view="{gridView}" />
-           </container:child>
-           <container:child layoutData="{centerBottomBarLayoutData}">
-           	<paging:ToolBar ui:field="pagingToolBar">
-           	</paging:ToolBar>
-           </container:child>
-         </container:VerticalLayoutContainer>
+        <gxt:ContentPanel ui:field="centerCp"
+                          collapsible="false">
+	         <container:VerticalLayoutContainer ui:field="centerPanel">
+	          <container:child layoutData="{centerLayoutData}">
+	                  <grid:Grid ui:field="grid"
+	                             cm="{cm}"
+	                             store="{listStore}"
+	                             view="{gridView}" />
+	           </container:child>
+	           <container:child layoutData="{centerBottomBarLayoutData}">
+	           	<paging:ToolBar ui:field="pagingToolBar">
+	           	</paging:ToolBar>
+	           </container:child>
+	         </container:VerticalLayoutContainer>
+        </gxt:ContentPanel>
       </container:center>
 
       <!-- Details Panel -->

@@ -41,7 +41,7 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
     List<DiskResourceQueryTemplate> cleanCopyQueryTemplates = Lists.newArrayList();
     final List<DiskResourceQueryTemplate> queryTemplates = Lists.newArrayList();
     TreeStore<Folder> treeStore;
-    DiskResourceSearchField view;
+    DiskResourceSearchField searchField;
     private DiskResourceQueryTemplate activeQuery = null;
     private final IplantAnnouncer announcer;
     private HandlerManager handlerManager;
@@ -194,24 +194,25 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
     @Override
     public void onFolderSelected(FolderSelectedEvent event) {
         if (event.getSelectedFolder() instanceof DiskResourceQueryTemplate) {
-            view.edit((DiskResourceQueryTemplate)event.getSelectedFolder());
+            final DiskResourceQueryTemplate selectedQuery = (DiskResourceQueryTemplate)event.getSelectedFolder();
+            searchField.edit(selectedQuery);
         } else {
             // Clear search form
-            view.clearSearch();
+            searchField.clearSearch();
         }
     }
 
     @Override
     public void searchInit(final HasFolderSelectedEventHandlers hasFolderSelectedHandlers, final FolderSelectedEventHandler folderSelectedHandler,
             final TreeStore<Folder> treeStore,
-            final DiskResourceSearchField view) {
+            final DiskResourceSearchField searchField) {
         hasFolderSelectedHandlers.addFolderSelectedEventHandler(this);
         // Add handler which will listen to our FolderSelectedEvents
         addFolderSelectedEventHandler(folderSelectedHandler);
         this.treeStore = treeStore;
-        this.view = view;
-        view.addSaveDiskResourceQueryEventHandler(this);
-        view.addSubmitDiskResourceQueryEventHandler(this);
+        this.searchField = searchField;
+        searchField.addSaveDiskResourceQueryEventHandler(this);
+        searchField.addSubmitDiskResourceQueryEventHandler(this);
     }
 
     boolean areTemplatesEqual(DiskResourceQueryTemplate lhs, DiskResourceQueryTemplate rhs) {

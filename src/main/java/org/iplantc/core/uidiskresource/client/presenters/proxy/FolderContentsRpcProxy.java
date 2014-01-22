@@ -2,6 +2,7 @@ package org.iplantc.core.uidiskresource.client.presenters.proxy;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.gwt.safehtml.client.HasSafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
@@ -10,6 +11,7 @@ import com.sencha.gxt.data.client.loader.RpcProxy;
 import com.sencha.gxt.data.shared.loader.PagingLoadResult;
 import com.sencha.gxt.data.shared.loader.PagingLoadResultBean;
 
+import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
@@ -17,6 +19,7 @@ import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
+import org.iplantc.core.uicommons.client.services.impl.DataSearchQueryBuilder;
 
 import java.util.List;
 
@@ -36,12 +39,16 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
         private final FolderContentsLoadConfig loadConfig;
         private final AsyncCallback<PagingLoadResult<DiskResource>> callback;
         private final IplantAnnouncer announcer;
+        private final IplantDisplayStrings dStrings;
+        private final HasSafeHtml hasSafeHtml1;
 
-        private FolderContentsCallback(IplantAnnouncer announcer, FolderContentsLoadConfig loadConfig,
-                AsyncCallback<PagingLoadResult<DiskResource>> callback) {
+        private FolderContentsCallback(IplantAnnouncer announcer, FolderContentsLoadConfig loadConfig, AsyncCallback<PagingLoadResult<DiskResource>> callback, IplantDisplayStrings displayStrings,
+                HasSafeHtml hasSafeHtml) {
             this.announcer = announcer;
             this.loadConfig = loadConfig;
             this.callback = callback;
+            this.dStrings = displayStrings;
+            this.hasSafeHtml1 = hasSafeHtml;
         }
 
         @Override
@@ -56,6 +63,12 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
             loadConfig.getFolder().setTotalFiltered(result.getTotalFiltered());
 
             callback.onSuccess(new PagingLoadResultBean<DiskResource>(list, result.getTotal(), loadConfig.getOffset()));
+            if (dStrings != null) {
+                final String searchAppResultsHeader = dStrings.searchAppResultsHeader(new DataSearchQueryBuilder((DiskResourceQueryTemplate)result).buildFullQuery(), result.getTotal());
+                hasSafeHtml1.setHTML(SafeHtmlUtils.fromString(searchAppResultsHeader));
+            } else {
+                hasSafeHtml1.setHTML(SafeHtmlUtils.fromSafeConstant("&nbsp;"));
+            }
         }
 
         @Override
@@ -79,12 +92,15 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
     private final DiskResourceServiceFacade drService;
     private final SearchServiceFacade searchService;
     private final IplantAnnouncer announcer;
+    private final IplantDisplayStrings displayStrings;
+    private HasSafeHtml hasSafeHtml;
 
     @Inject
-    public FolderContentsRpcProxy(final DiskResourceServiceFacade drService, final SearchServiceFacade searchService, final IplantAnnouncer announcer) {
+    public FolderContentsRpcProxy(final DiskResourceServiceFacade drService, final SearchServiceFacade searchService, final IplantAnnouncer announcer, final IplantDisplayStrings displayStrings) {
         this.drService = drService;
         this.searchService = searchService;
         this.announcer = announcer;
+        this.displayStrings = displayStrings;
     }
     
     @Override
@@ -99,12 +115,14 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
         	}
         	return;
         } else if(folder instanceof DiskResourceQueryTemplate){
-        	
-            searchService.submitSearchFromQueryTemplate((DiskResourceQueryTemplate)folder, loadConfig, null, new FolderContentsCallback(announcer, loadConfig, callback));
+            searchService.submitSearchFromQueryTemplate((DiskResourceQueryTemplate)folder, loadConfig, null, new FolderContentsCallback(announcer, loadConfig, callback, displayStrings, hasSafeHtml));
         } else {
-
-            drService.getFolderContents(folder, loadConfig, new FolderContentsCallback(announcer, loadConfig, callback));
+            drService.getFolderContents(folder, loadConfig, new FolderContentsCallback(announcer, loadConfig, callback, null, hasSafeHtml));
         }
 
+    }
+
+    public void init(HasSafeHtml hasSafeHtml) {
+        this.hasSafeHtml = hasSafeHtml;
     }
 }

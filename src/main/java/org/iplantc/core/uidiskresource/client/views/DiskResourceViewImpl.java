@@ -13,6 +13,7 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.safehtml.client.HasSafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
@@ -265,6 +266,9 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     @UiField
     ToolBar pagingToolBar;
+
+    @UiField
+    ContentPanel centerCp;
 
     private final Widget widget;
 
@@ -962,6 +966,11 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @Override
     public HandlerRegistration addFolderSelectedEventHandler(FolderSelectedEventHandler handler) {
         return asWidget().addHandler(handler, FolderSelectedEvent.TYPE);
+    }
+
+    @Override
+    public HasSafeHtml getCenterPanelHeader() {
+        return centerCp.getHeader();
     }
 
 }

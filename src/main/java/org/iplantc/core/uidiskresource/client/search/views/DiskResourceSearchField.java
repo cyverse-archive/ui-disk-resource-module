@@ -1,5 +1,10 @@
 package org.iplantc.core.uidiskresource.client.search.views;
 
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerRegistration;
 
 import com.sencha.gxt.widget.core.client.event.CollapseEvent.CollapseHandler;
@@ -11,9 +16,11 @@ import com.sencha.gxt.widget.core.client.form.DateField;
 import com.sencha.gxt.widget.core.client.form.PropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TriggerField;
 
+import org.iplantc.core.uicommons.client.events.SubmitTextSearchEvent;
+import org.iplantc.core.uicommons.client.events.SubmitTextSearchEvent.SubmitTextSearchEventHandler;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.core.uicommons.client.services.impl.DataSearchQueryBuilder;
-import org.iplantc.core.uicommons.client.services.impl.DiskResourceQueryTemplateBuilder;
+import org.iplantc.core.uicommons.client.models.search.SearchAutoBeanFactory;
+import org.iplantc.core.uicommons.client.widgets.search.SearchFieldDecorator;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.HasSaveDiskResourceQueryEventHandlers;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
@@ -30,16 +37,25 @@ import java.text.ParseException;
  * 
  */
 public class DiskResourceSearchField extends TriggerField<String> implements HasExpandHandlers, HasCollapseHandlers, HasSaveDiskResourceQueryEventHandlers, HasSubmitDiskResourceQueryEventHandlers,
-        SubmitDiskResourceQueryEventHandler {
+        SubmitDiskResourceQueryEventHandler, SubmitTextSearchEventHandler {
 
     public final class QueryStringPropertyEditor extends PropertyEditor<String> {
+        private final SearchAutoBeanFactory factory = GWT.create(SearchAutoBeanFactory.class);
         @Override
         public String parse(CharSequence text) throws ParseException {
-            DiskResourceQueryTemplate parsedTemplate = new DiskResourceQueryTemplateBuilder(text.toString()).build();
-            edit(parsedTemplate);
             clearInvalid();
 
-            getCell().fireEvent(new SubmitDiskResourceQueryEvent(parsedTemplate));
+            DiskResourceQueryTemplate qt = factory.dataSearchFilter().as();
+            final Iterable<String> transform = Iterables.transform(Splitter.on(" ").omitEmptyStrings().trimResults().split(text), new Function<String, String>() {
+                @Override
+                public String apply(String input) {
+                    return "*".concat(input).concat("*");
+                }
+            });
+            final String join = Joiner.on(" ").join(transform);
+            qt.setFileQuery(join);
+            GWT.log("This is the implicit wildcard: " + join);
+            getCell().fireEvent(new SubmitDiskResourceQueryEvent(qt));
             return text.toString();
         }
 
@@ -57,6 +73,9 @@ public class DiskResourceSearchField extends TriggerField<String> implements Has
 
         setPropertyEditor(new QueryStringPropertyEditor());
         getCell().addSubmitDiskResourceQueryEventHandler(this);
+
+        // Add search field decorator to enable "auto-search"
+        new SearchFieldDecorator<TriggerField<String>>(this).addSubmitTextSearchEventHandler(this);
     }
 
     @Override
@@ -83,6 +102,7 @@ public class DiskResourceSearchField extends TriggerField<String> implements Has
         // Forward clear call to searchForm
         getCell().getSearchForm().clearSearch();
         clearInvalid();
+        clear();
     }
 
     public void edit(DiskResourceQueryTemplate queryTemplate) {
@@ -116,9 +136,13 @@ public class DiskResourceSearchField extends TriggerField<String> implements Has
 
     @Override
     public void doSubmitDiskResourceQuery(SubmitDiskResourceQueryEvent event) {
-        DataSearchQueryBuilder builder = new DataSearchQueryBuilder(event.getQueryTemplate());
-        final String buildFullQuery = builder.buildFullQuery();
-        setValue(buildFullQuery);
+        clear();
+    }
+
+    @Override
+    public void onSubmitTextSearch(SubmitTextSearchEvent event) {
+        // Finish editing to fire search event.
+        finishEditing();
     }
 
 }

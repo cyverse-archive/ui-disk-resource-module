@@ -62,10 +62,9 @@ public interface DataSearchPresenter extends SaveDiskResourceQueryEventHandler, 
      * @param hasFolderSelectedHandlers
      * @param folderSelectedHandler
      * @param treeStore
-     * @param view
+     * @param searchField
      */
-    void searchInit(HasFolderSelectedEventHandlers hasFolderSelectedHandlers, FolderSelectedEventHandler folderSelectedHandler, TreeStore<Folder> treeStore,
-            DiskResourceSearchField view);
+    void searchInit(HasFolderSelectedEventHandlers hasFolderSelectedHandlers, FolderSelectedEventHandler folderSelectedHandler, TreeStore<Folder> treeStore, DiskResourceSearchField searchField);
 
     /**
      *

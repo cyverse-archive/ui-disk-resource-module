@@ -34,7 +34,7 @@ import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.core.uicommons.client.services.impl.DiskResourceQueryTemplateBuilder;
+import org.iplantc.core.uicommons.client.models.search.SearchModelUtils;
 import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.HasSaveDiskResourceQueryEventHandlers;
@@ -161,7 +161,7 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
      * @param searchService
      */
     public DiskResourceQueryForm() {
-        this(DiskResourceQueryTemplateBuilder.createDefaultFilter());
+        this(SearchModelUtils.createDefaultFilter());
     }
 
     /**
@@ -211,7 +211,7 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
      * Clears search form by binding it to a new default query template
      */
     public void clearSearch() {
-        editorDriver.edit(DiskResourceQueryTemplateBuilder.createDefaultFilter());
+        editorDriver.edit(SearchModelUtils.createDefaultFilter());
     }
 
     @Override
