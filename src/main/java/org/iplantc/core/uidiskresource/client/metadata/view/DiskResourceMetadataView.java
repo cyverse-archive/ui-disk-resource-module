@@ -1,6 +1,5 @@
 package org.iplantc.core.uidiskresource.client.metadata.view;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -22,8 +21,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.editor.client.Editor;
-import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -65,6 +62,8 @@ import com.sencha.gxt.widget.core.client.event.ValidEvent;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.form.DateField;
+import com.sencha.gxt.widget.core.client.form.DateTimePropertyEditor;
 import com.sencha.gxt.widget.core.client.form.Field;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
@@ -75,8 +74,6 @@ import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor.DoublePropert
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor.IntegerPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.form.Validator;
-import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
@@ -222,8 +219,11 @@ public class DiskResourceMetadataView implements IsWidget {
 
     private MetadataTemplateInfo selectedTemplate;
 
-    private DiskResource selectedResource;
+    private final DiskResource selectedResource;
     private int unique_avu_id;
+
+    private final DateTimeFormat timestampFormat = DateTimeFormat
+            .getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_SHORT);
 
     public DiskResourceMetadataView(DiskResource dr) {
         widget = uiBinder.createAndBindUi(this);
@@ -382,33 +382,19 @@ public class DiskResourceMetadataView implements IsWidget {
         return tf;
     }
 
-    private TextField buildDateField(MetadataTemplateAttribute attribute) {
-        final DateTimeFormat format = DateTimeFormat
-                .getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_SHORT);
-        final TextField tf = buildTextField(attribute);
-        tf.setEmptyText(format.format(new Date()));
-        tf.addValidator(new Validator<String>() {
+    private DateField buildDateField(MetadataTemplateAttribute attribute) {
+        final DateField tf = new DateField(new DateTimePropertyEditor(timestampFormat));
+        tf.setAllowBlank(!attribute.isRequired());
+		tf.setEmptyText(timestampFormat.format(new Date(0)));
 
-            @Override
-            public List<EditorError> validate(Editor<String> editor, String value) {
-                try {
-                    tf.clearInvalid();
-                    format.parse(value);
-                    return null;
-                } catch (Exception e) {
-                    GWT.log(value, e);
-                    EditorError dee = new DefaultEditorError(editor, "Invalid date / time. Please use: "
-                            + format.getPattern(), value);
-                    return Arrays.asList(dee);
-                }
-
+		DiskResourceMetadata avu = attrAvuMap.get(attribute.getName());
+		if (avu != null) {
+            try {
+                tf.setValue(timestampFormat.parse(avu.getValue()));
+            } catch (Exception e) {
+                GWT.log(avu.getValue(), e);
             }
-        });
-
-        DiskResourceMetadata avu = attrAvuMap.get(attribute.getName());
-        if (avu != null) {
-            tf.setValue(avu.getValue());
-        }
+		}
 
         return tf;
     }
@@ -601,9 +587,13 @@ public class DiskResourceMetadataView implements IsWidget {
         for (String attr : templateAttrFieldMap.keySet()) {
             Field<?> field = templateAttrFieldMap.get(attr);
             if (field.isValid() && field.getValue() != null && !field.getValue().toString().isEmpty()) {
+                String value = field.getValue().toString();
+                if (field instanceof DateField) {
+                    value = timestampFormat.format(((DateField)field).getValue());
+                }
                 DiskResourceMetadata avu = autoBeanFactory.metadata().as();
                 avu.setAttribute(attr);
-                avu.setValue(field.getValue().toString());
+                avu.setValue(value);
                 avu.setUnit(""); //$NON-NLS-1$
                 metaDataToAdd.add(avu);
             }
