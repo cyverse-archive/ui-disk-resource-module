@@ -220,6 +220,9 @@ public class DiskResourceMetadataView implements IsWidget {
     private MetadataTemplateInfo selectedTemplate;
 
     private final DiskResource selectedResource;
+
+    private final boolean writable;
+
     private int unique_avu_id;
 
     private final DateTimeFormat timestampFormat = DateTimeFormat
@@ -228,13 +231,15 @@ public class DiskResourceMetadataView implements IsWidget {
     public DiskResourceMetadataView(DiskResource dr) {
         widget = uiBinder.createAndBindUi(this);
         selectedResource = dr;
+        writable = selectedResource.getPermissions().isWritable();
         alc = new AccordionLayoutContainer();
         centerPanel = new VerticalLayoutContainer();
         con.setCenterWidget(centerPanel);
         appearance = GWT.<AccordionLayoutAppearance> create(AccordionLayoutAppearance.class);
         initGrid();
-        addMetadataButton.setEnabled(selectedResource.getPermissions().isWritable());
+        addMetadataButton.setEnabled(writable);
         deleteMetadataButton.disable();
+        templateCombo.setEnabled(writable);
         valid = true;
     }
 
@@ -453,7 +458,7 @@ public class DiskResourceMetadataView implements IsWidget {
         userMetadataPanel.add(grid);
         centerPanel.add(userMetadataPanel, new VerticalLayoutData(1, -1));
 
-        if (selectedResource.getPermissions().isWritable()) {
+        if (writable) {
             initEditor();
         }
         grid.getSelectionModel().addSelectionChangedHandler(new MetadataSelectionChangedListener());
@@ -632,8 +637,7 @@ public class DiskResourceMetadataView implements IsWidget {
 
         @Override
         public void onSelectionChanged(SelectionChangedEvent<DiskResourceMetadata> event) {
-            deleteMetadataButton.setEnabled(event.getSelection().size() > 0
-                    && selectedResource.getPermissions().isWritable());
+            deleteMetadataButton.setEnabled(event.getSelection().size() > 0 && writable);
             if (gridInlineEditing != null) {
                 gridInlineEditing.completeEditing();
             }

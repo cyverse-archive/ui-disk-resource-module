@@ -32,9 +32,10 @@ public class ToolbarButtonVisibilityGridHandler extends
         boolean canRename = oneSelected && owner && !selectionInTrash;
         boolean canShare = !selectionInTrash && DiskResourceUtil.hasOwner(selection);
         boolean canShareDataLink = canShare && DiskResourceUtil.containsFile(selection);
-        boolean canEditMetadata = oneSelected && selection.get(0).getPermissions().isWritable() && !selectionInTrash;
+        boolean canViewMetadata = oneSelected && selection.get(0).getPermissions().isReadable()
+                && !selectionInTrash;
         boolean canDelete = owner;
-        boolean canEdit = canRename || canDelete || canEditMetadata;
+        boolean canEdit = canRename || canDelete || canViewMetadata;
         boolean canMove = owner && !selectionInTrash;
 
         toolbar.setDownloadsEnabled(canDownload);
@@ -46,7 +47,7 @@ public class ToolbarButtonVisibilityGridHandler extends
         toolbar.setShareMenuItemEnabled(canShare);
         toolbar.setDataLinkMenuItemEnabled(canShareDataLink);
         toolbar.setRestoreMenuItemEnabled(selectionInTrash);
-        toolbar.setMetaDatMenuItemEnabled(canEditMetadata);
+        toolbar.setMetaDatMenuItemEnabled(canViewMetadata);
         toolbar.setEditEnabled(canEdit);
         toolbar.setMoveButtonEnabled(canMove);
     }
