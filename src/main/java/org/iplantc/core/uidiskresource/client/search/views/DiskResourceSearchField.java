@@ -1,9 +1,5 @@
 package org.iplantc.core.uidiskresource.client.search.views;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerRegistration;
 
@@ -46,15 +42,8 @@ public class DiskResourceSearchField extends TriggerField<String> implements Has
             clearInvalid();
 
             DiskResourceQueryTemplate qt = factory.dataSearchFilter().as();
-            final Iterable<String> transform = Iterables.transform(Splitter.on(" ").omitEmptyStrings().trimResults().split(text), new Function<String, String>() {
-                @Override
-                public String apply(String input) {
-                    return "*".concat(input).concat("*");
-                }
-            });
-            final String join = Joiner.on(" ").join(transform);
-            qt.setFileQuery(join);
-            GWT.log("This is the implicit wildcard: " + join);
+            String implicitSearchText = SearchFieldDecorator.applyImplicitAsteriskSearchText(text.toString());
+            qt.setFileQuery(implicitSearchText);
             getCell().fireEvent(new SubmitDiskResourceQueryEvent(qt));
             return text.toString();
         }
