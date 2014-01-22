@@ -54,7 +54,7 @@
 	<container:VerticalLayoutContainer ui:field="con">
 
 		<container:child layoutData="{verticalLayoutData}">
-			<form:FieldLabel text="Filename has the words"
+			<form:FieldLabel text="File/Folder name has the words"
 							 labelAlign="TOP">
 				<form:widget>
                     <form:TextField ui:field="fileQuery" 
@@ -65,7 +65,7 @@
 		</container:child>
 
 		<container:child layoutData="{verticalLayoutData}">
-			<form:FieldLabel text="Filename doesn't have"
+			<form:FieldLabel text="File/Folder name doesn't have"
 							 labelAlign="TOP">
 				<form:widget>
 					<form:TextField ui:field="negatedFileQuery"/>
