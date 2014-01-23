@@ -98,13 +98,13 @@ public class DiskResourceMetadataView implements IsWidget {
         @Override
         public void onClick(ClickEvent event) {
             ConfirmMessageBox cmb = new ConfirmMessageBox(I18N.DISPLAY.confirmAction(),
-                    "Are you sure you want to remove this template ?");
+                    I18N.DISPLAY.metadataTemplateConfirmRemove());
             cmb.addHideHandler(new HideHandler() {
 
                 @Override
                 public void onHide(HideEvent event) {
                     Dialog d = (Dialog)event.getSource();
-                    if (d.getHideButton().getText().equalsIgnoreCase("yes")) {
+                    if (d.getHideButton().getText().equalsIgnoreCase("yes")) { //$NON-NLS-1$
                         alc.remove(templateForm);
                         deleteTemplateAttrs();
                         templateCombo.setEnabled(true);
@@ -238,6 +238,9 @@ public class DiskResourceMetadataView implements IsWidget {
 
     interface MetadataHtmlTemplates extends SafeHtmlTemplates {
 
+        @SafeHtmlTemplates.Template("<b>{0}</b>")
+        SafeHtml boldHeader(String headerText);
+
         @SafeHtmlTemplates.Template("<span qtip=\"{0}\">{0}</span>")
         SafeHtml cell(String value);
 
@@ -280,7 +283,7 @@ public class DiskResourceMetadataView implements IsWidget {
                 new TemplateInfoLabelProvider());
         templateCombo.setEditable(false);
         templateCombo.setWidth(250);
-        templateCombo.setEmptyText("Select a template...");
+        templateCombo.setEmptyText(I18N.DISPLAY.metadataTemplateSelect());
         templateCombo.setTypeAhead(true);
         templateCombo.addSelectionHandler(new TemplateInfoSelectionHandler());
         return templateCombo;
@@ -313,7 +316,7 @@ public class DiskResourceMetadataView implements IsWidget {
     }
 
     private IPlantAnchor buildRemoveTemplateLink() {
-        return new IPlantAnchor(I18N.DISPLAY.remove() + " Template", 575,
+        return new IPlantAnchor(I18N.DISPLAY.metadataTemplateRemove(), 575,
                 new RemoveTemplateHandlerImpl());
     }
 
@@ -515,11 +518,11 @@ public class DiskResourceMetadataView implements IsWidget {
 
     private void buildUserMetadataPanel() {
         userMetadataPanel = new ContentPanel(appearance);
-        userMetadataPanel.setSize("575", "275");
+        userMetadataPanel.setSize("575", "275"); //$NON-NLS-1$ //$NON-NLS-2$
         userMetadataPanel.setCollapsible(true);
         userMetadataPanel.getHeader().addStyleName(ThemeStyles.getStyle().borderTop());
 
-        userMetadataPanel.setHeadingHtml("<b>User Metadata</b>");
+        userMetadataPanel.setHeadingHtml(htmlTemplates.boldHeader(I18N.DISPLAY.userMetadata()));
     }
 
     private ListStore<DiskResourceMetadata> createListStore() {
@@ -529,7 +532,7 @@ public class DiskResourceMetadataView implements IsWidget {
                 if (item != null) {
                     return item.getId();
                 } else {
-                    return "";
+                    return ""; //$NON-NLS-1$
                 }
             }
         });
@@ -555,19 +558,19 @@ public class DiskResourceMetadataView implements IsWidget {
     @UiHandler("addMetadataButton")
     void onAddMetadataSelected(SelectEvent event) {
         expandUserMetadataPanel();
-        DiskResourceMetadata md = newMetadata(getUniqeAttrName("New Attribute ", 0), "New Value",
-                USER_UNIT_TAG);
-        md.setId(unique_avu_id++ + "");
+        DiskResourceMetadata md = newMetadata(getUniqeAttrName(I18N.DISPLAY.newAttribute(), 0),
+                I18N.DISPLAY.newValue(), USER_UNIT_TAG);
+        md.setId(unique_avu_id++ + ""); //$NON-NLS-1$
         listStore.add(0, md);
         gridInlineEditing.startEditing(new GridCell(0, 0));
         gridInlineEditing.getEditor(grid.getColumnModel().getColumn(0)).validate();
     }
 
     private String getUniqeAttrName(String attrName, int i) {
-        String retName = i > 0 ? attrName + "_(" + i + ")" : attrName;
+        String retName = i > 0 ? attrName + "_(" + i + ")" : attrName; //$NON-NLS-1$ //$NON-NLS-2$
         for (DiskResourceMetadata md : listStore.getAll()) {
             if (md.getAttribute().equals(retName)) {
-                return getUniqeAttrName(attrName + "", ++i);
+                return getUniqeAttrName(attrName, ++i);
             }
         }
         return retName;
@@ -584,9 +587,9 @@ public class DiskResourceMetadataView implements IsWidget {
         List<ColumnConfig<DiskResourceMetadata, ?>> columns = Lists.newArrayList();
         DiskResourceMetadataProperties props = GWT.create(DiskResourceMetadataProperties.class);
         ColumnConfig<DiskResourceMetadata, String> attributeColumn = new ColumnConfig<DiskResourceMetadata, String>(
-                props.attribute(), 150, "Attribute");
+                props.attribute(), 150, I18N.DISPLAY.attribute());
         ColumnConfig<DiskResourceMetadata, String> valueColumn = new ColumnConfig<DiskResourceMetadata, String>(
-                props.value(), 150, "Value");
+                props.value(), 150, I18N.DISPLAY.paramValue());
 
         metadataCell = new MetadataCell();
         attributeColumn.setCell(metadataCell);
@@ -685,7 +688,7 @@ public class DiskResourceMetadataView implements IsWidget {
 
         DiskResourceMetadata templateAvu = null;
         for (DiskResourceMetadata avu : metadata) {
-            avu.setId(unique_avu_id++ + "");
+            avu.setId(unique_avu_id++ + ""); //$NON-NLS-1$
             String attribute = avu.getAttribute();
             attrAvuMap.put(attribute, avu);
 
@@ -735,9 +738,9 @@ public class DiskResourceMetadataView implements IsWidget {
 
     private void buildTemplatePanel() {
         templateForm = new ContentPanel(appearance);
-        templateForm.setBodyStyle("background-color: #fff; padding: 5px");
-        templateForm.setSize("575", "275");
-        templateForm.setHeadingHtml("<b>" + templateCombo.getCurrentValue().getName() + "</b>");
+        templateForm.setBodyStyle("background-color: #fff; padding: 5px"); //$NON-NLS-1$
+        templateForm.setSize("575", "275"); //$NON-NLS-1$ //$NON-NLS-2$
+        templateForm.setHeadingHtml(htmlTemplates.boldHeader(templateCombo.getCurrentValue().getName()));
         templateForm.getHeader().addStyleName(ThemeStyles.getStyle().borderTop());
         templateContainer = new VerticalLayoutContainer();
         templateContainer.setScrollMode(ScrollMode.AUTOY);
