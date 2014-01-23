@@ -14,6 +14,7 @@ import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceMetada
 import org.iplantc.core.uicommons.client.models.diskresources.MetadataTemplateAttribute;
 import org.iplantc.core.uicommons.client.models.diskresources.MetadataTemplateInfo;
 import org.iplantc.core.uicommons.client.validators.UrlValidator;
+import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceMetadataProperties;
 import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
 
@@ -22,6 +23,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -61,7 +64,6 @@ import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.event.ValidEvent;
 import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
@@ -91,9 +93,10 @@ import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 public class DiskResourceMetadataView implements IsWidget {
 
-    private final class RemoveTemplateHandlerImpl implements SelectHandler {
+    private final class RemoveTemplateHandlerImpl implements ClickHandler {
+
         @Override
-        public void onSelect(SelectEvent event) {
+        public void onClick(ClickEvent event) {
             ConfirmMessageBox cmb = new ConfirmMessageBox(I18N.DISPLAY.confirmAction(),
                     "Are you sure you want to remove this template ?");
             cmb.addHideHandler(new HideHandler() {
@@ -292,8 +295,8 @@ public class DiskResourceMetadataView implements IsWidget {
 
     public void loadTemplateAttributes(List<MetadataTemplateAttribute> attributes) {
         templateAttrFieldMap.clear();
-        TextButton rmvBtn = buildRemoveTemplateButton();
-        templateContainer.add(rmvBtn, new VerticalLayoutData(.35, -1));
+        IPlantAnchor removeLink = buildRemoveTemplateLink();
+        templateContainer.add(removeLink, new VerticalLayoutData(.25, -1));
         for (MetadataTemplateAttribute attribute : attributes) {
             Field<?> field = getAttributeValueWidget(attribute);
             if (field != null) {
@@ -309,12 +312,9 @@ public class DiskResourceMetadataView implements IsWidget {
         alc.unmask();
     }
 
-    private TextButton buildRemoveTemplateButton() {
-        TextButton removeBtn = new TextButton(I18N.DISPLAY.remove() + " Template",
-                IplantResources.RESOURCES.deleteIcon());
-        removeBtn.addSelectHandler(new RemoveTemplateHandlerImpl());
-
-        return removeBtn;
+    private IPlantAnchor buildRemoveTemplateLink() {
+        return new IPlantAnchor(I18N.DISPLAY.remove() + " Template", 575,
+                new RemoveTemplateHandlerImpl());
     }
 
     private void deleteTemplateAttrs() {
