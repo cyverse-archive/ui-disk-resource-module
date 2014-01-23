@@ -99,7 +99,7 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     VerticalLayoutContainer con;
 
     @UiField
-    TextField createdBy;
+    TextField ownedBy;
 
     @Ignore
     @UiField(provided = true)
@@ -130,7 +130,7 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     SimpleComboBox<String> lessThanComboBox;
 
     @UiField
-    TextField metadataQuery;
+    TextField metadataAttributeQuery;
 
     @Ignore
     @UiField(provided = true)
@@ -143,12 +143,12 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     TextField negatedFileQuery;
 
     @UiField
-    TextField negatedMetadataQuery;
+    TextField metadataValueQuery;
 
     @UiField 
     TextField sharedWith;
 
-    private final List<String> fileSizeUnits = Lists.newArrayList("KB", "MB");
+    private final List<String> fileSizeUnits = Lists.newArrayList("KB", "MB", "GB", "TB");
 
     private boolean showing;
 
@@ -334,11 +334,11 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     }
     
     boolean isEmptyQuery(DiskResourceQueryTemplate template){
-        if(Strings.isNullOrEmpty(template.getCreatedBy()) 
+        if (Strings.isNullOrEmpty(template.getOwnedBy())
                 && Strings.isNullOrEmpty(template.getFileQuery())
-                && Strings.isNullOrEmpty(template.getMetadataQuery())
+                && Strings.isNullOrEmpty(template.getMetadataAttributeQuery())
+                && Strings.isNullOrEmpty(template.getMetadataValueQuery())
                 && Strings.isNullOrEmpty(template.getNegatedFileQuery())
-                && Strings.isNullOrEmpty(template.getNegatedMetadataQuery())
                 && Strings.isNullOrEmpty(template.getSharedWith())
                 && (template.getDateCreated() == null)
                 && (template.getLastModified() == null)

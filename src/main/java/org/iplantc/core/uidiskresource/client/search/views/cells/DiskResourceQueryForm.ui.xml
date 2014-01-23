@@ -97,10 +97,10 @@
 		
 		
 		<container:child layoutData="{verticalLayoutData}">
-			<form:FieldLabel text="Metadata has the words"
+			<form:FieldLabel text="Metadata attribute has the words"
 							 labelAlign="TOP">
 				<form:widget>
-					<form:TextField ui:field="metadataQuery"
+					<form:TextField ui:field="metadataAttributeQuery"
 					                emptyText="Enter keyword(s) separated by commas"/>
 				</form:widget>
 			</form:FieldLabel>
@@ -108,10 +108,10 @@
 		
 		
 		<container:child layoutData="{verticalLayoutData}">
-			<form:FieldLabel text="Metadata doesn't have"
+			<form:FieldLabel text="Metadata value has the words"
 							 labelAlign="TOP">
 				<form:widget>
-					<form:TextField ui:field="negatedMetadataQuery"
+					<form:TextField ui:field="metadataValueQuery"
 					               emptyText="Enter keyword(s) separated by commas"/>
 				</form:widget>
 			</form:FieldLabel>
@@ -119,10 +119,11 @@
 		
 
 		<container:child layoutData="{verticalLayoutData}">
-			<form:FieldLabel text="Created by"
+			<form:FieldLabel text="Owned by"
 							 labelAlign="TOP">
 				<form:widget>
-					<form:TextField ui:field="createdBy"/>
+					<form:TextField ui:field="ownedBy"
+					                emptyText="Enter iPlant user name"/>
 				</form:widget>
 			</form:FieldLabel>
 		</container:child>
