@@ -543,6 +543,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
 			final IPlantDialog ipd = new IPlantDialog(true);
 			ipd.setHideOnButtonClick(false);
 			ipd.setSize("600", "400");
+			ipd.setResizable(true);
 
 			ipd.setHeadingText(I18N.DISPLAY.metadata() + ":" + selected.getId());
 			ipd.addHelp(new HTML(I18N.HELP.metadataHelp()));
@@ -561,7 +562,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
 								.getInstance()
 								.schedule(
 										new ErrorAnnouncementConfig(
-												"Please fix all errors before saving!"));
+												I18N.DISPLAY.publicSubmitTip()));
 					}
 				}
 			});
