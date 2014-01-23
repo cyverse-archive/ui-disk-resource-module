@@ -1,5 +1,6 @@
 package org.iplantc.core.uidiskresource.client.search.views.cells;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
@@ -195,6 +196,9 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         eventPreview.getIgnoreList().add(getElement());
         eventPreview.setAutoHide(false);
         addStyleName("x-ignore");
+
+        // JDS Small trial to correct placement of form in constrained views.
+        this.ensureVisibilityOnSizing = true;
     }
 
     @Override
@@ -321,12 +325,30 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     void onSearchBtnSelected(@SuppressWarnings("unused") SelectEvent event) {
         // Flush to perform local validations
         DiskResourceQueryTemplate flushedQueryTemplate = editorDriver.flush();
-        if (editorDriver.hasErrors()) {
+        if (editorDriver.hasErrors() || isEmptyQuery(flushedQueryTemplate)) {
             return;
         }
         // Fire event and pass flushed query
         fireEvent(new SubmitDiskResourceQueryEvent(flushedQueryTemplate));
         hide();
+    }
+    
+    boolean isEmptyQuery(DiskResourceQueryTemplate template){
+        if(Strings.isNullOrEmpty(template.getCreatedBy()) 
+                && Strings.isNullOrEmpty(template.getFileQuery())
+                && Strings.isNullOrEmpty(template.getMetadataQuery())
+                && Strings.isNullOrEmpty(template.getNegatedFileQuery())
+                && Strings.isNullOrEmpty(template.getNegatedMetadataQuery())
+                && Strings.isNullOrEmpty(template.getSharedWith())
+                && (template.getDateCreated() == null)
+                && (template.getLastModified() == null)
+                && ((template.getCreatedWithin() == null) || (template.getCreatedWithin().getFrom() == null) || (template.getCreatedWithin().getTo() == null))
+                && ((template.getModifiedWithin() == null) || (template.getModifiedWithin().getFrom() == null) || (template.getModifiedWithin().getTo() == null))
+                && ((template.getFileSizeRange() == null) || (template.getFileSizeRange().getMax() == null) || (template.getFileSizeRange().getMin() == null))){
+            // TODO Implement user error feedback
+            return true;
+        }
+        return false;
     }
 
     void showNamePrompt(DiskResourceQueryTemplate filter) {

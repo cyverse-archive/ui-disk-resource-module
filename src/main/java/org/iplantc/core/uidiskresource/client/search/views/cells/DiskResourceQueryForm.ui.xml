@@ -58,7 +58,6 @@
 							 labelAlign="TOP">
 				<form:widget>
                     <form:TextField ui:field="fileQuery" 
-                                    allowBlank="false"
                                     emptyText="Enter values..." />
 				</form:widget>
 			</form:FieldLabel>
