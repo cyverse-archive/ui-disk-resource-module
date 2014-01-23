@@ -293,7 +293,7 @@ public class DiskResourceMetadataView implements IsWidget {
         templateCombo.setEnabled(false);
         presenter.onTemplateSelected(templateInfo.getId());
         buildTemplateContainer();
-        alc.mask();
+        alc.mask(I18N.DISPLAY.loadingMask());
     }
 
     public void loadTemplateAttributes(List<MetadataTemplateAttribute> attributes) {
@@ -715,8 +715,11 @@ public class DiskResourceMetadataView implements IsWidget {
             for (IsField<?> f : fields) {
                 if (!f.isValid(false)) {
                     valid = false;
+                    return valid;
                 }
+                valid = true;
             }
+           
         }
         return valid;
     }
