@@ -8,54 +8,53 @@ import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 
-import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.widget.core.client.tree.TreeSelectionModel;
 
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 
-final class TreeCell extends AbstractCell<Folder> {
+public final class TreeCell extends AbstractCell<Folder> {
 
-    interface Templates extends XTemplates {
-        @XTemplate("{name}&nbsp;<span style='cursor: pointer;'>X</span>")
-        SafeHtml drqt(String name);
+    private final TreeCellAppearance appearance;
 
-        @XTemplate("*&nbsp;{name}&nbsp;<span style='cursor: pointer;'>X</span>")
-        SafeHtml drqtDirty(String name);
+    public interface TreeCellAppearance {
+
+        void render(Cell.Context context, Folder value, SafeHtmlBuilder sb);
+
+        void onBrowserEvent(Cell.Context context, Element parent, Folder value, NativeEvent event, ValueUpdater<Folder> valueUpdater);
+
+        void setHasHandlers(HasHandlers hasHandlers);
+
+        void setSelectionModel(TreeSelectionModel<Folder> selectionModel);
     }
 
-    private final Templates templates = GWT.create(Templates.class);
+    public TreeCell(TreeCellAppearance appearance) {
+        super(CLICK);
+        this.appearance = appearance;
+    }
 
     public TreeCell() {
-        super(CLICK);
+        this(GWT.<TreeCellAppearance> create(TreeCellAppearance.class));
     }
 
     @Override
     public void render(Cell.Context context, Folder value, SafeHtmlBuilder sb) {
-        if (value instanceof DiskResourceQueryTemplate) {
-            if (((DiskResourceQueryTemplate)value).isDirty()) {
-                // FIXME JDS This needs to be abstracted into an appearance
-                // sb.append(SafeHtmlUtils.fromString("* " + value.getName()));
-                sb.append(templates.drqtDirty(value.getName()));
+        appearance.render(context, value, sb);
+    }
 
-            } else {
-                // sb.append(SafeHtmlUtils.fromString(value.getName()));
-                sb.append(templates.drqt(value.getName()));
-
-            }
-        } else {
-            // Normal folder
-            sb.append(SafeHtmlUtils.fromString(value.getName()));
-        }
-
+    public void setHasHandlers(HasHandlers hasHandlers) {
+        appearance.setHasHandlers(hasHandlers);
     }
 
     @Override
     public void onBrowserEvent(Context context, Element parent, Folder value, NativeEvent event, ValueUpdater<Folder> valueUpdater) {
-        // TODO Auto-generated method stub
         super.onBrowserEvent(context, parent, value, event, valueUpdater);
+        appearance.onBrowserEvent(context, parent, value, event, valueUpdater);
+    }
+
+    public void setSelectionModel(TreeSelectionModel<Folder> selectionModel) {
+        appearance.setSelectionModel(selectionModel);
     }
 }

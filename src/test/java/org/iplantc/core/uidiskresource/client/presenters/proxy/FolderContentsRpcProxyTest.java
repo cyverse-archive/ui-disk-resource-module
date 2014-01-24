@@ -13,16 +13,8 @@ import com.sencha.gxt.data.shared.loader.PagingLoadResultBean;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
@@ -152,6 +144,8 @@ public class FolderContentsRpcProxyTest {
 
         final HasSafeHtml hasSafeHtmlMock = mock(HasSafeHtml.class);
         folderContentsRpcProxy.init(hasSafeHtmlMock);
+
+        // Call method under test
         folderContentsRpcProxy.load(loadConfigMock, pagingAsyncMock);
 
         ArgumentCaptor<FolderContentsRpcProxy.FolderContentsCallback> callBackCaptor
@@ -200,6 +194,7 @@ public class FolderContentsRpcProxyTest {
 
         final HasSafeHtml hasSafeHtmlMock = mock(HasSafeHtml.class);
         folderContentsRpcProxy.init(hasSafeHtmlMock);
+
         folderContentsRpcProxy.load(loadConfigMock, pagingAsyncMock);
 
         ArgumentCaptor<FolderContentsRpcProxy.FolderContentsCallback> callBackCaptor = ArgumentCaptor.forClass(FolderContentsRpcProxy.FolderContentsCallback.class);
@@ -207,7 +202,6 @@ public class FolderContentsRpcProxyTest {
 
         callBackCaptor.getValue().onSuccess(mockFolder);
         verifyZeroInteractions(searchServiceMock);
-
     }
 
     /**

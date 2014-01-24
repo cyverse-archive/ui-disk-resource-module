@@ -143,17 +143,18 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
 			}
 		};
 
-		this.view.setTreeLoader(treeLoader);
-		this.view.setPresenter(this);
-		this.view.addFolderSelectedEventHandler(this);
 		this.proxy.init(dataSearchPresenter, this);
+        this.dataSearchPresenter.searchInit(getView(), getView(), this, getView().getTreeStore(), getView().getToolbar().getSearchField());
         this.rpc_proxy.init(view.getCenterPanelHeader());
+
+        this.view.setTreeLoader(treeLoader);
+        this.view.setPresenter(this);
+        this.view.addFolderSelectedEventHandler(this);
 
         initHandlers();
         initDragAndDrop();
         loadUserTrashPath();
         initFolderContentRpc();
-        this.dataSearchPresenter.searchInit(getView(), this, getView().getTreeStore(), getView().getToolbar().getSearchField());
 
 	}
 

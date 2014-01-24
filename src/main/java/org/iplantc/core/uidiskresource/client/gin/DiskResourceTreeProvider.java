@@ -6,6 +6,7 @@ import com.google.inject.Provider;
 
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.data.shared.TreeStore;
+import com.sencha.gxt.widget.core.client.tips.QuickTip;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeAppearance;
 import com.sencha.gxt.widget.core.client.tree.TreeStyle;
@@ -54,8 +55,13 @@ public class DiskResourceTreeProvider implements Provider<Tree<Folder, Folder>> 
 
         };
 
-        tree.setCell(new TreeCell());
+        final TreeCell treeCell = new TreeCell();
+        treeCell.setHasHandlers(tree);
+        treeCell.setSelectionModel(tree.getSelectionModel());
+
+        tree.setCell(treeCell);
         tree.setStyle(new CustomTreeStyle(tree.getAppearance()));
+        new QuickTip(tree);
         return tree;
     }
 

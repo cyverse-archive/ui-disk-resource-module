@@ -19,12 +19,15 @@ import com.sencha.gxt.data.shared.TreeStore;
 
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
+import org.iplantc.core.uicommons.client.info.SuccessAnnouncementConfig;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.HasFolderSelectedEventHandlers;
+import org.iplantc.core.uidiskresource.client.search.events.DeleteSavedSearchEvent;
+import org.iplantc.core.uidiskresource.client.search.events.DeleteSavedSearchEvent.HasDeleteSavedSearchEventHandlers;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
@@ -40,8 +43,8 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
     List<DiskResourceQueryTemplate> cleanCopyQueryTemplates = Lists.newArrayList();
     final List<DiskResourceQueryTemplate> queryTemplates = Lists.newArrayList();
-    TreeStore<Folder> treeStore;
     DiskResourceSearchField searchField;
+    TreeStore<Folder> treeStore;
     private DiskResourceQueryTemplate activeQuery = null;
     private final IplantAnnouncer announcer;
     private HandlerManager handlerManager;
@@ -192,6 +195,35 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
     }
 
     @Override
+    public void onDeleteSavedSearch(DeleteSavedSearchEvent event) {
+        searchField.clearSearch();
+        final DiskResourceQueryTemplate savedSearch = event.getSavedSearch();
+        if (treeStore.remove(savedSearch)) {
+            if (queryTemplates.remove(savedSearch)) {
+                announcer.schedule(new SuccessAnnouncementConfig("Successfully deleted saved search: " + savedSearch.getName()));
+                searchService.saveQueryTemplates(queryTemplates, new AsyncCallback<Boolean>() {
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        announcer.schedule(new ErrorAnnouncementConfig("Failed to save search."));
+                    }
+
+                    @Override
+                    public void onSuccess(Boolean result) {
+                        if (!result) {
+                            GWT.log("Failed to save query templates after delete of saved search");
+                        }
+                    }
+                });
+            } else {
+                GWT.log("Failed to remove saved search from presenter");
+            }
+        } else {
+            GWT.log("Failed to remove saved search from treeStore.");
+        }
+    }
+
+    @Override
     public void onFolderSelected(FolderSelectedEvent event) {
         if (event.getSelectedFolder() instanceof DiskResourceQueryTemplate) {
             final DiskResourceQueryTemplate selectedQuery = (DiskResourceQueryTemplate)event.getSelectedFolder();
@@ -203,10 +235,10 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
     }
 
     @Override
-    public void searchInit(final HasFolderSelectedEventHandlers hasFolderSelectedHandlers, final FolderSelectedEventHandler folderSelectedHandler,
-            final TreeStore<Folder> treeStore,
-            final DiskResourceSearchField searchField) {
+    public void searchInit(final HasFolderSelectedEventHandlers hasFolderSelectedHandlers, final HasDeleteSavedSearchEventHandlers hasDeleteSavedSearchEventHandlers,
+            final FolderSelectedEventHandler folderSelectedHandler, final TreeStore<Folder> treeStore, final DiskResourceSearchField searchField) {
         hasFolderSelectedHandlers.addFolderSelectedEventHandler(this);
+        hasDeleteSavedSearchEventHandlers.addDeleteSavedSearchEventHandler(this);
         // Add handler which will listen to our FolderSelectedEvents
         addFolderSelectedEventHandler(folderSelectedHandler);
         this.treeStore = treeStore;
@@ -231,6 +263,7 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
         return handlerManager == null ? handlerManager = createHandlerManager() : handlerManager;
     }
 
+
     void fireEvent(GwtEvent<?> event) {
         if (handlerManager != null) {
             handlerManager.fireEvent(event);
@@ -240,7 +273,6 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
     HandlerManager getHandlerManager() {
         return handlerManager;
     }
-
 
     List<DiskResourceQueryTemplate> getQueryTemplates() {
         return queryTemplates;
