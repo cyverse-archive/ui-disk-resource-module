@@ -1,8 +1,11 @@
 package org.iplantc.core.uidiskresource.client.search.views.cells;
 
+import java.util.Date;
 import java.util.List;
 
+import org.iplantc.core.uicommons.client.models.search.DateInterval;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.core.uicommons.client.models.search.SearchAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.search.SearchModelUtils;
 import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
@@ -15,7 +18,6 @@ import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQu
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.OutlineStyle;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
@@ -37,6 +39,8 @@ import com.sencha.gxt.core.client.Style.AnchorAlignment;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.core.client.util.BaseEventPreview;
+import com.sencha.gxt.core.client.util.DateWrapper;
+import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.StringLabelProvider;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -103,9 +107,9 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     @UiField
     TextField ownedBy;
 
-    @Ignore
+    @Path("createdWithin")
     @UiField(provided = true)
-    SimpleComboBox<String> createdWithinCombo;
+    SimpleComboBox<DateInterval> createdWithinCombo;
 
     @UiField
     IPlantAnchor createFilterLink;
@@ -134,9 +138,9 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     @UiField
     TextField metadataAttributeQuery;
 
-    @Ignore
+    @Path("modifiedWithin")
     @UiField(provided = true)
-    SimpleComboBox<String> modifiedWithinCombo;
+    SimpleComboBox<DateInterval> modifiedWithinCombo;
 
     @Ignore
     DiskResourceQueryFormNamePrompt namePrompt;
@@ -153,8 +157,6 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     private final List<String> fileSizeUnits = Lists.newArrayList("KB", "MB", "GB", "TB");
 
     private boolean showing;
-
-    private final List<String> timeIntervals = Lists.newArrayList("---", "1 day", "3 days", "1 week", "2 weeks", "1 month", "2 months", "6 months", "1 year");
 
     private final DiskResourceQueryFormUiBinder uiBinder = GWT.create(DiskResourceQueryFormUiBinder.class);
 
@@ -312,7 +314,7 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         this.namePrompt = namePrompt;
         this.namePrompt.addSaveDiskResourceQueryEventHandler(this);
         StringLabelProvider<String> stringLabelProvider = new StringLabelProvider<String>();
-        initDateRangeCombos(stringLabelProvider);
+        initDateRangeCombos();
         initFileSizeNumberFields();
         initFileSizeComboBoxes(stringLabelProvider);
     }
@@ -348,9 +350,9 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
                 && Strings.isNullOrEmpty(template.getSharedWith())
                 && (template.getDateCreated() == null)
                 && (template.getLastModified() == null)
-                && ((template.getCreatedWithin() == null) || (template.getCreatedWithin().getFrom() == null) || (template.getCreatedWithin().getTo() == null))
-                && ((template.getModifiedWithin() == null) || (template.getModifiedWithin().getFrom() == null) || (template.getModifiedWithin().getTo() == null))
-                && ((template.getFileSizeRange() == null) || (template.getFileSizeRange().getMax() == null) || (template.getFileSizeRange().getMin() == null))){
+                && ((template.getCreatedWithin() == null) || (template.getCreatedWithin().getFrom() == null && template.getCreatedWithin().getTo() == null))
+                && ((template.getModifiedWithin() == null) || (template.getModifiedWithin().getFrom() == null && template.getModifiedWithin().getTo() == null))
+                && ((template.getFileSizeRange() == null) || (template.getFileSizeRange().getMax() == null && template.getFileSizeRange().getMin() == null))){
             // TODO Implement user error feedback
             return true;
         }
@@ -361,10 +363,72 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         namePrompt.show(filter, getElement(), new AnchorAlignment(Anchor.BOTTOM_LEFT, Anchor.BOTTOM_LEFT, true));
     }
 
-    private void initDateRangeCombos(StringLabelProvider<String> stringLabelProvider) {
+    private void initDateRangeCombos() {
+        List<DateInterval> timeIntervals = Lists.newArrayList();
+        Date now = new Date();
+
+        DateInterval interval = SearchAutoBeanFactory.INSTANCE.dateInterval().as();
+        interval.setLabel("---");
+        timeIntervals.add(interval);
+
+        interval = SearchAutoBeanFactory.INSTANCE.dateInterval().as();
+        interval.setFrom(new DateWrapper(now).clearTime().addDays(-1).asDate());
+        interval.setTo(now);
+        interval.setLabel("1 day");
+        timeIntervals.add(interval);
+
+        interval = SearchAutoBeanFactory.INSTANCE.dateInterval().as();
+        interval.setFrom(new DateWrapper(now).clearTime().addDays(-3).asDate());
+        interval.setTo(now);
+        interval.setLabel("3 days");
+        timeIntervals.add(interval);
+
+        interval = SearchAutoBeanFactory.INSTANCE.dateInterval().as();
+        interval.setFrom(new DateWrapper(now).clearTime().addDays(-7).asDate());
+        interval.setTo(now);
+        interval.setLabel("1 week");
+        timeIntervals.add(interval);
+
+        interval = SearchAutoBeanFactory.INSTANCE.dateInterval().as();
+        interval.setFrom(new DateWrapper(now).clearTime().addDays(-14).asDate());
+        interval.setTo(now);
+        interval.setLabel("2 weeks");
+        timeIntervals.add(interval);
+
+        interval = SearchAutoBeanFactory.INSTANCE.dateInterval().as();
+        interval.setFrom(new DateWrapper(now).clearTime().addMonths(-1).asDate());
+        interval.setTo(now);
+        interval.setLabel("1 month");
+        timeIntervals.add(interval);
+
+        interval = SearchAutoBeanFactory.INSTANCE.dateInterval().as();
+        interval.setFrom(new DateWrapper(now).clearTime().addMonths(-2).asDate());
+        interval.setTo(now);
+        interval.setLabel("2 months");
+        timeIntervals.add(interval);
+
+        interval = SearchAutoBeanFactory.INSTANCE.dateInterval().as();
+        interval.setFrom(new DateWrapper(now).clearTime().addMonths(-6).asDate());
+        interval.setTo(now);
+        interval.setLabel("6 months");
+        timeIntervals.add(interval);
+
+        interval = SearchAutoBeanFactory.INSTANCE.dateInterval().as();
+        interval.setFrom(new DateWrapper(now).clearTime().addYears(-1).asDate());
+        interval.setTo(now);
+        interval.setLabel("1 year");
+        timeIntervals.add(interval);
+
         // Data range combos
-        createdWithinCombo = new SimpleComboBox<String>(stringLabelProvider);
-        modifiedWithinCombo = new SimpleComboBox<String>(stringLabelProvider);
+        LabelProvider<DateInterval> dateIntervalLabelProvider = new LabelProvider<DateInterval>() {
+
+            @Override
+            public String getLabel(DateInterval item) {
+                return item.getLabel();
+            }
+        };
+        createdWithinCombo = new SimpleComboBox<DateInterval>(dateIntervalLabelProvider);
+        modifiedWithinCombo = new SimpleComboBox<DateInterval>(dateIntervalLabelProvider);
         createdWithinCombo.add(timeIntervals);
         modifiedWithinCombo.add(timeIntervals);
         createdWithinCombo.setValue(timeIntervals.get(0));
