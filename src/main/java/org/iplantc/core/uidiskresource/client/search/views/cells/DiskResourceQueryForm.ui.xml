@@ -17,15 +17,15 @@
 	</ui:with>
 	<ui:with field="margins0505"
 			 type="com.sencha.gxt.core.client.util.Margins">
-		<ui:attributes top="0" right="5" bottom="0" left="5" />
+		<ui:attributes top="0" right="5" bottom="5" left="5" />
 	</ui:with>
 	<ui:with field="margins5000"
 			 type="com.sencha.gxt.core.client.util.Margins">
-		<ui:attributes top="15" right="0" bottom="0" left="0" />
+		<ui:attributes top="15" right="0" bottom="0" left="5" />
 	</ui:with>
 	<ui:with field="margins0050"
 			 type="com.sencha.gxt.core.client.util.Margins">
-		<ui:attributes top="0" right="0" bottom="15" left="0" />
+		<ui:attributes top="0" right="0" bottom="15" left="5" />
 	</ui:with>
 	<ui:with field="padding5"
 			 type="com.sencha.gxt.core.client.util.Padding">
@@ -34,16 +34,16 @@
 
 	<ui:with field="verticalLayoutData"
 			 type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
-		<ui:attributes width="1" height="-1" margins="{margins0505}"/>
+		<ui:attributes width=".80" height="-1" margins="{margins0505}"/>
 	</ui:with>
 	
 	<ui:with field="verticalLayoutDataWithTopMargins"
              type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
-        <ui:attributes width="1" height="-1" margins="{margins5000}"/>
+        <ui:attributes width=".80" height="-1" margins="{margins5000}"/>
     </ui:with>
 	<ui:with field="verticalLayoutDataWithBottomMargins"
              type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
-        <ui:attributes width="1" height="-1" margins="{margins0050}"/>
+        <ui:attributes width=".80" height="-1" margins="{margins0050}"/>
     </ui:with>
 
 	<ui:with field="boxLayoutDataMargins0505"
@@ -74,23 +74,23 @@
 
 		
 		<container:child layoutData="{verticalLayoutDataWithTopMargins}">
-					<form:FieldLabel text="Created within">
+					<form:FieldLabel text="Created within" labelAlign="TOP">
 						<form:widget>
 							<form:SimpleComboBox ui:field="createdWithinCombo" 
 										   forceSelection="true" 
 										   triggerAction="ALL"
-										   width="75"/>
+										   />
 						</form:widget>
 					</form:FieldLabel>
 		</container:child>
 		
 		<container:child layoutData="{verticalLayoutDataWithBottomMargins}">
-					<form:FieldLabel text="Modified within">
+					<form:FieldLabel text="Modified within" labelAlign="TOP">
 						<form:widget>
 							<form:SimpleComboBox ui:field="modifiedWithinCombo" 
 										   forceSelection="true" 
 										   triggerAction="ALL" 
-										   width="75"/>
+										   />
 						</form:widget>
 					</form:FieldLabel>
 		</container:child>
@@ -133,7 +133,8 @@
 			<form:FieldLabel text="Shared with"
 							 labelAlign="TOP">
 				<form:widget>
-					<form:TextField ui:field="sharedWith"/>
+					<form:TextField ui:field="sharedWith"
+					 emptyText="Enter iPlant user name"/>
 				</form:widget>
 			</form:FieldLabel>
 		</container:child>
@@ -186,12 +187,6 @@
 	              <button:TextButton ui:field="searchButton"
 	                                 text="Search"/>
 	          </container:child>
-          </container:HBoxLayoutContainer>
-		</container:child>
-		
-		
-		<container:child layoutData="{verticalLayoutData}">
-		  <container:HBoxLayoutContainer hBoxLayoutAlign="TOP" pack="END">
 	          <container:child layoutData="{boxLayoutDataMargins0505}">
 	               <widgets:IPlantAnchor ui:field="createFilterLink" />
 	          </container:child>

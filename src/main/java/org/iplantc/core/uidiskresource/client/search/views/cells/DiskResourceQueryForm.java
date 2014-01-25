@@ -1,8 +1,22 @@
 package org.iplantc.core.uidiskresource.client.search.views.cells;
 
+import java.util.List;
+
+import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.core.uicommons.client.models.search.SearchModelUtils;
+import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.HasSaveDiskResourceQueryEventHandlers;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.HasSubmitDiskResourceQueryEventHandlers;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.OutlineStyle;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -18,9 +32,9 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
-
 import com.sencha.gxt.core.client.Style.Anchor;
 import com.sencha.gxt.core.client.Style.AnchorAlignment;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.core.client.util.BaseEventPreview;
 import com.sencha.gxt.data.shared.StringLabelProvider;
@@ -33,18 +47,6 @@ import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
-
-import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.core.uicommons.client.models.search.SearchModelUtils;
-import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
-import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
-import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.HasSaveDiskResourceQueryEventHandlers;
-import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
-import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
-import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.HasSubmitDiskResourceQueryEventHandlers;
-import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
-
-import java.util.List;
 
 /**
  * This form is used to construct, edit and/or save "search filters".
@@ -174,7 +176,10 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
 
         initWidget(createAndBindUi);
         getElement().getStyle().setBackgroundColor("white");
-        setSize("330", "-1");
+        getElement().getStyle().setOutlineWidth(0, Unit.PX);
+        getElement().getStyle().setPaddingTop(5, Unit.PX);
+        getElement().getStyle().setPaddingBottom(5, Unit.PX);
+        setSize("330", "250");
         editorDriver.initialize(this);
         editorDriver.edit(filter);
 
@@ -196,8 +201,9 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         eventPreview.getIgnoreList().add(getElement());
         eventPreview.setAutoHide(false);
         addStyleName("x-ignore");
-
-        // JDS Small trial to correct placement of form in constrained views.
+        con.setScrollMode(ScrollMode.AUTOY);
+        con.setBorders(true);
+         // JDS Small trial to correct placement of form in constrained views.
         this.ensureVisibilityOnSizing = true;
     }
 

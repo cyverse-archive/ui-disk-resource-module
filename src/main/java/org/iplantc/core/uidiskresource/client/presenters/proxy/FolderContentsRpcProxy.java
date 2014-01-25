@@ -74,7 +74,7 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
         @Override
         public void onFailure(Throwable caught) {
             if (loadConfig.getFolder() instanceof DiskResourceQueryTemplate) {
-                announcer.schedule(new ErrorAnnouncementConfig(SafeHtmlUtils.fromString("Submission of search failed"), true));
+                announcer.schedule(new ErrorAnnouncementConfig(SafeHtmlUtils.fromString("Unable to search. Please try again later."), true));
             }
             callback.onFailure(caught);
         }

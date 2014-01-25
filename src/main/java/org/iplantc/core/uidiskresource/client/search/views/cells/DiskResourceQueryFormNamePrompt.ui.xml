@@ -7,7 +7,7 @@
 	xmlns:widgets="urn:import:org.iplantc.core.uicommons.client.widgets">
 
 	<ui:with field="margins0500" type="com.sencha.gxt.core.client.util.Margins">
-		<ui:attributes top="0" right="5" bottom="0" left="0" />
+		<ui:attributes top="5" right="5" bottom="5" left="5" />
 	</ui:with>
 
 	<ui:with field="boxLayoutDataMargins0500"
@@ -17,7 +17,7 @@
 
 	<ui:with field="verticalLayoutData"
 		type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData">
-		<ui:attributes width="1" height="-1" margins="{margins0500}"/>
+		<ui:attributes width=".85" height="-1" margins="{margins0500}"/>
 	</ui:with>
 
 	<c:ContentPanel ui:field="cp" headerVisible="false"

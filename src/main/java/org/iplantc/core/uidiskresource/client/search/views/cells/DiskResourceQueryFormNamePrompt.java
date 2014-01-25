@@ -54,9 +54,8 @@ public class DiskResourceQueryFormNamePrompt extends Composite implements Editor
 
     public DiskResourceQueryFormNamePrompt() {
         initWidget(uiBinder.createAndBindUi(this));
+        setSize("330", "90");
         saveLabel.getElement().getStyle().setFontWeight(FontWeight.BOLD);
-        saveLabel.getElement().getStyle().setMarginLeft(10, Unit.PX);
-
         editorDriver.initialize(this);
         eventPreview = new BaseEventPreview();
         eventPreview.getIgnoreList().add(getElement());
