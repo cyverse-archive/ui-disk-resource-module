@@ -84,6 +84,8 @@ import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoadConfig;
+import org.iplantc.core.uidiskresource.client.search.events.DeleteSavedSearchEvent;
+import org.iplantc.core.uidiskresource.client.search.events.DeleteSavedSearchEvent.DeleteSavedSearchEventHandler;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
@@ -650,6 +652,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @Override
     public void unmask() {
         con.unmask();
+        grid.unmask();
     }
 
     @Override
@@ -971,6 +974,11 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @Override
     public HasSafeHtml getCenterPanelHeader() {
         return centerCp.getHeader();
+    }
+
+    @Override
+    public HandlerRegistration addDeleteSavedSearchEventHandler(DeleteSavedSearchEventHandler handler) {
+        return tree.addHandler(handler, DeleteSavedSearchEvent.TYPE);
     }
 
 }

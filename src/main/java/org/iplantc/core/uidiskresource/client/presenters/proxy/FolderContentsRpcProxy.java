@@ -106,7 +106,7 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
     @Override
     public void load(final FolderContentsLoadConfig loadConfig,
                      final AsyncCallback<PagingLoadResult<DiskResource>> callback) {
-        Folder folder = loadConfig.getFolder();
+        final Folder folder = loadConfig.getFolder();
         if (folder.isFilter()) {
         	if (callback != null) {
         		List<DiskResource> emptyResult = Lists.newArrayList();
@@ -122,7 +122,7 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
 
     }
 
-    public void init(HasSafeHtml hasSafeHtml) {
+    public void init(final HasSafeHtml hasSafeHtml) {
         this.hasSafeHtml = hasSafeHtml;
     }
 }

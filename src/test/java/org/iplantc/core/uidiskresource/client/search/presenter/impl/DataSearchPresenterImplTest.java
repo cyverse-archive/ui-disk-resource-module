@@ -9,18 +9,8 @@ import com.sencha.gxt.data.shared.TreeStore;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
@@ -29,6 +19,7 @@ import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.HasFolderSelectedEventHandlers;
+import org.iplantc.core.uidiskresource.client.search.events.DeleteSavedSearchEvent.HasDeleteSavedSearchEventHandlers;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
@@ -45,11 +36,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * 
- * @author jstroot
- * 
- */
 /**
  * @author jstroot
  *
@@ -466,17 +452,19 @@ public class DataSearchPresenterImplTest {
      * @see org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter#searchInit(org.iplantc.core.uidiskresource.client.views.DiskResourceView)
      */
     @Test public void testSearchInit_Case1() {
-        final HasFolderSelectedEventHandlers hasHandlersMock = mock(HasFolderSelectedEventHandlers.class);
+        final HasFolderSelectedEventHandlers hasFolderSelectHandlersMock = mock(HasFolderSelectedEventHandlers.class);
+        final HasDeleteSavedSearchEventHandlers hasDeleteSavedSearchEventHandlers = mock(HasDeleteSavedSearchEventHandlers.class);
         final FolderSelectedEventHandler folderSelectedEventHandlerMock = mock(FolderSelectedEventHandler.class);
-        dsPresenter.searchInit(hasHandlersMock, folderSelectedEventHandlerMock, treeStoreMock, viewMock);
+        dsPresenter.searchInit(hasFolderSelectHandlersMock, hasDeleteSavedSearchEventHandlers, folderSelectedEventHandlerMock, treeStoreMock, viewMock);
 
         /* Verify that presenter adds itself as handler to hasHandlersMock */
-        verify(hasHandlersMock).addFolderSelectedEventHandler(eq(dsPresenter));
+        verify(hasFolderSelectHandlersMock).addFolderSelectedEventHandler(eq(dsPresenter));
+        verify(hasDeleteSavedSearchEventHandlers).addDeleteSavedSearchEventHandler(dsPresenter);
 
         assertEquals("Verify that view is saved", viewMock, dsPresenter.searchField);
         assertEquals("Verify that the treeStore is saved", treeStoreMock, dsPresenter.treeStore);
 
-        verify(hasHandlersMock).addFolderSelectedEventHandler(eq(dsPresenter));
+        verify(hasFolderSelectHandlersMock).addFolderSelectedEventHandler(eq(dsPresenter));
 
         ArgumentCaptor<SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler> saveEventHandlerCaptor
                 = ArgumentCaptor.forClass(SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler.class);
@@ -487,15 +475,17 @@ public class DataSearchPresenterImplTest {
         assertEquals("Verify that the presenter registers itself to SaveDiskResourceQueryEvents", saveEventHandlerCaptor.getValue(), dsPresenter);
         assertEquals("Verify that the presenter registers itself to SubmitDiskResourceQueryEvents", submitEventHandlerCaptor.getValue(), dsPresenter);
 
-        verifyNoMoreInteractions(viewMock, hasHandlersMock);
+        verifyNoMoreInteractions(viewMock, hasFolderSelectHandlersMock, hasDeleteSavedSearchEventHandlers);
         verifyZeroInteractions(searchService, treeStoreMock);
     }
 
     @Test public void testOnFolderSelected_Case1() {
-        final HasFolderSelectedEventHandlers hasHandlersMock = mock(HasFolderSelectedEventHandlers.class);
+        final HasFolderSelectedEventHandlers hasFolderSelectHandlersMock = mock(HasFolderSelectedEventHandlers.class);
+        final HasDeleteSavedSearchEventHandlers hasDeleteSavedSearchEventHandlersMock = mock(HasDeleteSavedSearchEventHandlers.class);
         final FolderSelectedEventHandler folderSelectedEventHandlerMock = mock(FolderSelectedEventHandler.class);
-        dsPresenter.searchInit(hasHandlersMock, folderSelectedEventHandlerMock, treeStoreMock, viewMock);
-        verify(hasHandlersMock).addFolderSelectedEventHandler(eq(dsPresenter));
+        dsPresenter.searchInit(hasFolderSelectHandlersMock, hasDeleteSavedSearchEventHandlersMock, folderSelectedEventHandlerMock, treeStoreMock, viewMock);
+        verify(hasFolderSelectHandlersMock).addFolderSelectedEventHandler(eq(dsPresenter));
+        verify(hasDeleteSavedSearchEventHandlersMock).addDeleteSavedSearchEventHandler(dsPresenter);
 
         verify(viewMock).addSaveDiskResourceQueryEventHandler(any(SaveDiskResourceQueryEventHandler.class));
         verify(viewMock).addSubmitDiskResourceQueryEventHandler(any(SubmitDiskResourceQueryEventHandler.class));
@@ -507,15 +497,16 @@ public class DataSearchPresenterImplTest {
         
         verify(viewMock).clearSearch();
 
-        verifyNoMoreInteractions(viewMock, hasHandlersMock, folderSelectedEventHandlerMock);
+        verifyNoMoreInteractions(viewMock, hasFolderSelectHandlersMock, folderSelectedEventHandlerMock, hasDeleteSavedSearchEventHandlersMock);
         verifyZeroInteractions(searchService, treeStoreMock);
     }
     
     @Test public void testOnFolderSelected_Case2() {
-        final HasFolderSelectedEventHandlers hasHandlersMock = mock(HasFolderSelectedEventHandlers.class);
+        final HasFolderSelectedEventHandlers hasFolderSelectHandlersMock = mock(HasFolderSelectedEventHandlers.class);
+        final HasDeleteSavedSearchEventHandlers hasDeleteSavedSearchEventHandlersMock = mock(HasDeleteSavedSearchEventHandlers.class);
         final FolderSelectedEventHandler folderSelectedEventHandlerMock = mock(FolderSelectedEventHandler.class);
-        dsPresenter.searchInit(hasHandlersMock, folderSelectedEventHandlerMock, treeStoreMock, viewMock);
-        verify(hasHandlersMock).addFolderSelectedEventHandler(eq(dsPresenter));
+        dsPresenter.searchInit(hasFolderSelectHandlersMock, hasDeleteSavedSearchEventHandlersMock, folderSelectedEventHandlerMock, treeStoreMock, viewMock);
+        verify(hasFolderSelectHandlersMock).addFolderSelectedEventHandler(eq(dsPresenter));
 
         verify(viewMock).addSaveDiskResourceQueryEventHandler(any(SaveDiskResourceQueryEventHandler.class));
         verify(viewMock).addSubmitDiskResourceQueryEventHandler(any(SubmitDiskResourceQueryEventHandler.class));
@@ -527,7 +518,7 @@ public class DataSearchPresenterImplTest {
         
         verify(viewMock).edit(eq(selectedFolderMock));
 
-        verifyNoMoreInteractions(viewMock, hasHandlersMock, folderSelectedEventHandlerMock);
+        verifyNoMoreInteractions(viewMock, hasFolderSelectHandlersMock, folderSelectedEventHandlerMock);
         verifyZeroInteractions(searchService, treeStoreMock);
 
     }

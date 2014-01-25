@@ -6,6 +6,8 @@ import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.HasFolderSelectedEventHandlers;
+import org.iplantc.core.uidiskresource.client.search.events.DeleteSavedSearchEvent.DeleteSavedSearchEventHandler;
+import org.iplantc.core.uidiskresource.client.search.events.DeleteSavedSearchEvent.HasDeleteSavedSearchEventHandlers;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchField;
@@ -43,6 +45,7 @@ import java.util.List;
  * <li>Displaying the saved filters as selectable root items in the Navigation panel</li>
  * </ul>
  * </li>
+ * <li>Deleting saved queries</li>
  * 
  * </ul>
  * 
@@ -50,7 +53,8 @@ import java.util.List;
  * @author jstroot
  * 
  */
-public interface DataSearchPresenter extends SaveDiskResourceQueryEventHandler, SubmitDiskResourceQueryEventHandler, HasFolderSelectedEventHandlers, FolderSelectedEventHandler {
+public interface DataSearchPresenter extends SaveDiskResourceQueryEventHandler, SubmitDiskResourceQueryEventHandler, HasFolderSelectedEventHandlers, FolderSelectedEventHandler,
+        DeleteSavedSearchEventHandler {
 
     /**
      * Initializes this presenter's contract with the given input parameters.
@@ -60,14 +64,15 @@ public interface DataSearchPresenter extends SaveDiskResourceQueryEventHandler, 
      * {@code SubmitDiskResourceQueryEvent}s on the view itself.
      * 
      * @param hasFolderSelectedHandlers
+     * @param hasDeleteSavedSearchEventHandlers
      * @param folderSelectedHandler
      * @param treeStore
      * @param searchField
      */
-    void searchInit(HasFolderSelectedEventHandlers hasFolderSelectedHandlers, FolderSelectedEventHandler folderSelectedHandler, TreeStore<Folder> treeStore, DiskResourceSearchField searchField);
+    void searchInit(HasFolderSelectedEventHandlers hasFolderSelectedHandlers, HasDeleteSavedSearchEventHandlers hasDeleteSavedSearchEventHandlers, FolderSelectedEventHandler folderSelectedHandler,
+            TreeStore<Folder> treeStore, DiskResourceSearchField searchField);
 
     /**
-     *
      * @return the current active query, or null if there is not active query.
      */
     DiskResourceQueryTemplate getActiveQuery();

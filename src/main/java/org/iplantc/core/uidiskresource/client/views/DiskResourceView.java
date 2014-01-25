@@ -26,6 +26,7 @@ import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.FolderS
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.HasFolderSelectedEventHandlers;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoadConfig;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectFolderByIdLoadHandler;
+import org.iplantc.core.uidiskresource.client.search.events.DeleteSavedSearchEvent.HasDeleteSavedSearchEventHandlers;
 import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
@@ -39,7 +40,7 @@ import java.util.Set;
  * @author jstroot
  *
  */
-public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRoot, HasFolderSelectedEventHandlers {
+public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRoot, HasFolderSelectedEventHandlers, HasDeleteSavedSearchEventHandlers {
 
     public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter,
  DiskResourceViewToolbarImpl.Presenter, HasHandlerRegistrationMgmt, FolderSelectedEventHandler, IsMaskable {
