@@ -1,8 +1,13 @@
 package org.iplantc.core.uidiskresource.client.search.views.cells;
 
+import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.HasSaveDiskResourceQueryEventHandlers;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.FontWeight;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -13,18 +18,12 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
-
 import com.sencha.gxt.core.client.Style.AnchorAlignment;
 import com.sencha.gxt.core.client.util.BaseEventPreview;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.form.TextField;
-
-import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
-import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.HasSaveDiskResourceQueryEventHandlers;
-import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
 
 public class DiskResourceQueryFormNamePrompt extends Composite implements Editor<DiskResourceQueryTemplate>, HasSaveDiskResourceQueryEventHandlers {
 
@@ -55,6 +54,8 @@ public class DiskResourceQueryFormNamePrompt extends Composite implements Editor
     public DiskResourceQueryFormNamePrompt() {
         initWidget(uiBinder.createAndBindUi(this));
         setSize("330", "90");
+        name.addValidator(new DiskResourceNameValidator());
+        name.setAutoValidate(true);
         saveLabel.getElement().getStyle().setFontWeight(FontWeight.BOLD);
         editorDriver.initialize(this);
         eventPreview = new BaseEventPreview();
@@ -110,16 +111,16 @@ public class DiskResourceQueryFormNamePrompt extends Composite implements Editor
     }
 
     @UiHandler("cancelSaveFilterBtn")
-    void onCancelSaveFilter(@SuppressWarnings("unused") SelectEvent event) {
+    void onCancelSaveFilter(SelectEvent event) {
         // Reset name of filter
         name.setValue(originalName);
         hide();
     }
 
     @UiHandler("saveFilterBtn")
-    void onSaveFilterSelected(@SuppressWarnings("unused") SelectEvent event) {
+    void onSaveFilterSelected(SelectEvent event) {
         final DiskResourceQueryTemplate flushedQueryTemplate = editorDriver.flush();
-        if (editorDriver.hasErrors()) {
+        if (editorDriver.hasErrors() || DiskResourceQueryForm.isEmptyQuery(flushedQueryTemplate)) {
             return;
         }
 

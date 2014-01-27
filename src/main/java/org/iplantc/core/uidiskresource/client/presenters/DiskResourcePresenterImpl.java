@@ -207,7 +207,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
 
 		EventBus eventBus = EventBus.getInstance();
 		DiskResourcesEventHandler diskResourcesEventHandler = new DiskResourcesEventHandler(
-				this);
+				this,dataSearchPresenter);
 		dreventHandlers.add(eventBus.addHandler(DiskResourceRefreshEvent.TYPE,
 				diskResourcesEventHandler));
 		dreventHandlers.add(eventBus.addHandler(DiskResourcesDeletedEvent.TYPE,
@@ -737,7 +737,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
 
 	@Override
 	public void doSubmitDiskResourceQuery(SubmitDiskResourceQueryEvent event) {
-
 	}
 
 	private class MyBuilder implements Builder {

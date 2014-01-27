@@ -3,6 +3,8 @@ package org.iplantc.core.uidiskresource.client.search.views.cells;
 import java.util.Date;
 import java.util.List;
 
+import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
+import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.search.DateInterval;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uicommons.client.models.search.SearchAutoBeanFactory;
@@ -320,7 +322,7 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     }
 
     @UiHandler("createFilterLink")
-    void onCreateQueryTemplateClicked(@SuppressWarnings("unused") ClickEvent event) {
+    void onCreateQueryTemplateClicked(ClickEvent event) {
         // Flush to perform local validations
         DiskResourceQueryTemplate flushedFilter = editorDriver.flush();
         if (editorDriver.hasErrors()) {
@@ -330,7 +332,7 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     }
 
     @UiHandler("searchButton")
-    void onSearchBtnSelected(@SuppressWarnings("unused") SelectEvent event) {
+    void onSearchBtnSelected(SelectEvent event) {
         // Flush to perform local validations
         DiskResourceQueryTemplate flushedQueryTemplate = editorDriver.flush();
         if (editorDriver.hasErrors() || isEmptyQuery(flushedQueryTemplate)) {
@@ -339,9 +341,10 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         // Fire event and pass flushed query
         fireEvent(new SubmitDiskResourceQueryEvent(flushedQueryTemplate));
         hide();
+        
     }
     
-    boolean isEmptyQuery(DiskResourceQueryTemplate template){
+    static boolean isEmptyQuery(DiskResourceQueryTemplate template){
         if (Strings.isNullOrEmpty(template.getOwnedBy())
                 && Strings.isNullOrEmpty(template.getFileQuery())
                 && Strings.isNullOrEmpty(template.getMetadataAttributeQuery())
@@ -354,6 +357,7 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
                 && ((template.getModifiedWithin() == null) || (template.getModifiedWithin().getFrom() == null && template.getModifiedWithin().getTo() == null))
                 && ((template.getFileSizeRange() == null) || (template.getFileSizeRange().getMax() == null && template.getFileSizeRange().getMin() == null))){
             // TODO Implement user error feedback
+            IplantAnnouncer.getInstance().schedule(new ErrorAnnouncementConfig("You must select atleast one filter."));
             return true;
         }
         return false;

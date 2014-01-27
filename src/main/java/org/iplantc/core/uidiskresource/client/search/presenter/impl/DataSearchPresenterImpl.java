@@ -49,7 +49,8 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
     private final IplantAnnouncer announcer;
     private HandlerManager handlerManager;
     private final SearchServiceFacade searchService;
-
+    private DiskResourceView.Presenter diskResourcePresenter;
+    
     @Inject
     public DataSearchPresenterImpl(final SearchServiceFacade searchService, final IplantAnnouncer announcer) {
         this.searchService = searchService;
@@ -175,12 +176,24 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
         updateDataNavigationWindow(toUpdate, treeStore);
 
         activeQuery = toSubmit;
+        if(diskResourcePresenter != null) {
+            diskResourcePresenter.deSelectDiskResources();
+            diskResourcePresenter.getView().deSelectNavigationFolder();
+        }
         fireEvent(new FolderSelectedEvent(activeQuery));
+     
     }
 
     @Override
     public DiskResourceQueryTemplate getActiveQuery() {
         return activeQuery;
+    }
+    
+    @Override
+    public void fireActiveQuery() {
+        if(activeQuery != null) {
+            fireEvent(new FolderSelectedEvent(activeQuery));
+        }
     }
 
     @Override
@@ -236,11 +249,12 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
     @Override
     public void searchInit(final HasFolderSelectedEventHandlers hasFolderSelectedHandlers, final HasDeleteSavedSearchEventHandlers hasDeleteSavedSearchEventHandlers,
-            final FolderSelectedEventHandler folderSelectedHandler, final TreeStore<Folder> treeStore, final DiskResourceSearchField searchField) {
+            final DiskResourceView.Presenter presenter, final TreeStore<Folder> treeStore, final DiskResourceSearchField searchField) {
         hasFolderSelectedHandlers.addFolderSelectedEventHandler(this);
         hasDeleteSavedSearchEventHandlers.addDeleteSavedSearchEventHandler(this);
         // Add handler which will listen to our FolderSelectedEvents
-        addFolderSelectedEventHandler(folderSelectedHandler);
+        addFolderSelectedEventHandler(presenter);
+        diskResourcePresenter = presenter;
         this.treeStore = treeStore;
         this.searchField = searchField;
         searchField.addSaveDiskResourceQueryEventHandler(this);
