@@ -316,10 +316,9 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     void init(DiskResourceQueryFormNamePrompt namePrompt) {
         this.namePrompt = namePrompt;
         this.namePrompt.addSaveDiskResourceQueryEventHandler(this);
-        StringLabelProvider<String> stringLabelProvider = new StringLabelProvider<String>();
         initDateRangeCombos();
         initFileSizeNumberFields();
-        initFileSizeComboBoxes(stringLabelProvider);
+        initFileSizeComboBoxes();
     }
 
     @UiHandler("createFilterLink")
@@ -443,8 +442,9 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         modifiedWithinCombo.setEmptyText("---");
     }
 
-    private void initFileSizeComboBoxes(StringLabelProvider<String> stringLabelProvider) {
+    private void initFileSizeComboBoxes() {
         // File Size ComboBoxes
+        StringLabelProvider<String> stringLabelProvider = new StringLabelProvider<String>();
         greaterThanComboBox = new SimpleComboBox<String>(stringLabelProvider);
         lessThanComboBox = new SimpleComboBox<String>(stringLabelProvider);
         greaterThanComboBox.add(fileSizeUnits);
