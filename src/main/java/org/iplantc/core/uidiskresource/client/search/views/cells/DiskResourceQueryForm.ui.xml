@@ -151,7 +151,7 @@
 	
 						<container:child layoutData="{boxLayoutDataMargins0505}">
 							<form:SimpleComboBox ui:field="greaterThanComboBox"
-												 width="50"
+												 width="64"
 												 triggerAction="ALL"
 												 forceSelection="true"/>
 						</container:child>
@@ -171,7 +171,7 @@
 	
 						<container:child layoutData="{boxLayoutDataMargins0505}">
 							<form:SimpleComboBox ui:field="lessThanComboBox"
-												 width="50"
+												 width="64"
 												 triggerAction="ALL"
 												 forceSelection="true"/>
 						</container:child>

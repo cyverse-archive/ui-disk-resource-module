@@ -7,6 +7,7 @@ import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.search.DateInterval;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.core.uicommons.client.models.search.FileSizeRange;
 import org.iplantc.core.uicommons.client.models.search.SearchAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.search.SearchModelUtils;
 import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
@@ -156,7 +157,7 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     @UiField 
     TextField sharedWith;
 
-    private final List<String> fileSizeUnits = Lists.newArrayList("KB", "MB", "GB", "TB");
+    private final List<String> fileSizeUnits = Lists.newArrayList("bytes", "KB", "MB", "GB", "TB");
 
     private boolean showing;
 
@@ -338,6 +339,9 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         if (editorDriver.hasErrors() || isEmptyQuery(flushedQueryTemplate)) {
             return;
         }
+
+        convertFileSizesToBytes(flushedQueryTemplate);
+
         // Fire event and pass flushed query
         fireEvent(new SubmitDiskResourceQueryEvent(flushedQueryTemplate));
         hide();
@@ -454,6 +458,23 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         NumberPropertyEditor.DoublePropertyEditor doublePropertyEditor = new NumberPropertyEditor.DoublePropertyEditor();
         fileSizeGreaterThan = new NumberField<Double>(doublePropertyEditor);
         fileSizeLessThan = new NumberField<Double>(doublePropertyEditor);
+    }
+
+    private void convertFileSizesToBytes(DiskResourceQueryTemplate template) {
+        FileSizeRange fileSizeRange = template.getFileSizeRange();
+        if (fileSizeRange != null) {
+            Double max = fileSizeRange.getMax();
+            Double min = fileSizeRange.getMin();
+            int maxSizeIndex = lessThanComboBox.getSelectedIndex();
+            int minSizeIndex = greaterThanComboBox.getSelectedIndex();
+
+            if (max != null && maxSizeIndex >= 0) {
+                fileSizeRange.setMax(max * Math.pow(1024, maxSizeIndex));
+            }
+            if (min != null && minSizeIndex >= 0) {
+                fileSizeRange.setMin(min * Math.pow(1024, minSizeIndex));
+            }
+        }
     }
 
     private void onEscape(NativePreviewEvent pe) {
