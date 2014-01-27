@@ -439,8 +439,8 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         modifiedWithinCombo = new SimpleComboBox<DateInterval>(dateIntervalLabelProvider);
         createdWithinCombo.add(timeIntervals);
         modifiedWithinCombo.add(timeIntervals);
-        createdWithinCombo.setValue(timeIntervals.get(0));
-        modifiedWithinCombo.setValue(timeIntervals.get(0));
+        createdWithinCombo.setEmptyText("---");
+        modifiedWithinCombo.setEmptyText("---");
     }
 
     private void initFileSizeComboBoxes(StringLabelProvider<String> stringLabelProvider) {
