@@ -13,7 +13,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasName;
 import com.google.inject.Inject;
 import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
+import com.google.web.bindery.autobean.shared.Splittable;
+import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
 import com.sencha.gxt.data.shared.TreeStore;
 
@@ -22,6 +25,7 @@ import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.info.SuccessAnnouncementConfig;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.core.uicommons.client.models.search.SearchAutoBeanFactory;
 import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
@@ -49,11 +53,13 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
     private final IplantAnnouncer announcer;
     private HandlerManager handlerManager;
     private final SearchServiceFacade searchService;
+    private final SearchAutoBeanFactory factory;
     
     @Inject
-    public DataSearchPresenterImpl(final SearchServiceFacade searchService, final IplantAnnouncer announcer) {
+    public DataSearchPresenterImpl(final SearchServiceFacade searchService, final IplantAnnouncer announcer, final SearchAutoBeanFactory factory) {
         this.searchService = searchService;
         this.announcer = announcer;
+        this.factory = factory;
     }
 
     @Override
@@ -114,7 +120,13 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
             public void onSuccess(Boolean result) {
                 // Clear list of saved query templates and re-add result.
                 queryTemplates.clear();
-                queryTemplates.addAll(toBeSaved);
+                for (DiskResourceQueryTemplate qt : toBeSaved) {
+                    // Make sure all saved templates are set as saved.
+                    final Splittable encode = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(qt));
+                    StringQuoter.create(true).assign(encode, "saved");
+                    final DiskResourceQueryTemplate as = AutoBeanCodex.decode(factory, DiskResourceQueryTemplate.class, encode).as();
+                    queryTemplates.add(as);
+                }
 
                 /*
                  * Determine if there has been a name change, if so, remove the original from the
