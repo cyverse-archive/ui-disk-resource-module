@@ -224,7 +224,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
 
             }
         };
-        t.schedule(1500);
+        t.schedule(2500);
     }
 
     private void buildFolderLink(final DiskResource value) {
