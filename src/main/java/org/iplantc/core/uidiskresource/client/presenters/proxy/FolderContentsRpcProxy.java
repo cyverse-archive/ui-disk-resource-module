@@ -1,15 +1,6 @@
 package org.iplantc.core.uidiskresource.client.presenters.proxy;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.gwt.safehtml.client.HasSafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.inject.Inject;
-
-import com.sencha.gxt.data.client.loader.RpcProxy;
-import com.sencha.gxt.data.shared.loader.PagingLoadResult;
-import com.sencha.gxt.data.shared.loader.PagingLoadResultBean;
+import java.util.List;
 
 import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
@@ -19,9 +10,17 @@ import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
-import org.iplantc.core.uicommons.client.services.impl.DataSearchQueryBuilder;
 
-import java.util.List;
+import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.gwt.safehtml.client.HasSafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.inject.Inject;
+import com.sencha.gxt.data.client.loader.RpcProxy;
+import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+import com.sencha.gxt.data.shared.loader.PagingLoadResultBean;
 
 /**
  * This proxy is responsible for retrieving directory listings and search requests from the server.
@@ -64,7 +63,15 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
 
             callback.onSuccess(new PagingLoadResultBean<DiskResource>(list, result.getTotal(), loadConfig.getOffset()));
             if (dStrings != null) {
-                final String searchAppResultsHeader = dStrings.searchAppResultsHeader(new DataSearchQueryBuilder((DiskResourceQueryTemplate)result).buildFullQuery(), result.getTotal());
+                DiskResourceQueryTemplate query = (DiskResourceQueryTemplate)result;
+                String searchText = query.getFileQuery();
+                if (Strings.isNullOrEmpty(searchText)) {
+                    searchText = "Advanced Search";
+                } else {
+                    searchText = "\"" + searchText + "\"";
+                }
+                final String searchAppResultsHeader = dStrings.searchAppResultsHeader(searchText,
+                        query.getTotal(), query.getExecutionTime() / 1000.0);
                 hasSafeHtml1.setHTML(SafeHtmlUtils.fromString(searchAppResultsHeader));
             } else {
                 hasSafeHtml1.setHTML(SafeHtmlUtils.fromSafeConstant("&nbsp;"));

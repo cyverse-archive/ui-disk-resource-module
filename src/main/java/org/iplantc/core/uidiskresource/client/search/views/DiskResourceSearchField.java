@@ -1,16 +1,6 @@
 package org.iplantc.core.uidiskresource.client.search.views;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerRegistration;
-
-import com.sencha.gxt.widget.core.client.event.CollapseEvent.CollapseHandler;
-import com.sencha.gxt.widget.core.client.event.CollapseEvent.HasCollapseHandlers;
-import com.sencha.gxt.widget.core.client.event.ExpandEvent.ExpandHandler;
-import com.sencha.gxt.widget.core.client.event.ExpandEvent.HasExpandHandlers;
-import com.sencha.gxt.widget.core.client.event.ParseErrorEvent;
-import com.sencha.gxt.widget.core.client.form.DateField;
-import com.sencha.gxt.widget.core.client.form.PropertyEditor;
-import com.sencha.gxt.widget.core.client.form.TriggerField;
+import java.text.ParseException;
 
 import org.iplantc.core.uicommons.client.events.SubmitTextSearchEvent;
 import org.iplantc.core.uicommons.client.events.SubmitTextSearchEvent.SubmitTextSearchEventHandler;
@@ -24,7 +14,16 @@ import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQu
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.views.cells.DiskResourceSearchCell;
 
-import java.text.ParseException;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.sencha.gxt.widget.core.client.event.CollapseEvent.CollapseHandler;
+import com.sencha.gxt.widget.core.client.event.CollapseEvent.HasCollapseHandlers;
+import com.sencha.gxt.widget.core.client.event.ExpandEvent.ExpandHandler;
+import com.sencha.gxt.widget.core.client.event.ExpandEvent.HasExpandHandlers;
+import com.sencha.gxt.widget.core.client.event.ParseErrorEvent;
+import com.sencha.gxt.widget.core.client.form.DateField;
+import com.sencha.gxt.widget.core.client.form.PropertyEditor;
+import com.sencha.gxt.widget.core.client.form.TriggerField;
 
 /**
  * This class is a clone-and-own of {@link DateField}.
@@ -42,8 +41,7 @@ public class DiskResourceSearchField extends TriggerField<String> implements Has
             clearInvalid();
 
             DiskResourceQueryTemplate qt = factory.dataSearchFilter().as();
-            String implicitSearchText = SearchFieldDecorator.applyImplicitAsteriskSearchText(text.toString());
-            qt.setFileQuery(implicitSearchText);
+            qt.setFileQuery(text.toString());
             getCell().fireEvent(new SubmitDiskResourceQueryEvent(qt));
             return text.toString();
         }
