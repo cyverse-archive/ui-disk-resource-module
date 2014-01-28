@@ -60,9 +60,11 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
     @Override
     public void onLoad(LoadEvent<Folder, List<Folder>> event) {
         if (!rootsLoaded) {
-            // Folders must have been loaded to have this method called. Set this flag before calling
-            // initPathsToLoad, since it may attempt to load sub-folders, which may not be an async call,
-            // which will in turn call this method again before initPathsToLoad returns.
+            /*
+             * Folders must have been loaded to have this method called. Set this flag before calling
+             * initPathsToLoad, since it may attempt to load sub-folders, which may not be an async call,
+             * which will in turn call this method again before initPathsToLoad returns.
+             */
             rootsLoaded = true;
             initPathsToLoad();
             return;
@@ -111,9 +113,11 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
                 }
                 unmaskView();
             } else {
-                // Once a valid folder is found in the view, remotely load the
-                // folder, which will add the next folder in the path to the view's treeStore.
-                view.expandFolder(folder);
+                /*
+                 * Once a valid folder is found in the view, remotely load the folder, which will add the
+                 * next folder in the path to the view's treeStore.
+                 */
+                view.refreshFolder(folder);
             }
 
         }

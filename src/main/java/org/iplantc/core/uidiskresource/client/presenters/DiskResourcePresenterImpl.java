@@ -295,10 +295,18 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
 
 		Folder folder = view.getFolderById(folderToSelect.getId());
 		if (folder != null) {
-			// De-select currently selected folder, in case it is
-			// folderToSelect, to load center panel.
-			view.deSelectNavigationFolder();
-			view.setSelectedFolder(folder);
+            final Folder selectedFolder = view.getSelectedFolder();
+            if (folder == selectedFolder) {
+                // If the folder IS the currently selected folder, then trigger reload of center panel.
+                onFolderSelected(folder);
+            } else {
+                /*
+                 * If it is NOT the currently selected folder, then deselect the current folder and
+                 * re-select it.
+                 */
+                view.deSelectNavigationFolder();
+                view.setSelectedFolder(folder);
+            }
 		} else {
 			// Create and add the SelectFolderByIdLoadHandler to the treeLoader.
 			final SelectFolderByIdLoadHandler handler = new SelectFolderByIdLoadHandler(
@@ -306,27 +314,15 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
 			HandlerRegistration reg = treeLoader.addLoadHandler(handler);
 			addEventHandlerRegistration(handler, reg);
 
-			// If a parent folder of folderToSelect already exists, then we need
-			// to load its children.
+            /*
+             * If a parent folder of folderToSelect already exists, then we need to load its children.
+             */
 			String parentId = DiskResourceUtil.parseParent(folderToSelect
 					.getId());
 			Folder parentFolder = view.getFolderById(parentId);
 			while (validParentPath(parentId) && parentFolder == null) {
 				parentId = DiskResourceUtil.parseParent(parentId);
 				parentFolder = view.getFolderById(parentId);
-			}
-
-			if (validParentPath(parentId) && parentFolder != null) {
-				// treeLoader.loadChildren(parentFolder);
-				// KLUDGE The TreeStore models somehow become out of sync
-				// between the TreeLoader and the
-				// TreeView's SelectionModel when calling
-				// TreeLoader#loadChildren.
-				// We'll refresh the parentFolder here, since this folder may
-				// already have been loaded
-				// and we need to reload in case the listing is out of sync with
-				// the backend.
-				view.refreshFolder(parentFolder);
 			}
 		}
 	}
