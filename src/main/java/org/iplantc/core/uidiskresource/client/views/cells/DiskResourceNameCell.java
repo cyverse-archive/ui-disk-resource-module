@@ -196,7 +196,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
             if (value.isFilter()) {
                 initPopup();
                 linkPopup.add(new HTML(I18N.DISPLAY.diskResourceNotAvailable()));
-                linkPopup.setSize("300px", "200px");
+                linkPopup.setSize("300px", "150px");
                 schedulePopupTimer(eventTarget);
             }
             return;
@@ -217,7 +217,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
 
             @Override
             public void run() {
-                if (linkPopup != null) {
+                if (linkPopup != null && (eventTarget.getOffsetHeight() > 0 || eventTarget.getOffsetWidth() > 0)) {
                     linkPopup.showAt(eventTarget.getAbsoluteLeft() + 25,
                             eventTarget.getAbsoluteTop() - 15);
                 }
