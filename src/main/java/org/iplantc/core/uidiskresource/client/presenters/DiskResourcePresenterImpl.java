@@ -24,6 +24,7 @@ import org.iplantc.core.uicommons.client.models.UserInfo;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
@@ -614,6 +615,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
 	@Override
 	public boolean canDragDataToTargetFolder(final Folder targetFolder,
 			final Collection<DiskResource> dropData) {
+        if (targetFolder instanceof DiskResourceQueryTemplate) {
+            return false;
+        }
+
 		if (targetFolder.isFilter()) {
 			return false;
 		}
