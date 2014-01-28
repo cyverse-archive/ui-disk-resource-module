@@ -360,7 +360,7 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
                 && ((template.getModifiedWithin() == null) || (template.getModifiedWithin().getFrom() == null && template.getModifiedWithin().getTo() == null))
                 && ((template.getFileSizeRange() == null) || (template.getFileSizeRange().getMax() == null && template.getFileSizeRange().getMin() == null))){
             // TODO Implement user error feedback
-            IplantAnnouncer.getInstance().schedule(new ErrorAnnouncementConfig("You must select atleast one filter."));
+            IplantAnnouncer.getInstance().schedule(new ErrorAnnouncementConfig("You must select at least one filter."));
             return true;
         }
         return false;
