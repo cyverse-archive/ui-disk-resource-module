@@ -196,7 +196,7 @@ public class FolderContentsRpcProxyTest {
         DiskResourceQueryTemplate mockFolder = mock(DiskResourceQueryTemplate.class);
         when(mockFolder.isFilter()).thenReturn(false);
         String displayString = "test display string";
-        when(displayStringsMock.searchAppResultsHeader(anyString(), anyInt(), anyDouble())).thenReturn(
+        when(displayStringsMock.searchDataResultsHeader(anyString(), anyInt(), anyDouble())).thenReturn(
                 displayString);
 
         when(loadConfigMock.getFolder()).thenReturn(mockFolder);

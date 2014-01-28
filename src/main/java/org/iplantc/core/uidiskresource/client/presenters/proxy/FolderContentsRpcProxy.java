@@ -70,9 +70,9 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
                 } else {
                     searchText = "\"" + searchText + "\"";
                 }
-                final String searchAppResultsHeader = dStrings.searchAppResultsHeader(searchText,
+                final String searchResultsHeader = dStrings.searchDataResultsHeader(searchText,
                         query.getTotal(), query.getExecutionTime() / 1000.0);
-                hasSafeHtml1.setHTML(SafeHtmlUtils.fromString(searchAppResultsHeader));
+                hasSafeHtml1.setHTML(SafeHtmlUtils.fromString(searchResultsHeader));
             } else {
                 hasSafeHtml1.setHTML(SafeHtmlUtils.fromSafeConstant("&nbsp;"));
             }
