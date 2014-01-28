@@ -1,5 +1,8 @@
 package org.iplantc.core.uidiskresource.client.presenters.proxy;
 
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
@@ -16,6 +19,8 @@ import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
 import org.iplantc.core.uicommons.client.views.IsMaskable;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
@@ -112,12 +117,14 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
     private final IplantAnnouncer announcer;
     private DataSearchPresenter searchPresenter;
     private IsMaskable isMaskable;
+    private final HandlerManager handlerManager;
 
     @Inject
     public FolderRpcProxy(final DiskResourceServiceFacade drService, final SearchServiceFacade searchService, final IplantAnnouncer announcer) {
         this.drService = drService;
         this.searchService = searchService;
         this.announcer = announcer;
+        handlerManager = new HandlerManager(this);
     }
 
     @Override
@@ -133,15 +140,30 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
             return;
 
         } else {
-            drService.getSubFolders(parentFolder, new SubFoldersCallback(callback));
+            if (parentFolder instanceof DiskResourceQueryTemplate) {
+                fireEvent(new SubmitDiskResourceQueryEvent((DiskResourceQueryTemplate)parentFolder));
+            } else {
+                drService.getSubFolders(parentFolder, new SubFoldersCallback(callback));
+            }
         }
     }
 
     @Override
-    public void init(DataSearchPresenter presenter, IsMaskable isMaskable) {
+    public void init(final DataSearchPresenter presenter, final IsMaskable isMaskable) {
         this.searchPresenter = presenter;
         this.isMaskable = isMaskable;
+        addSubmitDiskResourceQueryEventHandler(searchPresenter);
     }
 
+    void fireEvent(GwtEvent<?> event) {
+        if (handlerManager != null) {
+            handlerManager.fireEvent(event);
+        }
+    }
+
+    @Override
+    public HandlerRegistration addSubmitDiskResourceQueryEventHandler(SubmitDiskResourceQueryEventHandler handler) {
+        return handlerManager.addHandler(SubmitDiskResourceQueryEvent.TYPE, handler);
+    }
 
 }

@@ -27,9 +27,6 @@ public class TreeCellDefaultAppearance implements TreeCellAppearance, BeforeSele
     interface TreeCellTempates extends XTemplates {
         @XTemplate("<span class='{style.treeCell}'>{name}&nbsp;</span><span class='{style.deleteBtn}' qtip='{imgToolTip}'>&nbsp;x</span>")
         SafeHtml savedQuery(String name, TreeCellStyle style, String imgToolTip);
-
-        @XTemplate("<span class='{style.treeCell}'>*&nbsp;{name}&nbsp;</span><span class='{style.deleteBtn}' qtip='{imgToolTip}'>&nbsp;x</span>")
-        SafeHtml dirtySavedQuery(String name, TreeCellStyle style, String imgToolTip);
     }
 
     public interface TreeCellStyle extends CssResource {
@@ -69,12 +66,7 @@ public class TreeCellDefaultAppearance implements TreeCellAppearance, BeforeSele
     @Override
     public void render(Context context, Folder value, SafeHtmlBuilder sb) {
         if (value instanceof DiskResourceQueryTemplate) {
-            if (((DiskResourceQueryTemplate)value).isDirty()) {
-                sb.append(templates.dirtySavedQuery(value.getName(), style, messages.deleteBtnToolTip()));
-
-            } else {
-                sb.append(templates.savedQuery(value.getName(), style, messages.deleteBtnToolTip()));
-            }
+            sb.append(templates.savedQuery(value.getName(), style, messages.deleteBtnToolTip()));
         } else {
             // Normal folder
             sb.append(SafeHtmlUtils.fromString(value.getName()));

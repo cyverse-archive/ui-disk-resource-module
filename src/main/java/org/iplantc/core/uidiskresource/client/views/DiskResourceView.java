@@ -27,6 +27,7 @@ import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.HasFold
 import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoadConfig;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectFolderByIdLoadHandler;
 import org.iplantc.core.uidiskresource.client.search.events.DeleteSavedSearchEvent.HasDeleteSavedSearchEventHandlers;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.HasSubmitDiskResourceQueryEventHandlers;
 import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
@@ -151,7 +152,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
      * @author jstroot
      *
      */
-    public interface Proxy extends DataProxy<Folder, List<Folder>> {
+    public interface Proxy extends DataProxy<Folder, List<Folder>>, HasSubmitDiskResourceQueryEventHandlers {
         void init(DataSearchPresenter presenter, IsMaskable isMaskable);
     }
 

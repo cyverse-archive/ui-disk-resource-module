@@ -11,7 +11,6 @@ import org.iplantc.core.uidiskresource.client.search.events.DeleteSavedSearchEve
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchField;
-import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 
 import java.util.List;
 
@@ -70,7 +69,7 @@ public interface DataSearchPresenter extends SaveDiskResourceQueryEventHandler, 
      * @param treeStore
      * @param searchField
      */
-    void searchInit(HasFolderSelectedEventHandlers hasFolderSelectedHandlers, HasDeleteSavedSearchEventHandlers hasDeleteSavedSearchEventHandlers, DiskResourceView.Presenter presenter,
+    void searchInit(HasFolderSelectedEventHandlers hasFolderSelectedHandlers, HasDeleteSavedSearchEventHandlers hasDeleteSavedSearchEventHandlers, FolderSelectedEventHandler folderSelectedHandler,
             TreeStore<Folder> treeStore, DiskResourceSearchField searchField);
 
     /**
@@ -89,7 +88,5 @@ public interface DataSearchPresenter extends SaveDiskResourceQueryEventHandler, 
      * @param savedQueries
      */
     void loadSavedQueries(List<DiskResourceQueryTemplate> savedQueries);
-
-    void fireActiveQuery();
 
 }

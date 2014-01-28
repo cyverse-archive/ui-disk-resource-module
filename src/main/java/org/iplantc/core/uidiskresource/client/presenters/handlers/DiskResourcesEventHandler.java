@@ -1,8 +1,5 @@
 package org.iplantc.core.uidiskresource.client.presenters.handlers;
 
-import java.util.Collection;
-import java.util.Set;
-
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.events.diskresources.DiskResourceRefreshEvent;
 import org.iplantc.core.uicommons.client.events.diskresources.DiskResourceRefreshEvent.DiskResourceRefreshEventHandler;
@@ -20,40 +17,29 @@ import org.iplantc.core.uidiskresource.client.events.DiskResourcesMovedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourcesMovedEvent.DiskResourcesMovedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent.FolderCreatedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.ShowFilePreviewEvent;
-import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
+
+import java.util.Collection;
+import java.util.Set;
 
 public final class DiskResourcesEventHandler implements DiskResourcesDeletedEventHandler,
         DiskResourceSelectedEventHandler, DiskResourcesMovedEventHandler,
         DiskResourceRenamedEventHandler, FolderCreatedEventHandler, DiskResourceRefreshEventHandler {
     private final DiskResourceView.Presenter presenter;
     private final DiskResourceView view;
-    private final DataSearchPresenter searchPresenter;
 
-    public DiskResourcesEventHandler(DiskResourceView.Presenter presenter, DataSearchPresenter searchPresenter) {
+    public DiskResourcesEventHandler(DiskResourceView.Presenter presenter) {
         this.presenter = presenter;
         this.view = presenter.getView();
-        this.searchPresenter = searchPresenter;
     }
 
     @Override
     public void onRefresh(DiskResourceRefreshEvent event) {
-        //if no folder is selected in left nav and refresh is enabled...then execute search
-        if(presenter.getSelectedFolder() == null) {
-            searchPresenter.fireActiveQuery();
-            return;
-        }
         presenter.refreshFolder(event.getCurrentFolderId(), event.getResources());
     }
 
     @Override
     public void onDiskResourcesDeleted(Collection<DiskResource> resources, Folder parentFolder) {
-        //re-load center grid with search results
-        if(presenter.getSelectedFolder() == null) {
-            searchPresenter.fireActiveQuery();
-            return;
-        }
-        
         presenter.doRefresh(parentFolder);
     }
 
@@ -73,12 +59,6 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
 
     @Override
     public void onDiskResourcesMoved(DiskResourcesMovedEvent event) {
-        
-        //re-load center grid with search results
-        if(presenter.getSelectedFolder() == null) {
-            searchPresenter.fireActiveQuery();
-            return;
-        }
         
         Set<DiskResource> resourcesToMove = event.getResourcesToMove();
         Folder destinationFolder = event.getDestinationFolder();
@@ -145,12 +125,6 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
 
     @Override
     public void onRename(DiskResource originalDr, DiskResource newDr) {
-        //re-load center grid with search results
-        if(presenter.getSelectedFolder() == null) {
-            searchPresenter.fireActiveQuery();
-            return;
-        }
-        
         Folder parent = view.getFolderById(DiskResourceUtil.parseParent(newDr.getPath()));
         if (parent != null) {
             presenter.doRefresh(parent);

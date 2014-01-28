@@ -101,8 +101,12 @@ public class DiskResourceSearchCell extends TriggerFieldCell<String> implements 
 
     @Override
     public void doSubmitDiskResourceQuery(SubmitDiskResourceQueryEvent event) {
-        // Refire
-        fireEvent(event);
+        if (event.getQueryTemplate().isSaved()) {
+            fireEvent(new SaveDiskResourceQueryEvent(event.getQueryTemplate(), event.getQueryTemplate().getName()));
+        } else {
+            // Refire
+            fireEvent(event);
+        }
     }
 
     public void expand(final Context context, final XElement parent, String value, ValueUpdater<String> valueUpdater) {
