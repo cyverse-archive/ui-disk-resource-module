@@ -362,6 +362,9 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
                 deSelectDiskResources();
                 getView().deSelectNavigationFolder();
             }
+            view.setAllowSelectAll(false);
+        } else {
+            view.setAllowSelectAll(true);
         }
 		onFolderSelected(event.getSelectedFolder());
 	}

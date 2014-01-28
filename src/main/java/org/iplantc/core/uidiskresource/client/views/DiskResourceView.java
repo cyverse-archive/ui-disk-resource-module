@@ -273,4 +273,6 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
     HasSafeHtml getCenterPanelHeader();
 
+    void setAllowSelectAll(boolean allowSelectAll);
+
 }
