@@ -4,6 +4,12 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+/**
+ * FIXME make test for refiring events
+ * 
+ * @author jstroot
+ * 
+ */
 public class DiskResourceSearchCellTest {
 
     @Before public void setUp() {}

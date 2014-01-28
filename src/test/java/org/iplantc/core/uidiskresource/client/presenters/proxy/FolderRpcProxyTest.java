@@ -8,11 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
@@ -37,6 +33,12 @@ import org.mockito.Mock;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * FIXME Update test per changes
+ * 
+ * @author jstroot
+ * 
+ */
 @RunWith(GxtMockitoTestRunner.class)
 public class FolderRpcProxyTest {
 

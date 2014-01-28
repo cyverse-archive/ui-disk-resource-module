@@ -19,6 +19,7 @@ import static org.mockito.Mockito.verify;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -31,6 +32,7 @@ import org.mockito.Mock;
  * 
  */
 @RunWith(GxtMockitoTestRunner.class)
+@Ignore
 public class DiskResourceQueryFormTest_NoEditorErrors {
 
     @Mock DiskResourceQueryFormNamePrompt namePrompt;
