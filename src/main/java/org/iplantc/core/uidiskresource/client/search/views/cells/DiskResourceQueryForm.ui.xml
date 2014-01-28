@@ -6,7 +6,14 @@
 	         xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form" 
 	         xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button"
 	         xmlns:widgets="urn:import:org.iplantc.core.uicommons.client.widgets">
-	
+
+    <ui:style>
+        .beta {
+            color: #F00;
+            font-size: .9em;
+        }
+    </ui:style>
+
 	<ui:with field="margins0000"
 			 type="com.sencha.gxt.core.client.util.Margins">
 		<ui:attributes top="0" right="0" bottom="0" left="0" />
@@ -187,6 +194,9 @@
 	              <button:TextButton ui:field="searchButton"
 	                                 text="Search"/>
 	          </container:child>
+              <container:child layoutData="{boxLayoutDataMargins0505}">
+                   <g:Label styleName="{style.beta}" title="Search functionality is currently in beta.">(beta)</g:Label>
+              </container:child>
 	          <container:child layoutData="{boxLayoutDataMargins0505}">
 	               <widgets:IPlantAnchor ui:field="createFilterLink" />
 	          </container:child>
