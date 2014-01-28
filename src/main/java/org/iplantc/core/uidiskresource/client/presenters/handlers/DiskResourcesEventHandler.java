@@ -38,6 +38,11 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
 
     @Override
     public void onRefresh(DiskResourceRefreshEvent event) {
+        //if no folder is selected in left nav and refresh is enabled...then execute search
+        if(presenter.getSelectedFolder() == null) {
+            searchPresenter.fireActiveQuery();
+            return;
+        }
         presenter.refreshFolder(event.getCurrentFolderId(), event.getResources());
     }
 
