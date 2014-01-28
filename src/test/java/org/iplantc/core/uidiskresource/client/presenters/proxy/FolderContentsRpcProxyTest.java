@@ -1,20 +1,20 @@
 package org.iplantc.core.uidiskresource.client.presenters.proxy;
 
-import com.google.common.collect.Lists;
-import com.google.gwt.safehtml.client.HasSafeHtml;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwtmockito.GxtMockitoTestRunner;
-
-import com.sencha.gxt.data.shared.SortDir;
-import com.sencha.gxt.data.shared.SortInfoBean;
-import com.sencha.gxt.data.shared.loader.FilterPagingLoadConfigBean;
-import com.sencha.gxt.data.shared.loader.PagingLoadResult;
-import com.sencha.gxt.data.shared.loader.PagingLoadResultBean;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyDouble;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
 
 import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
@@ -31,7 +31,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 
-import java.util.List;
+import com.google.common.collect.Lists;
+import com.google.gwt.safehtml.client.HasSafeHtml;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwtmockito.GxtMockitoTestRunner;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.SortInfoBean;
+import com.sencha.gxt.data.shared.loader.FilterPagingLoadConfigBean;
+import com.sencha.gxt.data.shared.loader.PagingLoadResult;
+import com.sencha.gxt.data.shared.loader.PagingLoadResultBean;
 
 /**
  * Performs tests on the {@link FolderContentsRpcProxy} and its underlying classes.
@@ -188,7 +196,8 @@ public class FolderContentsRpcProxyTest {
         DiskResourceQueryTemplate mockFolder = mock(DiskResourceQueryTemplate.class);
         when(mockFolder.isFilter()).thenReturn(false);
         String displayString = "test display string";
-        when(displayStringsMock.searchAppResultsHeader(anyString(), anyInt())).thenReturn(displayString);
+        when(displayStringsMock.searchAppResultsHeader(anyString(), anyInt(), anyDouble())).thenReturn(
+                displayString);
 
         when(loadConfigMock.getFolder()).thenReturn(mockFolder);
 
