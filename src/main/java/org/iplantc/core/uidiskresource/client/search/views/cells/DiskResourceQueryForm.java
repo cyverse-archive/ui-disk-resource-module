@@ -157,7 +157,7 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     @UiField 
     TextField sharedWith;
 
-    private final List<String> fileSizeUnits = Lists.newArrayList("bytes", "KB", "MB", "GB", "TB");
+    private final List<String> fileSizeUnits = Lists.newArrayList("KB", "MB", "GB", "TB");
 
     private boolean showing;
 
@@ -458,6 +458,8 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         NumberPropertyEditor.DoublePropertyEditor doublePropertyEditor = new NumberPropertyEditor.DoublePropertyEditor();
         fileSizeGreaterThan = new NumberField<Double>(doublePropertyEditor);
         fileSizeLessThan = new NumberField<Double>(doublePropertyEditor);
+        fileSizeGreaterThan.setAllowNegative(false);
+        fileSizeLessThan.setAllowNegative(false);
     }
 
     private void convertFileSizesToBytes(DiskResourceQueryTemplate template) {
@@ -469,10 +471,10 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
             int minSizeIndex = greaterThanComboBox.getSelectedIndex();
 
             if (max != null && maxSizeIndex >= 0) {
-                fileSizeRange.setMax(max * Math.pow(1024, maxSizeIndex));
+                fileSizeRange.setMax(max * Math.pow(1024, maxSizeIndex + 1));
             }
             if (min != null && minSizeIndex >= 0) {
-                fileSizeRange.setMin(min * Math.pow(1024, minSizeIndex));
+                fileSizeRange.setMin(min * Math.pow(1024, minSizeIndex + 1));
             }
         }
     }
