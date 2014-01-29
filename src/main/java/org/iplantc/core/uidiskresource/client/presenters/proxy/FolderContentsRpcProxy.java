@@ -38,13 +38,13 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
     class SearchResultsCallback implements AsyncCallback<List<DiskResource>> {
         private final FolderContentsLoadConfig loadConfig;
         private final AsyncCallback<PagingLoadResult<DiskResource>> callback;
-        private final IplantAnnouncer announcer;
+        private final IplantAnnouncer announcer1;
         private final IplantDisplayStrings dStrings;
         private final HasSafeHtml hasSafeHtml1;
 
         private SearchResultsCallback(IplantAnnouncer announcer, FolderContentsLoadConfig loadConfig, AsyncCallback<PagingLoadResult<DiskResource>> callback, IplantDisplayStrings displayStrings,
                 HasSafeHtml hasSafeHtml) {
-            this.announcer = announcer;
+            this.announcer1 = announcer;
             this.loadConfig = loadConfig;
             this.callback = callback;
             this.dStrings = displayStrings;
@@ -58,25 +58,27 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
                 return;
             }
             callback.onSuccess(new PagingLoadResultBean<DiskResource>(results, loadConfig.getFolder().getTotal(), loadConfig.getOffset()));
-            if (dStrings != null) {
-                DiskResourceQueryTemplate query = (DiskResourceQueryTemplate)loadConfig.getFolder();
-                String searchText = query.getFileQuery();
-                if (Strings.isNullOrEmpty(searchText)) {
-                    searchText = "Advanced Search";
-                } else {
-                    searchText = "\"" + searchText + "\"";
-                }
-                final String searchResultsHeader = dStrings.searchDataResultsHeader(searchText, query.getTotal(), query.getExecutionTime() / 1000.0);
-                hasSafeHtml1.setHTML(SafeHtmlUtils.fromString(searchResultsHeader));
+            DiskResourceQueryTemplate query = (DiskResourceQueryTemplate)loadConfig.getFolder();
+            String searchText = setSearchText(query.getFileQuery());
+
+            final String searchResultsHeader = dStrings.searchDataResultsHeader(searchText, query.getTotal(), query.getExecutionTime() / 1000.0);
+            hasSafeHtml1.setHTML(SafeHtmlUtils.fromString(searchResultsHeader));
+        }
+
+        private String setSearchText(String fileQuery) {
+            String retString;
+            if (Strings.isNullOrEmpty(fileQuery)) {
+                retString = "Advanced Search";
             } else {
-                hasSafeHtml1.setHTML(SafeHtmlUtils.fromSafeConstant("&nbsp;"));
+                retString = "\"" + fileQuery + "\"";
             }
+            return retString;
         }
 
         @Override
         public void onFailure(Throwable caught) {
             if (loadConfig.getFolder() instanceof DiskResourceQueryTemplate) {
-                announcer.schedule(new ErrorAnnouncementConfig(SafeHtmlUtils.fromString("Unable to search. Please try again later."), true));
+                announcer1.schedule(new ErrorAnnouncementConfig(SafeHtmlUtils.fromString("Unable to search. Please try again later."), true));
             }
             callback.onFailure(caught);
         }
@@ -100,15 +102,12 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
         private final FolderContentsLoadConfig loadConfig;
         private final AsyncCallback<PagingLoadResult<DiskResource>> callback;
         private final IplantAnnouncer announcer;
-        private final IplantDisplayStrings dStrings;
         private final HasSafeHtml hasSafeHtml1;
 
-        private FolderContentsCallback(IplantAnnouncer announcer, FolderContentsLoadConfig loadConfig, AsyncCallback<PagingLoadResult<DiskResource>> callback, IplantDisplayStrings displayStrings,
-                HasSafeHtml hasSafeHtml) {
+        private FolderContentsCallback(IplantAnnouncer announcer, FolderContentsLoadConfig loadConfig, AsyncCallback<PagingLoadResult<DiskResource>> callback, HasSafeHtml hasSafeHtml) {
             this.announcer = announcer;
             this.loadConfig = loadConfig;
             this.callback = callback;
-            this.dStrings = displayStrings;
             this.hasSafeHtml1 = hasSafeHtml;
         }
 
@@ -124,20 +123,9 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
             loadConfig.getFolder().setTotalFiltered(result.getTotalFiltered());
 
             callback.onSuccess(new PagingLoadResultBean<DiskResource>(list, result.getTotal(), loadConfig.getOffset()));
-            if (dStrings != null) {
-                DiskResourceQueryTemplate query = (DiskResourceQueryTemplate)result;
-                String searchText = query.getFileQuery();
-                if (Strings.isNullOrEmpty(searchText)) {
-                    searchText = "Advanced Search";
-                } else {
-                    searchText = "\"" + searchText + "\"";
-                }
-                final String searchResultsHeader = dStrings.searchDataResultsHeader(searchText,
-                        query.getTotal(), query.getExecutionTime() / 1000.0);
-                hasSafeHtml1.setHTML(SafeHtmlUtils.fromString(searchResultsHeader));
-            } else {
-                hasSafeHtml1.setHTML(SafeHtmlUtils.fromSafeConstant("&nbsp;"));
-            }
+
+            /* Set search results header to a non-breaking space to ensure it retains its height. */
+            hasSafeHtml1.setHTML(SafeHtmlUtils.fromSafeConstant("&nbsp;"));
         }
 
         @Override
@@ -186,7 +174,7 @@ public class FolderContentsRpcProxy extends RpcProxy<FolderContentsLoadConfig, P
         } else if(folder instanceof DiskResourceQueryTemplate){
             searchService.submitSearchFromQueryTemplate((DiskResourceQueryTemplate)folder, loadConfig, null, new SearchResultsCallback(announcer, loadConfig, callback, displayStrings, hasSafeHtml));
         } else {
-            drService.getFolderContents(folder, loadConfig, new FolderContentsCallback(announcer, loadConfig, callback, null, hasSafeHtml));
+            drService.getFolderContents(folder, loadConfig, new FolderContentsCallback(announcer, loadConfig, callback, hasSafeHtml));
         }
 
     }
