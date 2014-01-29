@@ -20,6 +20,7 @@ import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.HasFolderSelectedEventHandlers;
+import org.iplantc.core.uidiskresource.client.search.events.DeleteSavedSearchEvent;
 import org.iplantc.core.uidiskresource.client.search.events.DeleteSavedSearchEvent.HasDeleteSavedSearchEventHandlers;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
@@ -27,7 +28,6 @@ import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQu
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchField;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -39,8 +39,6 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * FIXME Update
- * 
  * @author jstroot
  * 
  */
@@ -56,7 +54,6 @@ public class DataSearchPresenterImplTest {
     @Captor ArgumentCaptor<List<DiskResourceQueryTemplate>> drqtListCaptor;
     @Captor ArgumentCaptor<AsyncCallback<List<DiskResourceQueryTemplate>>> stringAsyncCbCaptor;
     @Captor ArgumentCaptor<AsyncCallback<List<DiskResourceQueryTemplate>>> drqtListAsyncCaptor;
-    @Captor ArgumentCaptor<AsyncCallback<Boolean>> booleanAsyncCaptor;
 
     private DataSearchPresenterImpl dsPresenter;
 
@@ -113,11 +110,9 @@ public class DataSearchPresenterImplTest {
     /**
      * Verifies that an existing query template will be replaced when a request to save a template of the
      * same name is received.
-     * FIXME Another test needs to be fixed due to autobean issues
      * 
      * @see org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter#doSaveDiskResourceQueryTemplate(org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent)
      */
-    @Ignore
     @Test public void testDoSaveDiskResourceQueryTemplate_Case3() {
         DataSearchPresenterImpl spy = spy(dsPresenter);
         SaveDiskResourceQueryEvent mockEvent = mock(SaveDiskResourceQueryEvent.class);
@@ -131,11 +126,11 @@ public class DataSearchPresenterImplTest {
         spy.doSaveDiskResourceQueryTemplate(mockEvent);
 
         /* Verify that the service was called to save the template, and only 1 template was saved */
-        verify(searchService).saveQueryTemplates(drqtListCaptor.capture(), booleanAsyncCaptor.capture());
+        verify(searchService).saveQueryTemplates(drqtListCaptor.capture(), drqtListAsyncCaptor.capture());
         assertEquals("list passed to search service is expected size", 1, drqtListCaptor.getValue().size());
         assertTrue("list passed to search service contains the template to be saved", drqtListCaptor.getValue().contains(mockTemplate));
         // Mock expected behavior from service success
-        booleanAsyncCaptor.getValue().onSuccess(true);
+        drqtListAsyncCaptor.getValue().onSuccess(drqtListCaptor.getValue());
 
 
         /* ================ Save second template =================== */
@@ -148,12 +143,12 @@ public class DataSearchPresenterImplTest {
 
 
         /* Verify that the service was called to save the template, and only 2 templates were saved */
-        verify(searchService, times(2)).saveQueryTemplates(drqtListCaptor.capture(), booleanAsyncCaptor.capture());
+        verify(searchService, times(2)).saveQueryTemplates(drqtListCaptor.capture(), drqtListAsyncCaptor.capture());
         assertEquals("list passed to search service is expected size", 2, drqtListCaptor.getValue().size());
         assertTrue("list passed to search service contains previously saved template", drqtListCaptor.getValue().contains(mockTemplate));
         assertTrue("list passed to search service contains the template to be saved", drqtListCaptor.getValue().contains(mockTemplate_2));
         // Mock expected behavior from service success
-        booleanAsyncCaptor.getValue().onSuccess(true);
+        drqtListAsyncCaptor.getValue().onSuccess(drqtListCaptor.getValue());
 
 
         /* ================ Save third template =================== */
@@ -166,7 +161,7 @@ public class DataSearchPresenterImplTest {
         /* Verify that the service was called to save the template, and only 2 templates were saved but one of them was
          * replaced.
          */
-        verify(searchService, times(3)).saveQueryTemplates(drqtListCaptor.capture(), booleanAsyncCaptor.capture());
+        verify(searchService, times(3)).saveQueryTemplates(drqtListCaptor.capture(), drqtListAsyncCaptor.capture());
         assertEquals("list passed to search service is expected size", 2, drqtListCaptor.getValue().size());
         assertTrue("list passed to search service contains previously saved template", drqtListCaptor.getValue().contains(mockTemplate_2));
         assertTrue("list passed to search service contains previously saved template", drqtListCaptor.getValue().contains(mockTemplate_3));
@@ -176,11 +171,8 @@ public class DataSearchPresenterImplTest {
     /**
      * Verifies that a search of a given query will be requested after it is successfully persisted.
      * 
-     * FIXME Another test needs to be fixed due to autobean issues
-     * 
      * @see org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter#doSaveDiskResourceQueryTemplate(org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent)
      */
-    @Ignore
     @Test public void testDoSaveDiskResourceQueryTemplateOnSuccess_Case1() {
         DataSearchPresenterImpl spy = spy(dsPresenter);
         SaveDiskResourceQueryEvent mockEvent = mock(SaveDiskResourceQueryEvent.class);
@@ -189,12 +181,12 @@ public class DataSearchPresenterImplTest {
         when(mockEvent.getQueryTemplate()).thenReturn(mockTemplate);
 
         spy.doSaveDiskResourceQueryTemplate(mockEvent);
-        verify(searchService).saveQueryTemplates(drqtListCaptor.capture(), booleanAsyncCaptor.capture());
+        verify(searchService).saveQueryTemplates(drqtListCaptor.capture(), drqtListAsyncCaptor.capture());
 
         assertEquals("Verify that the query has not been added to the presenter's list", 0, spy.getQueryTemplates().size());
 
         // Force service success
-        booleanAsyncCaptor.getValue().onSuccess(true);
+        drqtListAsyncCaptor.getValue().onSuccess(drqtListCaptor.getValue());
 
         ArgumentCaptor<SubmitDiskResourceQueryEvent> submitEventCaptor = ArgumentCaptor.forClass(SubmitDiskResourceQueryEvent.class);
         verify(spy).doSubmitDiskResourceQuery(submitEventCaptor.capture());
@@ -212,9 +204,7 @@ public class DataSearchPresenterImplTest {
 
     /**
      * Verifies that a query will be removed from the treestore when a name change is detected.
-     * FIXME Another test needs to be fixed due to autobean issues
      */
-    @Ignore
     @Test public void testDoSaveDiskResourceQueryTemplateOnSuccess_Case2() {
         final String originalName = "originalMockName";
         DataSearchPresenterImpl spy = spy(dsPresenter);
@@ -229,10 +219,10 @@ public class DataSearchPresenterImplTest {
 
         spy.cleanCopyQueryTemplates = Lists.newArrayList(cleanMockTemplate);
         spy.doSaveDiskResourceQueryTemplate(mockEvent);
-        verify(searchService).saveQueryTemplates(drqtListCaptor.capture(), booleanAsyncCaptor.capture());
+        verify(searchService).saveQueryTemplates(drqtListCaptor.capture(), drqtListAsyncCaptor.capture());
         
         // Force service success
-        booleanAsyncCaptor.getValue().onSuccess(true);
+        drqtListAsyncCaptor.getValue().onSuccess(Collections.<DiskResourceQueryTemplate> emptyList());
 
         ArgumentCaptor<Folder> folderCaptor = ArgumentCaptor.forClass(Folder.class);
         verify(treeStoreMock).remove(folderCaptor.capture());
@@ -254,12 +244,12 @@ public class DataSearchPresenterImplTest {
         spy.doSaveDiskResourceQueryTemplate(mockEvent);
         // Perform verify for record keeping
         verify(spy).doSaveDiskResourceQueryTemplate(eq(mockEvent));
-        verify(searchService).saveQueryTemplates(drqtListCaptor.capture(), booleanAsyncCaptor.capture());
+        verify(searchService).saveQueryTemplates(drqtListCaptor.capture(), drqtListAsyncCaptor.capture());
 
         assertEquals("Verify that the query has not been added to the presenter's list", 0, spy.getQueryTemplates().size());
 
         // Force service failure
-        booleanAsyncCaptor.getValue().onFailure(null);
+        drqtListAsyncCaptor.getValue().onFailure(null);
 
         /* Verify that a search is not requested after failure to persist */
         verify(spy, never()).doSubmitDiskResourceQuery(any(SubmitDiskResourceQueryEvent.class));
@@ -560,7 +550,30 @@ public class DataSearchPresenterImplTest {
         assertTrue("Verify that all items from each list match", drqtListCaptor.getValue().contains(newArrayList.get(0)));
         assertTrue("Verify that all items from each list match", drqtListCaptor.getValue().contains(newArrayList.get(1)));
 
-        verifyNoMoreInteractions(searchService, treeStoreMock, spy);
+        verifyNoMoreInteractions(searchService, treeStoreMock, spy, viewMock);
+    }
+    
+    /**
+     * 
+     */
+    @Test public void testOnDeleteSavedSearch_Case1() {
+        
+        final DeleteSavedSearchEvent mockEvent = mock(DeleteSavedSearchEvent.class);
+        final DiskResourceQueryTemplate mockSavedSearch = mock(DiskResourceQueryTemplate.class);
+        when(mockEvent.getSavedSearch()).thenReturn(mockSavedSearch);
+        dsPresenter.getQueryTemplates().add(mockSavedSearch);
+        when(treeStoreMock.remove(eq(mockSavedSearch))).thenReturn(true);
+
+        // Call method under test
+        dsPresenter.onDeleteSavedSearch(mockEvent);
+
+        verify(viewMock).clearSearch();
+        verify(mockEvent).getSavedSearch();
+        verify(treeStoreMock).remove(eq(mockSavedSearch));
+
+        verify(searchService).saveQueryTemplates(eq(Collections.<DiskResourceQueryTemplate> emptyList()), drqtListAsyncCaptor.capture());
+
+        verifyNoMoreInteractions(viewMock, searchService);
     }
 
 
