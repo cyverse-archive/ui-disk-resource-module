@@ -113,7 +113,7 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
             @Override
             public void onFailure(Throwable caught) {
-                announcer.schedule(new ErrorAnnouncementConfig("Failed to save search."));
+                announcer.schedule(new ErrorAnnouncementConfig("Unable to save filter."));
             }
 
             @Override
@@ -213,12 +213,12 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
         final DiskResourceQueryTemplate savedSearch = event.getSavedSearch();
         if (treeStore.remove(savedSearch)) {
             if (queryTemplates.remove(savedSearch)) {
-                announcer.schedule(new SuccessAnnouncementConfig("Successfully deleted saved search: " + savedSearch.getName()));
+                announcer.schedule(new SuccessAnnouncementConfig("Deleted saved filter: " + savedSearch.getName()));
                 searchService.saveQueryTemplates(queryTemplates, new AsyncCallback<Boolean>() {
 
                     @Override
                     public void onFailure(Throwable caught) {
-                        announcer.schedule(new ErrorAnnouncementConfig("Failed to save search."));
+                        announcer.schedule(new ErrorAnnouncementConfig("Unable to save filter."));
                     }
 
                     @Override
