@@ -451,6 +451,12 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         lessThanComboBox.add(fileSizeUnits);
         greaterThanComboBox.setValue(fileSizeUnits.get(0));
         lessThanComboBox.setValue(fileSizeUnits.get(0));
+
+        // Set these combos uneditable since the selected index will not be updated if the user types and
+        // chooses a value from the filtered list. The index is required by convertFileSizesToBytes to
+        // calculate the correct size in bytes.
+        greaterThanComboBox.setEditable(false);
+        lessThanComboBox.setEditable(false);
     }
 
     private void initFileSizeNumberFields() {
