@@ -38,26 +38,22 @@ final class DataLinkPanelCell<M extends DiskResource> extends AbstractCell<M> {
         SafeHtml diskResCell(String fileIconImgClass, SafeHtml fileName);
     }
 
-    private static String dataLinkUrlPrefix;
     private final Templates templates = GWT.create(Templates.class);
     private final DataLinkPanel.Presenter<M> presenter;
-    private DataLinkPanelCellStyle dataLinkCss;
+    private final DataLinkPanelCellStyle dataLinkCss;
 
     DataLinkPanelCell(DataLinkPanel.Presenter<M> presenter) {
         super(CLICK);
         this.presenter = presenter;
         dataLinkCss = IplantResources.RESOURCES.getDataLinkCss();
         dataLinkCss.ensureInjected();
-
-        // Fetch the configured URL prefix for the DataLink URL.
-        dataLinkUrlPrefix = presenter.getDataLinkUrlPrefix();
     }
 
     @Override
     public void render(com.google.gwt.cell.client.Cell.Context context, M value, SafeHtmlBuilder sb) {
 
         if (value instanceof DataLink) {
-            SafeHtml dataLinkText = SafeHtmlUtils.fromString(dataLinkUrlPrefix + value.getId());
+            SafeHtml dataLinkText = SafeHtmlUtils.fromString(((DataLink)value).getDownloadPageUrl());
             // sb.append(templates.dataLinkCellWithCopyIcon(dataLinkCss.dataLinkDelete(),
             // I18N.DISPLAY.deleteDataLinkToolTip(), dataLinkText, copyToClipId,
             // dataLinkCss.pasteIcon()));

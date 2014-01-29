@@ -1,14 +1,36 @@
 package org.iplantc.core.uidiskresource.client.gin;
 
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-
+import com.google.gwt.resources.client.ImageResource;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.sencha.gxt.core.client.ValueProvider;
-import com.sencha.gxt.data.shared.TreeStore;
-import com.sencha.gxt.widget.core.client.tree.Tree;
 
-public class DiskResourceTreeProvider implements Provider<Tree<Folder, String>> {
+import com.sencha.gxt.core.client.IdentityValueProvider;
+import com.sencha.gxt.data.shared.TreeStore;
+import com.sencha.gxt.widget.core.client.tips.QuickTip;
+import com.sencha.gxt.widget.core.client.tree.Tree;
+import com.sencha.gxt.widget.core.client.tree.Tree.TreeAppearance;
+import com.sencha.gxt.widget.core.client.tree.TreeStyle;
+
+import org.iplantc.core.resources.client.IplantResources;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
+
+public class DiskResourceTreeProvider implements Provider<Tree<Folder, Folder>> {
+
+    final class CustomTreeStyle extends TreeStyle {
+
+        private final TreeAppearance appearance;
+
+        public CustomTreeStyle(final TreeAppearance appearance) {
+            this.appearance = appearance;
+        }
+
+        @Override
+        public ImageResource getLeafIcon() {
+            return appearance.closeNodeIcon();
+        }
+
+    }
 
     private final TreeStore<Folder> treeStore;
 
@@ -18,22 +40,29 @@ public class DiskResourceTreeProvider implements Provider<Tree<Folder, String>> 
     }
 
     @Override
-    public Tree<Folder, String> get() {
-        return new Tree<Folder, String>(treeStore, new ValueProvider<Folder, String>() {
+    public Tree<Folder, Folder> get() {
+
+        final Tree<Folder, Folder> tree = new Tree<Folder, Folder>(treeStore, new IdentityValueProvider<Folder>()) {
 
             @Override
-            public String getValue(Folder object) {
-                return object.getName();
+            protected ImageResource calculateIconStyle(Folder model) {
+                if (model instanceof DiskResourceQueryTemplate) {
+                    // Set magic folder icon
+                    return IplantResources.RESOURCES.folderView();
+                }
+                return super.calculateIconStyle(model);
             }
 
-            @Override
-            public void setValue(Folder object, String value) {}
+        };
 
-            @Override
-            public String getPath() {
-                return null;
-            }
-        });
+        final TreeCell treeCell = new TreeCell();
+        treeCell.setHasHandlers(tree);
+        treeCell.setSelectionModel(tree.getSelectionModel());
+
+        tree.setCell(treeCell);
+        tree.setStyle(new CustomTreeStyle(tree.getAppearance()));
+        new QuickTip(tree);
+        return tree;
     }
 
 }

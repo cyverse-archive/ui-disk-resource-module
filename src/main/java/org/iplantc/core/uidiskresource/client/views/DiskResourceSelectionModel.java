@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
+import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -62,6 +64,8 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
     private boolean selectAll;
 
     private int total;
+    
+    private boolean allowSelectAll = true;
 
     /**
      * Creates a CheckBoxSelectionModel that will operate on the row itself. To customize the row it is
@@ -165,6 +169,12 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
         if (c == config) {
             XElement hd = event.getEvent().getEventTarget().<Element> cast().getParentElement().cast();
             boolean isChecked = appearance.isHeaderChecked(hd);
+            
+            if(!isAllowSelectAll() && !isChecked) {
+                IplantAnnouncer.getInstance().schedule(new ErrorAnnouncementConfig("Select-all operation is not supported with search results."));
+                return;
+            }
+            
             /**
              * When header is checked, everything unselected and all items should be selected. When
              * header is unchecked, everything be unselected.
@@ -317,7 +327,7 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
     }
 
     public void setChecked(boolean checked) {
-        if (grid.isViewReady()) {
+        if (grid.isViewReady() && isAllowSelectAll()) {
             XElement hd = grid.getView().getHeader().getElement().child(".x-grid-hd-checker");
             if (hd != null) {
                 appearance.onHeaderChecked(hd.getParentElement().<XElement> cast(), checked);
@@ -363,6 +373,20 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
 
     public int getTotal() {
         return total;
+    }
+
+    /**
+     * @return the allowSelectAll
+     */
+    public boolean isAllowSelectAll() {
+        return allowSelectAll;
+    }
+
+    /**
+     * @param allowSelectAll the allowSelectAll to set
+     */
+    public void setAllowSelectAll(boolean allowSelectAll) {
+        this.allowSelectAll = allowSelectAll;
     }
 
 }

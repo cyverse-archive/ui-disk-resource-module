@@ -13,7 +13,6 @@ import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.gin.ServicesInjector;
-import org.iplantc.core.uicommons.client.models.DEProperties;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.File;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
@@ -23,7 +22,6 @@ import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.core.uidiskresource.client.dataLink.models.DataLink;
 import org.iplantc.core.uidiskresource.client.dataLink.models.DataLinkFactory;
 import org.iplantc.core.uidiskresource.client.dataLink.models.DataLinkList;
-import org.iplantc.core.uidiskresource.client.events.DataSearchNameSelectedEvent;
 import org.iplantc.core.uidiskresource.client.events.DiskResourceSelectedEvent;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -98,8 +96,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
                     AutoBean<DataLinkList> tickets = AutoBeanCodex.decode(dlFactory, DataLinkList.class,
                             result);
                     List<DataLink> dlList = tickets.as().getTickets();
-                    showShareLink(DEProperties.getInstance().getKifShareTicketBaseUrl()
-                            + dlList.get(0).getId());
+                    showShareLink(dlList.get(0).getDownloadUrl());
                 }
 
                 @Override
@@ -112,7 +109,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
     }
 
     public static enum CALLER_TAG {
-        DATA, SEARCH, SHARING;
+        DATA, SHARING;
     }
 
     /**
@@ -199,7 +196,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
             if (value.isFilter()) {
                 initPopup();
                 linkPopup.add(new HTML(I18N.DISPLAY.diskResourceNotAvailable()));
-                linkPopup.setSize("300px", "200px");
+                linkPopup.setSize("300px", "150px");
                 schedulePopupTimer(eventTarget);
             }
             return;
@@ -220,14 +217,14 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
 
             @Override
             public void run() {
-                if (linkPopup != null) {
+                if (linkPopup != null && (eventTarget.getOffsetHeight() > 0 || eventTarget.getOffsetWidth() > 0)) {
                     linkPopup.showAt(eventTarget.getAbsoluteLeft() + 25,
                             eventTarget.getAbsoluteTop() - 15);
                 }
 
             }
         };
-        t.schedule(1500);
+        t.schedule(2500);
     }
 
     private void buildFolderLink(final DiskResource value) {
@@ -264,8 +261,6 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
 
         if (tag.equals(CALLER_TAG.DATA)) {
             EventBus.getInstance().fireEvent(new DiskResourceSelectedEvent(caller, value));
-        } else if (tag.equals(CALLER_TAG.SEARCH)) {
-            EventBus.getInstance().fireEvent(new DataSearchNameSelectedEvent(value));
         }
     }
 

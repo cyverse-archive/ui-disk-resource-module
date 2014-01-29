@@ -1,8 +1,5 @@
 package org.iplantc.core.uidiskresource.client.presenters.handlers;
 
-import java.util.Collection;
-import java.util.Set;
-
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.events.diskresources.DiskResourceRefreshEvent;
 import org.iplantc.core.uicommons.client.events.diskresources.DiskResourceRefreshEvent.DiskResourceRefreshEventHandler;
@@ -21,6 +18,9 @@ import org.iplantc.core.uidiskresource.client.events.DiskResourcesMovedEvent.Dis
 import org.iplantc.core.uidiskresource.client.events.FolderCreatedEvent.FolderCreatedEventHandler;
 import org.iplantc.core.uidiskresource.client.events.ShowFilePreviewEvent;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
+
+import java.util.Collection;
+import java.util.Set;
 
 public final class DiskResourcesEventHandler implements DiskResourcesDeletedEventHandler,
         DiskResourceSelectedEventHandler, DiskResourcesMovedEventHandler,
@@ -59,6 +59,7 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
 
     @Override
     public void onDiskResourcesMoved(DiskResourcesMovedEvent event) {
+        
         Set<DiskResource> resourcesToMove = event.getResourcesToMove();
         Folder destinationFolder = event.getDestinationFolder();
         Folder selectedFolder = presenter.getSelectedFolder();

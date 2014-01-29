@@ -38,4 +38,15 @@ public interface DataLink extends DiskResource {
     @PropertyName("ticket-id")
     String getName();
 
+    @PropertyName("download-url")
+    void setDownloadUrl(String download_url);
+
+    @PropertyName("download-url")
+    String getDownloadUrl();
+
+    @PropertyName("download-page-url")
+    void setDownloadPageUrl(String download_page_url);
+
+    @PropertyName("download-page-url")
+    String getDownloadPageUrl();
 }

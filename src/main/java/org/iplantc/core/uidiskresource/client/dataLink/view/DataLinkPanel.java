@@ -42,10 +42,11 @@ public class DataLinkPanel<M extends DiskResource> implements IsWidget {
 
         void createDataLinks(List<M> selectedItems);
 
-        String getSelectedDataLinkText();
+        String getSelectedDataLinkDownloadPage();
 
-        String getDataLinkUrlPrefix();
+        String getSelectedDataLinkDownloadUrl();
 
+        void openSelectedDataLinkDownloadPage();
     }
 
     @UiTemplate("DataLinkPanel.ui.xml")
@@ -72,6 +73,9 @@ public class DataLinkPanel<M extends DiskResource> implements IsWidget {
     @UiField
     TextButton copyDataLinkButton;
 
+    @UiField
+    TextButton advancedDataLinkButton;
+
     private final Widget widget;
 
     private Presenter<M> presenter;
@@ -88,7 +92,8 @@ public class DataLinkPanel<M extends DiskResource> implements IsWidget {
         tree.getStyle().setNodeOpenIcon(emptyImgResource);
 
         tree.getSelectionModel().addSelectionHandler(
-                new TreeSelectionHandler(createDataLinksBtn, copyDataLinkButton, tree));
+                new TreeSelectionHandler(createDataLinksBtn, copyDataLinkButton, advancedDataLinkButton,
+                        tree));
         new QuickTip(widget);
 
     }
@@ -145,7 +150,7 @@ public class DataLinkPanel<M extends DiskResource> implements IsWidget {
         TextField textBox = new TextField();
         textBox.setWidth(500);
         textBox.setReadOnly(true);
-        textBox.setValue(presenter.getSelectedDataLinkText());
+        textBox.setValue(presenter.getSelectedDataLinkDownloadUrl());
         VerticalLayoutContainer container = new VerticalLayoutContainer();
         dlg.setWidget(container);
         container.add(textBox);
@@ -155,15 +160,20 @@ public class DataLinkPanel<M extends DiskResource> implements IsWidget {
         textBox.selectAll();
     }
 
+    @UiHandler("advancedDataLinkButton")
+    void onAdvancedDataLinkSelected(SelectEvent event) {
+        presenter.openSelectedDataLinkDownloadPage();
+    }
+
     @Override
     public Widget asWidget() {
         return widget;
     }
-    
+
     public void mask() {
         tree.mask(I18N.DISPLAY.loadingMask());
     }
-    
+
     public void unmask() {
         tree.unmask();
     }
@@ -171,39 +181,42 @@ public class DataLinkPanel<M extends DiskResource> implements IsWidget {
 
     /**
      * A handler who controls this widgets button visibility based on tree check selection.
-     * 
+     *
      * @author jstroot
-     * 
+     *
      */
     private final class TreeSelectionHandler implements SelectionHandler<M> {
 
         private final HasEnabled createBtn;
-        private final Tree<M, M> tree;
         private final HasEnabled copyDataLinkButton;
+        private final HasEnabled advancedDataLinkButton;
+        private final Tree<M, M> tree;
 
-        public TreeSelectionHandler(HasEnabled createBtn, HasEnabled copyDataLinkButton, Tree<M, M> tree) {
+        public TreeSelectionHandler(HasEnabled createBtn, HasEnabled copyDataLinkButton,
+                HasEnabled advancedDataLinkButton, Tree<M, M> tree) {
             this.createBtn = createBtn;
             this.copyDataLinkButton = copyDataLinkButton;
+            this.advancedDataLinkButton = advancedDataLinkButton;
             this.tree = tree;
         }
 
         @Override
         public void onSelection(SelectionEvent<M> event) {
-            createBtn.setEnabled(false);
-            copyDataLinkButton.setEnabled(false);
-            if ((tree.getSelectionModel().getSelectedItems().size() == 1)
-                    && (tree.getSelectionModel().getSelectedItems().get(0) instanceof DataLink)) {
-                copyDataLinkButton.setEnabled(true);
-            }
-            for (M item : tree.getSelectionModel().getSelectedItems()) {
-                if (!(item instanceof DataLink)) {
-                    createBtn.setEnabled(true);
-                } else {
-                    createBtn.setEnabled(false);
+            List<M> selectedItems = tree.getSelectionModel().getSelectedItems();
+            boolean createBtnEnabled = selectedItems.size() > 0;
+            boolean dataLinkSelected = selectedItems.size() == 1
+                    && (selectedItems.get(0) instanceof DataLink);
+
+            for (M item : selectedItems) {
+                if (item instanceof DataLink) {
+                    createBtnEnabled = false;
                     break;
                 }
             }
 
+            createBtn.setEnabled(createBtnEnabled);
+            copyDataLinkButton.setEnabled(dataLinkSelected);
+            advancedDataLinkButton.setEnabled(dataLinkSelected);
         }
 
     }

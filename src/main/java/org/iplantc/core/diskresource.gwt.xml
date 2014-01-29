@@ -19,6 +19,13 @@
     <replace-with class="org.iplantc.core.uidiskresource.client.views.CheckBoxColumnDefaultAppearance">
        <when-type-is class="org.iplantc.core.uidiskresource.client.views.DiskResourceSelectionModel.CheckBoxColumnAppearance"/>
     </replace-with>
+    <replace-with class="org.iplantc.core.uidiskresource.client.search.views.cells.DiskResourceSearchCellDefaultAppearance">
+        <when-type-is class="org.iplantc.core.uidiskresource.client.search.views.cells.DiskResourceSearchCell.DiskResourceSearchCellAppearance"/>
+    </replace-with>
+    
+    <replace-with class="org.iplantc.core.uidiskresource.client.gin.appearance.TreeCellDefaultAppearance">
+        <when-type-is class="org.iplantc.core.uidiskresource.client.gin.TreeCell.TreeCellAppearance" />
+    </replace-with>
    
 	<source path="client"/>
     <source path="uidiskresource"/>

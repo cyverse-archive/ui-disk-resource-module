@@ -14,3 +14,7 @@ target
 war
 # ignore directories related to GWT Unit Tests
 tomcat
+.gwt
+
+# ignore gradle build directory
+build/

@@ -1,8 +1,13 @@
 package org.iplantc.core.uidiskresource.client.presenters.proxy;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Stack;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+
+import com.sencha.gxt.data.shared.loader.LoadEvent;
+import com.sencha.gxt.data.shared.loader.LoadHandler;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
@@ -12,13 +17,9 @@ import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.HasHandlerRegistrationMgmt;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.sencha.gxt.data.shared.loader.LoadEvent;
-import com.sencha.gxt.data.shared.loader.LoadHandler;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Stack;
 
 /**
  * A <code>LoadHandler</code> which is used to lazily load, expand, and select a desired folder.
@@ -41,7 +42,7 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
 
     public SelectFolderByIdLoadHandler(final HasId folderToSelect,
             final DiskResourceView.Presenter presenter) {
-        presenter.maskView();
+        presenter.mask("");
         this.folderToSelect = folderToSelect;
         this.presenter = presenter;
         this.regMgr = presenter;
@@ -59,9 +60,11 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
     @Override
     public void onLoad(LoadEvent<Folder, List<Folder>> event) {
         if (!rootsLoaded) {
-            // Folders must have been loaded to have this method called. Set this flag before calling
-            // initPathsToLoad, since it may attempt to load sub-folders, which may not be an async call,
-            // which will in turn call this method again before initPathsToLoad returns.
+            /*
+             * Folders must have been loaded to have this method called. Set this flag before calling
+             * initPathsToLoad, since it may attempt to load sub-folders, which may not be an async call,
+             * which will in turn call this method again before initPathsToLoad returns.
+             */
             rootsLoaded = true;
             initPathsToLoad();
             return;
@@ -110,9 +113,11 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
                 }
                 unmaskView();
             } else {
-                // Once a valid folder is found in the view, remotely load the
-                // folder, which will add the next folder in the path to the view's treeStore.
-                view.expandFolder(folder);
+                /*
+                 * Once a valid folder is found in the view, remotely load the folder, which will add the
+                 * next folder in the path to the view's treeStore.
+                 */
+                view.refreshFolder(folder);
             }
 
         }
@@ -124,6 +129,6 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
 
     private void unmaskView() {
         regMgr.unregisterHandler(this);
-        presenter.unMaskView();
+        presenter.unmask();
     }
 }

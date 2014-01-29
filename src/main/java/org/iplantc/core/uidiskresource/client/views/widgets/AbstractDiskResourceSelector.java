@@ -397,7 +397,7 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
         if (errors.size() < 0) {
             input.clearInvalid();
         }
-        return errors.size() > 0;
+        return !(errors.size() > 0);
     }
 
     @Override
@@ -496,8 +496,8 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
                     errors.add(permissionEditorError);
                     input.showErrors(Lists.<EditorError> newArrayList(permissionEditorError));
                     setInfoErrorText(I18N.DISPLAY.permissionSelectErrorMessage());
-                } else if ((getInfoText() != null) && getInfoText().equalsIgnoreCase(I18N.DISPLAY.permissionSelectErrorMessage())) {
-                    setInfoErrorText("");
+                } else {
+                    setInfoErrorText(null);
                 }
             }
         });

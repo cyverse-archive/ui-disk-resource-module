@@ -9,7 +9,6 @@ import java.util.Set;
 import org.iplantc.core.resources.client.DataCollapseStyle;
 import org.iplantc.core.resources.client.IplantResources;
 import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceInfo;
@@ -17,9 +16,12 @@ import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.diskresources.Permissions;
 import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
 import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
-import org.iplantc.core.uidiskresource.client.events.DataSearchHistorySelectedEvent;
+import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent;
+import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
 import org.iplantc.core.uidiskresource.client.models.DiskResourceModelKeyProvider;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoadConfig;
+import org.iplantc.core.uidiskresource.client.search.events.DeleteSavedSearchEvent;
+import org.iplantc.core.uidiskresource.client.search.events.DeleteSavedSearchEvent.DeleteSavedSearchEventHandler;
 import org.iplantc.core.uidiskresource.client.views.cells.DiskResourceNameCell;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
@@ -32,22 +34,18 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.safehtml.client.HasSafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
@@ -92,17 +90,15 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 import com.sencha.gxt.widget.core.client.tree.Tree;
-import com.sencha.gxt.widget.core.client.tree.Tree.TreeAppearance;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
-import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 import com.sencha.gxt.widget.core.client.tree.TreeView;
 
 public class DiskResourceViewImpl implements DiskResourceView {
 
     private final class TreeStoreDataChangeHandlerImpl implements StoreDataChangeHandler<Folder> {
-        private final Tree<Folder, String> tree;
+        private final Tree<Folder, Folder> tree;
 
-        private TreeStoreDataChangeHandlerImpl(Tree<Folder, String> tree) {
+        private TreeStoreDataChangeHandlerImpl(Tree<Folder, Folder> tree) {
             this.tree = tree;
         }
 
@@ -197,7 +193,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
             Folder selectedItem = event.getSelectedItem();
             if (DiskResourceViewImpl.this.widget.isAttached() && (selectedItem != null)) {
                 if (!selectedItem.isFilter()) {
-                    onFolderSelected(selectedItem);
+                     DiskResourceViewImpl.this.asWidget().fireEvent(new FolderSelectedEvent(selectedItem));
                 } else {
                     tree.getSelectionModel().deselect(selectedItem);
                 }
@@ -223,7 +219,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     ContentPanel westPanel;
 
     @UiField(provided = true)
-    Tree<Folder, String> tree;
+    Tree<Folder, Folder> tree;
 
     @UiField(provided = true)
     final TreeStore<Folder> treeStore;
@@ -246,10 +242,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @UiField
     VerticalLayoutContainer detailsPanel;
 
-    // TODO temp. remove search
-    // @UiField
-    // ContentPanel historyPanel;
-
     @UiField
     BorderLayoutData westData;
     @UiField
@@ -267,6 +259,9 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @UiField
     ToolBar pagingToolBar;
 
+    @UiField
+    ContentPanel centerCp;
+
     private final Widget widget;
 
     private TreeLoader<Folder> treeLoader;
@@ -276,7 +271,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     private Status selectionStatus;
 
     @Inject
-    public DiskResourceViewImpl(final Tree<Folder, String> tree) {
+    public DiskResourceViewImpl(final Tree<Folder, Folder> tree) {
         this.tree = tree;
         this.treeStore = tree.getStore();
         tree.setView(new CustomTreeView());
@@ -289,7 +284,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
         grid.setSelectionModel(sm);
 
-        setLeafIcon(tree);
+        // setLeafIcon(tree);
         tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         tree.getSelectionModel().addSelectionHandler(new TreeSelectionHandler());
 
@@ -306,13 +301,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
         setGridEmptyText();
         addTreeCollapseButton();
 
-    }
-
-    private void setLeafIcon(final Tree<Folder, String> tree) {
-        // Set Leaf icon to a folder
-        TreeStyle treeStyle = tree.getStyle();
-        TreeAppearance appearance = tree.getAppearance();
-        treeStyle.setLeafIcon(appearance.closeNodeIcon());
     }
 
     private void initLiveView() {
@@ -645,6 +633,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @Override
     public void unmask() {
         con.unmask();
+        grid.unmask();
     }
 
     @Override
@@ -664,6 +653,30 @@ public class DiskResourceViewImpl implements DiskResourceView {
 
     private void setGridEmptyText() {
         gridView.setEmptyText(I18N.DISPLAY.noItemsToDisplay());
+    }
+
+    public void updateDiskResource(DiskResource originalDr, DiskResource newDr) {
+        // Check each store for for existence of original disk resource
+        Folder treeStoreModel = treeStore.findModelWithKey(originalDr.getId());
+        if (treeStoreModel != null) {
+
+            // Grab original disk resource's parent, then remove original from
+            // tree store
+            Folder parentFolder = treeStore.getParent(treeStoreModel);
+            treeStore.remove(treeStoreModel);
+
+            treeStoreModel.setId(newDr.getId());
+            treeStoreModel.setName(newDr.getName());
+            treeStore.add(parentFolder, treeStoreModel);
+        }
+
+        DiskResource listStoreModel = listStore.findModelWithKey(originalDr.getId());
+
+        if (listStoreModel != null) {
+            listStore.remove(listStoreModel);
+            listStore.add(newDr);
+        }
+
     }
 
     @Override
@@ -697,6 +710,11 @@ public class DiskResourceViewImpl implements DiskResourceView {
         // Hide the checkbox column
         getDiskResourceColumnModel().setCheckboxColumnHidden(true);
     }
+    
+    @Override
+    public void setAllowSelectAll(boolean allowSelectAll) {
+        sm.setAllowSelectAll(allowSelectAll);
+    }
 
     @Override
     public void disableFilePreview() {
@@ -712,18 +730,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
         if (!grid.isAttached()) {
             centerPanel.clear();
             centerPanel.add(grid, centerLayoutData);
-            // reset search
-            presenter.setCurrentSearchTerm(null);
-            toolbar.clearSearchTerm();
-        }
-    }
-
-    @Override
-    public void showSearchResultWidget(IsWidget w) {
-        if (!w.asWidget().isAttached()) {
-            w.asWidget().setHeight(centerPanel.getOffsetHeight(true) + "px"); //$NON-NLS-1$
-            centerPanel.clear();
-            centerPanel.add(w.asWidget(), centerLayoutData);
         }
     }
 
@@ -733,7 +739,7 @@ public class DiskResourceViewImpl implements DiskResourceView {
         FieldLabel fl = new FieldLabel();
         fl.setLabelWidth(detailsPanel.getOffsetWidth(true) - 10);
         fl.setLabelSeparator(""); //$NON-NLS-1$
-        fl.setHTML(getDetailAsHtml(I18N.DISPLAY.noDetails(), false)); //$NON-NLS-1$
+        fl.setHTML(getDetailAsHtml(I18N.DISPLAY.noDetails(), false)); 
         HorizontalPanel hp = new HorizontalPanel();
         hp.setSpacing(2);
         hp.add(fl);
@@ -751,8 +757,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
     /**
      * Parses a timestamp string into a formatted date string and adds it to this panel.
      * 
-     * @param label
-     * @param value
      */
     private HorizontalPanel getDateLabel(String label, Date date) {
         String value = ""; //$NON-NLS-1$
@@ -808,73 +812,6 @@ public class DiskResourceViewImpl implements DiskResourceView {
         panel.setHeight("25px"); //$NON-NLS-1$
         panel.setSpacing(1);
         return panel;
-    }
-
-    private IPlantAnchor buildSearchHistoryLink(final String searchTerm) {
-        IPlantAnchor anchor = new IPlantAnchor(searchTerm, 120, new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                DataSearchHistorySelectedEvent dsh = new DataSearchHistorySelectedEvent(searchTerm);
-                EventBus.getInstance().fireEvent(dsh);
-
-            }
-        });
-
-        return anchor;
-    }
-
-    @Override
-    public void renderSearchHistory(List<String> history) {
-        final VerticalLayoutContainer vlc = new VerticalLayoutContainer();
-        vlc.setScrollMode(ScrollMode.AUTOY);
-        // TODO temp. remove search
-        // historyPanel.clear();
-        // historyPanel.setWidget(vlc);
-        if (history != null && history.size() > 0) {
-            for (final String term : history) {
-                IPlantAnchor link = buildSearchHistoryLink(term);
-                final HorizontalPanel hp = buildRow();
-                hp.sinkEvents(Event.ONMOUSEOVER);
-                hp.sinkEvents(Event.ONMOUSEOUT);
-                final Image closeImg = new Image(IplantResources.RESOURCES.close());
-                addDomHandlers(hp, closeImg);
-                closeImg.addClickHandler(new ClickHandler() {
-
-                    @Override
-                    public void onClick(ClickEvent event) {
-                        vlc.remove(hp);
-                        presenter.removeFromSearchHistory(term);
-                    }
-                });
-                hp.add(link);
-                closeImg.setVisible(false);
-                hp.add(closeImg);
-                vlc.add(hp);
-            }
-        }
-        // KLUDGE:
-        // TODO temp. remove search
-        // historyPanel.forceLayout();
-    }
-
-    private void addDomHandlers(HorizontalPanel hp, final Image closeImg) {
-        hp.addDomHandler(new MouseOverHandler() {
-
-            @Override
-            public void onMouseOver(MouseOverEvent event) {
-                closeImg.setVisible(true);
-
-            }
-        }, MouseOverEvent.getType());
-
-        hp.addDomHandler(new MouseOutHandler() {
-
-            @Override
-            public void onMouseOut(MouseOutEvent event) {
-                closeImg.setVisible(false);
-
-            }
-        }, MouseOutEvent.getType());
     }
 
     @Override
@@ -1013,6 +950,21 @@ public class DiskResourceViewImpl implements DiskResourceView {
     @Override
     public int getTotalSelectionCount() {
         return sm.getTotal();
+    }
+
+    @Override
+    public HandlerRegistration addFolderSelectedEventHandler(FolderSelectedEventHandler handler) {
+        return asWidget().addHandler(handler, FolderSelectedEvent.TYPE);
+    }
+
+    @Override
+    public HasSafeHtml getCenterPanelHeader() {
+        return centerCp.getHeader();
+    }
+
+    @Override
+    public HandlerRegistration addDeleteSavedSearchEventHandler(DeleteSavedSearchEventHandler handler) {
+        return tree.addHandler(handler, DeleteSavedSearchEvent.TYPE);
     }
 
 }

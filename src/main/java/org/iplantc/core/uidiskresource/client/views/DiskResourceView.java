@@ -1,28 +1,11 @@
 package org.iplantc.core.uidiskresource.client.views;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
-import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceInfo;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceMetadata;
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
-import org.iplantc.core.uicommons.client.views.IsMaskable;
-import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoadConfig;
-import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectFolderByIdLoadHandler;
-import org.iplantc.core.uidiskresource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
-import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
-import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
-
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.safehtml.client.HasSafeHtml;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
+
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.SortInfo;
 import com.sencha.gxt.data.shared.TreeStore;
@@ -33,14 +16,35 @@ import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 
+import org.iplantc.core.uicommons.client.models.HasId;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceInfo;
+import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
+import org.iplantc.core.uicommons.client.views.IsMaskable;
+import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
+import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.HasFolderSelectedEventHandlers;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderContentsLoadConfig;
+import org.iplantc.core.uidiskresource.client.presenters.proxy.SelectFolderByIdLoadHandler;
+import org.iplantc.core.uidiskresource.client.search.events.DeleteSavedSearchEvent.HasDeleteSavedSearchEventHandlers;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.HasSubmitDiskResourceQueryEventHandlers;
+import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
+import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
+import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
 /**
  * @author jstroot
- * 
+ *
  */
-public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRoot {
+public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRoot, HasFolderSelectedEventHandlers, HasDeleteSavedSearchEventHandlers {
 
     public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter,
- DiskResourceViewToolbarImpl.Presenter, HasHandlerRegistrationMgmt {
+ DiskResourceViewToolbarImpl.Presenter, HasHandlerRegistrationMgmt, FolderSelectedEventHandler, IsMaskable {
         interface Builder extends org.iplantc.core.uicommons.client.presenter.Presenter {
             Builder hideNorth();
 
@@ -56,7 +60,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
         }
 
         void go(HasOneWidget container, HasId folderToSelect, List<? extends HasId> diskResourcesToSelect);
-        
+
         /**
          * Method to clean up all the events when it is no longer required.
          */
@@ -69,7 +73,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
          * Whenever this method is called with a non-null and non-empty list, the presenter will have the
          * view de-select all disk resources
          * in the center panel.
-         * 
+         *
          * @param folders
          */
         void onFolderSelected(Folder folders);
@@ -83,32 +87,19 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
         /**
          * Selects the folder with the given Id by adding a {@link SelectFolderByIdLoadHandler} to the
          * view's corresponding {@link TreeLoader}, then triggering a remote load.
-         * 
+         *
          * @param folderId
          */
         void setSelectedFolderById(HasId folderToSelect);
 
         /**
          * Sets the selected disk resource with the given ids.
-         * 
+         *
          * @param diskResourceIdList
          */
 //        void setSelectedDiskResourcesById(Set<String> diskResourceIdList);
 
         DiskResourceView getView();
-
-        /**
-         * Retrieves a collection of metadata for the given resource.
-         * 
-         * @param resource
-         * @param callback
-         * @return a collection of the given resource's metadata.
-         */
-        void getDiskResourceMetadata(DiskResource resource, AsyncCallback<String> callback);
-
-        void setDiskResourceMetaData(DiskResource resource, Set<DiskResourceMetadata> metadataToAdd,
-                Set<DiskResourceMetadata> metadataToDelete,
-                DiskResourceMetadataUpdateCallback diskResourceMetadataUpdateCallback);
 
         void doMoveDiskResources(Folder targetFolder, Set<DiskResource> resources);
 
@@ -119,18 +110,18 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
          * @return
          */
         Folder getDropTargetFolder(IsWidget widget, Element el);
-        
+
         /**
          * Determines if the given widget is this view's <code>Tree</code> object.
-         * 
+         *
          * @param widget
          * @return
          */
         boolean isViewTree(IsWidget widget);
-        
+
         /**
          * Determines if the given widget is this view's <code>Grid</code> object.
-         * 
+         *
          * @param widget
          * @return
          */
@@ -140,31 +131,10 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
         void deSelectDiskResources();
 
-        void loadSearchHistory();
-
         void loadUserTrashPath();
 
-        void addToSearchHistory(String searchTerm);
-
-        void removeFromSearchHistory(String searchTerm);
-
-        void saveSearchHistory();
-
-        
-        String getCurrentSearchTerm();
-        
-        void setCurrentSearchTerm(String searchTerm);
-
-        void maskView();
-
-        void unMaskView();
-
-        void handleSearchEvent(DiskResource resource);
-
-        void unMaskView(boolean clearRegisteredHandlers);
-
         void setSelectedDiskResourcesById(List<? extends HasId> selectedDiskResources);
-        
+
         void OnInfoTypeClick(String id, String infoType);
 
         Set<? extends DiskResource> getDragSources(IsWidget source, Element dragStartEl);
@@ -178,13 +148,12 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
      * When the proxy completes a load of a non-root folder, it is expected to call the
      * {@link DiskResourceView.Presenter#onFolderLoad(Folder, ArrayList)} method with the
      * <code>Folder</code> and <code>File</code> contents of the loaded folder.
-     * 
+     *
      * @author jstroot
-     * 
+     *
      */
-    public interface Proxy extends DataProxy<Folder, List<Folder>> {
-        void setPresenter(Presenter presenter);
-
+    public interface Proxy extends DataProxy<Folder, List<Folder>>, HasSubmitDiskResourceQueryEventHandlers {
+        void init(DataSearchPresenter presenter, IsMaskable isMaskable);
     }
 
     void setPresenter(Presenter presenter);
@@ -200,7 +169,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
     boolean isLoaded(Folder folder);
 
     void setDiskResources(Set<DiskResource> folderChildren);
-    
+
     void onFolderSelected(Folder folder);
 
     void onDiskResourceSelected(Set<DiskResource> selection);
@@ -224,7 +193,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
     /**
      * Selects the given Folder.
      * This method will also ensure that the Data listing widget is shown.
-     * 
+     *
      * @param folder
      */
     void setSelectedFolder(Folder folder);
@@ -249,14 +218,14 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
     /**
      * Removes the given <code>DiskResource</code>s from all of the view's stores.
-     * 
+     *
      * @param resources
      */
     <D extends DiskResource> void removeDiskResources(Collection<D> resources);
 
     /**
      * Determines if the given widget is this view's <code>Tree</code> object.
-     * 
+     *
      * @param widget
      * @return
      */
@@ -264,7 +233,7 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
     /**
      * Determines if the given widget is this view's <code>Grid</code> object.
-     * 
+     *
      * @param widget
      * @return
      */
@@ -284,13 +253,9 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
     void showDataListingWidget();
 
-    void showSearchResultWidget(IsWidget w);
-
     void updateDetails(String path, DiskResourceInfo info);
 
     void resetDetailsPanel();
-
-    void renderSearchHistory(List<String> history);
 
     void deSelectNavigationFolder();
 
@@ -301,9 +266,13 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
     void maskDetailsPanel();
 
     void setViewLoader(PagingLoader<FolderContentsLoadConfig, PagingLoadResult<DiskResource>> gridLoader);
-    
+
     boolean isSelectAll();
 
     int getTotalSelectionCount();
+
+    HasSafeHtml getCenterPanelHeader();
+
+    void setAllowSelectAll(boolean allowSelectAll);
 
 }
