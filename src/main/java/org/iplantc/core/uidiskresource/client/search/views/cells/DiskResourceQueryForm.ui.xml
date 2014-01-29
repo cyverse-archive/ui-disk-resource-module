@@ -74,7 +74,7 @@
 			<form:FieldLabel text="File/Folder name doesn't have"
 							 labelAlign="TOP">
 				<form:widget>
-					<form:TextField ui:field="negatedFileQuery"/>
+					<form:TextField ui:field="negatedFileQuery"  emptyText="Enter values..."/>
 				</form:widget>
 			</form:FieldLabel>
 		</container:child>
@@ -108,7 +108,7 @@
 							 labelAlign="TOP">
 				<form:widget>
 					<form:TextField ui:field="metadataAttributeQuery"
-					                emptyText="Enter keyword(s) separated by commas"/>
+					                emptyText="Enter values..."/>
 				</form:widget>
 			</form:FieldLabel>
 		</container:child>
@@ -119,7 +119,7 @@
 							 labelAlign="TOP">
 				<form:widget>
 					<form:TextField ui:field="metadataValueQuery"
-					               emptyText="Enter keyword(s) separated by commas"/>
+					               emptyText="Enter values..."/>
 				</form:widget>
 			</form:FieldLabel>
 		</container:child>
@@ -148,7 +148,7 @@
 		
 
 		<container:child layoutData="{verticalLayoutData}">
-			<form:FieldLabel text="File size is bigger than"
+			<form:FieldLabel text="File size is bigger than or equal to"
 			                 labelAlign="TOP">
 				<form:widget>
 					<container:HBoxLayoutContainer padding="{padding5}" hBoxLayoutAlign="TOP">
@@ -168,7 +168,7 @@
 		</container:child>
 
 		<container:child layoutData="{verticalLayoutData}">
-			<form:FieldLabel text="File size is smaller than"
+			<form:FieldLabel text="File size is smaller than or equal to"
 			                 labelAlign="TOP">
 				<form:widget>
 					<container:HBoxLayoutContainer padding="{padding5}" hBoxLayoutAlign="TOP">
