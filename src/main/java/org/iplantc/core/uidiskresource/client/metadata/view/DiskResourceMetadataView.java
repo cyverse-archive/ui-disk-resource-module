@@ -111,7 +111,7 @@ public class DiskResourceMetadataView implements IsWidget {
                         deleteTemplateAttrs();
                         templateCombo.setEnabled(true);
                         expandUserMetadataPanel();
-                        templateCombo.clear();
+                        templateCombo.setValue(null);
                         selectedTemplate = null;
                     }
                 }
@@ -125,6 +125,7 @@ public class DiskResourceMetadataView implements IsWidget {
         @Override
         public void onSelection(SelectionEvent<MetadataTemplateInfo> event) {
             selectedTemplate = event.getSelectedItem();
+            templateCombo.setValue(selectedTemplate, true);
             onTemplateSelected(selectedTemplate);
         }
     }
