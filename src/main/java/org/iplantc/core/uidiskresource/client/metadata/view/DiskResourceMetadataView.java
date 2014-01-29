@@ -33,6 +33,7 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
@@ -41,6 +42,7 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.resources.ThemeStyles;
 import com.sencha.gxt.core.shared.FastMap;
@@ -274,13 +276,25 @@ public class DiskResourceMetadataView implements IsWidget {
     public void setPresenter(Presenter p) {
         this.presenter = p;
     }
+    
+    interface MetadataInfoTemplate extends XTemplates {
+        @XTemplate("<div qtip=\"{name}\" >{name}</div>")
+        SafeHtml templateInfo(String name);
+    }
 
     @UiFactory
     ComboBox<MetadataTemplateInfo> buildTemplateCombo() {
         templateStore = new ListStore<MetadataTemplateInfo>(new TemplateInfoModelKeyProvider());
 
         templateCombo = new ComboBox<MetadataTemplateInfo>(templateStore,
-                new TemplateInfoLabelProvider());
+                new TemplateInfoLabelProvider(), new AbstractSafeHtmlRenderer<MetadataTemplateInfo>() {
+
+                    @Override
+                    public SafeHtml render(MetadataTemplateInfo object) {
+                        final MetadataInfoTemplate xtemp = GWT.create(MetadataInfoTemplate.class);
+                        return xtemp.templateInfo(object.getName());
+                    }
+                });
         templateCombo.setEditable(false);
         templateCombo.setWidth(250);
         templateCombo.setEmptyText(I18N.DISPLAY.metadataTemplateSelect());
