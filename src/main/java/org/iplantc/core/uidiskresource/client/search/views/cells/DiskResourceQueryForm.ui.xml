@@ -148,7 +148,7 @@
 		
 
 		<container:child layoutData="{verticalLayoutData}">
-			<form:FieldLabel text="File size is bigger than"
+			<form:FieldLabel text="File size is bigger than or equal to"
 			                 labelAlign="TOP">
 				<form:widget>
 					<container:HBoxLayoutContainer padding="{padding5}" hBoxLayoutAlign="TOP">
@@ -168,7 +168,7 @@
 		</container:child>
 
 		<container:child layoutData="{verticalLayoutData}">
-			<form:FieldLabel text="File size is smaller than"
+			<form:FieldLabel text="File size is smaller than or equal to"
 			                 labelAlign="TOP">
 				<form:widget>
 					<container:HBoxLayoutContainer padding="{padding5}" hBoxLayoutAlign="TOP">
