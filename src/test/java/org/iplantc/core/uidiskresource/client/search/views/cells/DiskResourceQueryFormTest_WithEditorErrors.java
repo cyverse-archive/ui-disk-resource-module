@@ -14,12 +14,14 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
+import org.iplantc.core.uicommons.client.models.search.DateInterval;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+
+import java.util.Date;
 
 /**
  * This test verifies the functionality of the {@link DiskResourceQueryForm} class when there are editor
@@ -29,7 +31,6 @@ import org.mockito.Mock;
  * 
  */
 @RunWith(GxtMockitoTestRunner.class)
-@Ignore
 public class DiskResourceQueryFormTest_WithEditorErrors {
 
     @Mock DiskResourceQueryFormNamePrompt namePrompt;
@@ -40,7 +41,18 @@ public class DiskResourceQueryFormTest_WithEditorErrors {
 
     @Before public void setUp() {
         GwtMockito.useProviderForType(SimpleBeanEditorDriver.class, new FakeSimpleBeanEditorDriverProvider(true));
-        form = new DiskResourceQueryForm(mockedTemplate);
+        form = new DiskResourceQueryForm(mockedTemplate) {
+
+            @Override
+            DateInterval createDateInterval(Date from, Date to, String label) {
+                DateInterval ret = mock(DateInterval.class);
+                ret.setFrom(from);
+                ret.setTo(to);
+                ret.setLabel(label);
+                return ret;
+            }
+
+        };
         form.namePrompt = namePrompt;
     }
 
