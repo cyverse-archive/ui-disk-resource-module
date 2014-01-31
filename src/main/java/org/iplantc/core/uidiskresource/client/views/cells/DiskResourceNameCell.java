@@ -202,11 +202,14 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
             return;
         }
 
-        if (value instanceof File && value.getPermissions().isOwner()
-                && !DiskResourceUtil.inTrash(value)) {
-            buildQuickSharePopup(value);
-        } else {
-            buildFolderLink(value);
+        if (!DiskResourceUtil.inTrash(value)) {
+          if(value instanceof File) {
+        	   if(value.getPermissions().isOwner()) {
+        		   buildQuickSharePopup(value);
+        	   }
+        	} else {
+        		buildFolderLink(value);
+        	}
         }
         schedulePopupTimer(eventTarget);
         eventTarget.getStyle().setTextDecoration(TextDecoration.UNDERLINE);
