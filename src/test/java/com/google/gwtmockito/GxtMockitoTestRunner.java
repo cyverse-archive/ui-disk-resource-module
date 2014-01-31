@@ -3,6 +3,7 @@ package com.google.gwtmockito;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.web.bindery.autobean.shared.AutoBean;
 
+import com.sencha.gxt.cell.core.client.form.TriggerFieldCell;
 import com.sencha.gxt.cell.core.client.form.ValueBaseInputCell;
 import com.sencha.gxt.core.client.dom.XDOM;
 import com.sencha.gxt.core.client.dom.XElement;
@@ -43,6 +44,7 @@ public class GxtMockitoTestRunner extends GwtMockitoTestRunner {
         classes.add(AutoBean.class);
         classes.add(SimpleBeanEditorDriver.class);
         classes.add(ValueBaseInputCell.class);
+        classes.add(TriggerFieldCell.class);
         return classes;
     }
 
