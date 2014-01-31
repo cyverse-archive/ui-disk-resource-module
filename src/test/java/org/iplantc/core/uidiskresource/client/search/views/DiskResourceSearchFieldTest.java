@@ -2,40 +2,34 @@ package org.iplantc.core.uidiskresource.client.search.views;
 
 import com.google.gwtmockito.GxtMockitoTestRunner;
 
-import org.junit.Before;
-import org.junit.Ignore;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+
+import org.iplantc.core.uicommons.client.events.SubmitTextSearchEvent;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(GxtMockitoTestRunner.class)
 public class DiskResourceSearchFieldTest {
 
-    @Before public void setUp() {
+    @Test public void testDoSubmitDiskResourceQuery() {
+        DiskResourceSearchField spy = spy(new DiskResourceSearchField());
+
+        // Call method under test
+        spy.doSubmitDiskResourceQuery(any(SubmitDiskResourceQueryEvent.class));
         
-    }
-
-    @Ignore
-    @Test public void testClearSearch() {
-        // TODO create test
-    }
-
-    @Ignore
-    @Test public void testEdit() {
-        // TODO create test
-    }
-
-    @Ignore
-    @Test public void testExpand() {
-        // TODO create test
+        verify(spy).clear();
     }
     
-    /**
-     * Verifies functionality when a user enters text into the textField
-     */
-    @Ignore
-    @Test public void testUserEnteredQuery() {
-        // TODO create test
-        // Verify that a search event is fired when a user successfully enters a query
+    @Test public void testOnSubmitTextSearch() {
+        DiskResourceSearchField spy = spy(new DiskResourceSearchField());
+
+        // Call method under test
+        spy.onSubmitTextSearch(any(SubmitTextSearchEvent.class));
+        
+        verify(spy).finishEditing();
     }
 
 }

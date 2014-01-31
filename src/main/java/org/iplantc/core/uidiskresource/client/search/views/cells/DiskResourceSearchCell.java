@@ -24,6 +24,7 @@ import com.sencha.gxt.widget.core.client.event.ExpandEvent.HasExpandHandlers;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 
+import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.HasSaveDiskResourceQueryEventHandlers;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
@@ -101,8 +102,9 @@ public class DiskResourceSearchCell extends TriggerFieldCell<String> implements 
 
     @Override
     public void doSubmitDiskResourceQuery(SubmitDiskResourceQueryEvent event) {
-        if (event.getQueryTemplate().isSaved()) {
-            fireEvent(new SaveDiskResourceQueryEvent(event.getQueryTemplate(), event.getQueryTemplate().getName()));
+        final DiskResourceQueryTemplate queryTemplate = event.getQueryTemplate();
+        if (queryTemplate.isSaved()) {
+            fireEvent(new SaveDiskResourceQueryEvent(queryTemplate, queryTemplate.getName()));
         } else {
             // Refire
             fireEvent(event);

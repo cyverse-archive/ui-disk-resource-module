@@ -21,9 +21,9 @@ import org.iplantc.core.uicommons.client.views.IsMaskable;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderRpcProxy.GetSavedQueryTemplatesCallback;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderRpcProxy.RootFolderCallback;
 import org.iplantc.core.uidiskresource.client.presenters.proxy.FolderRpcProxy.SubFoldersCallback;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
 import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * FIXME Update test per changes
  * 
  * @author jstroot
  * 
@@ -42,7 +41,6 @@ import java.util.List;
 @RunWith(GxtMockitoTestRunner.class)
 public class FolderRpcProxyTest {
 
-    @Mock FolderRpcProxy proxyUnderTestMock;
     @Mock DiskResourceServiceFacade drServiceMock;
     @Mock SearchServiceFacade searchServiceMock;
     @Mock IplantAnnouncer announcerMock;
@@ -53,9 +51,11 @@ public class FolderRpcProxyTest {
     
     @Captor ArgumentCaptor<List<Folder>> folderListCaptor;
 
+    private FolderRpcProxy proxyUnderTest;
+
     @Before public void setUp() {
-        proxyUnderTestMock = new FolderRpcProxy(drServiceMock, searchServiceMock, announcerMock);
-        proxyUnderTestMock.init(searchPresenterMock, maskableMock);
+        proxyUnderTest = new FolderRpcProxy(drServiceMock, searchServiceMock, announcerMock);
+        proxyUnderTest.init(searchPresenterMock, maskableMock);
     }
 
     /**
@@ -63,7 +63,7 @@ public class FolderRpcProxyTest {
      */
     @Test public void testLoad_Case1() {
 
-        proxyUnderTestMock.load(null, folderCallbackMock);
+        proxyUnderTest.load(null, folderCallbackMock);
 
         verify(maskableMock).mask(any(String.class));
 
@@ -92,7 +92,7 @@ public class FolderRpcProxyTest {
 
         // Call method under test
         AsyncCallback<List<Folder>> nullCallback = null;
-        proxyUnderTestMock.load(parentFolderMock, nullCallback);
+        proxyUnderTest.load(parentFolderMock, nullCallback);
 
         verify(parentFolderMock).isFilter();
 
@@ -109,7 +109,7 @@ public class FolderRpcProxyTest {
         Folder parentFolderMock = mock(Folder.class);
         when(parentFolderMock.isFilter()).thenReturn(true);
 
-        proxyUnderTestMock.load(parentFolderMock, folderCallbackMock);
+        proxyUnderTest.load(parentFolderMock, folderCallbackMock);
 
         verify(parentFolderMock).isFilter();
 
@@ -133,7 +133,7 @@ public class FolderRpcProxyTest {
         final String stubPath = "stubPath";
         when(parentFolderMock.getPath()).thenReturn(stubPath);
 
-        proxyUnderTestMock.load(parentFolderMock, folderCallbackMock);
+        proxyUnderTest.load(parentFolderMock, folderCallbackMock);
 
         verify(parentFolderMock).isFilter();
 
@@ -146,12 +146,35 @@ public class FolderRpcProxyTest {
         verifyNoMoreInteractions(parentFolderMock, drServiceMock);
 
     }
+
+    /**
+     * Verify functionality of load(..) method when given folder is not null, the folder.isFilter()
+     * method returns false, and the folder is a {@link DiskResourceQueryTemplate}.
+     */
+    @Test public void testLoad_Case5() {
+        DiskResourceQueryTemplate parentFolderMock = mock(DiskResourceQueryTemplate.class);
+        when(parentFolderMock.isFilter()).thenReturn(false);
+        final String stubPath = "stubPath";
+        when(parentFolderMock.getPath()).thenReturn(stubPath);
+
+        FolderRpcProxy spy = spy(proxyUnderTest);
+        spy.load(parentFolderMock, folderCallbackMock);
+        // Verify for record keeping
+        verify(spy).load(any(Folder.class), eq(folderCallbackMock));
+
+        verify(parentFolderMock).isFilter();
+        verify(spy).fireEvent(any(SubmitDiskResourceQueryEvent.class));
+
+
+        verifyNoMoreInteractions(parentFolderMock, spy);
+        verifyZeroInteractions(drServiceMock);
+    }
     
     /**
      * onSuccess callback !null
      */
     @Test public void testRootFolderCallbackOnSuccess_Case1() {
-        proxyUnderTestMock.load(null, folderCallbackMock);
+        proxyUnderTest.load(null, folderCallbackMock);
 
         verify(maskableMock).mask(any(String.class));
 
@@ -196,7 +219,7 @@ public class FolderRpcProxyTest {
     @Test public void testRootFolderCallbackOnSuccess_Case2() {
         
         AsyncCallback<List<Folder>> nullCallback = null;
-        proxyUnderTestMock.load(null, nullCallback);
+        proxyUnderTest.load(null, nullCallback);
         
         verify(maskableMock).mask(any(String.class));
         
@@ -217,54 +240,6 @@ public class FolderRpcProxyTest {
         assertEquals(searchPresenterMock, savedQueriesCaptor.getValue().searchPresenter2);
         
         verifyNoMoreInteractions(drServiceMock, searchServiceMock);
-    }
-
-    /**
-     * onFailure callback !null
-     */
-    @Ignore
-    @Test public void testRootFolderCallbackOnFailure_Case1() {
-        // TODO Complete test case 
-    }
-
-    /**
-     * onFailure callback null
-     */
-    @Ignore
-    @Test public void testRootFolderCallbackOnFailure_Case2() {
-       // TODO Complete test case 
-    }
-    
-    /**
-     * callback !null
-     */
-    @Ignore
-    @Test public void testSubFoldersCallbackOnSuccess_Case1() {
-       // TODO Complete test case 
-    }
-    
-    /**
-     * callback null
-     */
-    @Ignore
-    @Test public void testSubFoldersCallbackOnSuccess_Case2() {
-       // TODO Complete test case 
-    }
-
-    /**
-     * callback !null
-     */
-    @Ignore
-    @Test public void testSubFoldersCallbackOnFailure_Case1() {
-       // TODO Complete test case 
-    }
-    
-    /**
-     * callback null
-     */
-    @Ignore
-    @Test public void testSubFoldersCallbackOnFailure_Case2() {
-       // TODO Complete test case 
     }
 
 }

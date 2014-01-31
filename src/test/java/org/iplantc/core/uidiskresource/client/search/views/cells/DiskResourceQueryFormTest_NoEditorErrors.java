@@ -16,13 +16,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import org.iplantc.core.uicommons.client.models.search.DateInterval;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+
+import java.util.Date;
 
 /**
  * This test verifies the functionality of the {@link DiskResourceQueryForm} class when there are no
@@ -32,7 +34,6 @@ import org.mockito.Mock;
  * 
  */
 @RunWith(GxtMockitoTestRunner.class)
-@Ignore
 public class DiskResourceQueryFormTest_NoEditorErrors {
 
     @Mock DiskResourceQueryFormNamePrompt namePrompt;
@@ -43,7 +44,18 @@ public class DiskResourceQueryFormTest_NoEditorErrors {
 
     @Before public void setUp() {
         GwtMockito.useProviderForType(SimpleBeanEditorDriver.class, new FakeSimpleBeanEditorDriverProvider(false));
-        form = new DiskResourceQueryForm(mockedTemplate);
+        form = new DiskResourceQueryForm(mockedTemplate) {
+
+            @Override
+            DateInterval createDateInterval(Date from, Date to, String label) {
+                DateInterval ret = mock(DateInterval.class);
+                ret.setFrom(from);
+                ret.setTo(to);
+                ret.setLabel(label);
+                return ret;
+            }
+
+        };
         form.namePrompt = namePrompt;
     }
     

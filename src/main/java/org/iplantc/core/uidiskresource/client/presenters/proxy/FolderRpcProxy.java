@@ -29,7 +29,7 @@ import java.util.List;
 
 public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements DiskResourceView.Proxy {
 
-    final class SubFoldersCallback implements AsyncCallback<List<Folder>> {
+    class SubFoldersCallback implements AsyncCallback<List<Folder>> {
         final AsyncCallback<List<Folder>> callback;
 
         public SubFoldersCallback(AsyncCallback<List<Folder>> callback) {
@@ -139,12 +139,10 @@ public class FolderRpcProxy extends RpcProxy<Folder, List<Folder>> implements Di
             }
             return;
 
+        } else if (parentFolder instanceof DiskResourceQueryTemplate) {
+            fireEvent(new SubmitDiskResourceQueryEvent((DiskResourceQueryTemplate)parentFolder));
         } else {
-            if (parentFolder instanceof DiskResourceQueryTemplate) {
-                fireEvent(new SubmitDiskResourceQueryEvent((DiskResourceQueryTemplate)parentFolder));
-            } else {
-                drService.getSubFolders(parentFolder, new SubFoldersCallback(callback));
-            }
+            drService.getSubFolders(parentFolder, new SubFoldersCallback(callback));
         }
     }
 
