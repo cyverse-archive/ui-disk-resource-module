@@ -44,8 +44,8 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
-import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.resources.client.messages.IplantErrorStrings;
+import org.iplantc.de.resources.client.messages.I18N;
+import org.iplantc.de.resources.client.messages.IplantErrorStrings;
 import org.iplantc.core.uicommons.client.errorHandling.models.ServiceErrorCode;
 import org.iplantc.core.uicommons.client.errorHandling.models.SimpleServiceError;
 import org.iplantc.core.uicommons.client.events.EventBus;

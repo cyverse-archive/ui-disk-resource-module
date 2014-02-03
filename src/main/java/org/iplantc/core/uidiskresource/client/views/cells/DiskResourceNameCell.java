@@ -7,9 +7,9 @@ import static com.google.gwt.dom.client.BrowserEvents.MOUSEOVER;
 import java.util.Arrays;
 import java.util.List;
 
-import org.iplantc.core.resources.client.DiskResourceNameCellStyle;
-import org.iplantc.core.resources.client.IplantResources;
-import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.de.resources.client.DiskResourceNameCellStyle;
+import org.iplantc.de.resources.client.IplantResources;
+import org.iplantc.de.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.events.EventBus;
 import org.iplantc.core.uicommons.client.gin.ServicesInjector;

@@ -24,6 +24,7 @@ import org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchFie
 import org.iplantc.core.uidiskresource.client.views.dialogs.CreateFolderDialog;
 import org.iplantc.core.uidiskresource.client.views.dialogs.RenameFileDialog;
 import org.iplantc.core.uidiskresource.client.views.dialogs.RenameFolderDialog;
+import org.iplantc.de.resources.client.messages.I18N;
 
 public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
 
@@ -207,8 +208,8 @@ public class DiskResourceViewToolbarImpl implements DiskResourceViewToolbar {
 
     @UiHandler("emptyTrash")
     void onEmptyTrashClicked(SelectionEvent<Item> event) {
-        final ConfirmMessageBox cmb = new ConfirmMessageBox(org.iplantc.core.resources.client.messages.I18N.DISPLAY.emptyTrash(),
-                org.iplantc.core.resources.client.messages.I18N.DISPLAY.emptyTrashWarning());
+        final ConfirmMessageBox cmb = new ConfirmMessageBox(I18N.DISPLAY.emptyTrash(),
+                I18N.DISPLAY.emptyTrashWarning());
         cmb.addHideHandler(new HideHandler() {
             @Override
             public void onHide(HideEvent event) {

@@ -15,10 +15,10 @@
         	font-weight: bold;
         }
     </ui:style>
-   <ui:with type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" field="display"/>
-   <ui:with type="org.iplantc.core.resources.client.IplantResources" field="res"/>
+   <ui:with type="org.iplantc.de.resources.client.messages.IplantDisplayStrings" field="display"/>
+   <ui:with type="org.iplantc.de.resources.client.IplantResources" field="res"/>
       <ui:with field="img"
-            type="org.iplantc.core.resources.client.IplantResources"/>
+            type="org.iplantc.de.resources.client.IplantResources"/>
    <ui:with type="com.sencha.gxt.data.shared.TreeStore" field="store" />
    <ui:with type="com.sencha.gxt.core.client.ValueProvider" field="valueProvider" />
    

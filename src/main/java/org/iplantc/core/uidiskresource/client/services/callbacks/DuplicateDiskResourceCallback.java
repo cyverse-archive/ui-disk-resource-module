@@ -4,7 +4,7 @@ package org.iplantc.core.uidiskresource.client.services.callbacks;
 import java.util.Collection;
 import java.util.Set;
 
-import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.de.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceExistMap;
 import org.iplantc.core.uicommons.client.views.IsMaskable;

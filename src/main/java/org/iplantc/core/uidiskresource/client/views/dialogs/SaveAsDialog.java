@@ -1,6 +1,6 @@
 package org.iplantc.core.uidiskresource.client.views.dialogs;
 
-import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.de.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.models.CommonModelAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.HasId;
 import org.iplantc.core.uicommons.client.models.UserSettings;

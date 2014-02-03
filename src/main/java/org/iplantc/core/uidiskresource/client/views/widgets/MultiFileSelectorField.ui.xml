@@ -6,8 +6,8 @@
              xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button"
              xmlns:grid="urn:import:com.sencha.gxt.widget.core.client.grid">
 
-   <ui:with type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" field="display"/>
-   <ui:with type="org.iplantc.core.resources.client.IplantResources" field="icons"/>
+   <ui:with type="org.iplantc.de.resources.client.messages.IplantDisplayStrings" field="display"/>
+   <ui:with type="org.iplantc.de.resources.client.IplantResources" field="icons"/>
 
    <ui:with field="listStore"
             type="com.sencha.gxt.data.shared.ListStore" />

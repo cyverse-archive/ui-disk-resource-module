@@ -16,7 +16,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
+import org.iplantc.de.resources.client.messages.IplantDisplayStrings;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;

@@ -6,10 +6,10 @@
 	xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button"
 	xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client">
 
-	<ui:with type="org.iplantc.core.resources.client.IplantResources"
+	<ui:with type="org.iplantc.de.resources.client.IplantResources"
 		field="icns" />
 	<ui:with
-		type="org.iplantc.core.resources.client.messages.IplantDisplayStrings"
+		type="org.iplantc.de.resources.client.messages.IplantDisplayStrings"
 		field="display" />
 
 	<ui:with type="com.sencha.gxt.core.client.util.Margins" field="sideMargins">

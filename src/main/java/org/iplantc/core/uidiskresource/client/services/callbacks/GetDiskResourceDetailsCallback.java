@@ -1,7 +1,7 @@
 package org.iplantc.core.uidiskresource.client.services.callbacks;
 
 import org.iplantc.core.jsonutil.JsonUtil;
-import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.de.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.ErrorHandler;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceInfo;

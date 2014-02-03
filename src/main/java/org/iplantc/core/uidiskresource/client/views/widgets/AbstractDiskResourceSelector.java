@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.iplantc.core.resources.client.messages.I18N;
-import org.iplantc.core.resources.client.messages.IplantErrorStrings;
+import org.iplantc.de.resources.client.messages.I18N;
+import org.iplantc.de.resources.client.messages.IplantErrorStrings;
 import org.iplantc.core.uicommons.client.errorHandling.models.ServiceErrorCode;
 import org.iplantc.core.uicommons.client.errorHandling.models.SimpleServiceError;
 import org.iplantc.core.uicommons.client.gin.ServicesInjector;
@@ -172,7 +172,7 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
 
         sinkEvents(Event.ONCHANGE | Event.ONCLICK | Event.MOUSEEVENTS);
 
-        button = new TextButton(org.iplantc.core.resources.client.messages.I18N.DISPLAY.browse());
+        button = new TextButton(I18N.DISPLAY.browse());
         button.getElement().addClassName(res.style().buttonWrap());
         getElement().appendChild(button.getElement());
         button.addSelectHandler(new SelectHandler() {

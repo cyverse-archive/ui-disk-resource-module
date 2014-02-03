@@ -8,9 +8,9 @@
              xmlns:search="urn:import:org.iplantc.core.uidiskresource.client.search.views">
 
    <ui:with field="res"
-            type="org.iplantc.core.resources.client.IplantResources"/>
+            type="org.iplantc.de.resources.client.IplantResources"/>
    <ui:with field="display"
-            type="org.iplantc.core.resources.client.messages.IplantDisplayStrings"/>
+            type="org.iplantc.de.resources.client.messages.IplantDisplayStrings"/>
     <ui:with
         field="flexBoxData"
         type="com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData">

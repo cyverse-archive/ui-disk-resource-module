@@ -3,7 +3,7 @@ package org.iplantc.core.uidiskresource.client.views;
 import java.util.Collection;
 import java.util.Set;
 
-import org.iplantc.core.resources.client.messages.I18N;
+import org.iplantc.de.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.util.DiskResourceUtil;

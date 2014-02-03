@@ -8,9 +8,9 @@
 	xmlns:acc="urn:import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer">
 
 	<ui:with field="res"
-		type="org.iplantc.core.resources.client.IplantResources" />
+		type="org.iplantc.de.resources.client.IplantResources" />
 	<ui:with field="display"
-		type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" />
+		type="org.iplantc.de.resources.client.messages.IplantDisplayStrings" />
 
 	<ui:with field="northData"
 		type="com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData">

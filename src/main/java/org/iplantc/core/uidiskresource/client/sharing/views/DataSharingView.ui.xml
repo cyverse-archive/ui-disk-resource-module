@@ -8,7 +8,7 @@
 	xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form">
 
 
-	<ui:with type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" field="strings" />
+	<ui:with type="org.iplantc.de.resources.client.messages.IplantDisplayStrings" field="strings" />
 
 	<ui:with field="diskResourcesListStore" type="com.sencha.gxt.data.shared.ListStore" />
 	<ui:with field="diskResourcesColumnModel"

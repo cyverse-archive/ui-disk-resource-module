@@ -7,7 +7,7 @@
              xmlns:grid="urn:import:com.sencha.gxt.widget.core.client.grid"
              xmlns:paging="urn:import:com.sencha.gxt.widget.core.client.toolbar"
              xmlns:toolbar="urn:import:org.iplantc.core.uidiskresource.client.views.widgets">
-   <ui:with type="org.iplantc.core.resources.client.messages.IplantDisplayStrings" field="DISPLAY" />
+   <ui:with type="org.iplantc.de.resources.client.messages.IplantDisplayStrings" field="DISPLAY" />
 
 
     <!-- Nav Panel -->
