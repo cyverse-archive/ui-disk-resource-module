@@ -2,12 +2,12 @@ package org.iplantc.de.diskResource.client.dataLink.presenter;
 
 import java.util.List;
 
-import org.iplantc.core.uicommons.client.gin.ServicesInjector;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
-import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
-import org.iplantc.core.uicommons.client.util.WindowUtil;
+import org.iplantc.de.commons.client.gin.ServicesInjector;
+import org.iplantc.de.commons.client.models.diskresources.DiskResource;
+import org.iplantc.de.commons.client.models.diskresources.Folder;
+import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
+import org.iplantc.de.commons.client.util.DiskResourceUtil;
+import org.iplantc.de.commons.client.util.WindowUtil;
 import org.iplantc.de.diskResource.client.dataLink.models.DataLink;
 import org.iplantc.de.diskResource.client.dataLink.models.DataLinkFactory;
 import org.iplantc.de.diskResource.client.dataLink.view.DataLinkPanel;

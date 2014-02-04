@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.core.uicommons.client.ErrorHandler;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceExistMap;
-import org.iplantc.core.uicommons.client.views.IsMaskable;
+import org.iplantc.de.commons.client.ErrorHandler;
+import org.iplantc.de.commons.client.models.diskresources.DiskResourceExistMap;
+import org.iplantc.de.commons.client.views.IsMaskable;
 import org.iplantc.de.diskResource.client.services.errors.DiskResourceErrorAutoBeanFactory;
 import org.iplantc.de.diskResource.client.services.errors.ErrorDuplicateDiskResource;
 

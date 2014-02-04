@@ -3,7 +3,7 @@ package org.iplantc.de.diskResource.client.services.callbacks;
 import org.iplantc.de.jsonutil.client.JsonUtil;
 import org.iplantc.de.diskResource.client.dataLink.view.DataLinkPanel;
 import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.core.uicommons.client.ErrorHandler;
+import org.iplantc.de.commons.client.ErrorHandler;
 
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;

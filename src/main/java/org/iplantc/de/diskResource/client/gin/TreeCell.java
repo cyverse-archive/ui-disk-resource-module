@@ -13,7 +13,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 
 import com.sencha.gxt.widget.core.client.tree.TreeSelectionModel;
 
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.de.commons.client.models.diskresources.Folder;
 
 public final class TreeCell extends AbstractCell<Folder> {
 

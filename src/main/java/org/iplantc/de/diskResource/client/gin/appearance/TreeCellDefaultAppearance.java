@@ -18,8 +18,8 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.widget.core.client.tree.TreeSelectionModel;
 
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.de.commons.client.models.diskresources.Folder;
+import org.iplantc.de.commons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.de.diskResource.client.search.events.DeleteSavedSearchEvent;
 import org.iplantc.de.diskResource.client.gin.TreeCell;
 

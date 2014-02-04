@@ -1,6 +1,6 @@
 package org.iplantc.de.diskResource.client.events;
 
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.de.commons.client.models.diskresources.DiskResource;
 import org.iplantc.de.diskResource.client.events.DiskResourceRenamedEvent.DiskResourceRenamedEventHandler;
 
 import com.google.gwt.event.shared.EventHandler;

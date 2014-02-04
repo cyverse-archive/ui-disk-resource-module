@@ -1,7 +1,7 @@
 package org.iplantc.de.diskResource.client.services.callbacks;
 
-import org.iplantc.core.uicommons.client.ErrorHandler;
-import org.iplantc.core.uicommons.client.views.IsMaskable;
+import org.iplantc.de.commons.client.ErrorHandler;
+import org.iplantc.de.commons.client.views.IsMaskable;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

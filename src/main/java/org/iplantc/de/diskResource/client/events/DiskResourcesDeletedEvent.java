@@ -2,8 +2,8 @@ package org.iplantc.de.diskResource.client.events;
 
 import java.util.Collection;
 
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.de.commons.client.models.diskresources.DiskResource;
+import org.iplantc.de.commons.client.models.diskresources.Folder;
 import org.iplantc.de.diskResource.client.events.DiskResourcesDeletedEvent.DiskResourcesDeletedEventHandler;
 
 import com.google.gwt.event.shared.EventHandler;

@@ -2,7 +2,7 @@ package org.iplantc.de.diskResource.client.sharing.views;
 
 import java.util.List;
 
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.de.commons.client.models.diskresources.DiskResource;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;

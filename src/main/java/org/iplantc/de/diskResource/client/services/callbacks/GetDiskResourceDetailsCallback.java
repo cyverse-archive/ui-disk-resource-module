@@ -3,9 +3,9 @@ package org.iplantc.de.diskResource.client.services.callbacks;
 import org.iplantc.de.jsonutil.client.JsonUtil;
 import org.iplantc.de.diskResource.client.services.errors.DiskResourceErrorAutoBeanFactory;
 import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.core.uicommons.client.ErrorHandler;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceInfo;
+import org.iplantc.de.commons.client.ErrorHandler;
+import org.iplantc.de.commons.client.models.diskresources.DiskResourceAutoBeanFactory;
+import org.iplantc.de.commons.client.models.diskresources.DiskResourceInfo;
 import org.iplantc.de.diskResource.client.services.errors.ErrorGetManifest;
 import org.iplantc.de.diskResource.client.views.DiskResourceView;
 

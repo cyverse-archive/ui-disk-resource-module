@@ -1,6 +1,6 @@
 package org.iplantc.de.diskResource.client.views.dialogs;
 
-import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IsHideable;
+import org.iplantc.de.commons.client.views.gxt3.dialogs.IsHideable;
 
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;

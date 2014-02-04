@@ -1,11 +1,11 @@
 package org.iplantc.de.diskResource.client.views.dialogs;
 
 import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.core.uicommons.client.models.CommonModelAutoBeanFactory;
-import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uicommons.client.models.UserSettings;
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
+import org.iplantc.de.commons.client.models.CommonModelAutoBeanFactory;
+import org.iplantc.de.commons.client.models.HasId;
+import org.iplantc.de.commons.client.models.UserSettings;
+import org.iplantc.de.commons.client.models.diskresources.Folder;
+import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.de.diskResource.client.gin.DiskResourceInjector;
 import org.iplantc.de.diskResource.client.views.DiskResourceView;
 

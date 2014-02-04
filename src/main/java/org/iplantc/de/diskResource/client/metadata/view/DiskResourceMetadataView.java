@@ -9,14 +9,14 @@ import org.iplantc.de.diskResource.client.models.DiskResourceMetadataProperties;
 import org.iplantc.de.diskResource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
 import org.iplantc.de.resources.client.IplantResources;
 import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceAutoBeanFactory;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceMetadata;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceMetadataList;
-import org.iplantc.core.uicommons.client.models.diskresources.MetadataTemplateAttribute;
-import org.iplantc.core.uicommons.client.models.diskresources.MetadataTemplateInfo;
-import org.iplantc.core.uicommons.client.validators.UrlValidator;
-import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
+import org.iplantc.de.commons.client.models.diskresources.DiskResource;
+import org.iplantc.de.commons.client.models.diskresources.DiskResourceAutoBeanFactory;
+import org.iplantc.de.commons.client.models.diskresources.DiskResourceMetadata;
+import org.iplantc.de.commons.client.models.diskresources.DiskResourceMetadataList;
+import org.iplantc.de.commons.client.models.diskresources.MetadataTemplateAttribute;
+import org.iplantc.de.commons.client.models.diskresources.MetadataTemplateInfo;
+import org.iplantc.de.commons.client.validators.UrlValidator;
+import org.iplantc.de.commons.client.widgets.IPlantAnchor;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -144,7 +144,7 @@ public class DiskResourceMetadataView implements IsWidget {
         }
     }
 
-    public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter {
+    public interface Presenter extends org.iplantc.de.commons.client.presenter.Presenter {
         /**
          * Retrieves a collection of metadata for the given resource.
          * 

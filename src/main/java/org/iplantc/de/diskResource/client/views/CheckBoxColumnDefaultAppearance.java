@@ -7,7 +7,7 @@
  */
 package org.iplantc.de.diskResource.client.views;
 
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.de.commons.client.models.diskresources.DiskResource;
 import org.iplantc.de.diskResource.client.views.DiskResourceSelectionModel.CheckBoxColumnAppearance;
 
 import com.google.gwt.cell.client.Cell.Context;

@@ -1,6 +1,6 @@
 package org.iplantc.de.diskResource.client.gin;
 
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.de.commons.client.models.diskresources.Folder;
 import org.iplantc.de.diskResource.client.models.DiskResourceModelKeyProvider;
 
 import com.google.inject.Provider;

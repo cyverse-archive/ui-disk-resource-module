@@ -13,7 +13,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.iplantc.core.uicommons.client.events.SubmitTextSearchEvent;
+import org.iplantc.de.commons.client.events.SubmitTextSearchEvent;
 import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;

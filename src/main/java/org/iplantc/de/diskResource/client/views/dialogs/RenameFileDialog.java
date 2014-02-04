@@ -1,9 +1,9 @@
 package org.iplantc.de.diskResource.client.views.dialogs;
 
 import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.core.uicommons.client.models.diskresources.File;
-import org.iplantc.core.uicommons.client.validators.DiskResourceNameValidator;
-import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantPromptDialog;
+import org.iplantc.de.commons.client.models.diskresources.File;
+import org.iplantc.de.commons.client.validators.DiskResourceNameValidator;
+import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantPromptDialog;
 import org.iplantc.de.diskResource.client.views.widgets.DiskResourceViewToolbar;
 
 import com.sencha.gxt.widget.core.client.event.SelectEvent;

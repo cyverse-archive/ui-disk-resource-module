@@ -7,7 +7,7 @@
   "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
 <module>
     <!-- iPlant module inherits -->
-    <inherits name="org.iplantc.core.ui-commons"/>
+    <inherits name="org.iplantc.de.commons.ui-commons"/>
     
     <inherits name="com.google.gwt.inject.Inject"/>
     

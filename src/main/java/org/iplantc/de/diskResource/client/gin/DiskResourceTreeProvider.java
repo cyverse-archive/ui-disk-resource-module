@@ -12,8 +12,8 @@ import com.sencha.gxt.widget.core.client.tree.Tree.TreeAppearance;
 import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 
 import org.iplantc.de.resources.client.IplantResources;
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.de.commons.client.models.diskresources.Folder;
+import org.iplantc.de.commons.client.models.search.DiskResourceQueryTemplate;
 
 public class DiskResourceTreeProvider implements Provider<Tree<Folder, Folder>> {
 

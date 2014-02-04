@@ -12,11 +12,11 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.core.uicommons.client.models.search.SearchAutoBeanFactory;
-import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
+import org.iplantc.de.commons.client.info.IplantAnnouncer;
+import org.iplantc.de.commons.client.models.diskresources.Folder;
+import org.iplantc.de.commons.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.de.commons.client.models.search.SearchAutoBeanFactory;
+import org.iplantc.de.commons.client.services.SearchServiceFacade;
 import org.iplantc.de.diskResource.client.events.FolderSelectedEvent;
 import org.iplantc.de.diskResource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
 import org.iplantc.de.diskResource.client.events.FolderSelectedEvent.HasFolderSelectedEventHandlers;

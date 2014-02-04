@@ -2,8 +2,8 @@ package org.iplantc.de.diskResource.client.presenters.proxy;
 
 import java.util.List;
 
-import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
+import org.iplantc.de.commons.client.models.HasId;
+import org.iplantc.de.commons.client.models.diskresources.DiskResource;
 import org.iplantc.de.diskResource.client.views.DiskResourceView;
 
 import com.google.gwt.core.client.Scheduler;

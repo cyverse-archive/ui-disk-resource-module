@@ -1,7 +1,7 @@
 package org.iplantc.de.diskResource.client.gin;
 
-import org.iplantc.core.uicommons.client.gin.ServicesInjector;
-import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
+import org.iplantc.de.commons.client.gin.ServicesInjector;
+import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
 
 import com.google.inject.Provider;
 

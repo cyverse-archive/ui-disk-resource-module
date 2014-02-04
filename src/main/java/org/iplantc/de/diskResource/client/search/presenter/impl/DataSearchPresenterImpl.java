@@ -33,6 +33,22 @@ import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 
 import com.sencha.gxt.data.shared.TreeStore;
 
+import org.iplantc.de.commons.client.info.ErrorAnnouncementConfig;
+import org.iplantc.de.commons.client.info.IplantAnnouncer;
+import org.iplantc.de.commons.client.info.SuccessAnnouncementConfig;
+import org.iplantc.de.commons.client.models.diskresources.Folder;
+import org.iplantc.de.commons.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.de.commons.client.models.search.SearchAutoBeanFactory;
+import org.iplantc.de.commons.client.services.SearchServiceFacade;
+import org.iplantc.de.diskResource.client.events.FolderSelectedEvent;
+import org.iplantc.de.diskResource.client.search.events.DeleteSavedSearchEvent;
+import org.iplantc.de.diskResource.client.search.events.DeleteSavedSearchEvent.HasDeleteSavedSearchEventHandlers;
+import org.iplantc.de.diskResource.client.search.events.SaveDiskResourceQueryEvent;
+import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent;
+import org.iplantc.de.diskResource.client.search.presenter.DataSearchPresenter;
+import org.iplantc.de.diskResource.client.search.views.DiskResourceSearchField;
+import org.iplantc.de.diskResource.client.views.DiskResourceView;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;

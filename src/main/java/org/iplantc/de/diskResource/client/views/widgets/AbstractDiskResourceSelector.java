@@ -6,14 +6,14 @@ import java.util.Set;
 
 import org.iplantc.de.resources.client.messages.I18N;
 import org.iplantc.de.resources.client.messages.IplantErrorStrings;
-import org.iplantc.core.uicommons.client.errorHandling.models.ServiceErrorCode;
-import org.iplantc.core.uicommons.client.errorHandling.models.SimpleServiceError;
-import org.iplantc.core.uicommons.client.gin.ServicesInjector;
-import org.iplantc.core.uicommons.client.models.HasPaths;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceStatMap;
-import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
-import org.iplantc.core.uicommons.client.widgets.IPlantSideErrorHandler;
+import org.iplantc.de.commons.client.errorHandling.models.ServiceErrorCode;
+import org.iplantc.de.commons.client.errorHandling.models.SimpleServiceError;
+import org.iplantc.de.commons.client.gin.ServicesInjector;
+import org.iplantc.de.commons.client.models.HasPaths;
+import org.iplantc.de.commons.client.models.diskresources.DiskResource;
+import org.iplantc.de.commons.client.models.diskresources.DiskResourceStatMap;
+import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
+import org.iplantc.de.commons.client.widgets.IPlantSideErrorHandler;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;

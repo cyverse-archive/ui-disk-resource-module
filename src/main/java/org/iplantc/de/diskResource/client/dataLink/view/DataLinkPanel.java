@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.iplantc.de.diskResource.client.dataLink.models.DataLink;
 import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
-import org.iplantc.core.uicommons.client.views.gxt3.dialogs.IPlantDialog;
+import org.iplantc.de.commons.client.models.diskresources.DiskResource;
+import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantDialog;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -34,7 +34,7 @@ import com.sencha.gxt.widget.core.client.tree.Tree;
 
 public class DataLinkPanel<M extends DiskResource> implements IsWidget {
 
-    public interface Presenter<M> extends org.iplantc.core.uicommons.client.presenter.Presenter {
+    public interface Presenter<M> extends org.iplantc.de.commons.client.presenter.Presenter {
 
         void deleteDataLink(DataLink dataLink);
 

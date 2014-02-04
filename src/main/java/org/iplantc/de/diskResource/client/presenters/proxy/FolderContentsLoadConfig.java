@@ -1,6 +1,6 @@
 package org.iplantc.de.diskResource.client.presenters.proxy;
 
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+import org.iplantc.de.commons.client.models.diskresources.Folder;
 
 import com.sencha.gxt.data.shared.loader.FilterPagingLoadConfigBean;
 

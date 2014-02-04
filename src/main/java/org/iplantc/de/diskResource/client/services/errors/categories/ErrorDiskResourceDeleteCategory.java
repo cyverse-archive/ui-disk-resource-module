@@ -1,6 +1,6 @@
 package org.iplantc.de.diskResource.client.services.errors.categories;
 
-import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
+import org.iplantc.de.commons.client.util.DiskResourceUtil;
 import org.iplantc.de.diskResource.client.services.errors.ErrorDiskResourceDelete;
 
 import com.google.gwt.safehtml.shared.SafeHtml;

@@ -5,8 +5,8 @@ package org.iplantc.de.diskResource.client.sharing.views;
 
 import java.util.List;
 
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
-import org.iplantc.core.uicommons.client.models.diskresources.Permissions;
+import org.iplantc.de.commons.client.models.diskresources.DiskResource;
+import org.iplantc.de.commons.client.models.diskresources.Permissions;
 import org.iplantc.de.diskResource.client.sharing.models.DataSharing.TYPE;
 
 import com.google.gwt.user.client.ui.IsWidget;
@@ -18,7 +18,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public interface DataSharingView extends IsWidget {
 
-    public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter {
+    public interface Presenter extends org.iplantc.de.commons.client.presenter.Presenter {
 
         void loadDiskResources();
 

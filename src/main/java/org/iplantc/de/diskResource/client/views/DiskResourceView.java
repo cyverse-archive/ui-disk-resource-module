@@ -16,12 +16,12 @@ import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 
-import org.iplantc.core.uicommons.client.models.HasId;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
-import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceInfo;
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
-import org.iplantc.core.uicommons.client.views.IsMaskable;
+import org.iplantc.de.commons.client.models.HasId;
+import org.iplantc.de.commons.client.models.diskresources.DiskResource;
+import org.iplantc.de.commons.client.models.diskresources.DiskResourceInfo;
+import org.iplantc.de.commons.client.models.diskresources.Folder;
+import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
+import org.iplantc.de.commons.client.views.IsMaskable;
 import org.iplantc.de.diskResource.client.presenters.proxy.FolderContentsLoadConfig;
 import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent.HasSubmitDiskResourceQueryEventHandlers;
 import org.iplantc.de.diskResource.client.search.presenter.DataSearchPresenter;
@@ -40,9 +40,9 @@ import java.util.Set;
  */
 public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRoot, FolderSelectedEvent.HasFolderSelectedEventHandlers, DeleteSavedSearchEvent.HasDeleteSavedSearchEventHandlers {
 
-    public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter,
+    public interface Presenter extends org.iplantc.de.commons.client.presenter.Presenter,
             DiskResourceViewToolbar.Presenter, HasHandlerRegistrationMgmt, FolderSelectedEvent.FolderSelectedEventHandler, IsMaskable {
-        interface Builder extends org.iplantc.core.uicommons.client.presenter.Presenter {
+        interface Builder extends org.iplantc.de.commons.client.presenter.Presenter {
             Builder hideNorth();
 
             Builder hideWest();
