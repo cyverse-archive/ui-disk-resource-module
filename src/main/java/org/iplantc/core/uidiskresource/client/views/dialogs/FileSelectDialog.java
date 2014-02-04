@@ -71,7 +71,7 @@ public class FileSelectDialog extends IPlantDialog implements TakesValue<List<Fi
 
         HasId folderToSelect = null;
         if (diskResourcesToSelect != null && !diskResourcesToSelect.isEmpty()) {
-            String parentId = DiskResourceUtil.parseParent(diskResourcesToSelect.get(0).getId());
+            String parentId = DiskResourceUtil.parseParent(diskResourcesToSelect.get(0).getPath());
             folderToSelect = CommonModelUtils.createHasIdFromString(parentId);
         }
 

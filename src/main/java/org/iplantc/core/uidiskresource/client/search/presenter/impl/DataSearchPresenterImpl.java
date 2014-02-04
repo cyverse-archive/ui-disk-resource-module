@@ -13,10 +13,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasName;
 import com.google.inject.Inject;
 import com.google.web.bindery.autobean.shared.AutoBean;
-import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
-import com.google.web.bindery.autobean.shared.Splittable;
-import com.google.web.bindery.autobean.shared.impl.StringQuoter;
 
 import com.sencha.gxt.data.shared.TreeStore;
 
@@ -81,8 +78,6 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
         if (Strings.isNullOrEmpty(queryTemplate.getName())) {
             // Given query template has no name, ripple error back to view
-
-            // TODO Ripple error back to view
             GWT.log("TODO: User tried to save query with no name, cannot save. Ripple error back to view");
             return;
         } else {
@@ -109,7 +104,7 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
 
         final ImmutableList<DiskResourceQueryTemplate> toBeSaved = ImmutableList.copyOf(Iterables.concat(queryTemplates, Collections.singletonList(queryTemplate)));
         // Call service to save template
-        searchService.saveQueryTemplates(toBeSaved, new AsyncCallback<Boolean>() {
+        searchService.saveQueryTemplates(toBeSaved, new AsyncCallback<List<DiskResourceQueryTemplate>>() {
 
             @Override
             public void onFailure(Throwable caught) {
@@ -117,16 +112,13 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
             }
 
             @Override
-            public void onSuccess(Boolean result) {
+            public void onSuccess(List<DiskResourceQueryTemplate> savedTemplates) {
                 // Clear list of saved query templates and re-add result.
                 queryTemplates.clear();
-                for (DiskResourceQueryTemplate qt : toBeSaved) {
-                    // Make sure all saved templates are set as saved.
-                    final Splittable encode = AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(qt));
-                    StringQuoter.create(true).assign(encode, "saved");
-                    final DiskResourceQueryTemplate as = AutoBeanCodex.decode(factory, DiskResourceQueryTemplate.class, encode).as();
-                    queryTemplates.add(as);
+                if (toBeSaved.size() != savedTemplates.size()) {
+                    GWT.log("Saved templates returned from search service facade is a different size than what we submitted.");
                 }
+                queryTemplates.addAll(savedTemplates);
 
                 /*
                  * Determine if there has been a name change, if so, remove the original from the
@@ -213,8 +205,8 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
         final DiskResourceQueryTemplate savedSearch = event.getSavedSearch();
         if (treeStore.remove(savedSearch)) {
             if (queryTemplates.remove(savedSearch)) {
-                announcer.schedule(new SuccessAnnouncementConfig("Deleted saved filter: " + savedSearch.getName()));
-                searchService.saveQueryTemplates(queryTemplates, new AsyncCallback<Boolean>() {
+                announcer.schedule(new SuccessAnnouncementConfig("Successfully deleted saved search: " + savedSearch.getName()));
+                searchService.saveQueryTemplates(queryTemplates, new AsyncCallback<List<DiskResourceQueryTemplate>>() {
 
                     @Override
                     public void onFailure(Throwable caught) {
@@ -222,8 +214,8 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
                     }
 
                     @Override
-                    public void onSuccess(Boolean result) {
-                        if (!result) {
+                    public void onSuccess(List<DiskResourceQueryTemplate> savedTemplates) {
+                        if (queryTemplates.size() != savedTemplates.size()) {
                             GWT.log("Failed to save query templates after delete of saved search");
                         }
                     }
@@ -297,7 +289,6 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
             if (queryNameSet.contains(hasName.getName())) {
                 // We have a dupe name!!
                 GWT.log("Duplicate QueryTemplate name found: " + hasName.getName());
-                // TODO Determine what to do when dupe name is found. Currently it is ommitted silently.
             } else {
                 queryNameSet.add(hasName.getName());
             }

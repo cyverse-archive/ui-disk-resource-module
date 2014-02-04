@@ -1,23 +1,5 @@
 package org.iplantc.core.uidiskresource.client.search.views.cells;
 
-import java.util.Date;
-import java.util.List;
-
-import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
-import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
-import org.iplantc.core.uicommons.client.models.search.DateInterval;
-import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.core.uicommons.client.models.search.FileSizeRange;
-import org.iplantc.core.uicommons.client.models.search.SearchAutoBeanFactory;
-import org.iplantc.core.uicommons.client.models.search.SearchModelUtils;
-import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
-import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
-import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.HasSaveDiskResourceQueryEventHandlers;
-import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
-import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
-import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.HasSubmitDiskResourceQueryEventHandlers;
-import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
@@ -37,6 +19,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
+
 import com.sencha.gxt.core.client.Style.Anchor;
 import com.sencha.gxt.core.client.Style.AnchorAlignment;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
@@ -54,6 +37,24 @@ import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
+
+import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
+import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
+import org.iplantc.core.uicommons.client.models.search.DateInterval;
+import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.core.uicommons.client.models.search.FileSizeRange;
+import org.iplantc.core.uicommons.client.models.search.SearchAutoBeanFactory;
+import org.iplantc.core.uicommons.client.models.search.SearchModelUtils;
+import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.HasSaveDiskResourceQueryEventHandlers;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.HasSubmitDiskResourceQueryEventHandlers;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * This form is used to construct, edit and/or save "search filters".
@@ -162,6 +163,8 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     private boolean showing;
 
     private final DiskResourceQueryFormUiBinder uiBinder = GWT.create(DiskResourceQueryFormUiBinder.class);
+
+    private final SearchAutoBeanFactory factory = GWT.create(SearchAutoBeanFactory.class);
 
     /**
      * Creates the form with a new filter.
@@ -374,56 +377,32 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         List<DateInterval> timeIntervals = Lists.newArrayList();
         Date now = new Date();
 
-        DateInterval interval = SearchAutoBeanFactory.INSTANCE.dateInterval().as();
-        interval.setLabel("---");
+        DateInterval interval = createDateInterval(null, null, "---");
         timeIntervals.add(interval);
 
-        interval = SearchAutoBeanFactory.INSTANCE.dateInterval().as();
-        interval.setFrom(new DateWrapper(now).clearTime().addDays(-1).asDate());
-        interval.setTo(now);
-        interval.setLabel("1 day");
+        final DateWrapper dateWrapper = new DateWrapper(now).clearTime();
+        interval = createDateInterval(dateWrapper.addDays(-1).asDate(), now, "1 day");
         timeIntervals.add(interval);
 
-        interval = SearchAutoBeanFactory.INSTANCE.dateInterval().as();
-        interval.setFrom(new DateWrapper(now).clearTime().addDays(-3).asDate());
-        interval.setTo(now);
-        interval.setLabel("3 days");
+        interval = createDateInterval(dateWrapper.addDays(-3).asDate(), now, "3 days");
         timeIntervals.add(interval);
 
-        interval = SearchAutoBeanFactory.INSTANCE.dateInterval().as();
-        interval.setFrom(new DateWrapper(now).clearTime().addDays(-7).asDate());
-        interval.setTo(now);
-        interval.setLabel("1 week");
+        interval = createDateInterval(dateWrapper.addDays(-7).asDate(), now, "1 week");
         timeIntervals.add(interval);
 
-        interval = SearchAutoBeanFactory.INSTANCE.dateInterval().as();
-        interval.setFrom(new DateWrapper(now).clearTime().addDays(-14).asDate());
-        interval.setTo(now);
-        interval.setLabel("2 weeks");
+        interval = createDateInterval(dateWrapper.addDays(-14).asDate(), now, "2 weeks");
         timeIntervals.add(interval);
 
-        interval = SearchAutoBeanFactory.INSTANCE.dateInterval().as();
-        interval.setFrom(new DateWrapper(now).clearTime().addMonths(-1).asDate());
-        interval.setTo(now);
-        interval.setLabel("1 month");
+        interval = createDateInterval(dateWrapper.addMonths(-1).asDate(), now, "1 month");
         timeIntervals.add(interval);
 
-        interval = SearchAutoBeanFactory.INSTANCE.dateInterval().as();
-        interval.setFrom(new DateWrapper(now).clearTime().addMonths(-2).asDate());
-        interval.setTo(now);
-        interval.setLabel("2 months");
+        interval = createDateInterval(dateWrapper.addMonths(-2).asDate(), now, "2 months");
         timeIntervals.add(interval);
 
-        interval = SearchAutoBeanFactory.INSTANCE.dateInterval().as();
-        interval.setFrom(new DateWrapper(now).clearTime().addMonths(-6).asDate());
-        interval.setTo(now);
-        interval.setLabel("6 months");
+        interval = createDateInterval(dateWrapper.addMonths(-6).asDate(), now, "6 months");
         timeIntervals.add(interval);
 
-        interval = SearchAutoBeanFactory.INSTANCE.dateInterval().as();
-        interval.setFrom(new DateWrapper(now).clearTime().addYears(-1).asDate());
-        interval.setTo(now);
-        interval.setLabel("1 year");
+        interval = createDateInterval(dateWrapper.addYears(-1).asDate(), now, "1 year");
         timeIntervals.add(interval);
 
         // Data range combos
@@ -440,6 +419,14 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         modifiedWithinCombo.add(timeIntervals);
         createdWithinCombo.setEmptyText("---");
         modifiedWithinCombo.setEmptyText("---");
+    }
+
+    DateInterval createDateInterval(Date from, Date to, String label) {
+        DateInterval ret = factory.dateInterval().as();
+        ret.setFrom(from);
+        ret.setTo(to);
+        ret.setLabel(label);
+        return ret;
     }
 
     private void initFileSizeComboBoxes() {

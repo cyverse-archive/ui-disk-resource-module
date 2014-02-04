@@ -30,7 +30,6 @@ import org.iplantc.core.uidiskresource.client.search.events.DeleteSavedSearchEve
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.HasSubmitDiskResourceQueryEventHandlers;
 import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
-import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbarImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,7 +43,7 @@ import java.util.Set;
 public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRoot, HasFolderSelectedEventHandlers, HasDeleteSavedSearchEventHandlers {
 
     public interface Presenter extends org.iplantc.core.uicommons.client.presenter.Presenter,
- DiskResourceViewToolbarImpl.Presenter, HasHandlerRegistrationMgmt, FolderSelectedEventHandler, IsMaskable {
+ DiskResourceViewToolbar.Presenter, HasHandlerRegistrationMgmt, FolderSelectedEventHandler, IsMaskable {
         interface Builder extends org.iplantc.core.uicommons.client.presenter.Presenter {
             Builder hideNorth();
 
