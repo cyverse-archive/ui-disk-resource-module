@@ -2,7 +2,7 @@ package org.iplantc.de.diskResource.client.services.callbacks;
 
 import java.util.List;
 
-import org.iplantc.core.jsonutil.JsonUtil;
+import org.iplantc.de.jsonutil.client.JsonUtil;
 import org.iplantc.de.diskResource.client.dataLink.models.DataLink;
 import org.iplantc.de.diskResource.client.dataLink.models.DataLinkFactory;
 import org.iplantc.de.diskResource.client.dataLink.models.DataLinkList;
