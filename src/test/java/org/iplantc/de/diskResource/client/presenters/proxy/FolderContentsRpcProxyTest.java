@@ -1,4 +1,4 @@
-package org.iplantc.org.iplantc.de.diskResource.client.presenters.proxy;
+package org.iplantc.de.diskResource.client.presenters.proxy;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.safehtml.client.HasSafeHtml;
@@ -16,8 +16,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import org.iplantc.de.diskResource.client.presenters.proxy.FolderContentsLoadConfig;
-import org.iplantc.de.diskResource.client.presenters.proxy.FolderContentsRpcProxy;
 import org.iplantc.de.resources.client.messages.IplantDisplayStrings;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;

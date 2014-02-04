@@ -1,4 +1,4 @@
-package org.iplantc.org.iplantc.de.diskResource.client.search.views;
+package org.iplantc.de.diskResource.client.search.views;
 
 import org.iplantc.core.uicommons.client.events.SubmitTextSearchEvent;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 
 import org.iplantc.core.uicommons.client.events.SubmitTextSearchEvent;
 import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent;
-import org.iplantc.de.diskResource.client.search.views.DiskResourceSearchField;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;

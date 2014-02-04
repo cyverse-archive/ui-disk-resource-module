@@ -1,4 +1,4 @@
-package org.iplantc.org.iplantc.de.diskResource.client.presenters;
+package org.iplantc.de.diskResource.client.presenters;
 
 import org.junit.Before;
 import org.junit.Ignore;

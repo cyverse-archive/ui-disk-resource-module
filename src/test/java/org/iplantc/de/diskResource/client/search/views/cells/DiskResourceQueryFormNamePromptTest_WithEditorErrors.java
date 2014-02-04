@@ -1,6 +1,7 @@
-package org.iplantc.org.iplantc.de.diskResource.client.search.views.cells;
+package org.iplantc.de.diskResource.client.search.views.cells;
 
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
+import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwtmockito.GwtMockito;
 import com.google.gwtmockito.GxtMockitoTestRunner;
 import com.google.gwtmockito.fakes.FakeSimpleBeanEditorDriverProvider;
@@ -10,33 +11,34 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent;
-import org.iplantc.de.diskResource.client.search.views.cells.DiskResourceQueryFormNamePrompt;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 
 @RunWith(GxtMockitoTestRunner.class)
-public class DiskResourceQueryFormNamePromptTest_NoEditorErrors {
+public class DiskResourceQueryFormNamePromptTest_WithEditorErrors {
+
 
     private DiskResourceQueryFormNamePrompt namePrompt;
 
     @Before public void setUp() {
-        GwtMockito.useProviderForType(SimpleBeanEditorDriver.class, new FakeSimpleBeanEditorDriverProvider(false));
+        GwtMockito.useProviderForType(SimpleBeanEditorDriver.class, new FakeSimpleBeanEditorDriverProvider(true));
         namePrompt = new DiskResourceQueryFormNamePrompt();
     }
 
     /**
      * Verify the following when {@link DiskResourceQueryFormNamePrompt#cancelSaveFilterBtn} is clicked;<br/>
      */
-    @Test public void testOnCancelSaveFilter_noErrors() {
+    @Test public void testOnCancelSaveFilter_withErrors() {
         final String originalName = "originalName";
         namePrompt.originalName = originalName;
         DiskResourceQueryFormNamePrompt spy = spy(namePrompt);
+
         spy.onCancelSaveFilter(mock(SelectEvent.class));
 
         final ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
@@ -50,15 +52,16 @@ public class DiskResourceQueryFormNamePromptTest_NoEditorErrors {
     /**
      * Verify the following when {@link DiskResourceQueryFormNamePrompt#saveFilterBtn} is clicked;<br/>
      */
-    @Test public void testOnSaveFilterSelected_noErrors() {
+    @Test public void testOnSaveFilterSelected_withErrors() {
         DiskResourceQueryFormNamePrompt spy = spy(namePrompt);
         spy.onSaveFilterSelected(mock(SelectEvent.class));
 
-        // Verify that the appropriate event is fired
-        verify(spy).fireEvent(any(SubmitDiskResourceQueryEvent.class));
+        // Verify that no events are fired
+        verify(spy, never()).fireEvent(any(GwtEvent.class));
 
-        // Verify that the form is hidden
-        verify(spy).hide();
+        // Verify that the form is not hidden
+        verify(spy, never()).hide();
     }
+
 
 }

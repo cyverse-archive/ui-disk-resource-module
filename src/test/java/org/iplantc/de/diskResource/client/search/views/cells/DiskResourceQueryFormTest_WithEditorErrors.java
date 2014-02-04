@@ -1,4 +1,4 @@
-package org.iplantc.org.iplantc.de.diskResource.client.search.views.cells;
+package org.iplantc.de.diskResource.client.search.views.cells;
 
 import org.iplantc.core.uicommons.client.models.search.DateInterval;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;

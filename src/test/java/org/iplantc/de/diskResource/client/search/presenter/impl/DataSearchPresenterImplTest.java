@@ -1,4 +1,4 @@
-package org.iplantc.org.iplantc.de.diskResource.client.search.presenter.impl;
+package org.iplantc.de.diskResource.client.search.presenter.impl;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -26,7 +26,6 @@ import org.iplantc.de.diskResource.client.search.events.SaveDiskResourceQueryEve
 import org.iplantc.de.diskResource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
 import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent;
 import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
-import org.iplantc.de.diskResource.client.search.presenter.impl.DataSearchPresenterImpl;
 import org.iplantc.de.diskResource.client.search.views.DiskResourceSearchField;
 import org.junit.Before;
 import org.junit.Test;

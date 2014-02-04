@@ -1,4 +1,4 @@
-package org.iplantc.org.iplantc.de.diskResource.client.presenters.proxy;
+package org.iplantc.de.diskResource.client.presenters.proxy;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -18,7 +18,6 @@ import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
 import org.iplantc.core.uicommons.client.views.IsMaskable;
-import org.iplantc.de.diskResource.client.presenters.proxy.FolderRpcProxy;
 import org.iplantc.de.diskResource.client.presenters.proxy.FolderRpcProxy.GetSavedQueryTemplatesCallback;
 import org.iplantc.de.diskResource.client.presenters.proxy.FolderRpcProxy.RootFolderCallback;
 import org.iplantc.de.diskResource.client.presenters.proxy.FolderRpcProxy.SubFoldersCallback;
