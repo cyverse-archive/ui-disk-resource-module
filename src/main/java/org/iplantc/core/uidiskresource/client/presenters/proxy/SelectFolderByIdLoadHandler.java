@@ -1,13 +1,8 @@
 package org.iplantc.core.uidiskresource.client.presenters.proxy;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-
-import com.sencha.gxt.data.shared.loader.LoadEvent;
-import com.sencha.gxt.data.shared.loader.LoadHandler;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Stack;
 
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
@@ -17,9 +12,15 @@ import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
 import org.iplantc.core.uidiskresource.client.views.HasHandlerRegistrationMgmt;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Stack;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.sencha.gxt.data.shared.loader.LoadEvent;
+import com.sencha.gxt.data.shared.loader.LoadHandler;
 
 /**
  * A <code>LoadHandler</code> which is used to lazily load, expand, and select a desired folder.
@@ -60,11 +61,9 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
     @Override
     public void onLoad(LoadEvent<Folder, List<Folder>> event) {
         if (!rootsLoaded) {
-            /*
-             * Folders must have been loaded to have this method called. Set this flag before calling
-             * initPathsToLoad, since it may attempt to load sub-folders, which may not be an async call,
-             * which will in turn call this method again before initPathsToLoad returns.
-             */
+            // Folders must have been loaded to have this method called. Set this flag before calling
+            // initPathsToLoad, since it may attempt to load sub-folders, which may not be an async call,
+            // which will in turn call this method again before initPathsToLoad returns.
             rootsLoaded = true;
             initPathsToLoad();
             return;
@@ -99,25 +98,43 @@ public final class SelectFolderByIdLoadHandler implements LoadHandler<Folder, Li
      * This only needs to occur once.
      */
     private void initPathsToLoad() {
-        Folder folder = view.getFolderById(folderToSelect.getId());
+        Folder loadedFolder = view.getFolderById(folderToSelect.getId());
         // Find the paths which are not yet loaded, and push them onto the 'pathsToLoad' stack
-        while ((folder == null) && !path.isEmpty()) {
+        while ((loadedFolder == null) && !path.isEmpty()) {
             pathsToLoad.push(path.removeLast());
-            folder = view.getFolderById("/".concat(Joiner.on("/").join(path))); //$NON-NLS-1$ //$NON-NLS-2$
+            loadedFolder = view.getFolderById("/".concat(Joiner.on("/").join(path))); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
+        final Folder folder = loadedFolder;
         if (folder != null) {
+            // A folder along the path to load has been found.
             if (view.isLoaded(folder)) {
-                if (!folder.equals(presenter.getSelectedFolder())) {
-                    view.setSelectedFolder(folder);
+                if (folder.getPath().equals(folderToSelect.getId())) {
+                    // Exit condition: The target folder has already been loaded, so just select it.
+                    if (!folder.equals(presenter.getSelectedFolder())) {
+                        view.setSelectedFolder(folder);
+                    }
+                    unmaskView();
+                } else {
+                    // One of the target folder's parents already has its children loaded, but the target
+                    // wasn't found, so refresh that parent.
+                    Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+                        @Override
+                        public void execute() {
+                            // The refresh even must be deferred, since it's possible that the presenter
+                            // was initialized, and we reached this point, while the EventBus was
+                            // handling other events (such as showing the Data window). This means the
+                            // presenter's refresh handler will be deferred and will not handle this
+                            // refresh event.
+                            presenter.doRefresh(folder);
+                        }
+                    });
                 }
-                unmaskView();
             } else {
-                /*
-                 * Once a valid folder is found in the view, remotely load the folder, which will add the
-                 * next folder in the path to the view's treeStore.
-                 */
-                view.refreshFolder(folder);
+                // Once a valid folder is found in the view, remotely load the folder, which will add the
+                // next folder in the path to the view's treeStore.
+                view.expandFolder(folder);
             }
 
         }
