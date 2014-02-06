@@ -1,13 +1,13 @@
-package org.iplantc.core.uidiskresource.client.presenters.handlers;
-
-import java.util.List;
-
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
+package org.iplantc.de.diskResource.client.presenters.handlers;
 
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
 import com.sencha.gxt.data.shared.loader.LoadEvent;
 import com.sencha.gxt.data.shared.loader.LoadHandler;
+
+import org.iplantc.de.commons.client.models.diskresources.Folder;
+
+import java.util.List;
 
 /**
  * A LoadHandler, based on {@link ChildTreeStoreBinding}, that will recursively load all subfolders found

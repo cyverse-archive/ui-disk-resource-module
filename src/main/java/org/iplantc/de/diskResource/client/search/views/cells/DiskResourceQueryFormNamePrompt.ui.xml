@@ -4,7 +4,7 @@
 	xmlns:container="urn:import:com.sencha.gxt.widget.core.client.container"
 	xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
 	xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button"
-	xmlns:widgets="urn:import:org.iplantc.core.uicommons.client.widgets">
+	xmlns:widgets="urn:import:org.iplantc.de.commons.client.widgets">
 
 	<ui:with field="margins0500" type="com.sencha.gxt.core.client.util.Margins">
 		<ui:attributes top="5" right="5" bottom="5" left="5" />
