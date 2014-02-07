@@ -6,7 +6,7 @@ package org.iplantc.de.diskResource.client.sharing.presenter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iplantc.de.jsonutil.client.JsonUtil;
+import org.iplantc.de.commons.client.util.JsonUtil;
 import org.iplantc.de.diskResource.client.sharing.models.DataSharing;
 import org.iplantc.de.diskResource.client.sharing.views.DataSharingPermissionsPanel;
 import org.iplantc.de.diskResource.client.sharing.views.DataSharingView;

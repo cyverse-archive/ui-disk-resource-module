@@ -6,7 +6,7 @@ package org.iplantc.de.diskResource.client.views.dialogs;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iplantc.de.jsonutil.client.JsonUtil;
+import org.iplantc.de.commons.client.util.JsonUtil;
 import org.iplantc.de.commons.client.ErrorHandler;
 import org.iplantc.de.commons.client.gin.ServicesInjector;
 import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
