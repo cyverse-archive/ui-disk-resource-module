@@ -15,6 +15,7 @@ import org.iplantc.core.uicommons.client.models.diskresources.DiskResourceStatMa
 import org.iplantc.core.uicommons.client.services.DiskResourceServiceFacade;
 import org.iplantc.core.uicommons.client.widgets.IPlantSideErrorHandler;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.core.client.Scheduler;
@@ -464,11 +465,12 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
 
         permissionEditorError = null;
         existsEditorError = null;
+        final IplantErrorStrings errorStrings = I18N.ERROR;
         drServiceFacade.getStat(diskResourcePaths, new AsyncCallback<DiskResourceStatMap>() {
 
             @Override
             public void onFailure(Throwable caught) {
-                final IplantErrorStrings errorStrings = I18N.ERROR;
+                
                 SimpleServiceError serviceError = AutoBeanCodex.decode(drServiceFacade.getDiskResourceFactory(), SimpleServiceError.class, caught.getMessage()).as();
                 if (serviceError.getErrorCode().equals(ServiceErrorCode.ERR_DOES_NOT_EXIST.toString())) {
                     existsEditorError = new DefaultEditorError(input, errorStrings.diskResourceDoesNotExist(diskResourceId), diskResourceId);
@@ -486,6 +488,7 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
                 }
                 ValueChangeEvent.fire(AbstractDiskResourceSelector.this, value);
                 DiskResource diskResource = result.get(diskResourceId);
+                String infoText = getInfoText();
                 if (diskResource == null) {
                     permissionEditorError = new DefaultEditorError(input, I18N.DISPLAY.permissionSelectErrorMessage(), diskResourceId);
                     errors.add(permissionEditorError);
@@ -496,10 +499,11 @@ public abstract class AbstractDiskResourceSelector<R extends DiskResource> exten
                     errors.add(permissionEditorError);
                     input.showErrors(Lists.<EditorError> newArrayList(permissionEditorError));
                     setInfoErrorText(I18N.DISPLAY.permissionSelectErrorMessage());
-                } else {
-                    setInfoErrorText(null);
-                }
-            }
+                } else if(!Strings.isNullOrEmpty(infoText) && (!infoText.equalsIgnoreCase(I18N.APPS_MESSAGES.nonDefaultFolderWarning()))){
+						//clear only permission related errors on success
+					    setInfoErrorText(null);
+					}
+				}
         });
 
     }
