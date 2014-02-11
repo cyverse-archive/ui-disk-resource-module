@@ -1,5 +1,7 @@
 package org.iplantc.de.diskResource.client.search.views.cells;
 
+import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent;
+
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwtmockito.GwtMockito;
 import com.google.gwtmockito.GxtMockitoTestRunner;
@@ -13,7 +15,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

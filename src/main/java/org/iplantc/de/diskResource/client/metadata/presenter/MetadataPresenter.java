@@ -1,18 +1,15 @@
 package org.iplantc.de.diskResource.client.metadata.presenter;
 
-import java.util.List;
-import java.util.Set;
-
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.DiskResourceAutoBeanFactory;
+import org.iplantc.de.client.models.diskResources.DiskResourceMetadata;
+import org.iplantc.de.client.models.diskResources.DiskResourceMetadataList;
+import org.iplantc.de.client.models.diskResources.MetadataTemplate;
+import org.iplantc.de.client.models.diskResources.MetadataTemplateAttribute;
+import org.iplantc.de.client.models.diskResources.MetadataTemplateInfo;
+import org.iplantc.de.client.models.diskResources.MetadataTemplateInfoList;
 import org.iplantc.de.commons.client.ErrorHandler;
 import org.iplantc.de.commons.client.gin.ServicesInjector;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.DiskResourceAutoBeanFactory;
-import org.iplantc.de.commons.client.models.diskresources.DiskResourceMetadata;
-import org.iplantc.de.commons.client.models.diskresources.DiskResourceMetadataList;
-import org.iplantc.de.commons.client.models.diskresources.MetadataTemplate;
-import org.iplantc.de.commons.client.models.diskresources.MetadataTemplateAttribute;
-import org.iplantc.de.commons.client.models.diskresources.MetadataTemplateInfo;
-import org.iplantc.de.commons.client.models.diskresources.MetadataTemplateInfoList;
 import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
 import org.iplantc.de.diskResource.client.metadata.view.DiskResourceMetadataView;
 import org.iplantc.de.diskResource.client.metadata.view.DiskResourceMetadataView.Presenter;
@@ -23,6 +20,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+
+import java.util.List;
+import java.util.Set;
 
 public class MetadataPresenter implements Presenter {
 

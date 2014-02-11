@@ -1,13 +1,11 @@
 package org.iplantc.de.diskResource.client.services.callbacks;
 
-import java.util.List;
-
+import org.iplantc.de.commons.client.ErrorHandler;
 import org.iplantc.de.commons.client.util.JsonUtil;
 import org.iplantc.de.diskResource.client.dataLink.models.DataLink;
 import org.iplantc.de.diskResource.client.dataLink.models.DataLinkFactory;
 import org.iplantc.de.diskResource.client.dataLink.models.DataLinkList;
 import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.commons.client.ErrorHandler;
 
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
@@ -16,8 +14,11 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
+
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
+
+import java.util.List;
 
 public class ListDataLinksCallback<M> implements AsyncCallback<String> {
 

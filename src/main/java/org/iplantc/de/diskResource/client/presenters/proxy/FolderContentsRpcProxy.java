@@ -1,5 +1,14 @@
 package org.iplantc.de.diskResource.client.presenters.proxy;
 
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.Folder;
+import org.iplantc.de.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.de.commons.client.info.ErrorAnnouncementConfig;
+import org.iplantc.de.commons.client.info.IplantAnnouncer;
+import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
+import org.iplantc.de.commons.client.services.SearchServiceFacade;
+import org.iplantc.de.resources.client.messages.IplantDisplayStrings;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -11,15 +20,6 @@ import com.google.inject.Inject;
 import com.sencha.gxt.data.client.loader.RpcProxy;
 import com.sencha.gxt.data.shared.loader.PagingLoadResult;
 import com.sencha.gxt.data.shared.loader.PagingLoadResultBean;
-
-import org.iplantc.de.resources.client.messages.IplantDisplayStrings;
-import org.iplantc.de.commons.client.info.ErrorAnnouncementConfig;
-import org.iplantc.de.commons.client.info.IplantAnnouncer;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
-import org.iplantc.de.commons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
-import org.iplantc.de.commons.client.services.SearchServiceFacade;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package org.iplantc.de.diskResource.client.events;
 
-import org.iplantc.de.commons.client.models.diskresources.Folder;
+import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.diskResource.client.events.FolderCreatedEvent.FolderCreatedEventHandler;
 
 import com.google.gwt.event.shared.EventHandler;

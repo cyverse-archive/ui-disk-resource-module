@@ -1,27 +1,21 @@
 package org.iplantc.de.diskResource.client.views;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
+import org.iplantc.de.client.models.HasId;
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.DiskResourceInfo;
+import org.iplantc.de.client.models.diskResources.Folder;
+import org.iplantc.de.client.models.diskResources.Permissions;
+import org.iplantc.de.commons.client.util.DiskResourceUtil;
+import org.iplantc.de.commons.client.widgets.IPlantAnchor;
 import org.iplantc.de.diskResource.client.events.FolderSelectedEvent;
+import org.iplantc.de.diskResource.client.models.DiskResourceModelKeyProvider;
+import org.iplantc.de.diskResource.client.presenters.proxy.FolderContentsLoadConfig;
 import org.iplantc.de.diskResource.client.search.events.DeleteSavedSearchEvent;
+import org.iplantc.de.diskResource.client.views.cells.DiskResourceNameCell;
 import org.iplantc.de.diskResource.client.views.widgets.DiskResourceViewToolbar;
 import org.iplantc.de.resources.client.DataCollapseStyle;
 import org.iplantc.de.resources.client.IplantResources;
 import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.commons.client.models.HasId;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.DiskResourceInfo;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
-import org.iplantc.de.commons.client.models.diskresources.Permissions;
-import org.iplantc.de.commons.client.util.DiskResourceUtil;
-import org.iplantc.de.commons.client.widgets.IPlantAnchor;
-import org.iplantc.de.diskResource.client.models.DiskResourceModelKeyProvider;
-import org.iplantc.de.diskResource.client.presenters.proxy.FolderContentsLoadConfig;
-import org.iplantc.de.diskResource.client.views.cells.DiskResourceNameCell;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -47,6 +41,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
@@ -90,6 +85,12 @@ import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 import com.sencha.gxt.widget.core.client.tree.TreeView;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class DiskResourceViewImpl implements DiskResourceView {
 

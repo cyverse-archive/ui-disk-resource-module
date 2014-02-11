@@ -3,26 +3,23 @@
  */
 package org.iplantc.de.diskResource.client.sharing.views;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.iplantc.de.resources.client.IplantResources;
-import org.iplantc.de.resources.client.messages.I18N;
+import org.iplantc.de.client.models.UserInfo;
+import org.iplantc.de.client.models.collaborators.Collaborator;
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.DiskResourceAutoBeanFactory;
+import org.iplantc.de.client.models.diskResources.Permissions;
 import org.iplantc.de.commons.client.collaborators.events.UserSearchResultSelected;
 import org.iplantc.de.commons.client.collaborators.events.UserSearchResultSelected.USER_SEARCH_EVENT_TAG;
-import org.iplantc.de.commons.client.collaborators.models.Collaborator;
 import org.iplantc.de.commons.client.collaborators.presenter.ManageCollaboratorsPresenter.MODE;
 import org.iplantc.de.commons.client.collaborators.util.UserSearchField;
 import org.iplantc.de.commons.client.collaborators.views.ManageCollaboratorsDailog;
 import org.iplantc.de.commons.client.events.EventBus;
-import org.iplantc.de.commons.client.models.UserInfo;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.DiskResourceAutoBeanFactory;
-import org.iplantc.de.commons.client.models.diskresources.Permissions;
 import org.iplantc.de.diskResource.client.sharing.models.DataSharing;
 import org.iplantc.de.diskResource.client.sharing.models.DataSharingKeyProvider;
 import org.iplantc.de.diskResource.client.sharing.models.DataSharingProperties;
 import org.iplantc.de.diskResource.client.sharing.views.DataSharingView.Presenter;
+import org.iplantc.de.resources.client.IplantResources;
+import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -39,6 +36,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+
 import com.sencha.gxt.cell.core.client.TextButtonCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
@@ -60,6 +58,9 @@ import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.LabelToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author sriram

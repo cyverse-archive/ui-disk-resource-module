@@ -1,23 +1,23 @@
 package org.iplantc.de.diskResource.client.services.callbacks;
 
-import java.util.Set;
-
-import org.iplantc.de.resources.client.messages.I18N;
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.DiskResourceAutoBeanFactory;
+import org.iplantc.de.client.models.diskResources.RestoreResponse;
+import org.iplantc.de.client.models.diskResources.RestoreResponse.RestoredResource;
 import org.iplantc.de.commons.client.ErrorHandler;
 import org.iplantc.de.commons.client.info.IplantAnnouncer;
 import org.iplantc.de.commons.client.info.SuccessAnnouncementConfig;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.DiskResourceAutoBeanFactory;
-import org.iplantc.de.commons.client.models.diskresources.RestoreResponse;
-import org.iplantc.de.commons.client.models.diskresources.RestoreResponse.RestoredResource;
 import org.iplantc.de.diskResource.client.services.errors.DiskResourceErrorAutoBeanFactory;
 import org.iplantc.de.diskResource.client.services.errors.ErrorDiskResourceMove;
 import org.iplantc.de.diskResource.client.views.DiskResourceView;
+import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.Splittable;
+
+import java.util.Set;
 
 /**
  * A DiskResourceServiceCallback for data service "restore" endpoint requests.

@@ -1,12 +1,14 @@
 package org.iplantc.de.diskResource.client.views.cells;
 
-import static com.google.gwt.dom.client.BrowserEvents.CLICK;
-import static com.google.gwt.dom.client.BrowserEvents.MOUSEOUT;
-import static com.google.gwt.dom.client.BrowserEvents.MOUSEOVER;
-
-import java.util.Arrays;
-import java.util.List;
-
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.File;
+import org.iplantc.de.client.models.diskResources.Folder;
+import org.iplantc.de.commons.client.ErrorHandler;
+import org.iplantc.de.commons.client.events.EventBus;
+import org.iplantc.de.commons.client.gin.ServicesInjector;
+import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
+import org.iplantc.de.commons.client.util.DiskResourceUtil;
+import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.de.diskResource.client.dataLink.models.DataLink;
 import org.iplantc.de.diskResource.client.dataLink.models.DataLinkFactory;
 import org.iplantc.de.diskResource.client.dataLink.models.DataLinkList;
@@ -14,15 +16,10 @@ import org.iplantc.de.diskResource.client.events.DiskResourceSelectedEvent;
 import org.iplantc.de.resources.client.DiskResourceNameCellStyle;
 import org.iplantc.de.resources.client.IplantResources;
 import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.commons.client.ErrorHandler;
-import org.iplantc.de.commons.client.events.EventBus;
-import org.iplantc.de.commons.client.gin.ServicesInjector;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.File;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
-import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
-import org.iplantc.de.commons.client.util.DiskResourceUtil;
-import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantDialog;
+
+import static com.google.gwt.dom.client.BrowserEvents.CLICK;
+import static com.google.gwt.dom.client.BrowserEvents.MOUSEOUT;
+import static com.google.gwt.dom.client.BrowserEvents.MOUSEOVER;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.Cell;
@@ -46,10 +43,14 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+
 import com.sencha.gxt.widget.core.client.Popup;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.tips.Tip;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A cell for displaying the icons and names for <code>DiskResource</code> list items.

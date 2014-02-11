@@ -1,11 +1,11 @@
 package org.iplantc.de.diskResource.client.events;
 
+import org.iplantc.de.client.models.diskResources.Folder;
+import org.iplantc.de.diskResource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-
-import org.iplantc.de.commons.client.models.diskresources.Folder;
-import org.iplantc.de.diskResource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
 
 public class FolderSelectedEvent extends GwtEvent<FolderSelectedEventHandler> {
 

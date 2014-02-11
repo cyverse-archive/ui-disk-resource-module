@@ -1,5 +1,18 @@
 package org.iplantc.de.diskResource.client.views;
 
+import org.iplantc.de.client.models.HasId;
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.DiskResourceInfo;
+import org.iplantc.de.client.models.diskResources.Folder;
+import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
+import org.iplantc.de.commons.client.views.IsMaskable;
+import org.iplantc.de.diskResource.client.events.FolderSelectedEvent;
+import org.iplantc.de.diskResource.client.presenters.proxy.FolderContentsLoadConfig;
+import org.iplantc.de.diskResource.client.search.events.DeleteSavedSearchEvent;
+import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent.HasSubmitDiskResourceQueryEventHandlers;
+import org.iplantc.de.diskResource.client.search.presenter.DataSearchPresenter;
+import org.iplantc.de.diskResource.client.views.widgets.DiskResourceViewToolbar;
+
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safehtml.client.HasSafeHtml;
@@ -15,19 +28,6 @@ import com.sencha.gxt.data.shared.loader.PagingLoader;
 import com.sencha.gxt.data.shared.loader.TreeLoader;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
-
-import org.iplantc.de.commons.client.models.HasId;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.DiskResourceInfo;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
-import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
-import org.iplantc.de.commons.client.views.IsMaskable;
-import org.iplantc.de.diskResource.client.presenters.proxy.FolderContentsLoadConfig;
-import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent.HasSubmitDiskResourceQueryEventHandlers;
-import org.iplantc.de.diskResource.client.search.presenter.DataSearchPresenter;
-import org.iplantc.de.diskResource.client.views.widgets.DiskResourceViewToolbar;
-import org.iplantc.de.diskResource.client.events.FolderSelectedEvent;
-import org.iplantc.de.diskResource.client.search.events.DeleteSavedSearchEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;

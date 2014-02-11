@@ -1,7 +1,7 @@
 package org.iplantc.de.diskResource.client.models;
 
 
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
+import org.iplantc.de.client.models.diskResources.DiskResource;
 
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 

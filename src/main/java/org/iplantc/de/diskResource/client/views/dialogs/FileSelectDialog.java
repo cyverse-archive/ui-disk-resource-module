@@ -1,19 +1,15 @@
 package org.iplantc.de.diskResource.client.views.dialogs;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.commons.client.models.CommonModelUtils;
-import org.iplantc.de.commons.client.models.HasId;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.File;
+import org.iplantc.de.client.models.CommonModelUtils;
+import org.iplantc.de.client.models.HasId;
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.File;
 import org.iplantc.de.commons.client.util.DiskResourceUtil;
 import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.de.diskResource.client.gin.DiskResourceInjector;
 import org.iplantc.de.diskResource.client.views.DiskResourceView;
 import org.iplantc.de.diskResource.client.views.DiskResourceView.Presenter;
+import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -23,10 +19,15 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
+
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * An <code>IPlantDialog</code> which wraps the standard <code>DiskResourceView</code> for file

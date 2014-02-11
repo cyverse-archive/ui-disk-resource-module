@@ -1,13 +1,13 @@
 package org.iplantc.de.diskResource.client.views.dialogs;
 
-import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.commons.client.models.CommonModelAutoBeanFactory;
-import org.iplantc.de.commons.client.models.HasId;
-import org.iplantc.de.commons.client.models.UserSettings;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
+import org.iplantc.de.client.models.CommonModelAutoBeanFactory;
+import org.iplantc.de.client.models.HasId;
+import org.iplantc.de.client.models.UserSettings;
+import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.de.diskResource.client.gin.DiskResourceInjector;
 import org.iplantc.de.diskResource.client.views.DiskResourceView;
+import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;

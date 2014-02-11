@@ -4,24 +4,25 @@
 package org.iplantc.de.diskResource.client.sharing.views;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import org.iplantc.de.diskResource.client.sharing.presenter.DataSharingPresenter;
-import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
+import org.iplantc.de.client.models.diskResources.DiskResource;
 import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.de.diskResource.client.models.DiskResourceModelKeyProvider;
+import org.iplantc.de.diskResource.client.sharing.presenter.DataSharingPresenter;
 import org.iplantc.de.diskResource.client.views.cells.DiskResourceNameCell;
+import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.gwt.user.client.ui.HTML;
+
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author sriram

@@ -1,8 +1,8 @@
 package org.iplantc.de.diskResource.client.dataLink.models;
 
-import java.util.List;
-
 import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
+
+import java.util.List;
 
 /**
  * A convenience bean definition for deserializing lists of <code>DataLink</code>s

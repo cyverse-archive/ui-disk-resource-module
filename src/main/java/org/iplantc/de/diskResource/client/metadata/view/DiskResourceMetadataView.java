@@ -1,22 +1,17 @@
 package org.iplantc.de.diskResource.client.metadata.view;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.DiskResourceAutoBeanFactory;
+import org.iplantc.de.client.models.diskResources.DiskResourceMetadata;
+import org.iplantc.de.client.models.diskResources.DiskResourceMetadataList;
+import org.iplantc.de.client.models.diskResources.MetadataTemplateAttribute;
+import org.iplantc.de.client.models.diskResources.MetadataTemplateInfo;
+import org.iplantc.de.commons.client.validators.UrlValidator;
+import org.iplantc.de.commons.client.widgets.IPlantAnchor;
 import org.iplantc.de.diskResource.client.models.DiskResourceMetadataProperties;
 import org.iplantc.de.diskResource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
 import org.iplantc.de.resources.client.IplantResources;
 import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.DiskResourceAutoBeanFactory;
-import org.iplantc.de.commons.client.models.diskresources.DiskResourceMetadata;
-import org.iplantc.de.commons.client.models.diskresources.DiskResourceMetadataList;
-import org.iplantc.de.commons.client.models.diskresources.MetadataTemplateAttribute;
-import org.iplantc.de.commons.client.models.diskresources.MetadataTemplateInfo;
-import org.iplantc.de.commons.client.validators.UrlValidator;
-import org.iplantc.de.commons.client.widgets.IPlantAnchor;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -42,6 +37,7 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.resources.ThemeStyles;
@@ -92,6 +88,11 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.tips.QuickTip;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class DiskResourceMetadataView implements IsWidget {
 

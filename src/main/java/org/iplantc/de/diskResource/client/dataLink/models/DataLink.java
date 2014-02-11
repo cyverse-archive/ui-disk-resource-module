@@ -1,11 +1,12 @@
 package org.iplantc.de.diskResource.client.dataLink.models;
 
-import java.util.Date;
-
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
+import org.iplantc.de.client.models.diskResources.DiskResource;
 
 import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
+
 import com.sencha.gxt.widget.core.client.tree.Tree;
+
+import java.util.Date;
 
 /**
  * Represents a link for sharing <code>DiskResource</code>s outside of the <b>Discovery Environment</b>.

@@ -1,17 +1,18 @@
 package org.iplantc.de.diskResource.client.views.dialogs;
 
-import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.commons.client.models.HasId;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
+import org.iplantc.de.client.models.HasId;
+import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.de.diskResource.client.gin.DiskResourceInjector;
 import org.iplantc.de.diskResource.client.views.DiskResourceView;
+import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
+
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextField;
 

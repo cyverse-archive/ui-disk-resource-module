@@ -1,5 +1,20 @@
 package org.iplantc.de.diskResource.client.presenters.proxy;
 
+import org.iplantc.de.client.models.diskResources.Folder;
+import org.iplantc.de.client.models.diskResources.RootFolders;
+import org.iplantc.de.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.de.commons.client.ErrorHandler;
+import org.iplantc.de.commons.client.info.ErrorAnnouncementConfig;
+import org.iplantc.de.commons.client.info.IplantAnnouncer;
+import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
+import org.iplantc.de.commons.client.services.SearchServiceFacade;
+import org.iplantc.de.commons.client.views.IsMaskable;
+import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent;
+import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
+import org.iplantc.de.diskResource.client.search.presenter.DataSearchPresenter;
+import org.iplantc.de.diskResource.client.views.DiskResourceView;
+import org.iplantc.de.resources.client.messages.I18N;
+
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -8,21 +23,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 
 import com.sencha.gxt.data.client.loader.RpcProxy;
-
-import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.commons.client.ErrorHandler;
-import org.iplantc.de.commons.client.info.ErrorAnnouncementConfig;
-import org.iplantc.de.commons.client.info.IplantAnnouncer;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
-import org.iplantc.de.commons.client.models.diskresources.RootFolders;
-import org.iplantc.de.commons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
-import org.iplantc.de.commons.client.services.SearchServiceFacade;
-import org.iplantc.de.commons.client.views.IsMaskable;
-import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent;
-import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
-import org.iplantc.de.diskResource.client.search.presenter.DataSearchPresenter;
-import org.iplantc.de.diskResource.client.views.DiskResourceView;
 
 import java.util.Collections;
 import java.util.List;

@@ -1,22 +1,18 @@
 package org.iplantc.de.diskResource.client.views.dialogs;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.iplantc.de.diskResource.client.services.callbacks.DuplicateDiskResourceCallback;
-import org.iplantc.de.resources.client.messages.I18N;
+import org.iplantc.de.client.models.HasPaths;
+import org.iplantc.de.client.models.diskResources.DiskResourceAutoBeanFactory;
+import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.commons.client.events.EventBus;
 import org.iplantc.de.commons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.de.commons.client.info.IplantAnnouncer;
-import org.iplantc.de.commons.client.models.HasPaths;
-import org.iplantc.de.commons.client.models.diskresources.DiskResourceAutoBeanFactory;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
 import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
 import org.iplantc.de.commons.client.validators.DiskResourceNameValidator;
 import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.de.commons.client.widgets.IPCFileUploadField;
 import org.iplantc.de.diskResource.client.events.FileUploadedEvent;
+import org.iplantc.de.diskResource.client.services.callbacks.DuplicateDiskResourceCallback;
+import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -35,6 +31,7 @@ import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.StringQuoter;
+
 import com.sencha.gxt.core.client.util.Format;
 import com.sencha.gxt.core.shared.FastMap;
 import com.sencha.gxt.widget.core.client.Status;
@@ -56,6 +53,10 @@ import com.sencha.gxt.widget.core.client.form.FormPanelHelper;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.tips.ToolTip;
 import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class SimpleFileUploadDialog extends IPlantDialog {
 

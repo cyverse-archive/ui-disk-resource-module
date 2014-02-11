@@ -1,11 +1,11 @@
 package org.iplantc.de.diskResource.client.presenters.handlers;
 
-import java.util.List;
-
-import org.iplantc.de.commons.client.models.UserInfo;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
+import org.iplantc.de.client.models.UserInfo;
+import org.iplantc.de.client.models.diskResources.DiskResource;
 import org.iplantc.de.commons.client.util.DiskResourceUtil;
 import org.iplantc.de.diskResource.client.views.widgets.DiskResourceViewToolbar;
+
+import java.util.List;
 
 /**
  * A ToolbarButtonVisibilitySelectionHandler for DiskResource selections in the Data Window main grid.

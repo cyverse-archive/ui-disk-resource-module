@@ -1,5 +1,9 @@
 package org.iplantc.de.diskResource.client.gin;
 
+import org.iplantc.de.client.models.diskResources.Folder;
+import org.iplantc.de.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.de.resources.client.IplantResources;
+
 import com.google.gwt.resources.client.ImageResource;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -10,10 +14,6 @@ import com.sencha.gxt.widget.core.client.tips.QuickTip;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeAppearance;
 import com.sencha.gxt.widget.core.client.tree.TreeStyle;
-
-import org.iplantc.de.resources.client.IplantResources;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
-import org.iplantc.de.commons.client.models.search.DiskResourceQueryTemplate;
 
 public class DiskResourceTreeProvider implements Provider<Tree<Folder, Folder>> {
 

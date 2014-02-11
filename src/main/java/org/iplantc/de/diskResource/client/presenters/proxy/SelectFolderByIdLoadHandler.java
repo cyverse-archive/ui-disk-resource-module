@@ -1,12 +1,12 @@
 package org.iplantc.de.diskResource.client.presenters.proxy;
 
-import org.iplantc.de.diskResource.client.views.HasHandlerRegistrationMgmt;
-import org.iplantc.de.resources.client.messages.I18N;
+import org.iplantc.de.client.models.HasId;
+import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.commons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.de.commons.client.info.IplantAnnouncer;
-import org.iplantc.de.commons.client.models.HasId;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
 import org.iplantc.de.diskResource.client.views.DiskResourceView;
+import org.iplantc.de.diskResource.client.views.HasHandlerRegistrationMgmt;
+import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;

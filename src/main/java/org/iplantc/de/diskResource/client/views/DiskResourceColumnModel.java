@@ -1,17 +1,12 @@
 package org.iplantc.de.diskResource.client.views;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.File;
+import org.iplantc.de.client.models.diskResources.Folder;
+import org.iplantc.de.commons.client.util.DiskResourceUtil;
 import org.iplantc.de.diskResource.client.models.DiskResourceProperties;
 import org.iplantc.de.diskResource.client.views.cells.DiskResourceNameCell;
 import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.File;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
-import org.iplantc.de.commons.client.util.DiskResourceUtil;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.DateCell;

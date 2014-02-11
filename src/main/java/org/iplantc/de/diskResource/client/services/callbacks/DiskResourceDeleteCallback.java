@@ -1,23 +1,23 @@
 package org.iplantc.de.diskResource.client.services.callbacks;
 
-import java.util.Collection;
-
-import org.iplantc.de.diskResource.client.events.DiskResourcesDeletedEvent;
-import org.iplantc.de.diskResource.client.services.errors.DiskResourceErrorAutoBeanFactory;
-import org.iplantc.de.resources.client.messages.I18N;
+import org.iplantc.de.client.models.HasPaths;
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.commons.client.ErrorHandler;
 import org.iplantc.de.commons.client.events.EventBus;
 import org.iplantc.de.commons.client.info.IplantAnnouncer;
 import org.iplantc.de.commons.client.info.SuccessAnnouncementConfig;
-import org.iplantc.de.commons.client.models.HasPaths;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
 import org.iplantc.de.commons.client.views.IsMaskable;
+import org.iplantc.de.diskResource.client.events.DiskResourcesDeletedEvent;
+import org.iplantc.de.diskResource.client.services.errors.DiskResourceErrorAutoBeanFactory;
 import org.iplantc.de.diskResource.client.services.errors.ErrorDiskResourceDelete;
+import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+
+import java.util.Collection;
 
 public class DiskResourceDeleteCallback extends DiskResourceServiceCallback<HasPaths> {
 

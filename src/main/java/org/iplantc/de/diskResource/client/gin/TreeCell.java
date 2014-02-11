@@ -1,5 +1,7 @@
 package org.iplantc.de.diskResource.client.gin;
 
+import org.iplantc.de.client.models.diskResources.Folder;
+
 import static com.google.gwt.dom.client.BrowserEvents.CLICK;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -12,8 +14,6 @@ import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 
 import com.sencha.gxt.widget.core.client.tree.TreeSelectionModel;
-
-import org.iplantc.de.commons.client.models.diskresources.Folder;
 
 public final class TreeCell extends AbstractCell<Folder> {
 

@@ -1,5 +1,21 @@
 package org.iplantc.de.diskResource.client.search.presenter.impl;
 
+import org.iplantc.de.client.models.diskResources.Folder;
+import org.iplantc.de.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.de.client.models.search.SearchAutoBeanFactory;
+import org.iplantc.de.commons.client.info.IplantAnnouncer;
+import org.iplantc.de.commons.client.services.SearchServiceFacade;
+import org.iplantc.de.diskResource.client.events.FolderSelectedEvent;
+import org.iplantc.de.diskResource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
+import org.iplantc.de.diskResource.client.events.FolderSelectedEvent.HasFolderSelectedEventHandlers;
+import org.iplantc.de.diskResource.client.search.events.DeleteSavedSearchEvent;
+import org.iplantc.de.diskResource.client.search.events.DeleteSavedSearchEvent.HasDeleteSavedSearchEventHandlers;
+import org.iplantc.de.diskResource.client.search.events.SaveDiskResourceQueryEvent;
+import org.iplantc.de.diskResource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
+import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent;
+import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
+import org.iplantc.de.diskResource.client.search.views.DiskResourceSearchField;
+
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwtmockito.GxtMockitoTestRunner;
@@ -12,21 +28,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import org.iplantc.de.commons.client.info.IplantAnnouncer;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
-import org.iplantc.de.commons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.de.commons.client.models.search.SearchAutoBeanFactory;
-import org.iplantc.de.commons.client.services.SearchServiceFacade;
-import org.iplantc.de.diskResource.client.events.FolderSelectedEvent;
-import org.iplantc.de.diskResource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
-import org.iplantc.de.diskResource.client.events.FolderSelectedEvent.HasFolderSelectedEventHandlers;
-import org.iplantc.de.diskResource.client.search.events.DeleteSavedSearchEvent;
-import org.iplantc.de.diskResource.client.search.events.DeleteSavedSearchEvent.HasDeleteSavedSearchEventHandlers;
-import org.iplantc.de.diskResource.client.search.events.SaveDiskResourceQueryEvent;
-import org.iplantc.de.diskResource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
-import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent;
-import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
-import org.iplantc.de.diskResource.client.search.views.DiskResourceSearchField;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

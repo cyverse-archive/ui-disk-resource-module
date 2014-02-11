@@ -1,11 +1,9 @@
 package org.iplantc.de.diskResource.client.dataLink.view;
 
-import java.util.List;
-
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.de.diskResource.client.dataLink.models.DataLink;
 import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantDialog;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -21,6 +19,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -31,6 +30,8 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.tips.QuickTip;
 import com.sencha.gxt.widget.core.client.tree.Tree;
+
+import java.util.List;
 
 public class DataLinkPanel<M extends DiskResource> implements IsWidget {
 

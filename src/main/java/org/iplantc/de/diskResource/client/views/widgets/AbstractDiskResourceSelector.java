@@ -1,19 +1,15 @@
 package org.iplantc.de.diskResource.client.views.widgets;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
-import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.resources.client.messages.IplantErrorStrings;
-import org.iplantc.de.commons.client.errorHandling.models.ServiceErrorCode;
-import org.iplantc.de.commons.client.errorHandling.models.SimpleServiceError;
+import org.iplantc.de.client.models.HasPaths;
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.DiskResourceStatMap;
+import org.iplantc.de.client.models.errorHandling.ServiceErrorCode;
+import org.iplantc.de.client.models.errorHandling.SimpleServiceError;
 import org.iplantc.de.commons.client.gin.ServicesInjector;
-import org.iplantc.de.commons.client.models.HasPaths;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.DiskResourceStatMap;
 import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
 import org.iplantc.de.commons.client.widgets.IPlantSideErrorHandler;
+import org.iplantc.de.resources.client.messages.I18N;
+import org.iplantc.de.resources.client.messages.IplantErrorStrings;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -42,6 +38,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.XDOM;
 import com.sencha.gxt.core.client.dom.XElement;
@@ -64,6 +61,10 @@ import com.sencha.gxt.widget.core.client.form.IsField;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Abstract class for single select DiskResource fields.

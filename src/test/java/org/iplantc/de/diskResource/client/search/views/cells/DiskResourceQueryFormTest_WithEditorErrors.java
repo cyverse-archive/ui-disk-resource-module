@@ -1,10 +1,8 @@
 package org.iplantc.de.diskResource.client.search.views.cells;
 
-import org.iplantc.core.uicommons.client.models.search.DateInterval;
-import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.core.uicommons.client.models.search.FileSizeRange.FileSizeUnit;
+import org.iplantc.de.client.models.search.DateInterval;
+import org.iplantc.de.client.models.search.DiskResourceQueryTemplate;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.GwtEvent;
@@ -22,8 +20,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-import org.iplantc.de.diskResource.client.search.views.cells.DiskResourceQueryForm;
-import org.iplantc.de.diskResource.client.search.views.cells.DiskResourceQueryFormNamePrompt;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

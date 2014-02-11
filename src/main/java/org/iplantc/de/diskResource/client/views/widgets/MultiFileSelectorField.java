@@ -1,5 +1,25 @@
 package org.iplantc.de.diskResource.client.views.widgets;
 
+import org.iplantc.de.client.models.HasId;
+import org.iplantc.de.client.models.HasPaths;
+import org.iplantc.de.client.models.UserSettings;
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.DiskResourceStatMap;
+import org.iplantc.de.client.models.diskResources.File;
+import org.iplantc.de.client.models.errorHandling.ServiceErrorCode;
+import org.iplantc.de.client.models.errorHandling.SimpleServiceError;
+import org.iplantc.de.commons.client.events.EventBus;
+import org.iplantc.de.commons.client.events.UserSettingsUpdatedEvent;
+import org.iplantc.de.commons.client.gin.ServicesInjector;
+import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
+import org.iplantc.de.commons.client.util.DiskResourceUtil;
+import org.iplantc.de.commons.client.widgets.IPlantSideErrorHandler;
+import org.iplantc.de.diskResource.client.models.DiskResourceModelKeyProvider;
+import org.iplantc.de.diskResource.client.models.DiskResourceProperties;
+import org.iplantc.de.diskResource.client.views.dialogs.FileSelectDialog;
+import org.iplantc.de.resources.client.messages.I18N;
+import org.iplantc.de.resources.client.messages.IplantErrorStrings;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.core.client.GWT;
@@ -43,26 +63,6 @@ import com.sencha.gxt.widget.core.client.grid.GridView;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
-
-import org.iplantc.de.diskResource.client.models.DiskResourceModelKeyProvider;
-import org.iplantc.de.diskResource.client.models.DiskResourceProperties;
-import org.iplantc.de.diskResource.client.views.dialogs.FileSelectDialog;
-import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.resources.client.messages.IplantErrorStrings;
-import org.iplantc.de.commons.client.errorHandling.models.ServiceErrorCode;
-import org.iplantc.de.commons.client.errorHandling.models.SimpleServiceError;
-import org.iplantc.de.commons.client.events.EventBus;
-import org.iplantc.de.commons.client.events.UserSettingsUpdatedEvent;
-import org.iplantc.de.commons.client.gin.ServicesInjector;
-import org.iplantc.de.commons.client.models.HasId;
-import org.iplantc.de.commons.client.models.HasPaths;
-import org.iplantc.de.commons.client.models.UserSettings;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.DiskResourceStatMap;
-import org.iplantc.de.commons.client.models.diskresources.File;
-import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
-import org.iplantc.de.commons.client.util.DiskResourceUtil;
-import org.iplantc.de.commons.client.widgets.IPlantSideErrorHandler;
 
 import java.util.Collection;
 import java.util.Collections;

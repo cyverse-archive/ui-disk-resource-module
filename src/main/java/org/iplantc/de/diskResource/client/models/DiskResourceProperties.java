@@ -1,13 +1,14 @@
 package org.iplantc.de.diskResource.client.models;
 
-import java.util.Date;
-
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
+import org.iplantc.de.client.models.diskResources.DiskResource;
 
 import com.google.gwt.editor.client.Editor.Path;
+
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+
+import java.util.Date;
 
 public interface DiskResourceProperties extends PropertyAccess<DiskResource> {
 

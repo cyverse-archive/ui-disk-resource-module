@@ -5,10 +5,10 @@
  */
 package org.iplantc.de.diskResource.client.sharing.models;
 
-import org.iplantc.de.commons.client.collaborators.models.Collaborator;
-import org.iplantc.de.commons.client.models.diskresources.DiskResourceAutoBeanFactory;
-import org.iplantc.de.commons.client.models.diskresources.Permissions;
-import org.iplantc.de.commons.client.models.sharing.Sharing;
+import org.iplantc.de.client.models.collaborators.Collaborator;
+import org.iplantc.de.client.models.diskResources.DiskResourceAutoBeanFactory;
+import org.iplantc.de.client.models.diskResources.Permissions;
+import org.iplantc.de.client.models.sharing.Sharing;
 import org.iplantc.de.commons.client.util.DiskResourceUtil;
 
 import com.google.gwt.core.client.GWT;

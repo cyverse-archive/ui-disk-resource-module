@@ -1,19 +1,20 @@
 package org.iplantc.de.diskResource.client.sharing.views;
 
-import java.util.List;
-
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
+import org.iplantc.de.client.models.diskResources.DiskResource;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Widget;
+
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
+
+import java.util.List;
 
 public class DataSharingViewImpl implements DataSharingView {
 

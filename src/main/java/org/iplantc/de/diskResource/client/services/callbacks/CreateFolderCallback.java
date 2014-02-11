@@ -1,13 +1,13 @@
 package org.iplantc.de.diskResource.client.services.callbacks;
 
-import org.iplantc.de.diskResource.client.services.errors.DiskResourceErrorAutoBeanFactory;
-import org.iplantc.de.resources.client.messages.I18N;
+import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.commons.client.ErrorHandler;
 import org.iplantc.de.commons.client.events.EventBus;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
 import org.iplantc.de.commons.client.views.IsMaskable;
 import org.iplantc.de.diskResource.client.events.FolderCreatedEvent;
+import org.iplantc.de.diskResource.client.services.errors.DiskResourceErrorAutoBeanFactory;
 import org.iplantc.de.diskResource.client.services.errors.ErrorCreateFolder;
+import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;

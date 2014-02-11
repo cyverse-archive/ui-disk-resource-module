@@ -1,5 +1,15 @@
 package org.iplantc.de.diskResource.client.presenters.proxy;
 
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.Folder;
+import org.iplantc.de.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.de.commons.client.info.IplantAnnouncer;
+import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
+import org.iplantc.de.commons.client.services.SearchServiceFacade;
+import org.iplantc.de.commons.client.services.SearchServiceFacade.SearchType;
+import org.iplantc.de.diskResource.client.presenters.proxy.FolderContentsRpcProxy.FolderContentsCallback;
+import org.iplantc.de.resources.client.messages.IplantDisplayStrings;
+
 import com.google.common.collect.Lists;
 import com.google.gwt.safehtml.client.HasSafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -16,15 +26,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import org.iplantc.de.resources.client.messages.IplantDisplayStrings;
-import org.iplantc.de.commons.client.info.IplantAnnouncer;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
-import org.iplantc.de.commons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
-import org.iplantc.de.commons.client.services.SearchServiceFacade;
-import org.iplantc.de.commons.client.services.SearchServiceFacade.SearchType;
-import org.iplantc.de.diskResource.client.presenters.proxy.FolderContentsRpcProxy.FolderContentsCallback;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

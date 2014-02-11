@@ -7,9 +7,13 @@ import com.google.gwt.user.client.ui.IsWidget;
 
 import org.iplantc.de.commons.client.models.diskresources.DiskResource;
 import org.iplantc.de.commons.client.models.diskresources.Folder;
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.Folder;
+import org.iplantc.de.diskResource.client.search.events.SaveDiskResourceQueryEvent;
 import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
 import org.iplantc.de.diskResource.client.search.views.DiskResourceSearchField;
-import org.iplantc.de.diskResource.client.search.events.SaveDiskResourceQueryEvent;
+
+import com.google.gwt.user.client.ui.IsWidget;
 
 import com.google.gwt.user.client.ui.IsWidget;
 

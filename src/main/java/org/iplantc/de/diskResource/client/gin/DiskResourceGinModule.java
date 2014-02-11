@@ -1,16 +1,8 @@
 package org.iplantc.de.diskResource.client.gin;
 
-import com.google.gwt.inject.client.AbstractGinModule;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import com.google.inject.TypeLiteral;
-
-import com.sencha.gxt.data.shared.TreeStore;
-import com.sencha.gxt.widget.core.client.tree.Tree;
-
+import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.commons.client.gin.ServicesInjector;
 import org.iplantc.de.commons.client.info.IplantAnnouncer;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
 import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
 import org.iplantc.de.commons.client.services.SearchServiceFacade;
 import org.iplantc.de.diskResource.client.presenters.DiskResourcePresenterImpl;
@@ -20,6 +12,14 @@ import org.iplantc.de.diskResource.client.search.presenter.DataSearchPresenter;
 import org.iplantc.de.diskResource.client.search.presenter.impl.DataSearchPresenterImpl;
 import org.iplantc.de.diskResource.client.views.DiskResourceView;
 import org.iplantc.de.diskResource.client.views.DiskResourceViewImpl;
+
+import com.google.gwt.inject.client.AbstractGinModule;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
+
+import com.sencha.gxt.data.shared.TreeStore;
+import com.sencha.gxt.widget.core.client.tree.Tree;
 
 public class DiskResourceGinModule extends AbstractGinModule {
 

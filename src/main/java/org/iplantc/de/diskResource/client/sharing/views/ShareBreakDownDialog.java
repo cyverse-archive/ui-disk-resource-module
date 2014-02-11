@@ -3,17 +3,15 @@
  */
 package org.iplantc.de.diskResource.client.sharing.views;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.iplantc.de.resources.client.IplantResources;
-import org.iplantc.de.resources.client.messages.I18N;
 import org.iplantc.de.commons.client.util.DiskResourceUtil;
 import org.iplantc.de.diskResource.client.sharing.models.DataSharing;
 import org.iplantc.de.diskResource.client.sharing.models.DataSharingKeyProvider;
 import org.iplantc.de.diskResource.client.sharing.models.DataSharingProperties;
+import org.iplantc.de.resources.client.IplantResources;
+import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.gwt.core.client.GWT;
+
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.data.shared.ListStore;
@@ -27,6 +25,9 @@ import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.GroupingView;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author sriram

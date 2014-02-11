@@ -1,11 +1,11 @@
 package org.iplantc.de.diskResource.client.search.events;
 
+import org.iplantc.de.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.de.diskResource.client.search.events.DeleteSavedSearchEvent.DeleteSavedSearchEventHandler;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-
-import org.iplantc.de.commons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.de.diskResource.client.search.events.DeleteSavedSearchEvent.DeleteSavedSearchEventHandler;
 
 public class DeleteSavedSearchEvent extends GwtEvent<DeleteSavedSearchEventHandler> {
 

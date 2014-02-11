@@ -1,17 +1,14 @@
 package org.iplantc.de.diskResource.client.views.widgets;
 
-import java.util.List;
-import java.util.Set;
-
-import org.iplantc.de.diskResource.client.views.dialogs.FileSelectDialog;
-import org.iplantc.de.resources.client.messages.I18N;
+import org.iplantc.de.client.models.UserSettings;
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.DiskResourceAutoBeanFactory;
+import org.iplantc.de.client.models.diskResources.File;
 import org.iplantc.de.commons.client.events.EventBus;
 import org.iplantc.de.commons.client.events.UserSettingsUpdatedEvent;
-import org.iplantc.de.commons.client.models.UserSettings;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.DiskResourceAutoBeanFactory;
-import org.iplantc.de.commons.client.models.diskresources.File;
 import org.iplantc.de.commons.client.util.DiskResourceUtil;
+import org.iplantc.de.diskResource.client.views.dialogs.FileSelectDialog;
+import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -19,10 +16,14 @@ import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.TakesValue;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.StatusProxy;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
+
+import java.util.List;
+import java.util.Set;
 
 public class FileSelectorField extends AbstractDiskResourceSelector<File> {
 

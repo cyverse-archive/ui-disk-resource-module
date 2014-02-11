@@ -1,13 +1,13 @@
 package org.iplantc.de.diskResource.client.dataLink.view;
 
-import static com.google.gwt.dom.client.BrowserEvents.CLICK;
-
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.File;
+import org.iplantc.de.diskResource.client.dataLink.models.DataLink;
 import org.iplantc.de.resources.client.DataLinkPanelCellStyle;
 import org.iplantc.de.resources.client.IplantResources;
 import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.File;
-import org.iplantc.de.diskResource.client.dataLink.models.DataLink;
+
+import static com.google.gwt.dom.client.BrowserEvents.CLICK;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.Cell;

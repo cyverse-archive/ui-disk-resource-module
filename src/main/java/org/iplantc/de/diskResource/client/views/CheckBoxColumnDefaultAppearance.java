@@ -7,7 +7,7 @@
  */
 package org.iplantc.de.diskResource.client.views;
 
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
+import org.iplantc.de.client.models.diskResources.DiskResource;
 import org.iplantc.de.diskResource.client.views.DiskResourceSelectionModel.CheckBoxColumnAppearance;
 
 import com.google.gwt.cell.client.Cell.Context;
@@ -18,9 +18,9 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.resources.client.ImageResource.ImageOptions;
 import com.google.gwt.resources.client.ImageResource.RepeatStyle;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+
 import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.core.client.resources.StyleInjectorHelper;
-
 import com.sencha.gxt.widget.core.client.grid.ColumnHeader.ColumnHeaderStyles;
 import com.sencha.gxt.widget.core.client.grid.GridView.GridDataTableStyles;
 

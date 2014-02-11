@@ -1,23 +1,23 @@
 package org.iplantc.de.diskResource.client.presenters.handlers;
 
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.File;
+import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.commons.client.events.EventBus;
 import org.iplantc.de.commons.client.events.diskresources.DiskResourceRefreshEvent;
 import org.iplantc.de.commons.client.events.diskresources.DiskResourceRefreshEvent.DiskResourceRefreshEventHandler;
 import org.iplantc.de.commons.client.info.IplantAnnouncer;
 import org.iplantc.de.commons.client.info.SuccessAnnouncementConfig;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.File;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
 import org.iplantc.de.commons.client.util.DiskResourceUtil;
 import org.iplantc.de.diskResource.client.events.DiskResourceRenamedEvent.DiskResourceRenamedEventHandler;
 import org.iplantc.de.diskResource.client.events.DiskResourceSelectedEvent;
 import org.iplantc.de.diskResource.client.events.DiskResourceSelectedEvent.DiskResourceSelectedEventHandler;
+import org.iplantc.de.diskResource.client.events.DiskResourcesDeletedEvent;
 import org.iplantc.de.diskResource.client.events.DiskResourcesMovedEvent;
 import org.iplantc.de.diskResource.client.events.DiskResourcesMovedEvent.DiskResourcesMovedEventHandler;
 import org.iplantc.de.diskResource.client.events.FolderCreatedEvent.FolderCreatedEventHandler;
 import org.iplantc.de.diskResource.client.events.ShowFilePreviewEvent;
 import org.iplantc.de.diskResource.client.views.DiskResourceView;
-import org.iplantc.de.diskResource.client.events.DiskResourcesDeletedEvent;
 
 import java.util.Collection;
 import java.util.Set;

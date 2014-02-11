@@ -1,5 +1,19 @@
 package org.iplantc.de.diskResource.client.presenters.proxy;
 
+import org.iplantc.de.client.models.diskResources.Folder;
+import org.iplantc.de.client.models.diskResources.RootFolders;
+import org.iplantc.de.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.de.commons.client.info.ErrorAnnouncementConfig;
+import org.iplantc.de.commons.client.info.IplantAnnouncer;
+import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
+import org.iplantc.de.commons.client.services.SearchServiceFacade;
+import org.iplantc.de.commons.client.views.IsMaskable;
+import org.iplantc.de.diskResource.client.presenters.proxy.FolderRpcProxy.GetSavedQueryTemplatesCallback;
+import org.iplantc.de.diskResource.client.presenters.proxy.FolderRpcProxy.RootFolderCallback;
+import org.iplantc.de.diskResource.client.presenters.proxy.FolderRpcProxy.SubFoldersCallback;
+import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent;
+import org.iplantc.de.diskResource.client.search.presenter.DataSearchPresenter;
+
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwtmockito.GxtMockitoTestRunner;
@@ -10,19 +24,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
-import org.iplantc.de.commons.client.info.ErrorAnnouncementConfig;
-import org.iplantc.de.commons.client.info.IplantAnnouncer;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
-import org.iplantc.de.commons.client.models.diskresources.RootFolders;
-import org.iplantc.de.commons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
-import org.iplantc.de.commons.client.services.SearchServiceFacade;
-import org.iplantc.de.commons.client.views.IsMaskable;
-import org.iplantc.de.diskResource.client.presenters.proxy.FolderRpcProxy.GetSavedQueryTemplatesCallback;
-import org.iplantc.de.diskResource.client.presenters.proxy.FolderRpcProxy.RootFolderCallback;
-import org.iplantc.de.diskResource.client.presenters.proxy.FolderRpcProxy.SubFoldersCallback;
-import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent;
-import org.iplantc.de.diskResource.client.search.presenter.DataSearchPresenter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

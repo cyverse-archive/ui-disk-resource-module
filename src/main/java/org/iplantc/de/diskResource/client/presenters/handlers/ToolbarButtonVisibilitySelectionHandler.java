@@ -1,15 +1,16 @@
 package org.iplantc.de.diskResource.client.presenters.handlers;
 
-import java.util.List;
-
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
+import org.iplantc.de.client.models.diskResources.DiskResource;
 import org.iplantc.de.diskResource.client.views.widgets.DiskResourceViewToolbar;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
+
+import java.util.List;
 
 /**
  * A SelectionChangedHandler and SelectionHandler for DiskResources the Data Window.

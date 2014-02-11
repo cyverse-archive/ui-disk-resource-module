@@ -1,20 +1,15 @@
 package org.iplantc.de.diskResource.client.views.dialogs;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.commons.client.models.HasPaths;
-import org.iplantc.de.commons.client.models.diskresources.DiskResourceAutoBeanFactory;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
+import org.iplantc.de.client.models.HasPaths;
+import org.iplantc.de.client.models.diskResources.DiskResourceAutoBeanFactory;
+import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
 import org.iplantc.de.commons.client.util.DiskResourceUtil;
 import org.iplantc.de.commons.client.validators.ImportUrlValidator;
 import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.de.commons.client.views.gxt3.dialogs.IsHideable;
 import org.iplantc.de.diskResource.client.services.callbacks.DuplicateDiskResourceCallback;
+import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -29,6 +24,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
+
 import com.sencha.gxt.core.client.util.Format;
 import com.sencha.gxt.core.shared.FastMap;
 import com.sencha.gxt.fx.client.FxElement;
@@ -42,6 +38,11 @@ import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.ValueBaseField;
 import com.sencha.gxt.widget.core.client.tips.ToolTip;
 import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class FileUploadByUrlDialog extends IPlantDialog implements HasPending<Entry<Field<String>, Status>> {
 

@@ -1,11 +1,11 @@
 package org.iplantc.de.diskResource.client.presenters.handlers;
 
+import org.iplantc.de.client.models.diskResources.Folder;
+
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.loader.ChildTreeStoreBinding;
 import com.sencha.gxt.data.shared.loader.LoadEvent;
 import com.sencha.gxt.data.shared.loader.LoadHandler;
-
-import org.iplantc.de.commons.client.models.diskresources.Folder;
 
 import java.util.List;
 

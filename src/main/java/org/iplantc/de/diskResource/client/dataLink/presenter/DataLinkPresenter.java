@@ -1,10 +1,8 @@
 package org.iplantc.de.diskResource.client.dataLink.presenter;
 
-import java.util.List;
-
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.commons.client.gin.ServicesInjector;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
 import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
 import org.iplantc.de.commons.client.util.DiskResourceUtil;
 import org.iplantc.de.commons.client.util.WindowUtil;
@@ -18,6 +16,8 @@ import org.iplantc.de.diskResource.client.services.callbacks.ListDataLinksCallba
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.HasOneWidget;
+
+import java.util.List;
 
 
 public class DataLinkPresenter<M extends DiskResource> implements DataLinkPanel.Presenter<M> {

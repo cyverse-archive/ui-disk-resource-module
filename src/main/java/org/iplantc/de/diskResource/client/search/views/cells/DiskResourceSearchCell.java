@@ -1,5 +1,11 @@
 package org.iplantc.de.diskResource.client.search.views.cells;
 
+import org.iplantc.de.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.de.diskResource.client.search.events.SaveDiskResourceQueryEvent;
+import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent;
+import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent.HasSubmitDiskResourceQueryEventHandlers;
+import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
+
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -23,12 +29,6 @@ import com.sencha.gxt.widget.core.client.event.ExpandEvent.ExpandHandler;
 import com.sencha.gxt.widget.core.client.event.ExpandEvent.HasExpandHandlers;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
-
-import org.iplantc.de.commons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.de.diskResource.client.search.events.SaveDiskResourceQueryEvent;
-import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent;
-import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent.HasSubmitDiskResourceQueryEventHandlers;
-import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
 
 /**
  * This class is a clone-and-own of {@link DateCell}.

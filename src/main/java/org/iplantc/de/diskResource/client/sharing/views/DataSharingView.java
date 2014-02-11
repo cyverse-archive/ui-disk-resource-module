@@ -3,14 +3,14 @@
  */
 package org.iplantc.de.diskResource.client.sharing.views;
 
-import java.util.List;
-
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.Permissions;
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.Permissions;
 import org.iplantc.de.diskResource.client.sharing.models.DataSharing.TYPE;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.List;
 
 /**
  * @author sriram

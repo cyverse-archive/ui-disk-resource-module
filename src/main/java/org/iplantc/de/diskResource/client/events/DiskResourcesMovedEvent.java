@@ -1,13 +1,13 @@
 package org.iplantc.de.diskResource.client.events;
 
-import java.util.Set;
-
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.diskResource.client.events.DiskResourcesMovedEvent.DiskResourcesMovedEventHandler;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
+
+import java.util.Set;
 
 public class DiskResourcesMovedEvent extends GwtEvent<DiskResourcesMovedEventHandler> {
     

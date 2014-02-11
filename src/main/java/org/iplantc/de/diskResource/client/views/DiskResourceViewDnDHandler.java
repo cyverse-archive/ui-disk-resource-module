@@ -1,17 +1,15 @@
 package org.iplantc.de.diskResource.client.views;
 
-import java.util.Collection;
-import java.util.Set;
-
-import org.iplantc.de.resources.client.messages.I18N;
-import org.iplantc.de.commons.client.models.diskresources.DiskResource;
-import org.iplantc.de.commons.client.models.diskresources.Folder;
+import org.iplantc.de.client.models.diskResources.DiskResource;
+import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.commons.client.util.DiskResourceUtil;
 import org.iplantc.de.diskResource.client.views.DiskResourceView.Presenter;
+import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.common.collect.Sets;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
+
 import com.sencha.gxt.dnd.core.client.DndDragEnterEvent;
 import com.sencha.gxt.dnd.core.client.DndDragEnterEvent.DndDragEnterHandler;
 import com.sencha.gxt.dnd.core.client.DndDragMoveEvent;
@@ -22,6 +20,9 @@ import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DndDropEvent.DndDropHandler;
 import com.sencha.gxt.dnd.core.client.StatusProxy;
 import com.sencha.gxt.fx.client.DragMoveEvent;
+
+import java.util.Collection;
+import java.util.Set;
 
 class DiskResourceViewDnDHandler implements DndDragStartHandler, DndDropHandler, DndDragMoveHandler,
         DndDragEnterHandler {
