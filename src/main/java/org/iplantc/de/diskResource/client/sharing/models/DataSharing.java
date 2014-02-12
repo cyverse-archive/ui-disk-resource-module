@@ -9,7 +9,7 @@ import org.iplantc.de.client.models.collaborators.Collaborator;
 import org.iplantc.de.client.models.diskResources.DiskResourceAutoBeanFactory;
 import org.iplantc.de.client.models.diskResources.Permissions;
 import org.iplantc.de.client.models.sharing.Sharing;
-import org.iplantc.de.commons.client.util.DiskResourceUtil;
+import org.iplantc.de.client.util.DiskResourceUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONBoolean;

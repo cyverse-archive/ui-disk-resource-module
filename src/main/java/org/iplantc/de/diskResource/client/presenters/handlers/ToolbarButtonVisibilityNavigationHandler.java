@@ -2,7 +2,7 @@ package org.iplantc.de.diskResource.client.presenters.handlers;
 
 import org.iplantc.de.commons.client.models.diskresources.Folder;
 import org.iplantc.de.client.models.diskResources.Folder;
-import org.iplantc.de.commons.client.util.DiskResourceUtil;
+import org.iplantc.de.client.util.DiskResourceUtil;
 import org.iplantc.de.diskResource.client.views.widgets.DiskResourceViewToolbar;
 
 import java.util.List;

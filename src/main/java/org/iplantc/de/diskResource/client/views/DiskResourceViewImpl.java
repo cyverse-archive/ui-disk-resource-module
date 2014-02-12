@@ -5,7 +5,7 @@ import org.iplantc.de.client.models.diskResources.DiskResource;
 import org.iplantc.de.client.models.diskResources.DiskResourceInfo;
 import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.client.models.diskResources.Permissions;
-import org.iplantc.de.commons.client.util.DiskResourceUtil;
+import org.iplantc.de.client.util.DiskResourceUtil;
 import org.iplantc.de.commons.client.widgets.IPlantAnchor;
 import org.iplantc.de.diskResource.client.events.FolderSelectedEvent;
 import org.iplantc.de.diskResource.client.models.DiskResourceModelKeyProvider;

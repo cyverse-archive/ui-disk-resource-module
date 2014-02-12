@@ -1,14 +1,14 @@
 package org.iplantc.de.diskResource.client.presenters.handlers;
 
+import org.iplantc.de.client.events.EventBus;
+import org.iplantc.de.client.events.diskResources.DiskResourceRefreshEvent;
+import org.iplantc.de.client.events.diskResources.DiskResourceRefreshEvent.DiskResourceRefreshEventHandler;
 import org.iplantc.de.client.models.diskResources.DiskResource;
 import org.iplantc.de.client.models.diskResources.File;
 import org.iplantc.de.client.models.diskResources.Folder;
-import org.iplantc.de.commons.client.events.EventBus;
-import org.iplantc.de.commons.client.events.diskresources.DiskResourceRefreshEvent;
-import org.iplantc.de.commons.client.events.diskresources.DiskResourceRefreshEvent.DiskResourceRefreshEventHandler;
+import org.iplantc.de.client.util.DiskResourceUtil;
 import org.iplantc.de.commons.client.info.IplantAnnouncer;
 import org.iplantc.de.commons.client.info.SuccessAnnouncementConfig;
-import org.iplantc.de.commons.client.util.DiskResourceUtil;
 import org.iplantc.de.diskResource.client.events.DiskResourceRenamedEvent.DiskResourceRenamedEventHandler;
 import org.iplantc.de.diskResource.client.events.DiskResourceSelectedEvent;
 import org.iplantc.de.diskResource.client.events.DiskResourceSelectedEvent.DiskResourceSelectedEventHandler;

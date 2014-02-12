@@ -1,12 +1,12 @@
 package org.iplantc.de.diskResource.client.views.dialogs;
 
+import org.iplantc.de.client.events.EventBus;
 import org.iplantc.de.client.models.HasPaths;
 import org.iplantc.de.client.models.diskResources.DiskResourceAutoBeanFactory;
 import org.iplantc.de.client.models.diskResources.Folder;
-import org.iplantc.de.commons.client.events.EventBus;
+import org.iplantc.de.client.services.DiskResourceServiceFacade;
 import org.iplantc.de.commons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.de.commons.client.info.IplantAnnouncer;
-import org.iplantc.de.commons.client.services.DiskResourceServiceFacade;
 import org.iplantc.de.commons.client.validators.DiskResourceNameValidator;
 import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.de.commons.client.widgets.IPCFileUploadField;

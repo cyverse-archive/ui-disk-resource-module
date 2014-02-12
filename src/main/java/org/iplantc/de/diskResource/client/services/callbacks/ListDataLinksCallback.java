@@ -1,7 +1,7 @@
 package org.iplantc.de.diskResource.client.services.callbacks;
 
+import org.iplantc.de.client.util.JsonUtil;
 import org.iplantc.de.commons.client.ErrorHandler;
-import org.iplantc.de.commons.client.util.JsonUtil;
 import org.iplantc.de.diskResource.client.dataLink.models.DataLink;
 import org.iplantc.de.diskResource.client.dataLink.models.DataLinkFactory;
 import org.iplantc.de.diskResource.client.dataLink.models.DataLinkList;

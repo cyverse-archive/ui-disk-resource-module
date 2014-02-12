@@ -3,6 +3,7 @@
  */
 package org.iplantc.de.diskResource.client.sharing.views;
 
+import org.iplantc.de.client.events.EventBus;
 import org.iplantc.de.client.models.UserInfo;
 import org.iplantc.de.client.models.collaborators.Collaborator;
 import org.iplantc.de.client.models.diskResources.DiskResource;
@@ -13,7 +14,6 @@ import org.iplantc.de.commons.client.collaborators.events.UserSearchResultSelect
 import org.iplantc.de.commons.client.collaborators.presenter.ManageCollaboratorsPresenter.MODE;
 import org.iplantc.de.commons.client.collaborators.util.UserSearchField;
 import org.iplantc.de.commons.client.collaborators.views.ManageCollaboratorsDailog;
-import org.iplantc.de.commons.client.events.EventBus;
 import org.iplantc.de.diskResource.client.sharing.models.DataSharing;
 import org.iplantc.de.diskResource.client.sharing.models.DataSharingKeyProvider;
 import org.iplantc.de.diskResource.client.sharing.models.DataSharingProperties;

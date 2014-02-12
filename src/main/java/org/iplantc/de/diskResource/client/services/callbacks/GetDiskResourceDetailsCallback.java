@@ -2,8 +2,8 @@ package org.iplantc.de.diskResource.client.services.callbacks;
 
 import org.iplantc.de.client.models.diskResources.DiskResourceAutoBeanFactory;
 import org.iplantc.de.client.models.diskResources.DiskResourceInfo;
+import org.iplantc.de.client.util.JsonUtil;
 import org.iplantc.de.commons.client.ErrorHandler;
-import org.iplantc.de.commons.client.util.JsonUtil;
 import org.iplantc.de.diskResource.client.services.errors.DiskResourceErrorAutoBeanFactory;
 import org.iplantc.de.diskResource.client.services.errors.ErrorGetManifest;
 import org.iplantc.de.diskResource.client.views.DiskResourceView;

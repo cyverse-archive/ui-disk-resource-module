@@ -1,14 +1,14 @@
 package org.iplantc.de.diskResource.client.views.widgets;
 
+import org.iplantc.de.client.events.EventBus;
 import org.iplantc.de.client.models.CommonModelUtils;
 import org.iplantc.de.client.models.HasId;
 import org.iplantc.de.client.models.UserSettings;
 import org.iplantc.de.client.models.diskResources.DiskResource;
 import org.iplantc.de.client.models.diskResources.DiskResourceAutoBeanFactory;
 import org.iplantc.de.client.models.diskResources.Folder;
-import org.iplantc.de.commons.client.events.EventBus;
+import org.iplantc.de.client.util.DiskResourceUtil;
 import org.iplantc.de.commons.client.events.UserSettingsUpdatedEvent;
-import org.iplantc.de.commons.client.util.DiskResourceUtil;
 import org.iplantc.de.diskResource.client.views.dialogs.FolderSelectDialog;
 import org.iplantc.de.resources.client.messages.I18N;
 

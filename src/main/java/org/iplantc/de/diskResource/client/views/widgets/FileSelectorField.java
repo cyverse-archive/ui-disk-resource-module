@@ -1,12 +1,12 @@
 package org.iplantc.de.diskResource.client.views.widgets;
 
+import org.iplantc.de.client.events.EventBus;
 import org.iplantc.de.client.models.UserSettings;
 import org.iplantc.de.client.models.diskResources.DiskResource;
 import org.iplantc.de.client.models.diskResources.DiskResourceAutoBeanFactory;
 import org.iplantc.de.client.models.diskResources.File;
-import org.iplantc.de.commons.client.events.EventBus;
+import org.iplantc.de.client.util.DiskResourceUtil;
 import org.iplantc.de.commons.client.events.UserSettingsUpdatedEvent;
-import org.iplantc.de.commons.client.util.DiskResourceUtil;
 import org.iplantc.de.diskResource.client.views.dialogs.FileSelectDialog;
 import org.iplantc.de.resources.client.messages.I18N;
 
