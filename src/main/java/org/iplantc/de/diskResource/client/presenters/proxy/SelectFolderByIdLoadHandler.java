@@ -170,7 +170,7 @@ public class SelectFolderByIdLoadHandler implements LoadHandler<Folder, List<Fol
         });
     }
 
-    private void unmaskView() {
+    void unmaskView() {
         regMgr.unregisterHandler(this);
         presenter.unmask();
     }
