@@ -1,12 +1,5 @@
 package org.iplantc.de.diskResource.client.search.views;
 
-import org.iplantc.core.uicommons.client.events.SubmitTextSearchEvent;
-import org.iplantc.core.uicommons.client.events.SubmitTextSearchEvent.SubmitTextSearchEventHandler;
-import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.core.uicommons.client.models.search.SearchAutoBeanFactory;
-import org.iplantc.core.uicommons.client.widgets.search.SearchFieldDecorator;
-import java.text.ParseException;
-
 import org.iplantc.de.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.de.client.models.search.SearchAutoBeanFactory;
 import org.iplantc.de.commons.client.events.SubmitTextSearchEvent;
@@ -30,8 +23,6 @@ import com.sencha.gxt.widget.core.client.event.ParseErrorEvent;
 import com.sencha.gxt.widget.core.client.form.DateField;
 import com.sencha.gxt.widget.core.client.form.PropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TriggerField;
-
-import java.text.ParseException;
 
 import java.text.ParseException;
 

@@ -1,12 +1,5 @@
 package org.iplantc.de.diskResource.client.search.presenter.impl;
 
-import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
-import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
-import org.iplantc.core.uicommons.client.info.SuccessAnnouncementConfig;
-import org.iplantc.core.uicommons.client.models.diskresources.Folder;
-import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.core.uicommons.client.models.search.SearchAutoBeanFactory;
-import org.iplantc.core.uicommons.client.services.SearchServiceFacade;
 import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.de.client.models.search.SearchAutoBeanFactory;
