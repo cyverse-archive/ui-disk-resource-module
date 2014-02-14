@@ -1,10 +1,5 @@
 package org.iplantc.core.uidiskresource.client.views;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.File;
@@ -18,10 +13,16 @@ import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 
 public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
 
@@ -55,7 +56,7 @@ public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
 
         ColumnConfig<DiskResource, Date> created = new ColumnConfig<DiskResource, Date>(
                 props.dateSubmitted(), 120, I18N.DISPLAY.dateSubmitted());
-        lastModified.setCell(new DateCell(DateTimeFormat
+        created.setCell(new DateCell(DateTimeFormat
                 .getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM)));
         created.setHidden(true);
         
