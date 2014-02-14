@@ -207,6 +207,8 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
 
         EventBus eventBus = EventBus.getInstance();
         DiskResourcesEventHandler diskResourcesEventHandler = new DiskResourcesEventHandler(this);
+        dreventHandlers.add(eventBus
+                .addHandler(DiskResourceRefreshEvent.TYPE, diskResourcesEventHandler));
         dreventHandlers.add(eventBus.addHandler(DiskResourcesDeletedEvent.TYPE,
                 diskResourcesEventHandler));
         dreventHandlers.add(eventBus.addHandler(FolderCreatedEvent.TYPE, diskResourcesEventHandler));
@@ -413,7 +415,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
         }
 
         EventBus.getInstance().fireEvent(new DiskResourceRefreshEvent(folder));
+    }
 
+    @Override
+    public void onFolderRefresh(Folder folder) {
         folder = view.getFolderById(folder.getId());
         if (folder == null) {
             return;

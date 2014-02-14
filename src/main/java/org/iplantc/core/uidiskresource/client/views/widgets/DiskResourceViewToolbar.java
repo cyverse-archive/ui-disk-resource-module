@@ -1,5 +1,6 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
+import org.iplantc.core.uicommons.client.events.diskresources.DiskResourceRefreshEvent;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
@@ -21,10 +22,11 @@ public interface DiskResourceViewToolbar extends IsWidget {
         void doImport();
 
         /**
-         * Reloads the given folder in the view's navigation tree, and if it's the currently selected
-         * folder then the data grid is refreshed as well.
+         * Fires a {@link DiskResourceRefreshEvent} in order to reload the given folder in all available
+         * views and the folder cache. Or reloads the current search results if no valid folder is given.
          * 
-         * @param folder The folder to reload from the service.
+         * @param folder The folder to reload from the service, or null to refresh the current search
+         *            results.
          */
         void doRefresh(Folder folder);
 
@@ -60,9 +62,15 @@ public interface DiskResourceViewToolbar extends IsWidget {
         
         void onNewFile();
 
+        /**
+         * Reloads the given folder in the view's navigation tree, and if it's the currently selected
+         * folder then the data grid is refreshed as well.
+         * 
+         * @param folder
+         */
+        void onFolderRefresh(Folder folder);
     }
 
-   
 
     void setPresenter(Presenter presenter);
     

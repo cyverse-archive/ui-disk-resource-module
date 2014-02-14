@@ -1,6 +1,8 @@
 package org.iplantc.core.uidiskresource.client.presenters.handlers;
 
 import org.iplantc.core.uicommons.client.events.EventBus;
+import org.iplantc.core.uicommons.client.events.diskresources.DiskResourceRefreshEvent;
+import org.iplantc.core.uicommons.client.events.diskresources.DiskResourceRefreshEvent.DiskResourceRefreshEventHandler;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.info.SuccessAnnouncementConfig;
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
@@ -22,13 +24,18 @@ import java.util.Set;
 
 public final class DiskResourcesEventHandler implements DiskResourcesDeletedEventHandler,
         DiskResourceSelectedEventHandler, DiskResourcesMovedEventHandler,
-        DiskResourceRenamedEventHandler, FolderCreatedEventHandler {
+        DiskResourceRenamedEventHandler, FolderCreatedEventHandler, DiskResourceRefreshEventHandler {
     private final DiskResourceView.Presenter presenter;
     private final DiskResourceView view;
 
     public DiskResourcesEventHandler(DiskResourceView.Presenter presenter) {
         this.presenter = presenter;
         this.view = presenter.getView();
+    }
+
+    @Override
+    public void onRefresh(DiskResourceRefreshEvent event) {
+        presenter.onFolderRefresh(event.getFolder());
     }
 
     @Override
