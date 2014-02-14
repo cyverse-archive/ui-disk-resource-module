@@ -1,14 +1,13 @@
 package org.iplantc.core.uidiskresource.client.views.widgets;
 
-import com.google.gwt.user.client.ui.IsWidget;
-
 import org.iplantc.core.uicommons.client.models.diskresources.DiskResource;
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchField;
 
-import java.util.List;
+import com.google.gwt.user.client.ui.IsWidget;
+
 import java.util.Set;
 
 public interface DiskResourceViewToolbar extends IsWidget {
@@ -28,15 +27,6 @@ public interface DiskResourceViewToolbar extends IsWidget {
          * @param folder The folder to reload from the service.
          */
         void doRefresh(Folder folder);
-
-        /**
-         * Reloads the folder with the given ID in the view's navigation tree, and if it's the currently
-         * selected folder then the data grid is refreshed with the given selected resources.
-         * 
-         * @param selectedResources
-         * @param folderId
-         */
-        void refreshFolder(String folderId, List<DiskResource> selectedResources);
 
         void doSimpleDownload();
 

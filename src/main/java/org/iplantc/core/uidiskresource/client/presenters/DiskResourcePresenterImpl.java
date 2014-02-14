@@ -1,15 +1,5 @@
 package org.iplantc.core.uidiskresource.client.presenters;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import org.iplantc.core.jsonutil.JsonUtil;
 import org.iplantc.core.resources.client.messages.I18N;
 import org.iplantc.core.resources.client.messages.IplantDisplayStrings;
@@ -69,7 +59,6 @@ import org.iplantc.core.uidiskresource.client.views.dialogs.InfoTypeEditorDialog
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -83,6 +72,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
+
 import com.sencha.gxt.data.shared.SortInfo;
 import com.sencha.gxt.data.shared.loader.LoadHandler;
 import com.sencha.gxt.data.shared.loader.PagingLoadResult;
@@ -98,6 +88,16 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  *
@@ -193,33 +193,30 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
 				});
 	}
 
-	private void initHandlers() {
-		// Add selection handlers which will control the visibility of the
-		// toolbar buttons
-		DiskResourceViewToolbar toolbar = view.getToolbar();
-		initToolbar(toolbar);
-		addFileSelectChangedHandler(new ToolbarButtonVisibilityGridHandler(
-				toolbar));
-		addFolderSelectionHandler(new ToolbarButtonVisibilityNavigationHandler(
-				toolbar));
+    private void initHandlers() {
+        // Add selection handlers which will control the visibility of the toolbar buttons
+        DiskResourceViewToolbar toolbar = view.getToolbar();
+        initToolbar(toolbar);
+        ToolbarButtonVisibilityNavigationHandler buttonVisNavHandler = new ToolbarButtonVisibilityNavigationHandler(
+                toolbar);
+        toolbar.getSearchField().addSubmitDiskResourceQueryEventHandler(buttonVisNavHandler);
+        addFolderSelectionHandler(buttonVisNavHandler);
+        addFileSelectChangedHandler(new ToolbarButtonVisibilityGridHandler(toolbar));
 
         treeLoader.addLoadHandler(new CachedFolderTreeStoreBinding(view.getTreeStore()));
 
-		EventBus eventBus = EventBus.getInstance();
+        EventBus eventBus = EventBus.getInstance();
         DiskResourcesEventHandler diskResourcesEventHandler = new DiskResourcesEventHandler(this);
-		dreventHandlers.add(eventBus.addHandler(DiskResourceRefreshEvent.TYPE,
-				diskResourcesEventHandler));
-		dreventHandlers.add(eventBus.addHandler(DiskResourcesDeletedEvent.TYPE,
-				diskResourcesEventHandler));
-		dreventHandlers.add(eventBus.addHandler(FolderCreatedEvent.TYPE,
-				diskResourcesEventHandler));
-		dreventHandlers.add(eventBus.addHandler(DiskResourceRenamedEvent.TYPE,
-				diskResourcesEventHandler));
-		dreventHandlers.add(eventBus.addHandler(DiskResourceSelectedEvent.TYPE,
-				diskResourcesEventHandler));
-		dreventHandlers.add(eventBus.addHandler(DiskResourcesMovedEvent.TYPE,
-				diskResourcesEventHandler));
-	}
+        dreventHandlers.add(eventBus.addHandler(DiskResourcesDeletedEvent.TYPE,
+                diskResourcesEventHandler));
+        dreventHandlers.add(eventBus.addHandler(FolderCreatedEvent.TYPE, diskResourcesEventHandler));
+        dreventHandlers.add(eventBus
+                .addHandler(DiskResourceRenamedEvent.TYPE, diskResourcesEventHandler));
+        dreventHandlers.add(eventBus.addHandler(DiskResourceSelectedEvent.TYPE,
+                diskResourcesEventHandler));
+        dreventHandlers
+                .add(eventBus.addHandler(DiskResourcesMovedEvent.TYPE, diskResourcesEventHandler));
+    }
 
 	private void initToolbar(DiskResourceViewToolbar toolbar) {
 		// Disable all buttons, except for Uploads.
@@ -408,30 +405,28 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
 				new CreateFolderCallback(parentFolder, view));
 	}
 
-	@Override
-	public void doRefresh(Folder folder) {
-		String folderId = folder.getId();
-		ArrayList<DiskResource> selectedResources = Lists
-				.newArrayList(getSelectedDiskResources());
-		EventBus.getInstance().fireEvent(
-				new DiskResourceRefreshEvent(folderId, selectedResources));
-	}
+    @Override
+    public void doRefresh(Folder folder) {
+        if (folder == null || Strings.isNullOrEmpty(folder.getId())) {
+            dataSearchPresenter.refreshQuery();
+            return;
+        }
 
-	@Override
-	public void refreshFolder(String folderId,
-			List<DiskResource> selectedResources) {
-		Folder folder = view.getFolderById(folderId);
-		if (folder == null) {
-			return;
-		}
+        EventBus.getInstance().fireEvent(new DiskResourceRefreshEvent(folder));
 
-		Folder selectedFolder = getSelectedFolder();
-		view.refreshFolder(folder);
+        folder = view.getFolderById(folder.getId());
+        if (folder == null) {
+            return;
+        }
 
-		if (selectedFolder == folder) {
-			setSelectedFolderById(selectedFolder);
-		}
-	}
+        Folder selectedFolder = getSelectedFolder();
+        view.refreshFolder(folder);
+
+        if (!(folder instanceof DiskResourceQueryTemplate) && selectedFolder == folder) {
+            // If the folder is currently selected, then trigger reload of center panel.
+            onFolderSelected(folder);
+        }
+    }
 
 	@Override
 	public void doSimpleDownload() {

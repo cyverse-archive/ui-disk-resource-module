@@ -1,7 +1,5 @@
 package org.iplantc.core.uidiskresource.client.search.views;
 
-import java.text.ParseException;
-
 import org.iplantc.core.uicommons.client.events.SubmitTextSearchEvent;
 import org.iplantc.core.uicommons.client.events.SubmitTextSearchEvent.SubmitTextSearchEventHandler;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
@@ -14,8 +12,10 @@ import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQu
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.views.cells.DiskResourceSearchCell;
 
+import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerRegistration;
+
 import com.sencha.gxt.widget.core.client.event.CollapseEvent.CollapseHandler;
 import com.sencha.gxt.widget.core.client.event.CollapseEvent.HasCollapseHandlers;
 import com.sencha.gxt.widget.core.client.event.ExpandEvent.ExpandHandler;
@@ -24,6 +24,8 @@ import com.sencha.gxt.widget.core.client.event.ParseErrorEvent;
 import com.sencha.gxt.widget.core.client.form.DateField;
 import com.sencha.gxt.widget.core.client.form.PropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TriggerField;
+
+import java.text.ParseException;
 
 /**
  * This class is a clone-and-own of {@link DateField}.
@@ -85,6 +87,10 @@ public class DiskResourceSearchField extends TriggerField<String> implements Has
         return getCell().addSubmitDiskResourceQueryEventHandler(handler);
     }
 
+    public void updateSearch(DiskResourceQueryTemplate query) {
+        getCell().fireEvent(new SubmitDiskResourceQueryEvent(query));
+    }
+
     public void clearSearch() {
         // Forward clear call to searchForm
         getCell().getSearchForm().clearSearch();
@@ -123,7 +129,16 @@ public class DiskResourceSearchField extends TriggerField<String> implements Has
 
     @Override
     public void doSubmitDiskResourceQuery(SubmitDiskResourceQueryEvent event) {
-        clear();
+        DiskResourceQueryTemplate query = event.getQueryTemplate();
+        if (query == null || Strings.isNullOrEmpty(query.getFileQuery())) {
+            clear();
+            return;
+        }
+
+        String fileQuery = query.getFileQuery();
+        if (!fileQuery.equals(getText())) {
+            setText(fileQuery);
+        }
     }
 
     @Override
@@ -131,5 +146,4 @@ public class DiskResourceSearchField extends TriggerField<String> implements Has
         // Finish editing to fire search event.
         finishEditing();
     }
-
 }
