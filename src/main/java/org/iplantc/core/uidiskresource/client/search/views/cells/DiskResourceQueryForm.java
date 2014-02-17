@@ -436,9 +436,13 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         greaterThanComboBox = new SimpleComboBox<FileSizeUnit>(fileSizeUnitLabelProvider);
         lessThanComboBox = new SimpleComboBox<FileSizeUnit>(fileSizeUnitLabelProvider);
 
-        List<FileSizeUnit> fileSizeUnitList = SearchModelUtils.createFileSizeUnits();
+        List<FileSizeUnit> fileSizeUnitList = createFileSizeUnits();
         greaterThanComboBox.add(fileSizeUnitList);
         lessThanComboBox.add(fileSizeUnitList);
+    }
+
+    List<FileSizeUnit> createFileSizeUnits() {
+        return SearchModelUtils.createFileSizeUnits();
     }
 
     private void initFileSizeNumberFields() {

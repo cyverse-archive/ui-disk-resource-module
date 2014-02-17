@@ -1,5 +1,11 @@
 package org.iplantc.core.uidiskresource.client.search.views.cells;
 
+import org.iplantc.core.uicommons.client.models.search.DateInterval;
+import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.core.uicommons.client.models.search.FileSizeRange.FileSizeUnit;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
+
+import com.google.common.collect.Lists;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Element;
@@ -16,15 +22,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-import org.iplantc.core.uicommons.client.models.search.DateInterval;
-import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * This test verifies the functionality of the {@link DiskResourceQueryForm} class when there are no
@@ -55,6 +59,10 @@ public class DiskResourceQueryFormTest_NoEditorErrors {
                 return ret;
             }
 
+            @Override
+            List<FileSizeUnit> createFileSizeUnits() {
+                return Lists.newArrayList();
+            }
         };
         form.namePrompt = namePrompt;
     }
