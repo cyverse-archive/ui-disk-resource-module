@@ -1,9 +1,9 @@
 package org.iplantc.de.diskResource.client.services.callbacks;
 
+import org.iplantc.de.client.models.dataLink.DataLink;
+import org.iplantc.de.client.models.dataLink.DataLinkFactory;
+import org.iplantc.de.client.models.dataLink.DataLinkList;
 import org.iplantc.de.commons.client.ErrorHandler;
-import org.iplantc.de.diskResource.client.dataLink.models.DataLink;
-import org.iplantc.de.diskResource.client.dataLink.models.DataLinkFactory;
-import org.iplantc.de.diskResource.client.dataLink.models.DataLinkList;
 import org.iplantc.de.diskResource.client.dataLink.view.DataLinkPanel;
 import org.iplantc.de.resources.client.messages.I18N;
 
