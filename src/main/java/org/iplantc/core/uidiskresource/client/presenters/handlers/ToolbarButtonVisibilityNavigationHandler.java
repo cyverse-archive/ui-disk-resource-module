@@ -1,10 +1,12 @@
 package org.iplantc.core.uidiskresource.client.presenters.handlers;
 
-import java.util.List;
-
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.util.DiskResourceUtil;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewToolbar;
+
+import java.util.List;
 
 /**
  * A ToolbarButtonVisibilitySelectionHandler for Folder selections in the Data Window Navigation panel.
@@ -13,7 +15,7 @@ import org.iplantc.core.uidiskresource.client.views.widgets.DiskResourceViewTool
  * 
  */
 public class ToolbarButtonVisibilityNavigationHandler extends
-        ToolbarButtonVisibilitySelectionHandler<Folder> {
+        ToolbarButtonVisibilitySelectionHandler<Folder> implements SubmitDiskResourceQueryEventHandler {
 
     public ToolbarButtonVisibilityNavigationHandler(DiskResourceViewToolbar toolbar) {
         super(toolbar);
@@ -34,5 +36,10 @@ public class ToolbarButtonVisibilityNavigationHandler extends
         toolbar.setNewFileButtonEnabled(newFolderEnabled);
         toolbar.setNewFolderButtonEnabled(newFolderEnabled);
         toolbar.setRefreshButtonEnabled(oneSelected);
+    }
+
+    @Override
+    public void doSubmitDiskResourceQuery(SubmitDiskResourceQueryEvent event) {
+        toolbar.setRefreshButtonEnabled(event.getQueryTemplate() != null);
     }
 }

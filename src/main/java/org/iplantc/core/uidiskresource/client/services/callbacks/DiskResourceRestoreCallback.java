@@ -26,17 +26,17 @@ import com.google.web.bindery.autobean.shared.Splittable;
  * 
  */
 public class DiskResourceRestoreCallback extends DiskResourceServiceCallback<String> {
-    private final DiskResourceView view;
+    private final DiskResourceView.Presenter presenter;
     private final DiskResourceAutoBeanFactory drFactory;
     private final Set<DiskResource> selectedResources;
 
-    public DiskResourceRestoreCallback(DiskResourceView view, DiskResourceAutoBeanFactory drFactory,
-            Set<DiskResource> selectedResources) {
-        super(view);
+    public DiskResourceRestoreCallback(DiskResourceView.Presenter presenter,
+            DiskResourceAutoBeanFactory drFactory, Set<DiskResource> selectedResources) {
+        super(presenter);
 
         this.drFactory = drFactory;
         this.selectedResources = selectedResources;
-        this.view = view;
+        this.presenter = presenter;
     }
 
     @Override
@@ -49,11 +49,7 @@ public class DiskResourceRestoreCallback extends DiskResourceServiceCallback<Str
         super.onSuccess(result);
 
         checkForPartialRestore(result);
-        if(view.isSelectAll()) {
-            view.refreshFolder(view.getSelectedFolder());
-        } else {
-            view.removeDiskResources(selectedResources);
-        }
+        presenter.doRefresh(presenter.getSelectedFolder());
     }
 
     @Override

@@ -35,7 +35,7 @@ public final class DiskResourcesEventHandler implements DiskResourcesDeletedEven
 
     @Override
     public void onRefresh(DiskResourceRefreshEvent event) {
-        presenter.refreshFolder(event.getCurrentFolderId(), event.getResources());
+        presenter.onFolderRefresh(event.getFolder());
     }
 
     @Override

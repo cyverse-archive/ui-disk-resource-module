@@ -1,22 +1,5 @@
 package org.iplantc.core.uidiskresource.client.search.presenter.impl;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HasName;
-import com.google.inject.Inject;
-import com.google.web.bindery.autobean.shared.AutoBean;
-import com.google.web.bindery.autobean.shared.AutoBeanUtils;
-
-import com.sencha.gxt.data.shared.TreeStore;
-
 import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
 import org.iplantc.core.uicommons.client.info.SuccessAnnouncementConfig;
@@ -34,6 +17,23 @@ import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQu
 import org.iplantc.core.uidiskresource.client.search.presenter.DataSearchPresenter;
 import org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchField;
 import org.iplantc.core.uidiskresource.client.views.DiskResourceView;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HasName;
+import com.google.inject.Inject;
+import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
+
+import com.sencha.gxt.data.shared.TreeStore;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -337,6 +337,14 @@ public class DataSearchPresenterImpl implements DataSearchPresenter {
             }
         }
         return false;
+    }
+
+    @Override
+    public void refreshQuery() {
+        DiskResourceQueryTemplate query = getActiveQuery();
+        if (query != null) {
+            searchField.updateSearch(query);
+        }
     }
 
 }

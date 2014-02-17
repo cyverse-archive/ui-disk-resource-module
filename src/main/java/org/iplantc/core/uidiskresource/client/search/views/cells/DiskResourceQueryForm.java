@@ -1,5 +1,20 @@
 package org.iplantc.core.uidiskresource.client.search.views.cells;
 
+import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
+import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
+import org.iplantc.core.uicommons.client.models.search.DateInterval;
+import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.core.uicommons.client.models.search.FileSizeRange.FileSizeUnit;
+import org.iplantc.core.uicommons.client.models.search.SearchAutoBeanFactory;
+import org.iplantc.core.uicommons.client.models.search.SearchModelUtils;
+import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.HasSaveDiskResourceQueryEventHandlers;
+import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.HasSubmitDiskResourceQueryEventHandlers;
+import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
@@ -27,7 +42,6 @@ import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.core.client.util.BaseEventPreview;
 import com.sencha.gxt.core.client.util.DateWrapper;
 import com.sencha.gxt.data.shared.LabelProvider;
-import com.sencha.gxt.data.shared.StringLabelProvider;
 import com.sencha.gxt.widget.core.client.Composite;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
@@ -37,21 +51,6 @@ import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
-
-import org.iplantc.core.uicommons.client.info.ErrorAnnouncementConfig;
-import org.iplantc.core.uicommons.client.info.IplantAnnouncer;
-import org.iplantc.core.uicommons.client.models.search.DateInterval;
-import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
-import org.iplantc.core.uicommons.client.models.search.FileSizeRange;
-import org.iplantc.core.uicommons.client.models.search.SearchAutoBeanFactory;
-import org.iplantc.core.uicommons.client.models.search.SearchModelUtils;
-import org.iplantc.core.uicommons.client.widgets.IPlantAnchor;
-import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent;
-import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.HasSaveDiskResourceQueryEventHandlers;
-import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
-import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent;
-import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.HasSubmitDiskResourceQueryEventHandlers;
-import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
 
 import java.util.Date;
 import java.util.List;
@@ -131,13 +130,13 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
     @UiField(provided = true)
     NumberField<Double> fileSizeLessThan;
 
-    @Ignore
+    @Path("fileSizeRange.minUnit")
     @UiField(provided = true)
-    SimpleComboBox<String> greaterThanComboBox;
+    SimpleComboBox<FileSizeUnit> greaterThanComboBox;
 
-    @Ignore
+    @Path("fileSizeRange.maxUnit")
     @UiField(provided = true)
-    SimpleComboBox<String> lessThanComboBox;
+    SimpleComboBox<FileSizeUnit> lessThanComboBox;
 
     @UiField
     TextField metadataAttributeQuery;
@@ -157,8 +156,6 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
 
     @UiField 
     TextField sharedWith;
-
-    private final List<String> fileSizeUnits = Lists.newArrayList("KB", "MB", "GB", "TB");
 
     private boolean showing;
 
@@ -342,14 +339,11 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
             return;
         }
 
-        convertFileSizesToBytes(flushedQueryTemplate);
-
         // Fire event and pass flushed query
         fireEvent(new SubmitDiskResourceQueryEvent(flushedQueryTemplate));
         hide();
-        
     }
-    
+
     static boolean isEmptyQuery(DiskResourceQueryTemplate template){
         if (Strings.isNullOrEmpty(template.getOwnedBy())
                 && Strings.isNullOrEmpty(template.getFileQuery())
@@ -431,19 +425,20 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
 
     private void initFileSizeComboBoxes() {
         // File Size ComboBoxes
-        StringLabelProvider<String> stringLabelProvider = new StringLabelProvider<String>();
-        greaterThanComboBox = new SimpleComboBox<String>(stringLabelProvider);
-        lessThanComboBox = new SimpleComboBox<String>(stringLabelProvider);
-        greaterThanComboBox.add(fileSizeUnits);
-        lessThanComboBox.add(fileSizeUnits);
-        greaterThanComboBox.setValue(fileSizeUnits.get(0));
-        lessThanComboBox.setValue(fileSizeUnits.get(0));
+        LabelProvider<FileSizeUnit> fileSizeUnitLabelProvider = new LabelProvider<FileSizeUnit>() {
 
-        // Set these combos uneditable since the selected index will not be updated if the user types and
-        // chooses a value from the filtered list. The index is required by convertFileSizesToBytes to
-        // calculate the correct size in bytes.
-        greaterThanComboBox.setEditable(false);
-        lessThanComboBox.setEditable(false);
+            @Override
+            public String getLabel(FileSizeUnit item) {
+                return item.getLabel();
+            }
+
+        };
+        greaterThanComboBox = new SimpleComboBox<FileSizeUnit>(fileSizeUnitLabelProvider);
+        lessThanComboBox = new SimpleComboBox<FileSizeUnit>(fileSizeUnitLabelProvider);
+
+        List<FileSizeUnit> fileSizeUnitList = SearchModelUtils.createFileSizeUnits();
+        greaterThanComboBox.add(fileSizeUnitList);
+        lessThanComboBox.add(fileSizeUnitList);
     }
 
     private void initFileSizeNumberFields() {
@@ -453,23 +448,6 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
         fileSizeLessThan = new NumberField<Double>(doublePropertyEditor);
         fileSizeGreaterThan.setAllowNegative(false);
         fileSizeLessThan.setAllowNegative(false);
-    }
-
-    private void convertFileSizesToBytes(DiskResourceQueryTemplate template) {
-        FileSizeRange fileSizeRange = template.getFileSizeRange();
-        if (fileSizeRange != null) {
-            Double max = fileSizeRange.getMax();
-            Double min = fileSizeRange.getMin();
-            int maxSizeIndex = lessThanComboBox.getSelectedIndex();
-            int minSizeIndex = greaterThanComboBox.getSelectedIndex();
-
-            if (max != null && maxSizeIndex >= 0) {
-                fileSizeRange.setMax(max * Math.pow(1024, maxSizeIndex + 1));
-            }
-            if (min != null && minSizeIndex >= 0) {
-                fileSizeRange.setMin(min * Math.pow(1024, minSizeIndex + 1));
-            }
-        }
     }
 
     private void onEscape(NativePreviewEvent pe) {

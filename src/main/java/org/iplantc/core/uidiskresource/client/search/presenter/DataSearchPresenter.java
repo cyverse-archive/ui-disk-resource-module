@@ -1,7 +1,5 @@
 package org.iplantc.core.uidiskresource.client.search.presenter;
 
-import com.sencha.gxt.data.shared.TreeStore;
-
 import org.iplantc.core.uicommons.client.models.diskresources.Folder;
 import org.iplantc.core.uicommons.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.core.uidiskresource.client.events.FolderSelectedEvent.FolderSelectedEventHandler;
@@ -11,6 +9,8 @@ import org.iplantc.core.uidiskresource.client.search.events.DeleteSavedSearchEve
 import org.iplantc.core.uidiskresource.client.search.events.SaveDiskResourceQueryEvent.SaveDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.events.SubmitDiskResourceQueryEvent.SubmitDiskResourceQueryEventHandler;
 import org.iplantc.core.uidiskresource.client.search.views.DiskResourceSearchField;
+
+import com.sencha.gxt.data.shared.TreeStore;
 
 import java.util.List;
 
@@ -89,4 +89,5 @@ public interface DataSearchPresenter extends SaveDiskResourceQueryEventHandler, 
      */
     void loadSavedQueries(List<DiskResourceQueryTemplate> savedQueries);
 
+    void refreshQuery();
 }
