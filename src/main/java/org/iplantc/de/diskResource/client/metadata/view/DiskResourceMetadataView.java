@@ -8,8 +8,8 @@ import org.iplantc.de.client.models.diskResources.MetadataTemplateAttribute;
 import org.iplantc.de.client.models.diskResources.MetadataTemplateInfo;
 import org.iplantc.de.commons.client.validators.UrlValidator;
 import org.iplantc.de.commons.client.widgets.IPlantAnchor;
-import org.iplantc.de.diskResource.client.models.DiskResourceMetadataProperties;
 import org.iplantc.de.diskResource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
+import org.iplantc.de.diskResource.client.views.DiskResourceMetadataProperties;
 import org.iplantc.de.resources.client.IplantResources;
 import org.iplantc.de.resources.client.messages.I18N;
 

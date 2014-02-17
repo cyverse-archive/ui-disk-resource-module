@@ -1,4 +1,4 @@
-package org.iplantc.de.diskResource.client.models;
+package org.iplantc.de.diskResource.client.views;
 
 
 import org.iplantc.de.client.models.diskResources.DiskResource;

@@ -4,7 +4,6 @@ import org.iplantc.de.client.models.diskResources.DiskResource;
 import org.iplantc.de.client.models.diskResources.File;
 import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.client.util.DiskResourceUtil;
-import org.iplantc.de.diskResource.client.models.DiskResourceProperties;
 import org.iplantc.de.diskResource.client.views.cells.DiskResourceNameCell;
 import org.iplantc.de.resources.client.messages.I18N;
 

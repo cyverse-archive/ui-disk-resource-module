@@ -8,7 +8,6 @@ import org.iplantc.de.client.models.diskResources.Permissions;
 import org.iplantc.de.client.util.DiskResourceUtil;
 import org.iplantc.de.commons.client.widgets.IPlantAnchor;
 import org.iplantc.de.diskResource.client.events.FolderSelectedEvent;
-import org.iplantc.de.diskResource.client.models.DiskResourceModelKeyProvider;
 import org.iplantc.de.diskResource.client.presenters.proxy.FolderContentsLoadConfig;
 import org.iplantc.de.diskResource.client.search.events.DeleteSavedSearchEvent;
 import org.iplantc.de.diskResource.client.views.cells.DiskResourceNameCell;

@@ -6,8 +6,8 @@ package org.iplantc.de.diskResource.client.sharing.views;
 
 import org.iplantc.de.client.models.diskResources.DiskResource;
 import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantDialog;
-import org.iplantc.de.diskResource.client.models.DiskResourceModelKeyProvider;
 import org.iplantc.de.diskResource.client.sharing.presenter.DataSharingPresenter;
+import org.iplantc.de.diskResource.client.views.DiskResourceModelKeyProvider;
 import org.iplantc.de.diskResource.client.views.cells.DiskResourceNameCell;
 import org.iplantc.de.resources.client.messages.I18N;
 
