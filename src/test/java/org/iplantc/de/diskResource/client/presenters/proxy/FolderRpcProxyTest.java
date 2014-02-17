@@ -1,5 +1,6 @@
 package org.iplantc.de.diskResource.client.presenters.proxy;
 
+import org.iplantc.de.client.models.IsMaskable;
 import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.client.models.diskResources.RootFolders;
 import org.iplantc.de.client.models.search.DiskResourceQueryTemplate;
@@ -7,7 +8,6 @@ import org.iplantc.de.client.services.DiskResourceServiceFacade;
 import org.iplantc.de.client.services.SearchServiceFacade;
 import org.iplantc.de.commons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.de.commons.client.info.IplantAnnouncer;
-import org.iplantc.de.commons.client.views.IsMaskable;
 import org.iplantc.de.diskResource.client.presenters.proxy.FolderRpcProxy.GetSavedQueryTemplatesCallback;
 import org.iplantc.de.diskResource.client.presenters.proxy.FolderRpcProxy.RootFolderCallback;
 import org.iplantc.de.diskResource.client.presenters.proxy.FolderRpcProxy.SubFoldersCallback;
