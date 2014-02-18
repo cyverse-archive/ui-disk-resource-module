@@ -13,7 +13,6 @@ import org.iplantc.de.commons.client.ErrorHandler;
 import org.iplantc.de.commons.client.gin.ServicesInjector;
 import org.iplantc.de.diskResource.client.metadata.view.DiskResourceMetadataView;
 import org.iplantc.de.diskResource.client.metadata.view.DiskResourceMetadataView.Presenter;
-import org.iplantc.de.diskResource.client.services.callbacks.DiskResourceMetadataUpdateCallback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;

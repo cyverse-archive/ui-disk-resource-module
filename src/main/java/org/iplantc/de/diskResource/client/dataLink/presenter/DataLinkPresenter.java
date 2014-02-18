@@ -8,10 +8,10 @@ import org.iplantc.de.client.services.DiskResourceServiceFacade;
 import org.iplantc.de.client.util.DiskResourceUtil;
 import org.iplantc.de.commons.client.gin.ServicesInjector;
 import org.iplantc.de.commons.client.util.WindowUtil;
+import org.iplantc.de.diskResource.client.dataLink.presenter.callbacks.CreateDataLinkCallback;
+import org.iplantc.de.diskResource.client.dataLink.presenter.callbacks.DeleteDataLinksCallback;
+import org.iplantc.de.diskResource.client.dataLink.presenter.callbacks.ListDataLinksCallback;
 import org.iplantc.de.diskResource.client.dataLink.view.DataLinkPanel;
-import org.iplantc.de.diskResource.client.services.callbacks.CreateDataLinkCallback;
-import org.iplantc.de.diskResource.client.services.callbacks.DeleteDataLinksCallback;
-import org.iplantc.de.diskResource.client.services.callbacks.ListDataLinksCallback;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;

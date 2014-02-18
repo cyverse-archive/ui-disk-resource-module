@@ -1,4 +1,4 @@
-package org.iplantc.de.diskResource.client.services.callbacks;
+package org.iplantc.de.diskResource.client.presenters.callbacks;
 
 import org.iplantc.de.client.models.IsMaskable;
 import org.iplantc.de.commons.client.ErrorHandler;

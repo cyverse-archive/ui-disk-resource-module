@@ -1,4 +1,4 @@
-package org.iplantc.de.diskResource.client.services.callbacks;
+package org.iplantc.de.diskResource.client.dataLink.presenter.callbacks;
 
 import org.iplantc.de.client.util.JsonUtil;
 import org.iplantc.de.commons.client.ErrorHandler;

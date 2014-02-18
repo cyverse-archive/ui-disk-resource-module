@@ -1,14 +1,14 @@
-package org.iplantc.de.diskResource.client.services.callbacks;
+package org.iplantc.de.diskResource.client.presenters.callbacks;
 
 import org.iplantc.de.client.models.diskResources.DiskResource;
 import org.iplantc.de.client.models.diskResources.DiskResourceAutoBeanFactory;
 import org.iplantc.de.client.models.diskResources.RestoreResponse;
 import org.iplantc.de.client.models.diskResources.RestoreResponse.RestoredResource;
+import org.iplantc.de.client.models.errors.diskResources.DiskResourceErrorAutoBeanFactory;
+import org.iplantc.de.client.models.errors.diskResources.ErrorDiskResourceMove;
 import org.iplantc.de.commons.client.ErrorHandler;
 import org.iplantc.de.commons.client.info.IplantAnnouncer;
 import org.iplantc.de.commons.client.info.SuccessAnnouncementConfig;
-import org.iplantc.de.diskResource.client.services.errors.DiskResourceErrorAutoBeanFactory;
-import org.iplantc.de.diskResource.client.services.errors.ErrorDiskResourceMove;
 import org.iplantc.de.diskResource.client.views.DiskResourceView;
 import org.iplantc.de.resources.client.messages.I18N;
 

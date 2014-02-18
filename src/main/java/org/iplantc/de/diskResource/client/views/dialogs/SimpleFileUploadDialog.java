@@ -11,7 +11,6 @@ import org.iplantc.de.commons.client.validators.DiskResourceNameValidator;
 import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.de.commons.client.widgets.IPCFileUploadField;
 import org.iplantc.de.diskResource.client.events.FileUploadedEvent;
-import org.iplantc.de.diskResource.client.services.callbacks.DuplicateDiskResourceCallback;
 import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.common.base.Strings;

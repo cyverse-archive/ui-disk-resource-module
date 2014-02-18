@@ -1,11 +1,12 @@
 
-package org.iplantc.de.diskResource.client.services.callbacks;
+package org.iplantc.de.diskResource.client.views.dialogs;
 
 import org.iplantc.de.client.models.IsMaskable;
 import org.iplantc.de.client.models.diskResources.DiskResourceExistMap;
+import org.iplantc.de.client.models.errors.diskResources.DiskResourceErrorAutoBeanFactory;
+import org.iplantc.de.client.models.errors.diskResources.ErrorDuplicateDiskResource;
 import org.iplantc.de.commons.client.ErrorHandler;
-import org.iplantc.de.diskResource.client.services.errors.DiskResourceErrorAutoBeanFactory;
-import org.iplantc.de.diskResource.client.services.errors.ErrorDuplicateDiskResource;
+import org.iplantc.de.diskResource.client.presenters.callbacks.DiskResourceServiceCallback;
 import org.iplantc.de.resources.client.messages.I18N;
 
 import com.google.common.collect.Sets;
