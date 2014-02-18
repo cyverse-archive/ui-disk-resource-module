@@ -41,14 +41,16 @@ public class SelectFolderByIdLoadHandler implements LoadHandler<Folder, List<Fol
     private final DiskResourceView view;
     private final DiskResourceView.Presenter presenter;
     private final HasHandlerRegistrationMgmt regMgr;
+    private final IplantAnnouncer announcer;
 
     public SelectFolderByIdLoadHandler(final HasId folderToSelect,
-            final DiskResourceView.Presenter presenter) {
+ final DiskResourceView.Presenter presenter, final IplantAnnouncer announcer) {
         presenter.mask(""); //$NON-NLS-1$
         this.folderToSelect = folderToSelect;
         this.presenter = presenter;
         this.regMgr = presenter;
         this.view = presenter.getView();
+        this.announcer = announcer;
 
         // Split the string on "/"
         path = Lists.newLinkedList(Splitter.on("/").trimResults().omitEmptyStrings().split(folderToSelect.getId())); //$NON-NLS-1$
@@ -105,7 +107,7 @@ public class SelectFolderByIdLoadHandler implements LoadHandler<Folder, List<Fol
                 String folderName = SafeHtmlUtils.htmlEscape(path.getLast());
                 SafeHtml errMsg = SafeHtmlUtils.fromTrustedString(I18N.ERROR
                         .diskResourceDoesNotExist(folderName));
-                IplantAnnouncer.getInstance().schedule(new ErrorAnnouncementConfig(errMsg));
+                announcer.schedule(new ErrorAnnouncementConfig(errMsg));
 
                 view.setSelectedFolder(event.getLoadConfig());
                 unmaskView();

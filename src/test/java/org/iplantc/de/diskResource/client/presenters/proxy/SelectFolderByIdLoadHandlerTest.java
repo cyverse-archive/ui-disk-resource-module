@@ -1,9 +1,11 @@
 package org.iplantc.de.diskResource.client.presenters.proxy;
 
 import org.iplantc.de.client.models.diskResources.Folder;
+import org.iplantc.de.commons.client.info.IplantAnnouncer;
 import org.iplantc.de.diskResource.client.views.DiskResourceView;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.shared.EventHandler;
 import com.google.gwtmockito.GxtMockitoTestRunner;
 
 import com.sencha.gxt.data.shared.TreeStore;
@@ -32,6 +34,8 @@ import java.util.List;
 public class SelectFolderByIdLoadHandlerTest {
 
     @Mock DiskResourceView.Presenter presenterMock;
+
+    @Mock IplantAnnouncer announcerMock;
 
     @Mock DiskResourceView viewMock;
 
@@ -91,7 +95,7 @@ public class SelectFolderByIdLoadHandlerTest {
         Folder rootPathFolderMock = mock(Folder.class);
         when(viewMock.getFolderById(rootPath)).thenReturn(rootPathFolderMock);
 
-        SelectFolderByIdLoadHandler uutSpy = spy(new SelectFolderByIdLoadHandler(folderToSelectMock, presenterMock));
+        SelectFolderByIdLoadHandler uutSpy = spy(new SelectFolderByIdLoadHandler(folderToSelectMock, presenterMock, announcerMock));
         verifyPresenterInit();
 
         // The handler's constructor should call viewMock#expandFolder on rootPath.
@@ -127,6 +131,7 @@ public class SelectFolderByIdLoadHandlerTest {
         uutSpy.onLoad(eventMock);
         verify(viewMock).setSelectedFolder(folderToSelectMock);
         verify(uutSpy).unmaskView();
+        verifyPresenterCleanup(uutSpy);
 
         verifyNoMoreInteractions(presenterMock);
     }
@@ -147,7 +152,7 @@ public class SelectFolderByIdLoadHandlerTest {
         when(viewMock.getFolderById(targetFolderParentParentPath)).thenReturn(null);
         when(viewMock.getFolderById(rootPath)).thenReturn(folderMock);
 
-        loadHandlerUnderTest = new SelectFolderByIdLoadHandler(folderToSelectMock, presenterMock);
+        loadHandlerUnderTest = new SelectFolderByIdLoadHandler(folderToSelectMock, presenterMock, announcerMock);
         verifyPresenterInit();
 
         // The handler's constructor should call viewMock#expandFolder on rootPath.
@@ -171,7 +176,7 @@ public class SelectFolderByIdLoadHandlerTest {
         // viewMock, the handler should select the target folder's parent (folderMock) and display an
         // error message.
         verify(viewMock).setSelectedFolder(folderMock);
-        verifyPresenterCleanup();
+        verifyPresenterCleanup(loadHandlerUnderTest);
         verifyNoMoreInteractions(presenterMock);
     }
 
@@ -184,7 +189,7 @@ public class SelectFolderByIdLoadHandlerTest {
         // Start with no roots loaded in the treeStoreMock. This causes the handler to wait until the
         // first onLoad callback, which means that the roots have just been loaded into the viewMock.
         when(treeStoreMock.getAllItemsCount()).thenReturn(0);
-        loadHandlerUnderTest = new SelectFolderByIdLoadHandler(folderToSelectMock, presenterMock);
+        loadHandlerUnderTest = new SelectFolderByIdLoadHandler(folderToSelectMock, presenterMock, announcerMock);
         verifyPresenterInit();
 
         when(viewMock.getFolderById(targetFolderPath)).thenReturn(folderToSelectMock);
@@ -194,7 +199,7 @@ public class SelectFolderByIdLoadHandlerTest {
         verify(presenterMock).getSelectedFolder();
         // The onLoad method should have found folderToSelectMock in the viewMock.
         verify(viewMock).setSelectedFolder(folderToSelectMock);
-        verifyPresenterCleanup();
+        verifyPresenterCleanup(loadHandlerUnderTest);
         verifyNoMoreInteractions(presenterMock);
         verifyZeroInteractions(eventMock);
     }
@@ -215,7 +220,7 @@ public class SelectFolderByIdLoadHandlerTest {
 
         // Since deferred commands can't be tested, the refreshFolder method will be overridden to ensure
         // the DiskResourceView.Presenter#doRefresh method is called.
-        loadHandlerUnderTest = new SelectFolderByIdLoadHandler(folderToSelectMock, presenterMock) {
+        loadHandlerUnderTest = new SelectFolderByIdLoadHandler(folderToSelectMock, presenterMock, announcerMock) {
             @Override
             void refreshFolder(final Folder folder) {
                 presenterMock.doRefresh(folder);
@@ -235,7 +240,7 @@ public class SelectFolderByIdLoadHandlerTest {
 
         // The onLoad method should have found folderToSelectMock in the viewMock.
         verify(viewMock).setSelectedFolder(folderToSelectMock);
-        verifyPresenterCleanup();
+        verifyPresenterCleanup(loadHandlerUnderTest);
         verifyNoMoreInteractions(presenterMock);
     }
 
@@ -255,7 +260,7 @@ public class SelectFolderByIdLoadHandlerTest {
 
         // Since deferred commands can't be tested, the refreshFolder method will be overridden to ensure
         // the DiskResourceView.Presenter#doRefresh method is called.
-        loadHandlerUnderTest = new SelectFolderByIdLoadHandler(folderToSelectMock, presenterMock) {
+        loadHandlerUnderTest = new SelectFolderByIdLoadHandler(folderToSelectMock, presenterMock, announcerMock) {
             @Override
             void refreshFolder(final Folder folder) {
                 presenterMock.doRefresh(folder);
@@ -273,7 +278,7 @@ public class SelectFolderByIdLoadHandlerTest {
         // viewMock, the handler should select the target folder's parent (folderMock) and display an
         // error message.
         verify(viewMock).setSelectedFolder(folderMock);
-        verifyPresenterCleanup();
+        verifyPresenterCleanup(loadHandlerUnderTest);
         verifyNoMoreInteractions(presenterMock);
     }
 
@@ -290,8 +295,8 @@ public class SelectFolderByIdLoadHandlerTest {
      * When the SelectFolderByIdLoadHandler finishes loading and searching for the target folder, it will
      * unregister itself as a handler and unmask the presenter.
      */
-    private void verifyPresenterCleanup() {
-        verify(presenterMock).unregisterHandler(loadHandlerUnderTest);
+    private void verifyPresenterCleanup(EventHandler handler) {
+        verify(presenterMock).unregisterHandler(handler);
         verify(presenterMock).unmask();
     }
 }
