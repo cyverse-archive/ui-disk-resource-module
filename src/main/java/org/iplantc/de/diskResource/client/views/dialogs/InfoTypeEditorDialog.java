@@ -3,10 +3,10 @@
  */
 package org.iplantc.de.diskResource.client.views.dialogs;
 
+import org.iplantc.de.client.gin.ServicesInjector;
 import org.iplantc.de.client.services.DiskResourceServiceFacade;
 import org.iplantc.de.client.util.JsonUtil;
 import org.iplantc.de.commons.client.ErrorHandler;
-import org.iplantc.de.commons.client.gin.ServicesInjector;
 import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantDialog;
 
 import com.google.gwt.json.client.JSONArray;

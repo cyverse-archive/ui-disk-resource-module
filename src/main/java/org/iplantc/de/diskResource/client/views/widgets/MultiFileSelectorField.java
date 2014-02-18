@@ -1,6 +1,7 @@
 package org.iplantc.de.diskResource.client.views.widgets;
 
 import org.iplantc.de.client.events.EventBus;
+import org.iplantc.de.client.gin.ServicesInjector;
 import org.iplantc.de.client.models.HasId;
 import org.iplantc.de.client.models.HasPaths;
 import org.iplantc.de.client.models.UserSettings;
@@ -12,7 +13,6 @@ import org.iplantc.de.client.models.errorHandling.SimpleServiceError;
 import org.iplantc.de.client.services.DiskResourceServiceFacade;
 import org.iplantc.de.client.util.DiskResourceUtil;
 import org.iplantc.de.commons.client.events.UserSettingsUpdatedEvent;
-import org.iplantc.de.commons.client.gin.ServicesInjector;
 import org.iplantc.de.commons.client.widgets.IPlantSideErrorHandler;
 import org.iplantc.de.diskResource.client.views.DiskResourceModelKeyProvider;
 import org.iplantc.de.diskResource.client.views.DiskResourceProperties;

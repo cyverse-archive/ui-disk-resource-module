@@ -1,12 +1,12 @@
 package org.iplantc.de.diskResource.client.views.widgets;
 
+import org.iplantc.de.client.gin.ServicesInjector;
 import org.iplantc.de.client.models.HasPaths;
 import org.iplantc.de.client.models.diskResources.DiskResource;
 import org.iplantc.de.client.models.diskResources.DiskResourceStatMap;
 import org.iplantc.de.client.models.errorHandling.ServiceErrorCode;
 import org.iplantc.de.client.models.errorHandling.SimpleServiceError;
 import org.iplantc.de.client.services.DiskResourceServiceFacade;
-import org.iplantc.de.commons.client.gin.ServicesInjector;
 import org.iplantc.de.commons.client.widgets.IPlantSideErrorHandler;
 import org.iplantc.de.resources.client.messages.I18N;
 import org.iplantc.de.resources.client.messages.IplantErrorStrings;

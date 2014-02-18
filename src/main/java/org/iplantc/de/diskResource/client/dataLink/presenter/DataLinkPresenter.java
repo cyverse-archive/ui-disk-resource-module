@@ -1,12 +1,12 @@
 package org.iplantc.de.diskResource.client.dataLink.presenter;
 
+import org.iplantc.de.client.gin.ServicesInjector;
 import org.iplantc.de.client.models.dataLink.DataLink;
 import org.iplantc.de.client.models.dataLink.DataLinkFactory;
 import org.iplantc.de.client.models.diskResources.DiskResource;
 import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.client.services.DiskResourceServiceFacade;
 import org.iplantc.de.client.util.DiskResourceUtil;
-import org.iplantc.de.commons.client.gin.ServicesInjector;
 import org.iplantc.de.commons.client.util.WindowUtil;
 import org.iplantc.de.diskResource.client.dataLink.presenter.callbacks.CreateDataLinkCallback;
 import org.iplantc.de.diskResource.client.dataLink.presenter.callbacks.DeleteDataLinksCallback;

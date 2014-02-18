@@ -1,5 +1,6 @@
 package org.iplantc.de.diskResource.client.metadata.presenter;
 
+import org.iplantc.de.client.gin.ServicesInjector;
 import org.iplantc.de.client.models.diskResources.DiskResource;
 import org.iplantc.de.client.models.diskResources.DiskResourceAutoBeanFactory;
 import org.iplantc.de.client.models.diskResources.DiskResourceMetadata;
@@ -10,7 +11,6 @@ import org.iplantc.de.client.models.diskResources.MetadataTemplateInfo;
 import org.iplantc.de.client.models.diskResources.MetadataTemplateInfoList;
 import org.iplantc.de.client.services.DiskResourceServiceFacade;
 import org.iplantc.de.commons.client.ErrorHandler;
-import org.iplantc.de.commons.client.gin.ServicesInjector;
 import org.iplantc.de.diskResource.client.metadata.view.DiskResourceMetadataView;
 import org.iplantc.de.diskResource.client.metadata.view.DiskResourceMetadataView.Presenter;
 
@@ -26,8 +26,8 @@ import java.util.Set;
 public class MetadataPresenter implements Presenter {
 
 
-	private DiskResource resource;
-	private DiskResourceMetadataView view;
+	private final DiskResource resource;
+	private final DiskResourceMetadataView view;
     private final DiskResourceServiceFacade drService = ServicesInjector.INSTANCE.getDiskResourceServiceFacade();
     private final DiskResourceAutoBeanFactory autoBeanFactory = GWT
             .create(DiskResourceAutoBeanFactory.class);
