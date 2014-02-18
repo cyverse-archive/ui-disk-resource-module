@@ -2,8 +2,10 @@ package org.iplantc.de.diskResource.client.search.views.cells;
 
 import org.iplantc.de.client.models.search.DateInterval;
 import org.iplantc.de.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.de.client.models.search.FileSizeRange.FileSizeUnit;
 import org.iplantc.de.diskResource.client.search.events.SubmitDiskResourceQueryEvent;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Element;
@@ -38,8 +40,7 @@ import java.util.List;
 @RunWith(GxtMockitoTestRunner.class)
 public class DiskResourceQueryFormTest_NoEditorErrors {
 
-    @Mock
-    DiskResourceQueryFormNamePrompt namePrompt;
+    @Mock DiskResourceQueryFormNamePrompt namePrompt;
 
     @Mock DiskResourceQueryTemplate mockedTemplate;
 

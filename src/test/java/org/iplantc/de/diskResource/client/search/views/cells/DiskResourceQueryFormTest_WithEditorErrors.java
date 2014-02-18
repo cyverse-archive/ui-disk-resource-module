@@ -2,7 +2,9 @@ package org.iplantc.de.diskResource.client.search.views.cells;
 
 import org.iplantc.de.client.models.search.DateInterval;
 import org.iplantc.de.client.models.search.DiskResourceQueryTemplate;
+import org.iplantc.de.client.models.search.FileSizeRange.FileSizeUnit;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.GwtEvent;
@@ -15,10 +17,7 @@ import com.sencha.gxt.core.client.Style.AnchorAlignment;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,8 +37,7 @@ import java.util.List;
 @RunWith(GxtMockitoTestRunner.class)
 public class DiskResourceQueryFormTest_WithEditorErrors {
 
-    @Mock
-    DiskResourceQueryFormNamePrompt namePrompt;
+    @Mock DiskResourceQueryFormNamePrompt namePrompt;
 
     @Mock DiskResourceQueryTemplate mockedTemplate;
 
