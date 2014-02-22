@@ -44,7 +44,7 @@ public class SelectFolderByIdLoadHandler implements LoadHandler<Folder, List<Fol
     private final IplantAnnouncer announcer;
 
     public SelectFolderByIdLoadHandler(final HasId folderToSelect,
- final DiskResourceView.Presenter presenter, final IplantAnnouncer announcer) {
+            final DiskResourceView.Presenter presenter, final IplantAnnouncer announcer) {
         presenter.mask(""); //$NON-NLS-1$
         this.folderToSelect = folderToSelect;
         this.presenter = presenter;
@@ -91,27 +91,28 @@ public class SelectFolderByIdLoadHandler implements LoadHandler<Folder, List<Fol
             return;
         }
 
-        // Exit condition
-        if (pathsToLoad.isEmpty()) {
-            view.setSelectedFolder(event.getLoadConfig());
-            unmaskView();
-        } else {
-            path.add(pathsToLoad.pop());
-            Folder folder = view.getFolderById(getNextPathToLoad());
-            if (folder != null) {
+        path.add(pathsToLoad.pop());
+        Folder folder = view.getFolderById(getNextPathToLoad());
+
+        if (folder != null) {
+            if (pathsToLoad.isEmpty()) {
+                // Exit condition
+                view.setSelectedFolder(folder);
+                unmaskView();
+            } else {
                 // Trigger remote load by expanding folder
                 view.expandFolder(folder);
-            } else {
-                // This handler has loaded as much as it can, but has encountered a folder along the path
-                // that does not exist. Select the last folder loaded, then report the error.
-                String folderName = SafeHtmlUtils.htmlEscape(path.getLast());
-                SafeHtml errMsg = SafeHtmlUtils.fromTrustedString(I18N.ERROR
-                        .diskResourceDoesNotExist(folderName));
-                announcer.schedule(new ErrorAnnouncementConfig(errMsg));
-
-                view.setSelectedFolder(event.getLoadConfig());
-                unmaskView();
             }
+        } else {
+            // This handler has loaded as much as it can, but has encountered a folder along the path
+            // that does not exist. Select the last folder loaded, then report the error.
+            String folderName = SafeHtmlUtils.htmlEscape(path.getLast());
+            SafeHtml errMsg = SafeHtmlUtils.fromTrustedString(I18N.ERROR
+                    .diskResourceDoesNotExist(folderName));
+            announcer.schedule(new ErrorAnnouncementConfig(errMsg));
+
+            view.setSelectedFolder(event.getLoadConfig());
+            unmaskView();
         }
     }
 
@@ -130,30 +131,26 @@ public class SelectFolderByIdLoadHandler implements LoadHandler<Folder, List<Fol
             folder = view.getFolderById(getNextPathToLoad());
         }
 
-        if (folder != null) {
+        if (folder == null) {
+            // If no folders could be found in view
+            unmaskView();
+        } else {
             // A folder along the path to load has been found.
-            if (view.isLoaded(folder)) {
-                if (folder.getPath().equals(folderToSelect.getId())) {
-                    // Exit condition: The target folder has already been loaded, so just select it.
-                    if (!folder.equals(presenter.getSelectedFolder())) {
-                        view.setSelectedFolder(folder);
-                    }
-                    unmaskView();
-                } else {
-                    // One of the target folder's parents already has its children loaded, but the target
-                    // wasn't found, so refresh that parent.
-                    refreshFolder(folder);
+            if (folder.getPath().equals(folderToSelect.getId())) {
+                // Exit condition: The target folder has already been loaded, so just select it.
+                if (!folder.equals(presenter.getSelectedFolder())) {
+                    view.setSelectedFolder(folder);
                 }
+                unmaskView();
+            } else if (view.isLoaded(folder)) {
+                // One of the target folder's parents already has its children loaded, but the target
+                // wasn't found, so refresh that parent.
+                refreshFolder(folder);
             } else {
                 // Once a valid folder is found in the view, remotely load the folder, which will add the
                 // next folder in the path to the view's treeStore.
                 view.expandFolder(folder);
             }
-
-        }
-        // If no folders could be found in view
-        if (path.isEmpty()) {
-            unmaskView();
         }
     }
 
