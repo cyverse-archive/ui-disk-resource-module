@@ -46,7 +46,8 @@ public class InfoTypeEditorDialog extends IPlantDialog {
             }
             
         });
-        infoTypeCbo.setAllowBlank(false);
+        infoTypeCbo.setAllowBlank(true);
+        infoTypeCbo.setEmptyText("-");
         infoTypeCbo.setTriggerAction(TriggerAction.ALL);
         infoTypeCbo.setEditable(false);
         loadInfoTypes();

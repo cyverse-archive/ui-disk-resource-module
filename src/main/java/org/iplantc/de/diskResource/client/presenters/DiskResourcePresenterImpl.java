@@ -814,18 +814,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
             @Override
             public void onSelect(SelectEvent event) {
                 String newType = dialog.getSelectedValue();
-                diskResourceService.setFileType(id, newType, new AsyncCallback<String>() {
-
-                    @Override
-                    public void onFailure(Throwable arg0) {
-                        ErrorHandler.post(arg0);
-                    }
-
-                    @Override
-                    public void onSuccess(String arg0) {
-                        getDetails(id);
-                    }
-                });
+                setInfoType(id, newType);
             }
         });
 
@@ -891,5 +880,30 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
         }
 
     }
+    
+    
+    @Override
+    public void resetInfoType() {
+    	if(getSelectedDiskResources().size() >0) {
+    		Iterator<DiskResource> it = getSelectedDiskResources().iterator();
+    		setInfoType(it.next().getPath(), "");
+    	}
+    }
+    
+
+	private void setInfoType(final String id, String newType) {
+		diskResourceService.setFileType(id, newType, new AsyncCallback<String>() {
+
+		    @Override
+		    public void onFailure(Throwable arg0) {
+		        ErrorHandler.post(arg0);
+		    }
+
+		    @Override
+		    public void onSuccess(String arg0) {
+		        getDetails(id);
+		    }
+		});
+	}
 
 }

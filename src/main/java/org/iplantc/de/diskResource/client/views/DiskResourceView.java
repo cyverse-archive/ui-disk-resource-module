@@ -137,6 +137,8 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
         Set<? extends DiskResource> getDragSources(IsWidget source, Element dragStartEl);
 
         void updateSortInfo(SortInfo sortInfo);
+
+		void resetInfoType();
     }
 
     /**
