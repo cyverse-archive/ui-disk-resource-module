@@ -886,7 +886,9 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
     public void resetInfoType() {
     	if(getSelectedDiskResources().size() >0) {
     		Iterator<DiskResource> it = getSelectedDiskResources().iterator();
-    		setInfoType(it.next().getPath(), "");
+    		if(it!=null && it.hasNext()) {
+    			setInfoType(it.next().getPath(), "");
+    		}
     	}
     }
     
