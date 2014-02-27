@@ -949,18 +949,36 @@ public class DiskResourceViewImpl implements DiskResourceView {
 		fl.setHTML(getDetailAsHtml(label, true));
 		panel.add(fl);
 		String infoType = info.getInfoType();
+
 		if (infoType != null && !infoType.isEmpty()) {
-			link = new IPlantAnchor(infoType, 60, new InfoTypeClickHandler(
-					infoType));
-			panel.add(link);
-			Image rmImg = new Image(IplantResources.RESOURCES.deleteIcon());
-			rmImg.addClickHandler(new RemoveInfoTypeClikcHandler());
-			rmImg.setTitle(I18N.DISPLAY.delete());
-			rmImg.getElement().getStyle().setCursor(Cursor.POINTER);
-			panel.add(rmImg);
+			if (info.getPermissions().isOwner()
+					|| info.getPermissions().isWritable()) {
+				link = new IPlantAnchor(infoType, 60, new InfoTypeClickHandler(
+						infoType));
+				panel.add(link);
+				Image rmImg = new Image(IplantResources.RESOURCES.deleteIcon());
+				rmImg.addClickHandler(new RemoveInfoTypeClikcHandler());
+				rmImg.setTitle(I18N.DISPLAY.delete());
+				rmImg.getElement().getStyle().setCursor(Cursor.POINTER);
+				panel.add(rmImg);
+			} else {
+				FieldLabel infoLbl = new FieldLabel();
+				infoLbl.setLabelSeparator("");
+				infoLbl.setHTML(getDetailAsHtml(infoType, false));
+				panel.add(infoLbl);
+			}
 		} else {
-			link = new IPlantAnchor("Select", 100, new InfoTypeClickHandler(""));
-			panel.add(link);
+			if (info.getPermissions().isOwner()
+					|| info.getPermissions().isWritable()) {
+				link = new IPlantAnchor("Select", 100,
+						new InfoTypeClickHandler(""));
+				panel.add(link);
+			} else {
+				FieldLabel infoLbl = new FieldLabel();
+				infoLbl.setLabelSeparator("");
+				infoLbl.setHTML("-");
+				panel.add(infoLbl);
+			}
 		}
 
 		return panel;
