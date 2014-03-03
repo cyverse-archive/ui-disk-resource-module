@@ -1,17 +1,9 @@
 package org.iplantc.de.diskResource.client.views.cells;
 
 import org.iplantc.de.client.events.EventBus;
-import org.iplantc.de.client.gin.ServicesInjector;
-import org.iplantc.de.client.models.dataLink.DataLink;
-import org.iplantc.de.client.models.dataLink.DataLinkFactory;
-import org.iplantc.de.client.models.dataLink.DataLinkList;
 import org.iplantc.de.client.models.diskResources.DiskResource;
 import org.iplantc.de.client.models.diskResources.File;
 import org.iplantc.de.client.models.diskResources.Folder;
-import org.iplantc.de.client.services.DiskResourceServiceFacade;
-import org.iplantc.de.client.util.DiskResourceUtil;
-import org.iplantc.de.commons.client.ErrorHandler;
-import org.iplantc.de.commons.client.views.gxt3.dialogs.IPlantDialog;
 import org.iplantc.de.diskResource.client.events.DiskResourceSelectedEvent;
 import org.iplantc.de.resources.client.DiskResourceNameCellStyle;
 import org.iplantc.de.resources.client.IplantResources;
@@ -28,29 +20,17 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.TextDecoration;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Label;
-import com.google.web.bindery.autobean.shared.AutoBean;
-import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
 import com.sencha.gxt.widget.core.client.Popup;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.tips.Tip;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * A cell for displaying the icons and names for <code>DiskResource</code> list items.
@@ -64,51 +44,6 @@ import java.util.List;
 public class DiskResourceNameCell extends AbstractCell<DiskResource> {
 
     private static final DiskResourceNameCellStyle CSS = IplantResources.RESOURCES.diskResourceNameCss();
-
-    private final class FolderLinkClikcHandler implements ClickHandler {
-        private final DiskResource value;
-
-        private FolderLinkClikcHandler(DiskResource value) {
-            this.value = value;
-        }
-
-        @Override
-        public void onClick(ClickEvent event) {
-            showShareLink(GWT.getHostPageBaseURL() + "?type=data&folder=" + value.getId());
-        }
-    }
-
-    private final class QuickShareAnchorClickHandlerImpl implements ClickHandler {
-        private final DiskResource value;
-
-        private QuickShareAnchorClickHandlerImpl(DiskResource value) {
-            this.value = value;
-        }
-
-        @Override
-        public void onClick(ClickEvent event) {
-            final DiskResourceServiceFacade drService = ServicesInjector.INSTANCE
-                    .getDiskResourceServiceFacade();
-            final DataLinkFactory dlFactory = GWT.create(DataLinkFactory.class);
-            drService.createDataLinks(Arrays.asList(value.getPath()), new AsyncCallback<String>() {
-
-                @Override
-                public void onSuccess(String result) {
-                    AutoBean<DataLinkList> tickets = AutoBeanCodex.decode(dlFactory, DataLinkList.class,
-                            result);
-                    List<DataLink> dlList = tickets.as().getTickets();
-                    showShareLink(dlList.get(0).getDownloadUrl());
-                }
-
-                @Override
-                public void onFailure(Throwable caught) {
-                    ErrorHandler.post(I18N.ERROR.createDataLinksError(), caught);
-                }
-            });
-
-        }
-    }
-
     public static enum CALLER_TAG {
         DATA, SHARING;
     }
@@ -203,16 +138,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
             return;
         }
 
-        if (!DiskResourceUtil.inTrash(value)) {
-          if(value instanceof File) {
-        	   if(value.getPermissions().isOwner()) {
-        		   buildQuickSharePopup(value);
-        	   }
-        	} else {
-        		buildFolderLink(value);
-        	}
-        }
-        schedulePopupTimer(eventTarget);
+       
         eventTarget.getStyle().setTextDecoration(TextDecoration.UNDERLINE);
     }
 
@@ -231,24 +157,7 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         t.schedule(2500);
     }
 
-    private void buildFolderLink(final DiskResource value) {
-        initPopup();
-        Anchor hp = new Anchor();
-        hp.addClickHandler(new FolderLinkClikcHandler(value));
-        hp.setHTML("<span style='color:#0098AA;font-size:11px; padding:2px;cursor:pointer;'>"
-                + I18N.DISPLAY.linkToFolder() + " " + value.getName() + "</i></span>");
-        linkPopup.add(hp);
-    }
-
-    private void buildQuickSharePopup(final DiskResource value) {
-        initPopup();
-        Anchor hp = new Anchor();
-        hp.addClickHandler(new QuickShareAnchorClickHandlerImpl(value));
-        hp.setHTML("<span style='color:#0098AA;font-size:11px; padding:2px;cursor:pointer;'>"
-                + I18N.DISPLAY.share() + " " + value.getName() + " " + I18N.DISPLAY.viaPublicLink()
-                + "</i></span>");
-        linkPopup.add(hp);
-    }
+   
 
     private void initPopup() {
         linkPopup = new Popup();
@@ -278,24 +187,6 @@ public class DiskResourceNameCell extends AbstractCell<DiskResource> {
         this.previewEnabled = previewEnabled;
     }
 
-    private void showShareLink(String linkId) {
-        // Open dialog window with text selected.
-        IPlantDialog dlg = new IPlantDialog();
-        dlg.setHeadingText(I18N.DISPLAY.copy());
-        dlg.setHideOnButtonClick(true);
-        dlg.setResizable(false);
-        dlg.setSize("535", "130");
-        TextField textBox = new TextField();
-        textBox.setWidth(500);
-        textBox.setReadOnly(true);
-        textBox.setValue(linkId);
-        VerticalLayoutContainer container = new VerticalLayoutContainer();
-        dlg.setWidget(container);
-        container.add(textBox);
-        container.add(new Label(I18N.DISPLAY.copyPasteInstructions()));
-        dlg.setFocusWidget(textBox);
-        dlg.show();
-        textBox.selectAll();
-    }
+   
 
 }

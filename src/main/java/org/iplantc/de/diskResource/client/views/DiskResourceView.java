@@ -139,6 +139,8 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
         void updateSortInfo(SortInfo sortInfo);
 
 		void resetInfoType();
+		
+		
     }
 
     /**
@@ -156,6 +158,8 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
     }
 
     void setPresenter(Presenter presenter);
+    
+    Presenter getPresenter();
 
     void setTreeLoader(TreeLoader<Folder> treeLoader);
 

@@ -4,6 +4,7 @@ import org.iplantc.de.client.models.diskResources.DiskResource;
 import org.iplantc.de.client.models.diskResources.File;
 import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.client.util.DiskResourceUtil;
+import org.iplantc.de.diskResource.client.views.cells.DiskResourceActionsCell;
 import org.iplantc.de.diskResource.client.views.cells.DiskResourceNameCell;
 import org.iplantc.de.resources.client.messages.I18N;
 
@@ -59,12 +60,20 @@ public class DiskResourceColumnModel extends ColumnModel<DiskResource> {
                 .getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM)));
         created.setHidden(true);
         
+        ColumnConfig<DiskResource, DiskResource> actions = new ColumnConfig<DiskResource, DiskResource>(
+                new IdentityValueProvider<DiskResource>("actions"), 75, "");
+        actions.setCell(new DiskResourceActionsCell(view, DiskResourceNameCell.CALLER_TAG.DATA));
+        actions.setHidden(false);
+        actions.setMenuDisabled(true);
+        actions.setSortable(false);
+        
         list.add(sm.getColumn());
         list.add(name);
         list.add(lastModified);
         list.add(size);
         list.add(path);
         list.add(created);
+        list.add(actions);
 
         return list;
     }

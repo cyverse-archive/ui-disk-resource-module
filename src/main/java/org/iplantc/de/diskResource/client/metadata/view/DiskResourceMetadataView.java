@@ -280,7 +280,7 @@ public class DiskResourceMetadataView implements IsWidget {
     }
     
     interface MetadataInfoTemplate extends XTemplates {
-        @XTemplate("<div qtip=\"{name}\" >{name}</div>")
+        @XTemplate("<div style='text-overflow:ellipsis;overflow:hidden;white-space:nowarp;border:none;' qtip=\"{name}\" >{name}</div>")
         SafeHtml templateInfo(String name);
     }
 

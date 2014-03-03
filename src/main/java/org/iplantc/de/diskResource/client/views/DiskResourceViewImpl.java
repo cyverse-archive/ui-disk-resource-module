@@ -1046,4 +1046,9 @@ public class DiskResourceViewImpl implements DiskResourceView {
 		return tree.addHandler(handler, DeleteSavedSearchEvent.TYPE);
 	}
 
+	@Override
+	public Presenter getPresenter() {
+		return presenter;
+	}
+
 }
