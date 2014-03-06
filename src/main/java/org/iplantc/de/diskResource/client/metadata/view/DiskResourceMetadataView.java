@@ -393,7 +393,12 @@ public class DiskResourceMetadataView implements IsWidget {
     private FieldLabel buildFieldLabel(IsWidget widget, String lbl, String description,
             boolean allowBlank) {
         FieldLabel fl = new FieldLabel(widget);
-        fl.setHTML(buildLabelWithDescription(lbl, description, allowBlank));
+        if (!(widget instanceof CheckBox)) {
+            fl.setHTML(buildLabelWithDescription(lbl, description, allowBlank));
+        } else {
+            // always set allow blank to true for checkbox
+            fl.setHTML(buildLabelWithDescription(lbl, description, true));
+        }
         new QuickTip(fl);
         fl.setLabelAlign(LabelAlign.TOP);
         return fl;
@@ -426,6 +431,7 @@ public class DiskResourceMetadataView implements IsWidget {
     private TextField buildURLField(MetadataTemplateAttribute attribute) {
         TextField tf = buildTextField(attribute);
         tf.addValidator(new UrlValidator());
+        tf.setEmptyText("Valid URL");
         return tf;
     }
 
