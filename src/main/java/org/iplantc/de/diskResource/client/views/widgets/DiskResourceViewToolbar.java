@@ -1,6 +1,6 @@
 package org.iplantc.de.diskResource.client.views.widgets;
 
-import org.iplantc.de.client.events.diskResources.DiskResourceRefreshEvent;
+import org.iplantc.de.client.events.diskResources.FolderRefreshEvent;
 import org.iplantc.de.client.models.diskResources.DiskResource;
 import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.diskResource.client.search.events.SaveDiskResourceQueryEvent;
@@ -22,7 +22,7 @@ public interface DiskResourceViewToolbar extends IsWidget {
         void doImport();
 
         /**
-         * Fires a {@link DiskResourceRefreshEvent} in order to reload the given folder in all available
+         * Fires a {@link FolderRefreshEvent} in order to reload the given folder in all available
          * views and the folder cache. Or reloads the current search results if no valid folder is given.
          * 
          * @param folder The folder to reload from the service, or null to refresh the current search

@@ -1,7 +1,7 @@
 package org.iplantc.de.diskResource.client.presenters;
 
 import org.iplantc.de.client.events.EventBus;
-import org.iplantc.de.client.events.diskResources.DiskResourceRefreshEvent;
+import org.iplantc.de.client.events.diskResources.FolderRefreshEvent;
 import org.iplantc.de.client.models.HasId;
 import org.iplantc.de.client.models.HasPaths;
 import org.iplantc.de.client.models.UserInfo;
@@ -198,7 +198,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
 
         EventBus eventBus = EventBus.getInstance();
         DiskResourcesEventHandler diskResourcesEventHandler = new DiskResourcesEventHandler(this);
-        dreventHandlers.add(eventBus.addHandler(DiskResourceRefreshEvent.TYPE, diskResourcesEventHandler));
+        dreventHandlers.add(eventBus.addHandler(FolderRefreshEvent.TYPE, diskResourcesEventHandler));
         dreventHandlers.add(eventBus.addHandler(DiskResourcesDeletedEvent.TYPE, diskResourcesEventHandler));
         dreventHandlers.add(eventBus.addHandler(FolderCreatedEvent.TYPE, diskResourcesEventHandler));
         dreventHandlers.add(eventBus.addHandler(DiskResourceRenamedEvent.TYPE, diskResourcesEventHandler));
@@ -389,7 +389,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
             return;
         }
 
-        EventBus.getInstance().fireEvent(new DiskResourceRefreshEvent(folder));
+        EventBus.getInstance().fireEvent(new FolderRefreshEvent(folder));
     }
 
     @Override
@@ -421,8 +421,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
 
     @Override
     public void doRename(final DiskResource dr, final String newName) {
-        view.mask(DISPLAY.loadingMask());
-        diskResourceService.renameDiskResource(dr, newName, new RenameDiskResourceCallback(dr, view));
+        if (dr != null && !dr.getName().equals(newName)) {
+            view.mask(DISPLAY.loadingMask());
+            diskResourceService.renameDiskResource(dr, newName, new RenameDiskResourceCallback(dr, view));
+        }
     }
 
     @Override
