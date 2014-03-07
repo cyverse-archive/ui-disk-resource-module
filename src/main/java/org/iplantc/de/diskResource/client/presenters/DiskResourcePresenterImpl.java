@@ -421,8 +421,10 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
 
     @Override
     public void doRename(final DiskResource dr, final String newName) {
-        view.mask(DISPLAY.loadingMask());
-        diskResourceService.renameDiskResource(dr, newName, new RenameDiskResourceCallback(dr, view));
+        if (dr != null && !dr.getName().equals(newName)) {
+            view.mask(DISPLAY.loadingMask());
+            diskResourceService.renameDiskResource(dr, newName, new RenameDiskResourceCallback(dr, view));
+        }
     }
 
     @Override
