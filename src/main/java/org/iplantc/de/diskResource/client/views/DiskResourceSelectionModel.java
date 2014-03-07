@@ -56,9 +56,9 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
 
     private final CheckBoxColumnAppearance appearance = GWT.create(CheckBoxColumnAppearance.class);
 
-    private GroupingHandlerRegistration handlerRegistration = new GroupingHandlerRegistration();
+    private final GroupingHandlerRegistration handlerRegistration = new GroupingHandlerRegistration();
 
-    private Map<String, DiskResource> selectedItemsCache = new HashMap<String, DiskResource>();
+    private final Map<String, DiskResource> selectedItemsCache = new HashMap<String, DiskResource>();
 
     private int rowcount;
 
@@ -284,6 +284,7 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
         updateHeaderCheckBox();
     }
 
+    @Override
     protected void onRemove(DiskResource model) {
         if (!selectAll) {
             selectedItemsCache.remove(model.getId());
@@ -347,7 +348,7 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
      * @param selectAll the selectAll to set
      */
     public void setSelectAll(boolean selectAll) {
-        this.selectAll = selectAll;
+        this.selectAll = selectAll && allowSelectAll;
     }
 
     private void updateHeaderCheckBox() {
@@ -388,6 +389,7 @@ public class DiskResourceSelectionModel extends GridSelectionModel<DiskResource>
      */
     public void setAllowSelectAll(boolean allowSelectAll) {
         this.allowSelectAll = allowSelectAll;
+        setSelectAll(isSelectAll());
     }
 
 }
