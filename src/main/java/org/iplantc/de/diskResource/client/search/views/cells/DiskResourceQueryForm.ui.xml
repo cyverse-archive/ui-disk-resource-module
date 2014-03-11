@@ -186,6 +186,10 @@
 				</form:widget>
 			</form:FieldLabel>
 		</container:child>
+
+        <container:child layoutData="{verticalLayoutData}">
+            <form:CheckBox ui:field="includeTrashItems" boxLabel="Include items in Trash" />
+        </container:child>
 		
 		
 		<container:child layoutData="{verticalLayoutData}">

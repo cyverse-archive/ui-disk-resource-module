@@ -45,6 +45,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.ShowEvent;
+import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
@@ -154,6 +155,9 @@ public class DiskResourceQueryForm extends Composite implements Editor<DiskResou
 
     @UiField 
     TextField sharedWith;
+
+    @UiField
+    CheckBox includeTrashItems;
 
     private boolean showing;
 
