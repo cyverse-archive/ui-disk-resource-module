@@ -11,7 +11,6 @@ import org.iplantc.de.client.models.diskResources.Folder;
 import org.iplantc.de.client.models.search.DiskResourceQueryTemplate;
 import org.iplantc.de.client.services.DiskResourceServiceFacade;
 import org.iplantc.de.client.util.DiskResourceUtil;
-import org.iplantc.de.client.util.JsonUtil;
 import org.iplantc.de.commons.client.ErrorHandler;
 import org.iplantc.de.commons.client.info.ErrorAnnouncementConfig;
 import org.iplantc.de.commons.client.info.IplantAnnouncer;
@@ -149,9 +148,7 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
 
         initHandlers();
         initDragAndDrop();
-        loadUserTrashPath();
         initFolderContentRpc();
-
     }
 
     private void initFolderContentRpc() {
@@ -163,25 +160,6 @@ public class DiskResourcePresenterImpl implements DiskResourceView.Presenter {
 
     private void initDragAndDrop() {
 
-    }
-
-    @Override
-    public void loadUserTrashPath() {
-        final String userName = UserInfo.getInstance().getUsername();
-        diskResourceService.getUserTrashPath(userName, new AsyncCallback<String>() {
-
-            @Override
-            public void onFailure(Throwable caught) {
-                // best guess of user trash. this is horrible
-                UserInfo.getInstance().setTrashPath("/iplant/trash/home/rods/" + userName); //$NON-NLS-1$
-            }
-
-            @Override
-            public void onSuccess(String result) {
-                JSONObject obj = JsonUtil.getObject(result);
-                UserInfo.getInstance().setTrashPath(JsonUtil.getString(obj, "path")); //$NON-NLS-1$
-            }
-        });
     }
 
     private void initHandlers() {

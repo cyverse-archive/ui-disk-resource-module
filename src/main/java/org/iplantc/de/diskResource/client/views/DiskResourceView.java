@@ -128,8 +128,6 @@ public interface DiskResourceView extends IsWidget, IsMaskable, IsDiskResourceRo
 
         void deSelectDiskResources();
 
-        void loadUserTrashPath();
-
         void setSelectedDiskResourcesById(List<? extends HasId> selectedDiskResources);
 
         void OnInfoTypeClick(String id, String infoType);
